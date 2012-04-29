@@ -6,55 +6,34 @@ Visual Studio plugin for CoApp packages
 ![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
 
 
-[X] List Packages
+### Progress
 
-[X] Get Package Info
+    [X] List Packages
+    [X] Get Package Info
+    [X] Close Window
+    [X] Progress Bar
 
-[X] Close Window
+    [ ] Activate Package (C#)
+    [ ] Activate Package (C++)
+    [ ] Packages.config, prompt required library installs
 
-[X] Progress Bar
+    [ ] Install Package
+    [ ] Uninstall Package
+    [ ] Update Packages
+    [ ] Upgrade Packages
+    [X] List Feeds
+    [ ] Add Feed
+    [ ] Remove Feed
 
+    [ ] Options
+    [ ] Feed Configuration
 
-[ ] Activate Package (C#)
+    [X] Search (local list)
+    [X] Sort (local list)
+    [X] Categories: installed, active, online, updates, recent
+    [X] Subcategories: all, libraries, tools
 
-[ ] Activate Package (C++)
-
-[ ] Packages.config, prompt required library installs
-
-
-[ ] Install Package
-
-[ ] Uninstall Package
-
-[ ] Update Packages
-
-[ ] Upgrade Packages
-
-[X] List Feeds
-
-[ ] Add Feed
-
-[ ] Remove Feed
-
-
-[ ] Options
-
-[ ] Feed Configuration
-
-
-[X] Search (local list)
-
-[X] Sort (local list)
-
-[X] Categories: installed, active, online, updates, recent
-
-[X] Subcategories: all, libraries, tools
-
-
-[ ] Command line toolbox
-
-[ ] Update notifications
-
-[ ] VsExtension
-
+    [ ] Command line toolbox
+    [ ] Update notifications
+    [ ] VsExtension
 
