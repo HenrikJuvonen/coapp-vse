@@ -5,12 +5,16 @@ Visual Studio plugin for CoApp packages
 
 ![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
 
+### Notes
+
+- Requires CoApp.Toolkit 1.2.0.165 (for now).
+
+- Set startup project to "Loader" if it isn't.
 
 ### Progress
 
     [X] List Packages
     [X] Get Package Info
-    [X] Close Window
     [X] Progress Bar
 
     [ ] Activate Package (C#)
@@ -30,8 +34,8 @@ Visual Studio plugin for CoApp packages
 
     [X] Search (local list)
     [X] Sort (local list)
-    [X] Categories: installed, active, online, updates, recent
-    [X] Subcategories: all, libraries, tools
+    [|] Categories: installed, active, online, updates, recent
+    [|] Subcategories: all, libraries, tools
 
     [ ] Command line toolbox
     [ ] Update notifications
