@@ -3,7 +3,7 @@ coapp-vsp-prototype
 
 Visual Studio plugin for CoApp packages
 
-![Package Manager](coapp-vsp-prototype/blob/master/pkgmgr.png)
+![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
 
 [X] List Packages
 [X] Get Package Info
