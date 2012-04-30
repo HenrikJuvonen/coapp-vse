@@ -8,8 +8,7 @@ Visual Studio plugin for CoApp packages
 ### Notes
 
 - Requires CoApp.Toolkit 1.2.0.165 (for now).
-
-- Set startup project to "Loader" if it isn't.
+- Set startup project to "VsExtension" if it isn't.
 
 ### Progress
 
@@ -37,7 +36,7 @@ Visual Studio plugin for CoApp packages
     [|] Categories: installed, active, online, updates, recent
     [|] Subcategories: all, libraries, tools
 
-    [ ] Command line toolbox
+	[X] VsExtension
+	[|] Console window
     [ ] Update notifications
-    [ ] VsExtension
-
+    

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VsExtension.Properties {
+namespace CoApp.VsExtension {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VsExtension.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,24 @@ namespace CoApp.VsExtension.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not create tool window..
+        /// </summary>
+        internal static string CanNotCreateWindow {
+            get {
+                return ResourceManager.GetString("CanNotCreateWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CoApp Console.
+        /// </summary>
+        internal static string ConsoleWindowTitle {
+            get {
+                return ResourceManager.GetString("ConsoleWindowTitle", resourceCulture);
             }
         }
     }

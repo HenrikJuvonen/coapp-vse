@@ -6,7 +6,7 @@ using CoApp.Toolkit.Engine.Client;
 using CoApp.Toolkit.Extensions;
 using CoApp.Toolkit.Win32;
 
-namespace CoApp.Vsp
+namespace CoApp.VsExtension
 {
     public class Proxy
     {

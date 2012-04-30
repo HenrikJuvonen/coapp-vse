@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CoApp.Toolkit.Engine.Client;
 using CoApp.Toolkit.Win32;
 using System.Threading;
-using System.Windows.Threading;
+using Microsoft.VisualStudio.PlatformUI;
 
-namespace CoApp.Vsp
+namespace CoApp.VsExtension
 {
     public class Handler
     {
-        private static MainWindow mw = new MainWindow();
+        private static PackageManagerWindow mw;
         private static Proxy proxy = new Proxy();
         private static IEnumerable<Package> packages, subpackages;
         private static IEnumerable<Feed> feeds;
@@ -21,23 +20,25 @@ namespace CoApp.Vsp
         private static bool orderByName;
         private static bool orderByPublisherName;
 
-        public static void Start()
+        public static void CreatePackageManagerWindow()
         {
-            App app = new App();
-            app.Run(mw);
+            mw = new PackageManagerWindow();
+            mw.ShowModal();
         }
 
         public static void PushPackageList(IEnumerable<Package> pkgs)
         {
-            mw.packageList.Dispatcher.Invoke((Action)(() =>
+            mw.Dispatcher.Invoke((Action)(() =>
             {
                 if (orderByName)
                 {
-                    subpackages = orderByDescending ? pkgs.OrderByDescending(p => p.Name) : pkgs.OrderBy(p => p.Name);
+                    subpackages = orderByDescending ? pkgs.OrderByDescending(p => p.Name)
+                                                    : pkgs.OrderBy(p => p.Name);
                 }
                 else if (orderByPublisherName)
                 {
-                    subpackages = orderByDescending ? pkgs.OrderByDescending(p => p.PublisherName) : pkgs.OrderBy(p => p.PublisherName);
+                    subpackages = orderByDescending ? pkgs.OrderByDescending(p => p.PublisherName)
+                                                    : pkgs.OrderBy(p => p.PublisherName);
                 }
                 else
                 {
@@ -72,7 +73,7 @@ namespace CoApp.Vsp
                                 .Where(pkg => pkg.Version.ToString() == parameters[2])
                                 .First();
 
-            mw.packageInfo.Dispatcher.Invoke((Action)(() =>
+            mw.Dispatcher.Invoke((Action)(() =>
             {
                 mw.packageInfo.Text = "Name: " + p.Name +
                                         "\nArchitecture: " + p.Architecture.ToString() +

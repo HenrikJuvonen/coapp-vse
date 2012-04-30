@@ -1,7 +1,9 @@
-﻿<Window x:Class="CoApp.Vsp.MainWindow"
+﻿<pfui:DialogWindow
+        x:Class="CoApp.VsExtension.PackageManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="coapp-vsp-prototype" Height="373" Width="705" ResizeMode="NoResize" UseLayoutRounding="False" Loaded="Window_Loaded">
+        xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
+        Title="CoApp Package Manager" Height="373" Width="705" ResizeMode="NoResize" UseLayoutRounding="False">
     <Grid Height="333" Width="680" ClipToBounds="True">
         <ListBox Height="236" HorizontalAlignment="Left" Margin="121,36,0,0" Name="packageList" VerticalAlignment="Top" Width="404" SelectionChanged="packageList_SelectionChanged" Grid.ColumnSpan="3" />
         <TextBlock Height="178" Margin="531,36,12,0" Name="packageInfo" Text="" VerticalAlignment="Top" />
@@ -37,4 +39,4 @@
         </Grid>
         
     </Grid>
-</Window>
+</pfui:DialogWindow>

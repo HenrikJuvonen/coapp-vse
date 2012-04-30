@@ -8,8 +8,8 @@
     <ProjectGuid>{74BA38EE-A932-4980-ABA0-BE336DF56F59}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoApp.Vsp</RootNamespace>
-    <AssemblyName>CoApp.Vsp.Proxy</AssemblyName>
+    <RootNamespace>CoApp.VsExtension</RootNamespace>
+    <AssemblyName>CoApp.VsExtension.Proxy</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

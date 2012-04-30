@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.Vsp.Properties {
+namespace CoApp.VsExtension.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
