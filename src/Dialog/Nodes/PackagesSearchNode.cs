@@ -62,26 +62,17 @@ namespace CoApp.VsExtension.Dialog.Providers
 
         public override IQueryable<Package> GetPackages()
         {
-            if (!(_baseNode is UpdatesTreeNode))
-            {
-                var simpleNode = _baseNode as SimpleTreeNode;
-                if (simpleNode != null)
-                {
-                    return simpleNode.GetPackages().Find(_searchText);
-                }
-            }
-
             return _baseNode.GetPackages().Find(_searchText);
         }
 
         public override IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages)
         {
-            return GetPackages();
+            return _baseNode.GetDetailedPackages(packages).Find(_searchText);
         }
 
         public override void SetCancellationTokenSourceForRepository(CancellationTokenSource cts)
         {
-            
+            _baseNode.SetCancellationTokenSourceForRepository(cts);
         }
     }
 }

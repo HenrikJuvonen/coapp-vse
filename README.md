@@ -18,22 +18,19 @@ Visual Studio plugin for CoApp packages
 ### Progress
 
 	[|] VsExtension
-		[ ] Search by name
+		[X] Search by name
 		[X] Sort by name
 		[|] Categories
 			[ ] Active
 				[ ] Dev
-			[ ] Installed
-				[ ] All
+			[|] Installed
+				[|] All
 				[ ] Dev
 			[|] Online
 				[|] All
 				[ ] Dev
 			[|] Updates
 				[|] All
-				[ ] Dev
-			[ ] Recent
-				[ ] All
 				[ ] Dev
 
 		[ ] Activate Package (C#)
@@ -42,10 +39,9 @@ Visual Studio plugin for CoApp packages
 
 		[|] List Packages
 		[|] Get Package Details
-		[ ] Install Package
-		[ ] Uninstall Package
-		[ ] Update Packages
-		[ ] Upgrade Packages
+		[ ] Install Package (Online)
+		[ ] Uninstall Package (Installed)
+		[ ] Update Packages (Updates)
 	
 		[ ] Options
 			[ ] Feed Configuration

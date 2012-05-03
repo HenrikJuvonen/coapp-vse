@@ -31,7 +31,7 @@ namespace CoApp.VsExtension
 
         private static List<string> activeDownloads = new List<string>();
 
-        private static IEnumerable<Package> allPackages, updateablePackages;
+        private static IEnumerable<Package> allPackages, updateablePackages, installedPackages;
 
         private CancellationTokenSource cts;
 
@@ -75,7 +75,7 @@ namespace CoApp.VsExtension
             }
 
             List<Package> pl = allPackages.ToList();
-            for (int i = 10; i < pl.Count(); i++)
+            for (int i = 10; i < pl.Count; i++)
             {
                 pl[i] = GetDetailedPackage(pl[i]);
             }
@@ -91,6 +91,18 @@ namespace CoApp.VsExtension
             }
 
             return updateablePackages;
+        }
+
+        public IEnumerable<Package> GetInstalledPackages()
+        {
+            if (installedPackages == null || installedPackages.IsEmpty())
+            {
+                _installed = true;
+                installedPackages = ListPackages(new string[] { "*" });
+                _installed = null;
+            }
+
+            return installedPackages;
         }
 
         public IEnumerable<Package> ListUpdateablePackages(string[] parameters)
@@ -134,7 +146,7 @@ namespace CoApp.VsExtension
             ContinueTask(task);
 
             List<Package> pl = pkgs.ToList();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < pl.Count && i < 10; i++)
             {
                 pl[i] = GetDetailedPackage(pl[i]);
             }

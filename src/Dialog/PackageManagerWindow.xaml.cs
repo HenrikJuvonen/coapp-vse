@@ -35,15 +35,26 @@ namespace CoApp.VsExtension.Dialog
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         private void SetupProviders(Project activeProject, DTE dte)
         {
+            InstalledProvider installedProvider = new InstalledProvider();
             OnlineProvider onlineProvider = new OnlineProvider();
             UpdatesProvider updatesProvider = new UpdatesProvider();
 
+            explorer.Providers.Add(installedProvider);
             explorer.Providers.Add(onlineProvider);
             explorer.Providers.Add(updatesProvider);
 
             explorer.SelectedProvider = explorer.Providers[0];
         }
 
+        private void OnCategorySelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            if (selectedNode != null)
+            {
+                // notify the selected node that it is opened.
+                selectedNode.OnOpened();
+            }
+        }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
         private void CanExecuteCommandOnPackage(object sender, CanExecuteRoutedEventArgs e)

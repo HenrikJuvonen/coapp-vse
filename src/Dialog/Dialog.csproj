@@ -107,6 +107,7 @@
     <Compile Include="Nodes\PackagesSearchNode.cs" />
     <Compile Include="Nodes\SimpleTreeNode.cs" />
     <Compile Include="Nodes\UpdatesTreeNode.cs" />
+    <Compile Include="Providers\InstalledProvider.cs" />
     <Compile Include="Providers\OnlineProvider.cs" />
     <Compile Include="Providers\PackagesProviderBase.cs" />
     <Compile Include="Providers\UpdatesProvider.cs" />

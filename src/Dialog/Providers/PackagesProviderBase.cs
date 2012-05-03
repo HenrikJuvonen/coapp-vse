@@ -85,6 +85,11 @@ namespace CoApp.VsExtension.Dialog.Providers
         
         public override IVsExtensionsTreeNode Search(string searchText)
         {
+            if (OperationCoordinator.IsBusy)
+            {
+                return null;
+            }
+
             if (!String.IsNullOrWhiteSpace(searchText) && SelectedNode != null)
             {
                 searchText = searchText.Trim();

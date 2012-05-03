@@ -43,7 +43,7 @@
                 IsMediumIconsViewButtonVisible="False"
                 IsSmallIconsViewButtonVisible="False"
                 IsLargeIconsViewButtonVisible="False"
-                Grid.IsSharedSizeScope="True" IsFxComboVisible="True" />
+                Grid.IsSharedSizeScope="True" IsFxComboVisible="True" CategorySelectionChanged="OnCategorySelectionChanged" />
         </Border>
 
         <Grid Grid.Row="2" MinHeight="50">
