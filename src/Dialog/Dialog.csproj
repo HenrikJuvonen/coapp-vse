@@ -121,7 +121,6 @@
     <Compile Include="Nodes\RootTreeNode.cs" />
     <Compile Include="PackageItem.cs" />
     <Compile Include="PackageSortDescriptor.cs" />
-    <Compile Include="Handler.cs" />
     <Page Include="PackageManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
