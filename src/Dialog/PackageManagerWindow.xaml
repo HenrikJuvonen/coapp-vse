@@ -1,42 +1,78 @@
 ﻿<pfui:DialogWindow
-        x:Class="CoApp.VsExtension.PackageManagerWindow"
+        x:Class="CoApp.VsExtension.Dialog.PackageManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="clr-namespace:Microsoft.VisualStudio.ExtensionsExplorer.UI;assembly=Microsoft.VisualStudio.ExtensionsExplorer.UI"
         xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
-        Title="CoApp Package Manager" Height="373" Width="705" ResizeMode="NoResize" UseLayoutRounding="False">
-    <Grid Height="333" Width="680" ClipToBounds="True">
-        <ListBox Height="236" HorizontalAlignment="Left" Margin="121,36,0,0" Name="packageList" VerticalAlignment="Top" Width="404" SelectionChanged="packageList_SelectionChanged" Grid.ColumnSpan="3" />
-        <TextBlock Height="178" Margin="531,36,12,0" Name="packageInfo" Text="" VerticalAlignment="Top" />
-        <Button Content="Custom1" Height="23" HorizontalAlignment="Left" Margin="592,220,0,0" Name="customButton1" VerticalAlignment="Top" Width="75" Visibility="Hidden" />
-        <Button Content="Custom2" Height="23" HorizontalAlignment="Left" Margin="593,249,0,0" Name="customButton2" VerticalAlignment="Top" Width="75" Visibility="Hidden" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="531,9,0,0" Name="searchBox" VerticalAlignment="Top" Width="136" Text="" TextChanged="searchBox_TextChanged" />
-        <Button Content="Close" Height="23" HorizontalAlignment="Left" Margin="593,297,0,0" Name="closeButton" VerticalAlignment="Top" Width="75" Click="closeButton_Click" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="177.39,9,0,0" Name="sortComboBox" VerticalAlignment="Top" Width="150.61" SelectionChanged="sortComboBox_SelectionChanged">
-            <ComboBoxItem Content="Name: Ascending" IsSelected="True" />
-            <ComboBoxItem Content="Name: Descending" />
-            <ComboBoxItem Content="Publisher: Ascending" />
-            <ComboBoxItem Content="Publisher: Descending" />
-        </ComboBox>
-        <Label Content="Sort by:" Height="28" HorizontalAlignment="Left" Margin="121,7,0,0" Name="sortLabel" VerticalAlignment="Top" />
-        <Button Content="Settings" Height="23" HorizontalAlignment="Left" Margin="12,297,0,0" Name="settingsButton" VerticalAlignment="Top" Width="75" />
-        <TreeView Height="265" HorizontalAlignment="Left" Name="categoryTree" VerticalAlignment="Top" Width="105" SelectedItemChanged="categoryTree_SelectedItemChanged" Margin="10,7,0,0">
-            <TreeViewItem Header="Active" IsSelected="True" />
-            <TreeViewItem Header="Installed">
-                <TreeViewItem Header="All" />
-                <TreeViewItem Header="Libraries" />
-                <TreeViewItem Header="Tools" />
-            </TreeViewItem>
-            <TreeViewItem Header="Online" IsExpanded="False" IsSelected="False">
-                <TreeViewItem Header="All" IsSelected="False" />
-                <TreeViewItem Header="Libraries" />
-                <TreeViewItem Header="Tools" />
-            </TreeViewItem>
-            <TreeViewItem Header="Updates" />
-        </TreeView>
-        <Grid Height="236" HorizontalAlignment="Left" Margin="121,36,0,0" Name="progress" VerticalAlignment="Top" Width="404" Visibility="Hidden">
-            <ProgressBar Height="20" Name="progressBar" Margin="133.5,88,134.133,128" IsIndeterminate="True" />
-            <Label Content="Retrieving information..." Margin="133.5,114,134.133,0" Name="progressLabel" />
-        </Grid>
+        xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+        Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}"
+        WindowStartupLocation="CenterOwner"
+        HasHelpButton="True" 
+        HasMaximizeButton="False"
+        HasMinimizeButton="False"
+        ResizeMode="CanResize"
+        ShowInTaskbar="False"
+        SnapsToDevicePixels="True"
+        Width="900"
+        Height="600"
+        MinWidth="800" 
+        MinHeight="450"
+        Title="CoApp Package Manager" IsEnabled="True" Closing="OnDialogWindowClosing">
+
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="ApplicationCommands.Close"
+            CanExecute="CanExecuteClose"
+            Executed="ExecutedClose" />
+    </Window.CommandBindings>
+
+        <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         
+        <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.DropShadowBackgroundKey}}" Padding="0,0,0,4" Grid.Row="1">
+            <shared:VSExtensionsExplorerCtl
+                x:Name="explorer"
+                ActiveView="MediumIcons"
+                HorizontalAlignment="Stretch"
+                SnapsToDevicePixels="True"
+                ListViewIsVirtualizing="True"
+                IsMediumIconsViewButtonVisible="False"
+                IsSmallIconsViewButtonVisible="False"
+                IsLargeIconsViewButtonVisible="False"
+                Grid.IsSharedSizeScope="True" IsFxComboVisible="True" />
+        </Border>
+
+        <Grid Grid.Row="2" MinHeight="50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button 
+                    Grid.Column="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="12"
+                    MinWidth="75" 
+                    MinHeight="23"
+                    Padding="4,0,4,0"
+                    Content="Settings" />
+
+            <Button 
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="12"
+                    MinWidth="75" 
+                    MinHeight="23"
+                    Padding="4,0,4,0"
+                    Content="Close"
+                    Command="ApplicationCommands.Close"
+                    IsCancel="True" />
+        </Grid>
     </Grid>
 </pfui:DialogWindow>

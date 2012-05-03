@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{74BA38EE-A932-4980-ABA0-BE336DF56F59}</ProjectGuid>
+    <ProjectGuid>{D46F169B-4BBF-4687-9899-9E3DB954591D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CoApp.VsExtension</RootNamespace>
-    <AssemblyName>CoApp.VsExtension.Proxy</AssemblyName>
+    <AssemblyName>CoApp.VsExtension.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,20 +33,47 @@
   <ItemGroup>
     <Reference Include="CoApp.Client, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Client.dll</HintPath>
+      <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Client.dll</HintPath>
     </Reference>
     <Reference Include="CoApp.Toolkit, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Toolkit.dll</HintPath>
+      <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Proxy.cs" />
+    <Compile Include="..\..\Common\CommonResources.cs">
+      <Link>CommonResources.cs</Link>
+    </Compile>
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\PackageExtensions.cs" />
+    <Compile Include="Extensions\QueryableExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxy.cs" />
+    <Compile Include="Repositories\BufferedEnumerable.cs" />
+    <Compile Include="Repositories\OnlineRepository.cs" />
+    <Compile Include="Repositories\UpdatesRepository.cs" />
+    <Compile Include="Repositories\ICloneableRepository.cs" />
+    <Compile Include="Repositories\IPackageRepository.cs" />
+    <Compile Include="Repositories\ISearchableRepository.cs" />
+    <Compile Include="Repositories\PackageRepositoryBase.cs" />
+    <Compile Include="Repositories\PackageRepositoryExtensions.cs" />
+    <Compile Include="Repositories\ProgressEventArgs.cs" />
+    <Compile Include="Utility\ExceptionUtility.cs" />
+    <Compile Include="Utility\IProgressProvider.cs" />
+    <Compile Include="Utility\PathUtility.cs" />
+    <Compile Include="Utility\PathValidator.cs" />
+    <Compile Include="Utility\UriUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

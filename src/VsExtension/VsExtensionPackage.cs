@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.Shell;
 
 namespace CoApp.VsExtension
 {
+    using Dialog;
+
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     ///
@@ -102,7 +104,8 @@ namespace CoApp.VsExtension
         /// </summary>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            Handler.CreatePackageManagerWindow();
+            PackageManagerWindow pkm = new PackageManagerWindow();
+            pkm.ShowModal();
         }
 
     }

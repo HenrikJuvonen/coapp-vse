@@ -1,102 +1,129 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using Microsoft.VisualStudio.PlatformUI;
+using System.Diagnostics.CodeAnalysis;
+using EnvDTE;
+using CoApp.Toolkit.Engine.Client;
+using Microsoft.VisualStudio.ExtensionsExplorer.UI;
+//using CoApp.VsExtension.VisualStudio;
 
-namespace CoApp.VsExtension
+namespace CoApp.VsExtension.Dialog
 {
+    using Providers;
+
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PkmWindow.xaml
     /// </summary>
     public partial class PackageManagerWindow : DialogWindow
     {
-        private bool filterDev;
-
         public PackageManagerWindow()
         {
             InitializeComponent();
+            SetupProviders(null, null);
+        }
+        
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+        private void SetupProviders(Project activeProject, DTE dte)
+        {
+            OnlineProvider onlineProvider = new OnlineProvider();
+            UpdatesProvider updatesProvider = new UpdatesProvider();
+
+            explorer.Providers.Add(onlineProvider);
+            explorer.Providers.Add(updatesProvider);
+
+            explorer.SelectedProvider = explorer.Providers[0];
         }
 
-        public void ShowProgress()
-        {
-            packageInfo.Text = "";
-            packageList.Items.Clear();
-            progress.Visibility = Visibility.Visible;
-        }
 
-        public void HideProgress()
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
+        private void CanExecuteCommandOnPackage(object sender, CanExecuteRoutedEventArgs e)
         {
-            progress.Visibility = Visibility.Hidden;
-        }
-
-        private void packageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // update package info
-            if (packageList.HasItems)
+            if (OperationCoordinator.IsBusy)
             {
-                Handler.Pull("info", packageList.SelectedItem.ToString().Split(new char[] { ' ' }));
-                customButton1.Content = "Install";
-                customButton1.Visibility = Visibility.Visible;
+                e.CanExecute = false;
+                return;
             }
-            else
+
+            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            if (control == null)
             {
-                packageInfo.Text = "";
-                customButton1.Visibility = Visibility.Hidden;
+                e.CanExecute = false;
+                return;
+            }
+
+            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            if (selectedItem == null)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            try
+            {
+                e.CanExecute = selectedItem.IsEnabled;
+            }
+            catch (Exception)
+            {
+                e.CanExecute = false;
             }
         }
 
-        private void closeButton_Click(object sender, RoutedEventArgs e)
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
+        private void ExecutedPackageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (OperationCoordinator.IsBusy)
+            {
+                return;
+            }
+
+            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            if (control == null)
+            {
+                return;
+            }
+
+            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
+            if (provider != null)
+            {
+                provider.Execute(selectedItem);
+            }
+        }
+
+        private void CanExecuteClose(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !OperationCoordinator.IsBusy;
+            e.Handled = true;
+        }
+
+        private void ExecutedClose(object sender, ExecutedRoutedEventArgs e)
         {
             Close();
         }
 
-        private void categoryTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void OnDialogWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            filterDev = false;
-
-            foreach (TreeViewItem t in categoryTree.Items)
+            // don't allow the dialog to be closed if an operation is pending
+            if (OperationCoordinator.IsBusy)
             {
-                bool childSelected = false;
-                foreach (TreeViewItem u in t.Items)
-                {
-                    if (t.IsSelected) // Select the first sub-item
-                    {
-                        t.IsSelected = false;
-                        u.IsSelected = true;
-                        return;
-                    }
-                    if (u.IsSelected)
-                    {
-                        childSelected = true;
-                        if (u.Header.Equals("All"))
-                        {
-                            Handler.Pull("list", new string[] { searchBox.Text });
-                        }
-                        else if (u.Header.Equals("Libraries"))
-                        {
-                            filterDev = true;
-                            Handler.Pull("list", new string[] { searchBox.Text, filterDev ? "dev" : "" });
-                        }
-                    }
-                }
-                t.IsExpanded = t.IsSelected || childSelected ? true : false;
+                e.Cancel = true;
             }
         }
-
-        private void searchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Handler.Pull("list", new string[] { searchBox.Text, filterDev ? "dev" : "" });
-        }
-
-        private void sortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            switch (((ComboBoxItem)sortComboBox.SelectedItem).Content.ToString()) {
-                case "Name: Ascending": Handler.OrderBy(false, true, false); break;
-                case "Name: Descending": Handler.OrderBy(true, true, false); break;
-                case "Publisher: Ascending": Handler.OrderBy(false, false, true); break;
-                case "Publisher: Descending": Handler.OrderBy(true, false, true); break;
-            }
-            Handler.Reorder();
-        }
+        
     }
 }

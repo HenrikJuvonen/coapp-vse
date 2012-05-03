@@ -34,6 +34,10 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CoApp.Client, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Client.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
@@ -164,13 +168,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{D46F169B-4BBF-4687-9899-9E3DB954591D}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DialogServices\DialogServices.csproj">
+      <Project>{2943EF98-97DC-4819-82AF-9D19DC1BF13B}</Project>
+      <Name>DialogServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dialog\Dialog.csproj">
       <Project>{86072616-8F24-4346-821F-F725CD3DEC90}</Project>
       <Name>Dialog</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Proxy\Proxy.csproj">
-      <Project>{74BA38EE-A932-4980-ABA0-BE336DF56F59}</Project>
-      <Name>Proxy</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
