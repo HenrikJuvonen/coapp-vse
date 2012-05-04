@@ -10,9 +10,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CoApp.VsExtension</RootNamespace>
     <AssemblyName>CoApp.VsExtension</AssemblyName>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -123,10 +120,10 @@
     </Compile>
     <Compile Include="ConsoleWindow.cs" />
     <Compile Include="Guids.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="ConsoleResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>ConsoleResources.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="VsExtensionPackage.cs" />
@@ -134,9 +131,9 @@
     <Compile Include="PkgCmdID.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Include="ConsoleResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>ConsoleResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
@@ -172,13 +169,17 @@
       <Project>{D46F169B-4BBF-4687-9899-9E3DB954591D}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dialog\Dialog.csproj">
+      <Project>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</Project>
+      <Name>Dialog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DialogServices\DialogServices.csproj">
-      <Project>{2943EF98-97DC-4819-82AF-9D19DC1BF13B}</Project>
+      <Project>{23CBC679-580F-4AF9-8D81-E41AD9672174}</Project>
       <Name>DialogServices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dialog\Dialog.csproj">
-      <Project>{86072616-8F24-4346-821F-F725CD3DEC90}</Project>
-      <Name>Dialog</Name>
+    <ProjectReference Include="..\VisualStudio\VisualStudio.csproj">
+      <Project>{FA3254A6-71B5-4029-B727-3A477AB413E7}</Project>
+      <Name>VisualStudio</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

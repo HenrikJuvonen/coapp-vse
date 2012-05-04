@@ -2,23 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{86072616-8F24-4346-821F-F725CD3DEC90}</ProjectGuid>
+    <ProjectGuid>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoApp.VsExtension</RootNamespace>
+    <RootNamespace>CoApp.VsExtension.Dialog</RootNamespace>
     <AssemblyName>CoApp.VsExtension.Dialog</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -27,8 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -36,29 +30,21 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoApp.Client, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Client.dll</HintPath>
+      <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Client.dll</HintPath>
     </Reference>
     <Reference Include="CoApp.Toolkit, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Toolkit.dll</HintPath>
+      <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\EnvDTE.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.VisualStudio.ExtensionManager.Implementation\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualStudio.ExtensionManager.Implementation.dll</HintPath>
+      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.ExtensionManager.Implementation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.ExtensionsExplorer, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -68,73 +54,54 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.ExtensionsExplorer.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Shell.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 2010 SDK SP1\VisualStudioIntegration\Common\Assemblies\v2.0\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Common\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Common\CommonResources.Designer.cs">
-      <Link>CommonResources.Designer.cs</Link>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommonResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Nodes\EmptyTreeNode.cs" />
-    <Compile Include="Nodes\PackagesSearchNode.cs" />
-    <Compile Include="Nodes\SimpleTreeNode.cs" />
-    <Compile Include="Nodes\UpdatesTreeNode.cs" />
-    <Compile Include="Providers\InstalledProvider.cs" />
-    <Compile Include="Providers\OnlineProvider.cs" />
-    <Compile Include="Providers\PackagesProviderBase.cs" />
-    <Compile Include="Providers\UpdatesProvider.cs" />
     <EmbeddedResource Include="..\..\Common\CommonResources.resx">
       <Link>CommonResources.resx</Link>
       <SubType>Designer</SubType>
       <LastGenOutput>CommonResources.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <Compile Include="..\..\Common\CommonResources.Designer.cs">
+      <Link>CommonResources.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CommonResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="LoadPageResult.cs" />
+    <Compile Include="Nodes\EmptyTreeNode.cs" />
+    <Compile Include="Nodes\PackagesSearchNode.cs" />
     <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
     <Compile Include="Nodes\RootTreeNode.cs" />
+    <Compile Include="Nodes\SimpleTreeNode.cs" />
+    <Compile Include="Nodes\UpdatesTreeNode.cs" />
     <Compile Include="PackageItem.cs" />
-    <Compile Include="PackageSortDescriptor.cs" />
-    <Page Include="PackageManagerWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="PackageManagerWindow.xaml.cs">
       <DependentUpon>PackageManagerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <AppDesigner Include="Properties\" />
+    <Compile Include="PackageManagerWindowCommands.cs" />
+    <Compile Include="PackageSortDescriptor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\InstalledProvider.cs" />
+    <Compile Include="Providers\OnlineProvider.cs" />
+    <Compile Include="Providers\PackagesProviderBase.cs" />
+    <Compile Include="Providers\UpdatesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
@@ -142,11 +109,35 @@
       <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\DialogServices\DialogServices.csproj">
-      <Project>{2943EF98-97DC-4819-82AF-9D19DC1BF13B}</Project>
+      <Project>{23CBC679-580F-4AF9-8D81-E41AD9672174}</Project>
       <Name>DialogServices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VisualStudio\VisualStudio.csproj">
+      <Project>{FA3254A6-71B5-4029-B727-3A477AB413E7}</Project>
+      <Name>VisualStudio</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="CommonStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="OnlineProviderTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PackageManagerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TemplateStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="packageicon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

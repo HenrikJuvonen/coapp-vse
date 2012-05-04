@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VsExtension {
+namespace CoApp.VsExtension.Dialog {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VsExtension {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.CommonResources", typeof(CommonResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Dialog.CommonResources", typeof(CommonResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VsExtension {
+namespace CoApp.VsExtension.Dialog {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VsExtension {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Dialog.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,6 +61,15 @@ namespace CoApp.VsExtension {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Architecture:.
+        /// </summary>
+        public static string Dialog_ArchitectureLabel {
+            get {
+                return ResourceManager.GetString("Dialog_ArchitectureLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Dialog_Cancel {
@@ -75,15 +84,6 @@ namespace CoApp.VsExtension {
         public static string Dialog_Close {
             get {
                 return ResourceManager.GetString("Dialog_Close", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Created by:.
-        /// </summary>
-        public static string Dialog_CreatedByLabel {
-            get {
-                return ResourceManager.GetString("Dialog_CreatedByLabel", resourceCulture);
             }
         }
         
@@ -178,29 +178,11 @@ namespace CoApp.VsExtension {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last Updated:.
-        /// </summary>
-        public static string Dialog_LastUpdatedLabel {
-            get {
-                return ResourceManager.GetString("Dialog_LastUpdatedLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Operation failed.
         /// </summary>
         public static string Dialog_MessageBoxTitle {
             get {
                 return ResourceManager.GetString("Dialog_MessageBoxTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project Information.
-        /// </summary>
-        public static string Dialog_MoreInfo {
-            get {
-                return ResourceManager.GetString("Dialog_MoreInfo", resourceCulture);
             }
         }
         
@@ -327,6 +309,33 @@ namespace CoApp.VsExtension {
         public static string Dialog_ProjectSelectorTitle {
             get {
                 return ResourceManager.GetString("Dialog_ProjectSelectorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Published:.
+        /// </summary>
+        public static string Dialog_PublishDateLabel {
+            get {
+                return ResourceManager.GetString("Dialog_PublishDateLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publisher:.
+        /// </summary>
+        public static string Dialog_PublisherLabel {
+            get {
+                return ResourceManager.GetString("Dialog_PublisherLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More Information.
+        /// </summary>
+        public static string Dialog_PublisherUrl {
+            get {
+                return ResourceManager.GetString("Dialog_PublisherUrl", resourceCulture);
             }
         }
         

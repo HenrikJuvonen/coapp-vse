@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -60,11 +61,55 @@ namespace CoApp.VsExtension.Dialog.Providers
             }
         }
 
+        public string Architecture
+        {
+            get
+            {
+                return _packageIdentity.Architecture.ToString();
+            }
+        }
+
+        public string PublishDate
+        {
+            get
+            {
+                var date = DateTime.FromFileTime(long.Parse(_packageIdentity.PublishDate));
+                return date.ToShortDateString();
+            }
+        }
+
+        public string License
+        {
+            get
+            {
+                return _packageIdentity.License.ToString();
+            }
+        }
+
+        public bool IsInstalled
+        {
+            get
+            {
+                return _packageIdentity.IsInstalled;
+            }
+        }
+
         public bool IsUpdateItem
         {
             get
             {
                 return _isUpdateItem;
+            }
+        }
+
+        public string Tags
+        {
+            get
+            {
+                if (_packageIdentity.Tags.IsEmpty())
+                    return null;
+
+                return String.Join(", ", _packageIdentity.Tags);
             }
         }
 
@@ -93,7 +138,14 @@ namespace CoApp.VsExtension.Dialog.Providers
         {
             get
             {
-                return _packageIdentity.Dependencies;
+                List<string> deps = _packageIdentity.Dependencies.ToList();
+
+                for (int i = 0; i < deps.Count; i++)
+                {
+                    deps[i] = deps[i].Substring(0, deps[i].LastIndexOf('-'));
+                }
+
+                return deps;
             }
         }
 
@@ -123,11 +175,14 @@ namespace CoApp.VsExtension.Dialog.Providers
             "Microsoft.Performance",
             "CA1811:AvoidUncalledPrivateCode",
             Justification = "This property is data-bound in XAML.")]
-        public IEnumerable<string> Authors
+        public string PublisherName
         {
             get
             {
-                return new List<string> {_packageIdentity.PublisherName};
+                if (_packageIdentity.PublisherName.IsEmpty())
+                    return null;
+
+                return _packageIdentity.PublisherName;
             }
         }
 

@@ -348,13 +348,6 @@ namespace CoApp.VsExtension.Dialog.Providers
 
                 // Buffer 3 pages
                 _query = orderedQuery.AsBufferedEnumerable(PageSize * 3);
-
-                if (CollapseVersions)
-                {
-                    // If we are connecting to an older gallery implementation, we need to use the Published field. 
-                    // For newer gallery, the package is never unpublished, it is only unlisted.
-                    //_query = _query.Where(PackageExtensions.IsListed).AsCollapsed();
-                }
             }
 
             IQueryable<Package> pkx = _query.Skip((pageNumber - 1) * PageSize)

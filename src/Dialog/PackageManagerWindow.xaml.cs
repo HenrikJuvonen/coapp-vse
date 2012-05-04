@@ -14,18 +14,16 @@ using Microsoft.VisualStudio.PlatformUI;
 using System.Diagnostics.CodeAnalysis;
 using EnvDTE;
 using CoApp.Toolkit.Engine.Client;
+using CoApp.VsExtension.VisualStudio;
+using CoApp.VsExtension.Dialog.Providers;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
-//using CoApp.VsExtension.VisualStudio;
 
 namespace CoApp.VsExtension.Dialog
 {
-    using Providers;
-
-    /// <summary>
-    /// Interaction logic for PkmWindow.xaml
-    /// </summary>
     public partial class PackageManagerWindow : DialogWindow
     {
+        //private readonly IProviderSettings _providerSettings;
+
         public PackageManagerWindow()
         {
             InitializeComponent();
@@ -35,9 +33,9 @@ namespace CoApp.VsExtension.Dialog
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         private void SetupProviders(Project activeProject, DTE dte)
         {
-            InstalledProvider installedProvider = new InstalledProvider();
-            OnlineProvider onlineProvider = new OnlineProvider();
-            UpdatesProvider updatesProvider = new UpdatesProvider();
+            InstalledProvider installedProvider = new InstalledProvider(Resources);
+            OnlineProvider onlineProvider = new OnlineProvider(Resources);
+            UpdatesProvider updatesProvider = new UpdatesProvider(Resources);
 
             explorer.Providers.Add(installedProvider);
             explorer.Providers.Add(onlineProvider);
@@ -54,6 +52,30 @@ namespace CoApp.VsExtension.Dialog
                 // notify the selected node that it is opened.
                 selectedNode.OnOpened();
             }
+        }
+
+        private void ExecutedShowOptionsPage(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+            /*
+            _optionsPageActivator.ActivatePage(
+                OptionsPage.PackageSources,
+                () => OnActivated(_activeProject));*/
+        }
+
+        private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)
+        {
+            Hyperlink hyperlink = e.OriginalSource as Hyperlink;
+            if (hyperlink != null && hyperlink.NavigateUri != null)
+            {
+                UriHelper.OpenExternalLink(hyperlink.NavigateUri);
+                e.Handled = true;
+            }
+        }
+
+        private void ExecuteSetFocusOnSearchBox(object sender, ExecutedRoutedEventArgs e)
+        {
+            explorer.SetFocusOnSearchBox();
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]

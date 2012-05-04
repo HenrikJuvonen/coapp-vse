@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Linq;
 using System.Text;
 using System.Globalization;
@@ -13,12 +14,22 @@ namespace CoApp.VsExtension.Dialog.Providers
 {
     internal abstract class PackagesProviderBase : VsExtensionsProvider
     {
+        private readonly ResourceDictionary _resources;
+        private object _mediumIconDataTemplate;
+        private object _detailViewDataTemplate;
+
         private PackagesSearchNode _searchNode;
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
         
-        public PackagesProviderBase()
+        public PackagesProviderBase(ResourceDictionary resources)
         {
+            if (resources == null)
+            {
+                throw new ArgumentNullException("resources");
+            }
+
+            _resources = resources;
         }
 
         public override IVsExtensionsTreeNode ExtensionsTree
@@ -32,6 +43,30 @@ namespace CoApp.VsExtension.Dialog.Providers
                 }
 
                 return RootNode;
+            }
+        }
+
+        public override object MediumIconDataTemplate
+        {
+            get
+            {
+                if (_mediumIconDataTemplate == null)
+                {
+                    _mediumIconDataTemplate = _resources["PackageItemTemplate"];
+                }
+                return _mediumIconDataTemplate;
+            }
+        }
+
+        public override object DetailViewDataTemplate
+        {
+            get
+            {
+                if (_detailViewDataTemplate == null)
+                {
+                    _detailViewDataTemplate = _resources["PackageDetailTemplate"];
+                }
+                return _detailViewDataTemplate;
             }
         }
 

@@ -120,8 +120,8 @@
   <data name="Dialog_Close" xml:space="preserve">
     <value>Close</value>
   </data>
-  <data name="Dialog_CreatedByLabel" xml:space="preserve">
-    <value>Created by:</value>
+  <data name="Dialog_PublisherLabel" xml:space="preserve">
+    <value>Publisher:</value>
   </data>
   <data name="Dialog_DependenciesLabel" xml:space="preserve">
     <value>Dependencies:</value>
@@ -144,8 +144,8 @@
   <data name="Dialog_MessageBoxTitle" xml:space="preserve">
     <value>Operation failed</value>
   </data>
-  <data name="Dialog_MoreInfo" xml:space="preserve">
-    <value>Project Information</value>
+  <data name="Dialog_PublisherUrl" xml:space="preserve">
+    <value>More Information</value>
   </data>
   <data name="Dialog_NoDependencyLabel" xml:space="preserve">
     <value>No Dependencies</value>
@@ -258,8 +258,8 @@
   <data name="Dialog_TagLabel" xml:space="preserve">
     <value>Tags:</value>
   </data>
-  <data name="Dialog_LastUpdatedLabel" xml:space="preserve">
-    <value>Last Updated:</value>
+  <data name="Dialog_PublishDateLabel" xml:space="preserve">
+    <value>Published:</value>
   </data>
   <data name="Dialog_OnlineSolutionInstruction" xml:space="preserve">
     <value>Install the package in the following projects:</value>
@@ -329,5 +329,8 @@
   </data>
   <data name="Filter_StablePackages" xml:space="preserve">
     <value>Stable Only</value>
+  </data>
+  <data name="Dialog_ArchitectureLabel" xml:space="preserve">
+    <value>Architecture:</value>
   </data>
 </root>

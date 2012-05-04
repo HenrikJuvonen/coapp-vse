@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Common\CommonResources.cs">
-      <Link>CommonResources.cs</Link>
+      <Link>Common\CommonResources.cs</Link>
     </Compile>
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

@@ -61,7 +61,7 @@ namespace CoApp.VsExtension
             ToolWindowPane window = this.FindToolWindow(typeof(ConsoleWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
-                throw new NotSupportedException(Resources.CanNotCreateWindow);
+                throw new NotSupportedException(ConsoleResources.CanNotCreateWindow);
             }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());

@@ -21,8 +21,8 @@ Visual Studio plugin for CoApp packages
 		[X] Search by name
 		[X] Sort by name
 		[|] Categories
-			[ ] Active
-				[ ] Dev
+			[ ] Project
+				[ ] Project 1..n
 			[|] Installed
 				[|] All
 				[ ] Dev
@@ -32,23 +32,28 @@ Visual Studio plugin for CoApp packages
 			[|] Updates
 				[|] All
 				[ ] Dev
-
-		[ ] Activate Package (C#)
-		[ ] Activate Package (C++)
-		[ ] Packages.config, prompt required library installs
-
-		[|] List Packages
-		[|] Get Package Details
-		[ ] Install Package (Online)
-		[ ] Uninstall Package (Installed)
-		[ ] Update Packages (Updates)
 	
 		[ ] Options
 			[ ] Feed Configuration
 				[|] List Feeds
 				[ ] Add Feed
 				[ ] Remove Feed
+		
+		[ ] VisualStudio
+			[ ] Add to project
+				[ ] C#
+				[ ] C++
+			[ ] Remove from project
+				[ ] C#
+				[ ] C++
+			[ ] Packages.config, prompt required library installs
+
+		[X] List Packages
+		[X] Get Package Details
+		[ ] Install Package (Online)
+		[ ] Uninstall Package (Installed)
+		[ ] Update Packages (Updates)
 	
-		[|] Console window (one instance)
+		[|] Console window
 		[ ] Update notifications
     

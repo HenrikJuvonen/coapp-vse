@@ -32,6 +32,7 @@ namespace CoApp.VsExtension
         private static List<string> activeDownloads = new List<string>();
 
         private static IEnumerable<Package> allPackages, updateablePackages, installedPackages;
+        private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime;
 
         private CancellationTokenSource cts;
 
@@ -69,9 +70,10 @@ namespace CoApp.VsExtension
 
         public IEnumerable<Package> GetAllPackages()
         {
-            if (allPackages == null || allPackages.IsEmpty())
+            if (allPackages == null || allPackages.IsEmpty() || DateTime.Compare(DateTime.Now, allRetrievalTime.AddSeconds(30)) > 0)
             {
                 allPackages = ListPackages(new string[] { "*" });
+                allRetrievalTime = DateTime.Now;
             }
 
             List<Package> pl = allPackages.ToList();
@@ -85,9 +87,10 @@ namespace CoApp.VsExtension
 
         public IEnumerable<Package> GetUpdateablePackages()
         {
-            if (updateablePackages == null || updateablePackages.IsEmpty())
+            if (updateablePackages == null || updateablePackages.IsEmpty() || DateTime.Compare(DateTime.Now, updateableRetrievalTime.AddSeconds(30)) > 0)
             {
                 updateablePackages = ListUpdateablePackages(new string[] { "*" });
+                updateableRetrievalTime = DateTime.Now;
             }
 
             return updateablePackages;
@@ -95,10 +98,11 @@ namespace CoApp.VsExtension
 
         public IEnumerable<Package> GetInstalledPackages()
         {
-            if (installedPackages == null || installedPackages.IsEmpty())
+            if (installedPackages == null || installedPackages.IsEmpty() || DateTime.Compare(DateTime.Now, installedRetrievalTime.AddSeconds(30)) > 0)
             {
                 _installed = true;
                 installedPackages = ListPackages(new string[] { "*" });
+                installedRetrievalTime = DateTime.Now;
                 _installed = null;
             }
 
@@ -153,6 +157,8 @@ namespace CoApp.VsExtension
 
             if (cts.IsCancellationRequested)
                 return new List<Package>();
+
+            _latest = null;
 
             return pl;
         }

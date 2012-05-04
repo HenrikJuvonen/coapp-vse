@@ -11,7 +11,8 @@ namespace CoApp.VsExtension.Dialog.Providers
 {
     internal class UpdatesProvider : OnlineProvider
     {
-        public UpdatesProvider()
+        public UpdatesProvider(ResourceDictionary resources)
+            : base(resources)
         {
         }
 
@@ -58,7 +59,7 @@ namespace CoApp.VsExtension.Dialog.Providers
 
         public override bool CanExecute(PackageItem item)
         {
-            return false;
+            return true;
         }
 
         public override IVsExtension CreateExtension(Package package)

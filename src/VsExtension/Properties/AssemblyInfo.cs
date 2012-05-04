@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("VsExtension")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]   
+[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]     
 [assembly: CLSCompliant(false)]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -31,6 +31,3 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-[assembly: InternalsVisibleTo("VsExtension_IntegrationTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100fdd9d5e75deb1baba23d514a96881a9c3bad24fa898ec8ac8e0ba21a411ffcf3f4cccf58ba039ae0219f779e35d501e1be3babd89ed58e4b509f9e5679eacf42840f536d8a38d5480c88b8b4c70d829b052b6d95803bf3cb79f34922d7f85e6a0bcad7c4e6fba6e378e11430a42f7fd371031e8628efd37674f7d79dc3ad94e1")]
-[assembly: InternalsVisibleTo("VsExtension_UnitTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100fdd9d5e75deb1baba23d514a96881a9c3bad24fa898ec8ac8e0ba21a411ffcf3f4cccf58ba039ae0219f779e35d501e1be3babd89ed58e4b509f9e5679eacf42840f536d8a38d5480c88b8b4c70d829b052b6d95803bf3cb79f34922d7f85e6a0bcad7c4e6fba6e378e11430a42f7fd371031e8628efd37674f7d79dc3ad94e1")]

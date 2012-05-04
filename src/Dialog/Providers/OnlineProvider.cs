@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
@@ -11,7 +12,8 @@ namespace CoApp.VsExtension.Dialog.Providers
 {
     class OnlineProvider : PackagesProviderBase
     {
-        public OnlineProvider()
+        public OnlineProvider(ResourceDictionary resources)
+            : base(resources)
         {
         }
 
@@ -42,7 +44,7 @@ namespace CoApp.VsExtension.Dialog.Providers
 
         public override bool CanExecute(PackageItem item)
         {
-            return false;
+            return SelectedNode.Extensions.Where(i => i.IsSelected && ((PackageItem)i).IsInstalled).IsEmpty();
         }
 
         public override IVsExtension CreateExtension(Package package)
