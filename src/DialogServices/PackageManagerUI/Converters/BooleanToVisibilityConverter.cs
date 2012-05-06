@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CoApp.VsExtension.Dialog.PackageManagerUI
+namespace CoGet.Dialog.PackageManagerUI
 {
     /// <summary>
     /// This BooleanToVisibility converter allows us to override the converted value when

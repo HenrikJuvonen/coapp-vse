@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VsExtension {
+namespace CoGet {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VsExtension {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.ConsoleResources", typeof(ConsoleResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoGet.ConsoleResources", typeof(ConsoleResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

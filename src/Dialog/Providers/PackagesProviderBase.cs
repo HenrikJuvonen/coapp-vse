@@ -10,25 +10,35 @@ using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
-    internal abstract class PackagesProviderBase : VsExtensionsProvider
+    internal abstract class PackagesProviderBase : VsExtensionsProvider, ILogger
     {
         private readonly ResourceDictionary _resources;
+        private readonly ProviderServices _providerServices;
         private object _mediumIconDataTemplate;
         private object _detailViewDataTemplate;
 
         private PackagesSearchNode _searchNode;
         private PackagesTreeNodeBase _lastSelectedNode;
+        protected readonly IProgressProvider _progressProvider;
         private IList<IVsSortDescriptor> _sortDescriptors;
         
-        public PackagesProviderBase(ResourceDictionary resources)
+        public PackagesProviderBase(ResourceDictionary resources,
+                                    ProviderServices providerServices, 
+                                    IProgressProvider progressProvider)
         {
             if (resources == null)
             {
                 throw new ArgumentNullException("resources");
             }
+            if (providerServices == null)
+            {
+                throw new ArgumentNullException("providerServices");
+            }
 
+            _providerServices = providerServices;
+            _progressProvider = progressProvider;
             _resources = resources;
         }
 
@@ -67,6 +77,17 @@ namespace CoApp.VsExtension.Dialog.Providers
                     _detailViewDataTemplate = _resources["PackageDetailTemplate"];
                 }
                 return _detailViewDataTemplate;
+            }
+        }
+
+        public void Log(MessageLevel level, string message, params object[] args)
+        {
+            string formattedMessage = String.Format(CultureInfo.CurrentCulture, message, args);
+
+            // for the dialog we ignore debug messages
+            if (_providerServices.ProgressWindow.IsOpen && level != MessageLevel.Debug)
+            {
+                _providerServices.ProgressWindow.AddMessage(level, formattedMessage);
             }
         }
 
@@ -282,16 +303,42 @@ namespace CoApp.VsExtension.Dialog.Providers
 
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
-            
+
+            _progressProvider.ProgressAvailable += OnProgressAvailable;
+
+            ClearProgressMessages();
+
             var worker = new BackgroundWorker();
             worker.DoWork += OnRunWorkerDoWork;
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
             worker.RunWorkerAsync(item);
 
-            // write an introductory sentence before every operation starts to make the console easier to read
-            string progressMessage = GetProgressMessage(item.PackageIdentity);
         }
 
+        private void ClearProgressMessages()
+        {
+            _providerServices.ProgressWindow.ClearMessages();
+        }
+
+        protected void ShowProgressWindow()
+        {
+            _providerServices.ProgressWindow.Show(ProgressWindowTitle, PackageManagerWindow.CurrentInstance);
+        }
+
+        protected void HideProgressWindow()
+        {
+            _providerServices.ProgressWindow.Hide();
+        }
+
+        protected void CloseProgressWindow()
+        {
+            _providerServices.ProgressWindow.Close();
+        }
+
+        private void OnProgressAvailable(object sender, ProgressEventArgs e)
+        {
+            _providerServices.ProgressWindow.ShowProgress(e.Operation, e.PercentComplete);
+        }
 
         private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
         {
@@ -304,23 +351,29 @@ namespace CoApp.VsExtension.Dialog.Providers
         private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             OperationCoordinator.IsBusy = false;
+
+            _progressProvider.ProgressAvailable -= OnProgressAvailable;
             
             if (e.Error == null)
             {
                 if (e.Cancelled)
                 {
-                    
+                    CloseProgressWindow();
                 }
                 else
                 {
                     OnExecuteCompleted((PackageItem)e.Result);
-                    
+                    _providerServices.ProgressWindow.SetCompleted(successful: true);
                 }
             }
             else
             {
                 // show error message in the progress window in case of error
+                Log(MessageLevel.Error, ExceptionUtility.Unwrap(e.Error).Message);
+                _providerServices.ProgressWindow.SetCompleted(successful: false);
             }
+
+            SelectedNode.Refresh(true);
         }
     }
 }

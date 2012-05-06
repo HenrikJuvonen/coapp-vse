@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows;
 
-namespace CoApp.VsExtension.Dialog.PackageManagerUI
+namespace CoGet.Dialog.PackageManagerUI
 {
     public class FixUrlConverter : IValueConverter
     {

@@ -8,12 +8,14 @@ using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     class OnlineProvider : PackagesProviderBase
     {
-        public OnlineProvider(ResourceDictionary resources)
-            : base(resources)
+        public OnlineProvider(ResourceDictionary resources,
+                                ProviderServices providerServices,
+                                IProgressProvider progressProvider)
+            : base(resources, providerServices, progressProvider)
         {
         }
 
@@ -44,7 +46,9 @@ namespace CoApp.VsExtension.Dialog.Providers
 
         public override bool CanExecute(PackageItem item)
         {
-            return SelectedNode.Extensions.Where(i => i.IsSelected && ((PackageItem)i).IsInstalled).IsEmpty();
+            PackageItem selected = (PackageItem)SelectedNode.Extensions.Single(i => i == item);
+
+            return !selected.IsInstalled;
         }
 
         public override IVsExtension CreateExtension(Package package)
@@ -76,11 +80,24 @@ namespace CoApp.VsExtension.Dialog.Providers
             return Resources.Dialog_InstallProgress + package.ToString();
         }
 
-        /*
+        protected override bool ExecuteCore(PackageItem item)
+        {
+            ShowProgressWindow();
+            InstallPackage(item);
+            HideProgressWindow();
+            return true;
+        }
+
+        protected void InstallPackage(PackageItem item)
+        {
+            ProgressManager.UpdateProgress("", 0);
+            Proxy.InstallPackage(item.PackageIdentity);
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Microsoft.Design",
             "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]*/
+            Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
             var repository = new OnlineRepository();

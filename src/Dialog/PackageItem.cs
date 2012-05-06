@@ -9,7 +9,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     internal class PackageItem : IVsExtension, INotifyPropertyChanged
     {

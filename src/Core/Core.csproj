@@ -8,8 +8,8 @@
     <ProjectGuid>{D46F169B-4BBF-4687-9899-9E3DB954591D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoApp.VsExtension</RootNamespace>
-    <AssemblyName>CoApp.VsExtension.Core</AssemblyName>
+    <RootNamespace>CoGet</RootNamespace>
+    <AssemblyName>CoGet.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoApp.Client, Version=1.2.0.165, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -40,6 +43,7 @@
       <HintPath>..\..\..\ProgramData\program files\OUTERCURVE FOUNDATION\coapp.toolkit-1.2.0.165-any-1e373a58e25250cb\ReferenceAssemblies\CoApp.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Xml.Linq" />
@@ -53,11 +57,20 @@
     <Compile Include="..\..\Common\CommonResources.cs">
       <Link>Common\CommonResources.cs</Link>
     </Compile>
+    <Compile Include="Authoring\IPropertyProvider.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\PackageExtensions.cs" />
     <Compile Include="Extensions\QueryableExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\MessageLevel.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Packages\IFrameworkTargetable.cs" />
+    <Compile Include="ProjectSystem\IFileSystem.cs" />
+    <Compile Include="ProjectSystem\IProjectSystem.cs" />
+    <Compile Include="ProjectSystem\NullFileSystem.cs" />
+    <Compile Include="ProjectSystem\PhysicalFileSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Repositories\BufferedEnumerable.cs" />
@@ -70,13 +83,36 @@
     <Compile Include="Repositories\PackageRepositoryBase.cs" />
     <Compile Include="Repositories\PackageRepositoryExtensions.cs" />
     <Compile Include="Repositories\ProgressEventArgs.cs" />
+    <Compile Include="Resources\CoGetResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoGetResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SemanticVersion.cs" />
     <Compile Include="Utility\ExceptionUtility.cs" />
+    <Compile Include="Utility\HashCodeCombiner.cs" />
     <Compile Include="Utility\IProgressProvider.cs" />
+    <Compile Include="Utility\IVersionSpec.cs" />
     <Compile Include="Utility\PathUtility.cs" />
     <Compile Include="Utility\PathValidator.cs" />
+    <Compile Include="Utility\ProgressProvider.cs" />
     <Compile Include="Utility\UriUtility.cs" />
+    <Compile Include="Utility\VersionSpec.cs" />
+    <Compile Include="Utility\VersionUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CoGetResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoGetResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\mt.exe" -manifest "$(ProjectDir)app.manifest" -outputresource:"$(TargetPath)";#2</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

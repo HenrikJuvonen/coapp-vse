@@ -8,8 +8,8 @@
     <ProjectGuid>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoApp.VsExtension.Dialog</RootNamespace>
-    <AssemblyName>CoApp.VsExtension.Dialog</AssemblyName>
+    <RootNamespace>CoGet.Dialog</RootNamespace>
+    <AssemblyName>CoGet.Dialog</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

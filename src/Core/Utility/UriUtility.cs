@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.IO.Packaging;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     internal static class UriUtility
     {

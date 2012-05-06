@@ -1,4 +1,4 @@
-namespace CoApp.VsExtension
+namespace CoGet
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

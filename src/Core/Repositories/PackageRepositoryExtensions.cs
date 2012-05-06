@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using CoApp.Toolkit.Engine.Client;
 using CoApp.Toolkit.Win32;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class PackageRepositoryExtensions
     {

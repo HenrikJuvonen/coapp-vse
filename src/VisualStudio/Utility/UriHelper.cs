@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace CoApp.VsExtension.VisualStudio
+namespace CoGet.VisualStudio
 {
     public static class UriHelper
     {

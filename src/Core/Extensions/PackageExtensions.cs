@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class PackageExtensions
     {

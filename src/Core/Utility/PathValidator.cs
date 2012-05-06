@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class PathValidator
     {

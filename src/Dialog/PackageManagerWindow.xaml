@@ -1,12 +1,12 @@
 ﻿<pfui:DialogWindow
-    x:Class="CoApp.VsExtension.Dialog.PackageManagerWindow"
+    x:Class="CoGet.Dialog.PackageManagerWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:shared="clr-namespace:Microsoft.VisualStudio.ExtensionsExplorer.UI;assembly=Microsoft.VisualStudio.ExtensionsExplorer.UI"
-    xmlns:resources="clr-namespace:CoApp.VsExtension.Dialog;assembly=CoApp.VsExtension.DialogServices"
-    xmlns:dialogServices="clr-namespace:CoApp.VsExtension.Dialog;assembly=CoApp.VsExtension.DialogServices"
-    xmlns:dialogCommands="clr-namespace:CoApp.VsExtension.Dialog.PackageManagerUI"
-    xmlns:local="clr-namespace:CoApp.VsExtension.Dialog"
+    xmlns:resources="clr-namespace:CoGet.Dialog;assembly=CoGet.DialogServices"
+    xmlns:dialogServices="clr-namespace:CoGet.Dialog;assembly=CoGet.DialogServices"
+    xmlns:dialogCommands="clr-namespace:CoGet.Dialog.PackageManagerUI"
+    xmlns:local="clr-namespace:CoGet.Dialog"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
     Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}"
@@ -21,7 +21,7 @@
     Height="600"
     MinWidth="800" 
     MinHeight="450"
-    Title="CoApp Package Manager" IsEnabled="True" Closing="OnDialogWindowClosing">
+    Title="CoApp Package Manager" IsEnabled="True" Closing="OnDialogWindowClosing" Loaded="OnDialogWindowLoaded" Closed="OnDialogWindowClosed">
 
     <Window.Resources>
         <ResourceDictionary>

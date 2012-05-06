@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class StreamExtensions
     {

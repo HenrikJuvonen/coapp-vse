@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace CoApp.VsExtension.Dialog.PackageManagerUI
+namespace CoGet.Dialog.PackageManagerUI
 {
 
     public static class PackageManagerWindowCommands

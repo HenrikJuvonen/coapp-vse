@@ -1,4 +1,4 @@
-﻿namespace CoApp.VsExtension
+﻿namespace CoGet
 {
     public interface ICloneableRepository
     {

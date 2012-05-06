@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     /// <summary>
     /// Base implementation of IVsExtensionsTreeNode

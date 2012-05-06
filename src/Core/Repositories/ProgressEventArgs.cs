@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public class ProgressEventArgs : EventArgs
     {

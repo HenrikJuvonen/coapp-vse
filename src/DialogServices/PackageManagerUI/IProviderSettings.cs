@@ -1,5 +1,5 @@
 ﻿
-namespace CoApp.VsExtension.Dialog.PackageManagerUI
+namespace CoGet.Dialog.PackageManagerUI
 {
     public interface IProviderSettings
     {

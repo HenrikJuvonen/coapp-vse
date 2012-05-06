@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     /// <summary>
     /// This class represents a tree node under the Updates tab

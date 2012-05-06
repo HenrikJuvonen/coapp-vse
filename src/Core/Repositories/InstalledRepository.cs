@@ -8,36 +8,28 @@ using System.Runtime.Versioning;
 using CoApp.Toolkit.Engine.Client;
 using System.Threading;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
-    public class InstalledRepository : PackageRepositoryBase, ISearchableRepository, ICloneableRepository
+    public class InstalledRepository : PackageRepositoryBase, ISearchableRepository
     {
-        private Proxy proxy;
-
         public InstalledRepository()
         {
-            proxy = new Proxy();
         }
 
         public override IQueryable<Package> GetPackages()
         {
-            return proxy.GetInstalledPackages().AsQueryable();
+            return Proxy.GetInstalledPackages().AsQueryable();
         }
 
         public override IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages)
         {
-            return proxy.GetDetailedPackages(packages).AsQueryable();
+            return Proxy.GetDetailedPackages(packages).AsQueryable();
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "OData expects a lower case value.")]
         public IQueryable<Package> Search(string searchTerm)
         {
             return GetPackages().Find(searchTerm).AsQueryable();
-        }
-
-        public IPackageRepository Clone()
-        {
-            return new InstalledRepository();
         }
 
         public IEnumerable<Package> FindPackagesById(string packageId)
@@ -47,7 +39,12 @@ namespace CoApp.VsExtension
 
         public override void SetCancellationTokenSource(CancellationTokenSource cts)
         {
-            proxy.SetCancellationTokenSource(cts);
+            Proxy.SetCancellationTokenSource(cts);
+        }
+
+        public override void UninstallPackage(Package package)
+        {
+            Proxy.UninstallPackage(package);
         }
     }
 }

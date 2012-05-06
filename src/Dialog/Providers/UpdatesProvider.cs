@@ -4,15 +4,17 @@ using System.Linq;
 using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-//using CoApp.VsExtension.VisualStudio;
+//using CoGet.VisualStudio;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     internal class UpdatesProvider : OnlineProvider
     {
-        public UpdatesProvider(ResourceDictionary resources)
-            : base(resources)
+        public UpdatesProvider(ResourceDictionary resources,
+                                ProviderServices providerServices,
+                                IProgressProvider progressProvider)
+            : base(resources, providerServices, progressProvider)
         {
         }
 

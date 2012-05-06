@@ -11,9 +11,14 @@ Visual Studio plugin for CoApp packages
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 
-### Notes
+### Debugging
 
-- Set startup project to "VsExtension" if it isn't.
+- Run Visual Studio as administrator.
+- Set startup project to "VsExtension".
+- Go to "VsExtension" project properties and select Debug tab:
+	- Start external program: C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe
+	- Command line arguments: /rootsuffix Exp
+- Build project and start debugging
 
 ### Progress
 
@@ -50,8 +55,8 @@ Visual Studio plugin for CoApp packages
 
 		[X] List Packages
 		[X] Get Package Details
-		[ ] Install Package (Online)
-		[ ] Uninstall Package (Installed)
+		[X] Install Package (Online)
+		[X] Uninstall Package (Installed)
 		[ ] Update Packages (Updates)
 	
 		[|] Console window

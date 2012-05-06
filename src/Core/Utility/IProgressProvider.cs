@@ -1,9 +1,11 @@
 ﻿using System;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public interface IProgressProvider
     {
         event EventHandler<ProgressEventArgs> ProgressAvailable;
+
+        void OnProgressAvailable(string operation, int percentage);
     }
 }

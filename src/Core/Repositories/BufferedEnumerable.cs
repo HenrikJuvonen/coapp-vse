@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     /// <summary>
     /// An IEnumerble&lt;T&gt; implementation that queries an IQueryable&lt;T&gt; on demand. 

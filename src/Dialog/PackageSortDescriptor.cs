@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     public class PackageSortDescriptor : IVsSortDescriptor
     {

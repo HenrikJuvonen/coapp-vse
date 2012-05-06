@@ -2,7 +2,7 @@
 // MUST match PkgCmdID.h
 using System;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class PkgCmdIDList
     {

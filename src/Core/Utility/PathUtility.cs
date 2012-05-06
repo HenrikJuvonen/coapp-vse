@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class PathUtility
     {

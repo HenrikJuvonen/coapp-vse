@@ -2,7 +2,7 @@
 using System.Linq;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public interface ISearchableRepository
     {

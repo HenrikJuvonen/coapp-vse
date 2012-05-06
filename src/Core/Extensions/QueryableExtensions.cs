@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class QueryableExtensions
     {

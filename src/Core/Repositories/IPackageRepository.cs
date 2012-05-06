@@ -3,7 +3,7 @@ using System.Linq;
 using CoApp.Toolkit.Engine.Client;
 using System.Threading;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public interface IPackageRepository
     {
@@ -13,8 +13,8 @@ namespace CoApp.VsExtension
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "This call might be expensive")]
         IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages);
 
-        void AddPackage(Package package);
-        void RemovePackage(Package package);
+        void InstallPackage(Package package);
+        void UninstallPackage(Package package);
 
         void SetCancellationTokenSource(CancellationTokenSource cts);
     }

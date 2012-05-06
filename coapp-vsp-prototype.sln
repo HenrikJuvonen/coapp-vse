@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFA95EF9-5D18-4BB0-9730-380D81E59B19}"
 	ProjectSection(SolutionItems) = preProject
 		coapp-vsp-prototype.vsmdi = coapp-vsp-prototype.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5C4EB2AE-E3F1-4CF2-B28B-A30050A5B492}"
@@ -26,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialog", "src\Dialog\Dialog.csproj", "{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogServices", "src\DialogServices\DialogServices.csproj", "{23CBC679-580F-4AF9-8D81-E41AD9672174}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Test", "Core.Test\Core.Test.csproj", "{A681578D-2B29-498F-948F-FB00192E2DAA}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -90,8 +94,21 @@ Global
 		{23CBC679-580F-4AF9-8D81-E41AD9672174}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{23CBC679-580F-4AF9-8D81-E41AD9672174}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{23CBC679-580F-4AF9-8D81-E41AD9672174}.Release|x86.ActiveCfg = Release|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A681578D-2B29-498F-948F-FB00192E2DAA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A681578D-2B29-498F-948F-FB00192E2DAA} = {5C4EB2AE-E3F1-4CF2-B28B-A30050A5B492}
 	EndGlobalSection
 EndGlobal

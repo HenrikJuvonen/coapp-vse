@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     internal class LoadPageResult
     {

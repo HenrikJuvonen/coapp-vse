@@ -193,7 +193,7 @@
     <value>Name</value>
   </data>
   <data name="Dialog_Title" xml:space="preserve">
-    <value>{0} - Manage CoApp.VsExtension Packages</value>
+    <value>{0} - Manage CoGet Packages</value>
   </data>
   <data name="Dialog_UninstallButton" xml:space="preserve">
     <value>_Uninstall</value>
@@ -286,7 +286,7 @@
     <value>Solution '{0}'</value>
   </data>
   <data name="Dialog_SummaryErrorMessage" xml:space="preserve">
-    <value>CoApp.VsExtension failed to install or uninstall the selected package in the following project(s).</value>
+    <value>CoGet failed to install or uninstall the selected package in the following project(s).</value>
   </data>
   <data name="ErrorStringFormat" xml:space="preserve">
     <value>Error: {0}</value>

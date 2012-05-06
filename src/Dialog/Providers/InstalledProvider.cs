@@ -7,13 +7,22 @@ using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 using CoApp.Toolkit.Engine.Client;
+using System.Threading;
+using CoGet.VisualStudio;
+using CoGet.Dialog.PackageManagerUI;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
     class InstalledProvider : PackagesProviderBase
     {
-        public InstalledProvider(ResourceDictionary resources) : base(resources)
+        private readonly IUserNotifierServices _userNotifierServices;
+
+        public InstalledProvider(ResourceDictionary resources,
+                                ProviderServices providerServices,
+                                IProgressProvider progressProvider)
+            : base(resources, providerServices, progressProvider)
         {
+            _userNotifierServices = providerServices.UserNotifierServices;
         }
 
         public override string Name
@@ -43,7 +52,64 @@ namespace CoApp.VsExtension.Dialog.Providers
 
         public override bool CanExecute(PackageItem item)
         {
+            return item.Name != "CoApp.Toolkit";
+        }
+
+        protected override bool ExecuteCore(PackageItem item)
+        {
+            bool? removeDependencies = AskRemoveDependency(item.PackageIdentity, checkDependents: true);
+            if (removeDependencies == null)
+            {
+                // user presses Cancel
+                return false;
+            }
+            ShowProgressWindow();
+            UninstallPackage(item, (bool)removeDependencies);
+            HideProgressWindow();
             return true;
+        }
+
+
+        protected bool? AskRemoveDependency(Package package, bool checkDependents)
+        {
+            if (checkDependents)
+            {
+                // check if there is any other package depends on this package.
+                // if there is, throw to cancel the uninstallation
+
+                var dependents = Proxy.GetDependents(package);
+
+                if (!dependents.IsEmpty())
+                {
+                    ShowProgressWindow();
+                    throw new Exception("Uninstall depending packages first:\n" + String.Join("\n", dependents.Select(pkg => pkg.CanonicalName)));
+                }
+            }
+
+            //var uninstallPackageNames = package.Dependencies.Where(name => !name.Contains("coapp.toolkit"));
+
+            bool? removeDependencies = false;
+
+            /*
+            if (uninstallPackageNames.Count() > 0)
+            {
+                // show each dependency package on one line
+                String packageNames = String.Join(Environment.NewLine, uninstallPackageNames);
+                String message = String.Format(Resources.Dialog_RemoveDependencyMessage, package)
+                        + Environment.NewLine
+                        + Environment.NewLine
+                        + packageNames;
+
+                removeDependencies = _userNotifierServices.ShowRemoveDependenciesWindow(message);
+            }
+            */
+
+            return removeDependencies;
+        }
+
+        protected void UninstallPackage(PackageItem item, bool removeDependencies)
+        {
+            Proxy.UninstallPackage(item.PackageIdentity, removeDependencies);
         }
 
         public override IVsExtension CreateExtension(Package package)

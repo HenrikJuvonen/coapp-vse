@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VsExtension.Dialog {
+namespace CoGet.Dialog {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VsExtension.Dialog {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VsExtension.Dialog.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoGet.Dialog.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -493,7 +493,7 @@ namespace CoApp.VsExtension.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CoApp.VsExtension failed to install or uninstall the selected package in the following project(s)..
+        ///   Looks up a localized string similar to CoGet failed to install or uninstall the selected package in the following project(s)..
         /// </summary>
         public static string Dialog_SummaryErrorMessage {
             get {
@@ -520,7 +520,7 @@ namespace CoApp.VsExtension.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} - Manage CoApp.VsExtension Packages.
+        ///   Looks up a localized string similar to {0} - Manage CoGet Packages.
         /// </summary>
         public static string Dialog_Title {
             get {

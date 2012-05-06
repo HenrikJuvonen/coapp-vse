@@ -1,51 +1,78 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using CoApp.Toolkit.Engine.Client;
+using CoApp.Toolkit.Exceptions;
 using CoApp.Toolkit.Extensions;
 using CoApp.Toolkit.Win32;
-using System.Threading;
+using System.Security.Principal;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
+    public static class ProgressManager
+    {
+
+        private static readonly IProgressProvider _progressProvider = new ProgressProvider();
+
+        public static IProgressProvider ProgressProvider
+        {
+            get
+            {
+                return _progressProvider;
+            }
+        }
+
+        public static void UpdateProgress(this string message, long progress)
+        {
+            ProgressProvider.OnProgressAvailable(message, (int)progress);
+        }
+    }
+
     public class Proxy
     {
-        private FourPartVersion? _minVersion = null;
-        private FourPartVersion? _maxVersion = null;
+        private static FourPartVersion? _minVersion = null;
+        private static FourPartVersion? _maxVersion = null;
 
-        private bool? _installed = null;
-        private bool? _active = null;
-        private bool? _blocked = null;
-        private bool? _latest = null;
+        private static bool? _installed = null;
+        private static bool? _active = null;
+        private static bool? _required = null;
+        private static bool? _blocked = null;
+        private static bool? _latest = null;
+        private static bool? _force = null;
 
-        private string _location = null;
+        private static string _location = null;
+        private static bool? _dependencies = null;
+        private static bool? _download = null;
+        private static bool? _pretend = null;
+        private static bool? _autoUpgrade = null;
 
-        private bool? _x64 = null;
-        private bool? _x86 = null;
-        private bool? _cpuany = null;
+        private static bool? _x64 = null;
+        private static bool? _x86 = null;
+        private static bool? _cpuany = null;
 
-        private bool IsFiltering { get { return (true == _x64) || (true == _x86) || (true == _cpuany); } }
+        private static bool IsFiltering { get { return (true == _x64) || (true == _x86) || (true == _cpuany); } }
 
-        private readonly List<Task> preCommandTasks = new List<Task>();
+        private static readonly List<Task> preCommandTasks = new List<Task>();
 
         private static List<string> activeDownloads = new List<string>();
 
-        private static IEnumerable<Package> allPackages, updateablePackages, installedPackages;
-        private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime;
+        private static IEnumerable<Package> allPackages, updateablePackages, installedPackages, subPackages;
+        private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime, subRetrievalTime;
 
-        private CancellationTokenSource cts;
+        private static CancellationTokenSource _cts;
 
-        public Proxy()
-        {
-        }
-
-        private readonly EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
+        private readonly static EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
         {
             if (!activeDownloads.Contains(itemUri))
             {
                 activeDownloads.Add(itemUri);
             }
+            "Downloading {0}".format(itemUri.UrlDecode()).UpdateProgress(progress);
         }, (itemUrl, localLocation) =>
         {
             if (activeDownloads.Contains(itemUrl))
@@ -53,9 +80,10 @@ namespace CoApp.VsExtension
                 Console.WriteLine();
                 activeDownloads.Remove(itemUrl);
             }
+            
         });
 
-        public IEnumerable<Feed> ListFeeds()
+        public static IEnumerable<Feed> ListFeeds()
         {
             Console.WriteLine("Fetching feed list...");
 
@@ -68,7 +96,7 @@ namespace CoApp.VsExtension
             return fds;
         }
 
-        public IEnumerable<Package> GetAllPackages()
+        public static IEnumerable<Package> GetAllPackages()
         {
             if (allPackages == null || allPackages.IsEmpty() || DateTime.Compare(DateTime.Now, allRetrievalTime.AddSeconds(30)) > 0)
             {
@@ -85,7 +113,18 @@ namespace CoApp.VsExtension
             return allPackages;
         }
 
-        public IEnumerable<Package> GetUpdateablePackages()
+        public static IEnumerable<Package> GetPackages(string[] parameters)
+        {
+            if (subPackages == null || subPackages.IsEmpty() || DateTime.Compare(DateTime.Now, subRetrievalTime.AddSeconds(30)) > 0)
+            {
+                subPackages = ListPackages(parameters);
+                subRetrievalTime = DateTime.Now;
+            }
+
+            return subPackages;
+        }
+
+        public static IEnumerable<Package> GetUpdateablePackages()
         {
             if (updateablePackages == null || updateablePackages.IsEmpty() || DateTime.Compare(DateTime.Now, updateableRetrievalTime.AddSeconds(30)) > 0)
             {
@@ -96,7 +135,7 @@ namespace CoApp.VsExtension
             return updateablePackages;
         }
 
-        public IEnumerable<Package> GetInstalledPackages()
+        public static IEnumerable<Package> GetInstalledPackages()
         {
             if (installedPackages == null || installedPackages.IsEmpty() || DateTime.Compare(DateTime.Now, installedRetrievalTime.AddSeconds(30)) > 0)
             {
@@ -106,28 +145,34 @@ namespace CoApp.VsExtension
                 _installed = null;
             }
 
+            List<Package> pl = installedPackages.ToList();
+            for (int i = 10; i < pl.Count; i++)
+            {
+                pl[i] = GetDetailedPackage(pl[i]);
+            }
+
             return installedPackages;
         }
 
-        public IEnumerable<Package> ListUpdateablePackages(string[] parameters)
+        private static IEnumerable<Package> ListUpdateablePackages(string[] parameters)
         {
             Console.WriteLine("Fetching package list...");
 
             IEnumerable<Package> pkgs = null;
 
-            if (cts.IsCancellationRequested)
+            if (_cts.IsCancellationRequested)
                 return new List<Package>();
 
             Task task = preCommandTasks.Continue(() => _easyPackageManager.GetUpdatablePackages(parameters)).Continue(p => pkgs = p);
 
-            if (cts.IsCancellationRequested)
+            if (_cts.IsCancellationRequested)
                 return new List<Package>();
 
             ContinueTask(task);
             return pkgs;
         }
-        
-        public IEnumerable<Package> ListPackages(string[] parameters)
+
+        private static IEnumerable<Package> ListPackages(string[] parameters)
         {
             if (!parameters.Any() || parameters[0] == "*")
             {
@@ -138,13 +183,13 @@ namespace CoApp.VsExtension
 
             IEnumerable<Package> pkgs = null;
 
-            if (cts.IsCancellationRequested)
+            if (_cts != null && _cts.IsCancellationRequested)
                 return new List<Package>();
 
             Task task = preCommandTasks.Continue(() => _easyPackageManager.GetPackages(parameters, _minVersion, _maxVersion, false, _installed, _active, null, _blocked, _latest, _location)
                 .Continue(p => pkgs = p));
 
-            if (cts.IsCancellationRequested)
+            if (_cts != null && _cts.IsCancellationRequested)
                 return new List<Package>();
 
             ContinueTask(task);
@@ -155,7 +200,7 @@ namespace CoApp.VsExtension
                 pl[i] = GetDetailedPackage(pl[i]);
             }
 
-            if (cts.IsCancellationRequested)
+            if (_cts != null && _cts.IsCancellationRequested)
                 return new List<Package>();
 
             _latest = null;
@@ -163,7 +208,7 @@ namespace CoApp.VsExtension
             return pl;
         }
 
-        public Package GetDetailedPackage(Package package)
+        public static Package GetDetailedPackage(Package package)
         {
             Task task = _easyPackageManager.GetPackageDetails(package.CanonicalName).Continue(detailedPackage =>
             {
@@ -175,7 +220,7 @@ namespace CoApp.VsExtension
             return package;
         }
 
-        public IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
+        public static IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
             IEnumerable<Package> pkgs = null;
 
@@ -190,12 +235,81 @@ namespace CoApp.VsExtension
             return packages;
         }
 
-        public void SetCancellationTokenSource(CancellationTokenSource cts)
+        public static void UninstallPackage(Package package, bool removeDependencies = false)
         {
-            this.cts = cts;
+            try
+            {
+                IEnumerable<string> pkgs = new List<string>() { package.CanonicalName };
+                if (removeDependencies)
+                {
+                    pkgs = pkgs.Concat(package.Dependencies.Where(name => !name.Contains("coapp.toolkit")));
+                }
+                Task task = preCommandTasks.Continue(() => RemovePackages(pkgs));
+                ContinueTask(task);
+                
+                installedPackages = null;
+                updateablePackages = null;
+                allPackages = null;
+            }
+            catch (Exception e)
+            {
+                _cts.Cancel();
+            }
+            
         }
-        
-        public int ContinueTask(Task task)
+
+        public static void InstallPackage(Package package)
+        {
+            bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent())
+                    .IsInRole(WindowsBuiltInRole.Administrator) ? true : false;
+
+            if (isAdmin)
+            {
+                Console.WriteLine("you are an administrator");
+            }
+            else
+            {
+                Console.WriteLine("You are not an administrator");
+            }
+
+            try
+            {
+                Task task = preCommandTasks.Continue(() => InstallPackage(package.CanonicalName));
+                ContinueTask(task);
+                installedPackages = null;
+                allPackages = null;
+            }
+            catch (Exception e)
+            {
+                _cts.Cancel();
+            }
+
+        }
+
+        private static Task InstallPackage(string canonicalName)
+        {
+            Console.WriteLine("Installing...");
+            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => ProgressManager.UpdateProgress(name, progress));
+        }
+
+        private static Task RemovePackages(IEnumerable<string> parameters)
+        {
+            Console.WriteLine("Uninstalling...");
+            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => ProgressManager.UpdateProgress(name, progress));
+        }
+
+        public static IEnumerable<Package> GetDependents(Package package)
+        {
+            return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package.CanonicalName));
+        }
+
+
+        public static void SetCancellationTokenSource(CancellationTokenSource cts)
+        {
+            _cts = cts;
+        }
+
+        public static int ContinueTask(Task task)
         {
             task.ContinueOnCanceled(() =>
             {

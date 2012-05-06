@@ -2,7 +2,7 @@
 // MUST match guids.h
 using System;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class GuidList
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CoApp.VsExtension
+namespace CoGet
 {
     public static class ExceptionUtility
     {

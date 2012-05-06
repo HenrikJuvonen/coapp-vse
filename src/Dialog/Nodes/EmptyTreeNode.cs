@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
 using System.Threading;
 
-namespace CoApp.VsExtension.Dialog.Providers
+namespace CoGet.Dialog.Providers
 {
 
     /// <summary>

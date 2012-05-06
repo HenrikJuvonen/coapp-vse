@@ -14,28 +14,35 @@ using Microsoft.VisualStudio.PlatformUI;
 using System.Diagnostics.CodeAnalysis;
 using EnvDTE;
 using CoApp.Toolkit.Engine.Client;
-using CoApp.VsExtension.VisualStudio;
-using CoApp.VsExtension.Dialog.Providers;
+using CoGet.VisualStudio;
+using CoGet.Dialog.Providers;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
-namespace CoApp.VsExtension.Dialog
+namespace CoGet.Dialog
 {
     public partial class PackageManagerWindow : DialogWindow
     {
         //private readonly IProviderSettings _providerSettings;
+        internal static PackageManagerWindow CurrentInstance;
 
         public PackageManagerWindow()
         {
             InitializeComponent();
-            SetupProviders(null, null);
+
+            ProviderServices providerServices = new ProviderServices();
+            IProgressProvider progressProvider = new ProgressProvider();
+
+            SetupProviders(providerServices, progressProvider, null, null);
         }
         
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        private void SetupProviders(Project activeProject, DTE dte)
+        private void SetupProviders(ProviderServices providerServices,
+                                    IProgressProvider progressProvider,
+                                    Project activeProject, DTE dte)
         {
-            InstalledProvider installedProvider = new InstalledProvider(Resources);
-            OnlineProvider onlineProvider = new OnlineProvider(Resources);
-            UpdatesProvider updatesProvider = new UpdatesProvider(Resources);
+            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, progressProvider);
+            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices, progressProvider);
+            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices, progressProvider);
 
             explorer.Providers.Add(installedProvider);
             explorer.Providers.Add(onlineProvider);
@@ -157,6 +164,18 @@ namespace CoApp.VsExtension.Dialog
                 e.Cancel = true;
             }
         }
-        
+
+        private void OnDialogWindowClosed(object sender, EventArgs e)
+        {
+            explorer.Providers.Clear();
+
+            CurrentInstance = null;
+        }
+
+        private void OnDialogWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            // HACK: Keep track of the currently open instance of this class.
+            CurrentInstance = this;
+        }
     }
 }
