@@ -91,6 +91,11 @@ namespace CoGet.Dialog.Providers
             }
         }
 
+        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(string type)
+        {
+            return new SimpleTreeNode(this, "All", RootNode, type);
+        }
+
         protected void SelectNode(PackagesTreeNodeBase node)
         {
             node.IsSelected = true;

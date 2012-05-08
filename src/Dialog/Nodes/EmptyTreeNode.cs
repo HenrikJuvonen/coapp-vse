@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
 using System.Threading;
@@ -35,19 +36,14 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        public override IQueryable<Package> GetPackages()
+        public override IEnumerable<Package> GetPackages()
         {
-            return Enumerable.Empty<Package>().AsQueryable();
+            return Enumerable.Empty<Package>();
         }
 
-        public override IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages)
+        public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
             return GetPackages();
-        }
-
-        public override void SetCancellationTokenSourceForRepository(CancellationTokenSource cts)
-        {
-
         }
     }
 }

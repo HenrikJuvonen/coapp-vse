@@ -96,6 +96,54 @@ namespace CoGet
             return fds;
         }
 
+        public static IEnumerable<Package> GetPackagesOfType(string type)
+        {
+            IEnumerable<Package> pkgs = null;
+            switch (type)
+            {
+                case "all":
+                    {
+                        pkgs = GetAllPackages();
+                        break;
+                    }
+                case "installed":
+                    {
+                        pkgs = GetInstalledPackages();
+                        break;
+                    }
+                case "updateable":
+                    {
+                        pkgs = GetUpdateablePackages();
+                        break;
+                    }
+            }
+            return pkgs;
+        }
+
+        public static IEnumerable<Package> Search(string type, string searchText)
+        {
+            IEnumerable<Package> pkgs = null;
+            switch (type)
+            {
+                case "all":
+                    {
+                        pkgs = GetAllPackages();
+                        break;
+                    }
+                case "installed":
+                    {
+                        pkgs = GetInstalledPackages();
+                        break;
+                    }
+                case "updateable":
+                    {
+                        pkgs = GetUpdateablePackages();
+                        break;
+                    }
+            }
+            return pkgs.AsQueryable().Find(searchText);
+        }
+        
         public static IEnumerable<Package> GetAllPackages()
         {
             if (allPackages == null || allPackages.IsEmpty() || DateTime.Compare(DateTime.Now, allRetrievalTime.AddSeconds(30)) > 0)

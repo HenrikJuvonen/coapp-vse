@@ -100,16 +100,8 @@ namespace CoGet.Dialog.Providers
             Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
-            var repository = new OnlineRepository();
-
-            PackagesTreeNodeBase node = CreateTreeNodeForPackages(repository);
+            PackagesTreeNodeBase node = CreateTreeNodeForPackages("all");
             RootNode.Nodes.Add(node);
         }
-
-        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(IPackageRepository repository)
-        {
-            return new SimpleTreeNode(this, "All", RootNode, repository);
-        }
-
     }
 }

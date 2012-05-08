@@ -90,7 +90,6 @@
     <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
     <Compile Include="Nodes\RootTreeNode.cs" />
     <Compile Include="Nodes\SimpleTreeNode.cs" />
-    <Compile Include="Nodes\UpdatesTreeNode.cs" />
     <Compile Include="PackageItem.cs" />
     <Compile Include="PackageManagerWindow.xaml.cs">
       <DependentUpon>PackageManagerWindow.xaml</DependentUpon>

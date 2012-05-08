@@ -13,7 +13,7 @@ namespace CoGet.Dialog.Providers
         private readonly PackagesTreeNodeBase _baseNode;
 
         public PackagesSearchNode(PackagesProviderBase provider, IVsExtensionsTreeNode parent, PackagesTreeNodeBase baseNode, string searchText) :
-            base(parent, provider, baseNode.CollapseVersions)
+            base(parent, provider)
         {
 
             if (baseNode == null)
@@ -60,19 +60,14 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        public override IQueryable<Package> GetPackages()
+        public override IEnumerable<Package> GetPackages()
         {
-            return _baseNode.GetPackages().Find(_searchText);
+            return _baseNode.GetPackages().AsQueryable().Find(_searchText);
         }
 
-        public override IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages)
+        public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return _baseNode.GetDetailedPackages(packages).Find(_searchText);
-        }
-
-        public override void SetCancellationTokenSourceForRepository(CancellationTokenSource cts)
-        {
-            _baseNode.SetCancellationTokenSourceForRepository(cts);
+            return _baseNode.GetDetailedPackages(packages).AsQueryable().Find(_searchText);
         }
     }
 }

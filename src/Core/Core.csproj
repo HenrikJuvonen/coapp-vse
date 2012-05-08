@@ -74,14 +74,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Repositories\BufferedEnumerable.cs" />
-    <Compile Include="Repositories\InstalledRepository.cs" />
-    <Compile Include="Repositories\OnlineRepository.cs" />
-    <Compile Include="Repositories\UpdatesRepository.cs" />
-    <Compile Include="Repositories\ICloneableRepository.cs" />
-    <Compile Include="Repositories\IPackageRepository.cs" />
-    <Compile Include="Repositories\ISearchableRepository.cs" />
-    <Compile Include="Repositories\PackageRepositoryBase.cs" />
-    <Compile Include="Repositories\PackageRepositoryExtensions.cs" />
     <Compile Include="Repositories\ProgressEventArgs.cs" />
     <Compile Include="Resources\CoGetResources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -141,23 +141,14 @@ namespace CoGet.Dialog.Providers
             return Resources.Dialog_UninstallProgress + package.ToString();
         }
 
-        /*
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Microsoft.Design",
             "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]*/
+            Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
-            var repository = new InstalledRepository();
-
-            PackagesTreeNodeBase node = CreateTreeNodeForPackages(repository);
+            PackagesTreeNodeBase node = CreateTreeNodeForPackages("installed");
             RootNode.Nodes.Add(node);
         }
-
-        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(IPackageRepository repository)
-        {
-            return new SimpleTreeNode(this, "All", RootNode, repository);
-        }
-
     }
 }

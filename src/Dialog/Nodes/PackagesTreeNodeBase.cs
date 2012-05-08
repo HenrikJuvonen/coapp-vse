@@ -50,14 +50,6 @@ namespace CoGet.Dialog.Providers
             PageSize = DefaultItemsPerPage;
         }
 
-        public bool CollapseVersions
-        {
-            get
-            {
-                return _collapseVersions;
-            }
-        }
-
         protected PackagesProviderBase Provider
         {
             get;
@@ -228,9 +220,9 @@ namespace CoGet.Dialog.Providers
         /// Get all packages belonging to this node.
         /// </summary>
         /// <returns></returns>
-        public abstract IQueryable<Package> GetPackages();
+        public abstract IEnumerable<Package> GetPackages();
 
-        public abstract IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages);
+        public abstract IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages);
         
         /// <summary>
         /// Helper function to raise property changed events
@@ -242,9 +234,7 @@ namespace CoGet.Dialog.Providers
                 PageDataChanged(this, EventArgs.Empty);
             }
         }
-
-        public abstract void SetCancellationTokenSourceForRepository(CancellationTokenSource cts);
-
+        
         /// <summary>
         /// Loads the packages in the specified page.
         /// </summary>
@@ -276,7 +266,7 @@ namespace CoGet.Dialog.Providers
 
             _currentCancellationSource = new CancellationTokenSource();
 
-            SetCancellationTokenSourceForRepository(_currentCancellationSource);
+            Proxy.SetCancellationTokenSource(_currentCancellationSource);
 
             TaskScheduler uiScheduler;
             try
@@ -330,7 +320,7 @@ namespace CoGet.Dialog.Providers
 
             if (_query == null)
             {
-                IQueryable<Package> query = GetPackages();
+                IQueryable<Package> query = GetPackages().AsQueryable();
 
                 token.ThrowIfCancellationRequested();
 
@@ -353,7 +343,7 @@ namespace CoGet.Dialog.Providers
             IQueryable<Package> pkx = _query.Skip((pageNumber - 1) * PageSize)
                                              .Take(PageSize).AsQueryable();
 
-            pkx = GetDetailedPackages(pkx);
+            pkx = GetDetailedPackages(pkx).AsQueryable();
 
             IList<Package> packages = pkx.ToList();
 

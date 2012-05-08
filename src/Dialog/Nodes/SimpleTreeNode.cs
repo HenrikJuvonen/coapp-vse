@@ -12,31 +12,24 @@ namespace CoGet.Dialog.Providers
     /// </summary>
     internal class SimpleTreeNode : PackagesTreeNodeBase
     {
-        private IPackageRepository _repository;
         private readonly string _category;
+        private readonly string _type;
 
-        public IPackageRepository Repository
-        {
-            get
-            {
-                return _repository;
-            }
-        }
-
-        public SimpleTreeNode(PackagesProviderBase provider, string category, IVsExtensionsTreeNode parent, IPackageRepository repository, bool collapseVersion = true) :
-            base(parent, provider, collapseVersion)
+        public SimpleTreeNode(PackagesProviderBase provider, string category, IVsExtensionsTreeNode parent, string type) :
+            base(parent, provider)
         {
             if (category == null)
             {
                 throw new ArgumentNullException("category");
             }
-            if (repository == null)
+
+            if (type == null)
             {
-                throw new ArgumentNullException("repository");
+                throw new ArgumentNullException("type");
             }
 
             _category = category;
-            _repository = repository;
+            _type = type;
         }
 
         public override string Name
@@ -47,19 +40,14 @@ namespace CoGet.Dialog.Providers
             }
         }
         
-        public override IQueryable<Package> GetPackages()
+        public override IEnumerable<Package> GetPackages()
         {
-            return Repository.GetPackages().AsQueryable();
+            return Proxy.GetPackagesOfType(_type);
         }
 
-        public override IQueryable<Package> GetDetailedPackages(IQueryable<Package> packages)
+        public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return Repository.GetDetailedPackages(packages);
-        }
-
-        public override void SetCancellationTokenSourceForRepository(CancellationTokenSource cts)
-        {
-            Repository.SetCancellationTokenSource(cts);
+            return Proxy.GetDetailedPackages(packages);
         }
     }
 }
