@@ -52,7 +52,7 @@ Visual Studio plugin for CoApp packages
 				[ ] C#
 				[ ] C++
 			[ ] Packages.config
-			[ ] Dialog: "Package requires <list of packages>, install?"
+			[ ] Dialog: "Solution requires <list of packages>, install?"
 
 		[X] List Packages
 		[X] Get Package Details
