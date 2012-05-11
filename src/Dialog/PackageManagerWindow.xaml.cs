@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,25 +26,38 @@ namespace CoGet.Dialog
         //private readonly IProviderSettings _providerSettings;
         internal static PackageManagerWindow CurrentInstance;
 
-        public PackageManagerWindow()
+        private readonly IOptionsPageActivator _optionsPageActivator;
+        private readonly Project _activeProject;
+
+        public PackageManagerWindow(Project project) :
+            this(project,
+                 ServiceLocator.GetInstance<IOptionsPageActivator>())
+        {
+        }
+
+        public PackageManagerWindow(Project project,
+                                    IOptionsPageActivator optionPageActivator)
         {
             InitializeComponent();
 
-            ProviderServices providerServices = new ProviderServices();
-            IProgressProvider progressProvider = new ProgressProvider();
+            _activeProject = project;
+            _optionsPageActivator = optionPageActivator;
 
-            SetupProviders(providerServices, progressProvider, null, null);
+            ProviderServices providerServices = new ProviderServices();
+
+            SetupProviders(providerServices, null, null);
         }
         
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         private void SetupProviders(ProviderServices providerServices,
-                                    IProgressProvider progressProvider,
                                     Project activeProject, DTE dte)
         {
-            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, progressProvider);
-            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices, progressProvider);
-            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices, progressProvider);
+            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices);
+            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices);
+            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
+            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
 
+            explorer.Providers.Add(solutionProvider);
             explorer.Providers.Add(installedProvider);
             explorer.Providers.Add(onlineProvider);
             explorer.Providers.Add(updatesProvider);
@@ -64,10 +78,26 @@ namespace CoGet.Dialog
         private void ExecutedShowOptionsPage(object sender, ExecutedRoutedEventArgs e)
         {
             Close();
-            /*
             _optionsPageActivator.ActivatePage(
                 OptionsPage.PackageSources,
-                () => OnActivated(_activeProject));*/
+                () => OnActivated(_activeProject));
+        }
+
+        /// <summary>
+        /// Called when coming back from the Options dialog
+        /// </summary>
+        private static void OnActivated(Project project)
+        {
+            var window = new PackageManagerWindow(project);
+            try
+            {
+                window.ShowModal();
+            }
+            catch (TargetInvocationException exception)
+            {
+                MessageHelper.ShowErrorMessage(exception, CoGet.Dialog.Resources.Dialog_MessageBoxTitle);
+                ExceptionHelper.WriteToActivityLog(exception);
+            }
         }
 
         private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)
@@ -142,6 +172,32 @@ namespace CoGet.Dialog
             if (provider != null)
             {
                 provider.Execute(selectedItem);
+            }
+        }
+
+        private void ExecutedPackageCommand2(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (OperationCoordinator.IsBusy)
+            {
+                return;
+            }
+
+            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            if (control == null)
+            {
+                return;
+            }
+
+            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
+            if (provider != null)
+            {
+                provider.Execute2(selectedItem);
             }
         }
 

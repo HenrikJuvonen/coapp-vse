@@ -145,10 +145,10 @@
     <value>The package source does not belong to the collection of available sources.</value>
   </data>
   <data name="Console_DisclaimerText" xml:space="preserve">
-    <value>Each package is licensed to you by its owner. NuGet is not responsible for, nor does it grant any licenses to, third-party packages. Some packages may include dependencies which are governed by additional licenses. Follow the package source (feed) URL to determine any dependencies.</value>
+    <value>Each package is licensed to you by its owner. CoApp is not responsible for, nor does it grant any licenses to, third-party packages. Some packages may include dependencies which are governed by additional licenses. Follow the package source (feed) URL to determine any dependencies.</value>
   </data>
   <data name="Dialog_DisclaimerText" xml:space="preserve">
-    <value>Each package is licensed to you by its owner. NuGet is not responsible for, nor does it grant any licenses to, third-party packages.</value>
+    <value>Each package is licensed to you by its owner. CoApp is not responsible for, nor does it grant any licenses to, third-party packages.</value>
   </data>
   <data name="PackageCannotBeRemovedBecauseItIsInUse" xml:space="preserve">
     <value>'{0}' cannot be removed because it in use by '{1}'</value>
@@ -169,7 +169,7 @@
     <value>Executing script file '{0}'.</value>
   </data>
   <data name="Console_HelpText" xml:space="preserve">
-    <value>Type 'get-help NuGet' to see all available NuGet commands.</value>
+    <value>Type 'get-help CoGet' to see all available CoApp commands.</value>
   </data>
   <data name="UnableToFindPackageFromSource" xml:space="preserve">
     <value>Unable to find package '{0}' version '{1}' from the source '{2}'.</value>
@@ -199,7 +199,7 @@
     <value>All</value>
   </data>
   <data name="OfficialSourceName" xml:space="preserve">
-    <value>NuGet official package source</value>
+    <value>CoApp official package source</value>
   </data>
   <data name="FailedToAddGacReference" xml:space="preserve">
     <value>Failed to add reference to '{0}'. Please make sure that it is in the Global Assembly Cache.</value>
@@ -217,7 +217,7 @@
     <value>'{0}' already exists. Skipping...</value>
   </data>
   <data name="AskForUpdateMessage" xml:space="preserve">
-    <value>A new version of NuGet Package Manager is available.</value>
+    <value>A new version of CoApp Package Manager is available.</value>
   </data>
   <data name="ShowDetails" xml:space="preserve">
     <value>Show Details</value>
@@ -274,27 +274,27 @@
     <value>Error accessing Extension Manager.</value>
   </data>
   <data name="DialogTitle" xml:space="preserve">
-    <value>NuGet Package Manager</value>
+    <value>CoApp Package Manager</value>
   </data>
   <data name="PackageRestoreCompleted" xml:space="preserve">
-    <value>Finished configuring this solution to restore NuGet packages on build.</value>
+    <value>Finished configuring this solution to restore CoApp packages on build.</value>
   </data>
   <data name="PackageRestoreWaitMessage" xml:space="preserve">
-    <value>Configuring the solution to restore NuGet packages on build...</value>
+    <value>Configuring the solution to restore CoApp packages on build...</value>
   </data>
   <data name="PackageRestoreErrorMessage" xml:space="preserve">
-    <value>An error occurred while configuring the solution to restore NuGet packages on build</value>
+    <value>An error occurred while configuring the solution to restore CoApp packages on build</value>
   </data>
   <data name="PackageRestoreDownloadPackageFailed" xml:space="preserve">
     <value>Downloading package '{0}' failed.</value>
   </data>
   <data name="PackageRestoreConfirmation" xml:space="preserve">
-    <value>Do you want to configure this solution to download and restore missing NuGet packages during build? A .nuget folder will be added to the root of the solution that contains files that enable package restore.
+    <value>Do you want to configure this solution to download and restore missing CoGet packages during build? A .CoGet folder will be added to the root of the solution that contains files that enable package restore.
 
 Packages installed into Website projects will not be restored during build. Consider converting those into Web application projects if necessary.</value>
   </data>
   <data name="AskForRestoreMessage" xml:space="preserve">
-    <value>Some NuGet packages are missing from this solution. Click to restore.</value>
+    <value>Some CoApp packages are missing from this solution. Click to restore.</value>
   </data>
   <data name="RestoreButtonLabel" xml:space="preserve">
     <value>_Restore</value>

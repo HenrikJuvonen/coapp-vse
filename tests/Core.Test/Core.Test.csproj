@@ -59,7 +59,7 @@
     <Compile Include="ProxyTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Core\Core.csproj">
+    <ProjectReference Include="..\..\src\Core\Core.csproj">
       <Project>{D46F169B-4BBF-4687-9899-9E3DB954591D}</Project>
       <Name>Core</Name>
     </ProjectReference>

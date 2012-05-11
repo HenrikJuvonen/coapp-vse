@@ -23,11 +23,21 @@ Visual Studio plugin for CoApp packages
 ### Progress
 
 	[|] VsExtension
+		[ ] VisualStudio
+			[ ] Add package to solution
+				[ ] C++
+				[ ] C#
+			[ ] Remove package from solution
+				[ ] C++
+				[ ] C#
+			[ ] Packages.config
+			[ ] Dialog: "Solution requires <list of packages>, install?"
+
 		[X] Search by name
 		[X] Sort by name
 		[|] Categories
-			[ ] Solution
-				[ ] All
+			[|] Solution
+				[|] All
 			[|] Installed
 				[|] All
 				[ ] Dev
@@ -38,21 +48,12 @@ Visual Studio plugin for CoApp packages
 				[|] All
 				[ ] Dev
 	
-		[ ] Options
-			[ ] Feed Configuration
-				[|] List Feeds
-				[ ] Add Feed
-				[ ] Remove Feed
-		
-		[ ] VisualStudio
-			[ ] Add package to solution
-				[ ] C#
-				[ ] C++
-			[ ] Remove package from solution
-				[ ] C#
-				[ ] C++
-			[ ] Packages.config
-			[ ] Dialog: "Solution requires <list of packages>, install?"
+		[|] Options
+			[X] Clear cache
+			[X] Feed Configuration
+				[X] List Feeds
+				[X] Add Feed
+				[X] Remove Feed
 
 		[X] List Packages
 		[X] Get Package Details

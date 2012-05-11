@@ -18,9 +18,8 @@ namespace CoGet.Dialog.Providers
         private readonly IUserNotifierServices _userNotifierServices;
 
         public InstalledProvider(ResourceDictionary resources,
-                                ProviderServices providerServices,
-                                IProgressProvider progressProvider)
-            : base(resources, providerServices, progressProvider)
+                                ProviderServices providerServices)
+            : base(resources, providerServices)
         {
             _userNotifierServices = providerServices.UserNotifierServices;
         }

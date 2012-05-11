@@ -1,4 +1,4 @@
-﻿namespace CoApp.VsExtension.VisualStudio
+﻿namespace CoGet.VisualStudio
 {
     public interface IFileSystemProvider
     {

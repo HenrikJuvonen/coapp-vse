@@ -94,6 +94,14 @@ namespace CoGet.Dialog.Providers
             }
         }
 
+        public bool IsDev
+        {
+            get
+            {
+                return _packageIdentity.Name.Contains("-dev");
+            }
+        }
+
         public bool IsUpdateItem
         {
             get

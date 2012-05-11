@@ -136,7 +136,7 @@
     <value>Installed packages</value>
   </data>
   <data name="Dialog_InstalledProviderNoItem" xml:space="preserve">
-    <value>No packages are installed in the current project.</value>
+    <value>No packages are installed.</value>
   </data>
   <data name="Dialog_InstallProgress" xml:space="preserve">
     <value>Installing...</value>
@@ -332,5 +332,20 @@
   </data>
   <data name="Dialog_ArchitectureLabel" xml:space="preserve">
     <value>Architecture:</value>
+  </data>
+  <data name="Dialog_ManageButton" xml:space="preserve">
+    <value>Manage</value>
+  </data>
+  <data name="Dialog_ManageProgress" xml:space="preserve">
+    <value>Removing...</value>
+  </data>
+  <data name="Dialog_SolutionProvider" xml:space="preserve">
+    <value>Solution</value>
+  </data>
+  <data name="Dialog_SolutionProviderNoItem" xml:space="preserve">
+    <value>No packages are added to project(s).</value>
+  </data>
+  <data name="Dialog_AddButton" xml:space="preserve">
+    <value>Add to solution</value>
   </data>
 </root>

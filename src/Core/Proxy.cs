@@ -63,7 +63,7 @@ namespace CoGet
 
         private static IEnumerable<Package> allPackages, updateablePackages, installedPackages, subPackages;
         private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime, subRetrievalTime;
-
+        
         private static CancellationTokenSource _cts;
 
         private readonly static EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
@@ -87,13 +87,55 @@ namespace CoGet
         {
             Console.WriteLine("Fetching feed list...");
 
-            IEnumerable<Feed> fds = null;
+            IEnumerable<Feed> feeds = null;
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.Feeds.Continue(feeds => fds = feeds));
+            Task task = preCommandTasks.Continue(() => _easyPackageManager.Feeds.Continue(fds => feeds = fds));
 
             ContinueTask(task);
 
-            return fds;
+            return feeds;
+        }
+
+        public static void AddFeed(string feedLocation)
+        {
+            Console.WriteLine("Adding feed: " + feedLocation);
+
+            Task task = preCommandTasks.Continue(() => _easyPackageManager.AddSystemFeed(feedLocation));
+
+            try
+            {
+                ContinueTask(task);
+            }
+            catch (AggregateException ae)
+            {
+                foreach (Exception e in ae.InnerExceptions)
+                {
+                    Console.Error.WriteLine(e.Message);
+                }
+            }
+
+            ListFeeds();
+        }
+
+        public static void RemoveFeed(string feedLocation)
+        {
+            Console.WriteLine("Removing feed: " + feedLocation);
+
+            Task task = preCommandTasks.Continue(() => _easyPackageManager.RemoveSystemFeed(feedLocation));
+
+            try
+            {
+                ContinueTask(task);
+            }
+            catch (AggregateException ae)
+            {
+                foreach (Exception e in ae.InnerExceptions)
+                {
+                    Console.Error.WriteLine(e.Message);
+                }
+            }
+
+            ListFeeds();
         }
 
         public static IEnumerable<Package> GetPackagesOfType(string type)
@@ -114,6 +156,11 @@ namespace CoGet
                 case "updateable":
                     {
                         pkgs = GetUpdateablePackages();
+                        break;
+                    }
+                default:
+                    {
+                        pkgs = new List<Package>();
                         break;
                     }
             }

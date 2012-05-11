@@ -5,7 +5,7 @@ namespace CoGet.Dialog.PackageManagerUI
 {
     internal class ProviderSettingsManager : SettingsManagerBase, IProviderSettings
     {
-        private const string SettingsRoot = "NuGet";
+        private const string SettingsRoot = "CoGet";
         private const string SelectedPropertyName = "SelectedProvider";
         private const string IncludePrereleaseName = "Prerelease";
 

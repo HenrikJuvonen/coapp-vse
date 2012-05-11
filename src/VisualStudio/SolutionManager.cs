@@ -387,7 +387,7 @@ namespace CoGet.VisualStudio
 
         private void SetDefaultProject()
         {
-            // when a new solution opens, we set its startup project as the default project in NuGet Console
+            // when a new solution opens, we set its startup project as the default project in CoGet Console
             var solutionBuild = (SolutionBuild2)_dte.Solution.SolutionBuild;
             if (solutionBuild.StartupProjects != null)
             {

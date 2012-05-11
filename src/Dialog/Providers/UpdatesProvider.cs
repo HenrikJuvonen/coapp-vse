@@ -12,9 +12,8 @@ namespace CoGet.Dialog.Providers
     internal class UpdatesProvider : OnlineProvider
     {
         public UpdatesProvider(ResourceDictionary resources,
-                                ProviderServices providerServices,
-                                IProgressProvider progressProvider)
-            : base(resources, providerServices, progressProvider)
+                                ProviderServices providerServices)
+            : base(resources, providerServices)
         {
         }
 

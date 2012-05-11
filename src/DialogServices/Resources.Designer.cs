@@ -61,6 +61,15 @@ namespace CoGet.Dialog {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add to solution.
+        /// </summary>
+        public static string Dialog_AddButton {
+            get {
+                return ResourceManager.GetString("Dialog_AddButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Architecture:.
         /// </summary>
         public static string Dialog_ArchitectureLabel {
@@ -151,7 +160,7 @@ namespace CoGet.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No packages are installed in the current project..
+        ///   Looks up a localized string similar to No packages are installed..
         /// </summary>
         public static string Dialog_InstalledProviderNoItem {
             get {
@@ -174,6 +183,24 @@ namespace CoGet.Dialog {
         public static string Dialog_InstallProgress {
             get {
                 return ResourceManager.GetString("Dialog_InstallProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage.
+        /// </summary>
+        public static string Dialog_ManageButton {
+            get {
+                return ResourceManager.GetString("Dialog_ManageButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing....
+        /// </summary>
+        public static string Dialog_ManageProgress {
+            get {
+                return ResourceManager.GetString("Dialog_ManageProgress", resourceCulture);
             }
         }
         
@@ -444,6 +471,24 @@ namespace CoGet.Dialog {
         public static string Dialog_SolutionNode {
             get {
                 return ResourceManager.GetString("Dialog_SolutionNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solution.
+        /// </summary>
+        public static string Dialog_SolutionProvider {
+            get {
+                return ResourceManager.GetString("Dialog_SolutionProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No packages are added to project(s)..
+        /// </summary>
+        public static string Dialog_SolutionProviderNoItem {
+            get {
+                return ResourceManager.GetString("Dialog_SolutionProviderNoItem", resourceCulture);
             }
         }
         

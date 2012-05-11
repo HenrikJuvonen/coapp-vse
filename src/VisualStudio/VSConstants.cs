@@ -24,7 +24,7 @@ namespace CoGet.VisualStudio
         // All unloaded projects have this Kind value
         internal const string UnloadedProjectTypeGuid = "{67294A52-A4F0-11D2-AA88-00C04F688DDE}";
         
-        internal const string NuGetSolutionSettingsFolder = ".nuget";
+        internal const string CoGetSolutionSettingsFolder = ".CoGet";
 
         // HResults
         internal const int S_OK = 0;

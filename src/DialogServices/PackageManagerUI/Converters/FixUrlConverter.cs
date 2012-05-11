@@ -18,7 +18,7 @@ namespace CoGet.Dialog.PackageManagerUI
             Uri source = new Uri((string)value);
             if (source == null || !source.IsAbsoluteUri || String.IsNullOrEmpty(source.OriginalString))
             {
-                // the nuget gallery has a bug where it sends down relative path. We ignore them.
+                // the CoGet gallery has a bug where it sends down relative path. We ignore them.
                 source = null;
             }
 

@@ -4,7 +4,7 @@ using System.Reflection;
 using Microsoft.Build.Evaluation;
 using MsBuildProject = Microsoft.Build.Evaluation.Project;
 
-namespace CoApp.VsExtension.VisualStudio
+namespace CoGet.VisualStudio
 {
     internal static class MSBuildProjectExtensions
     {

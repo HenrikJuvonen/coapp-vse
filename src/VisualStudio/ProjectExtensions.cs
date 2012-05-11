@@ -228,7 +228,7 @@ namespace CoGet.VisualStudio
             if (project.IsJavaScriptProject())
             {
                 // The JavaScript project initially returns a "(loading..)" suffix to the project Name.
-                // Need to get rid of it for the rest of NuGet to work properly.
+                // Need to get rid of it for the rest of CoGet to work properly.
                 // TODO: Follow up with the VS team to see if this will be fixed eventually
                 const string suffix = " (loading...)";
                 if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))

@@ -4,7 +4,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace CoApp.VsExtension.VisualStudio
+namespace CoGet.VisualStudio
 {
     public static class DTEExtensions
     {

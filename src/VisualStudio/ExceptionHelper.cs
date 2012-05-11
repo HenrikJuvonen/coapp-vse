@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.Shell;
 
-namespace CoApp.VsExtension.VisualStudio
+namespace CoGet.VisualStudio
 {
     public static class ExceptionHelper
     {
-        private const string LogEntrySource = "NuGet Package Manager";
+        private const string LogEntrySource = "CoGet Package Manager";
 
         public static void WriteToActivityLog(Exception exception)
         {

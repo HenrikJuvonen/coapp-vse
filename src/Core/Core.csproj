@@ -58,15 +58,33 @@
       <Link>Common\CommonResources.cs</Link>
     </Compile>
     <Compile Include="Authoring\IPropertyProvider.cs" />
+    <Compile Include="Configuration\ISettings.cs" />
+    <Compile Include="Configuration\ISettingsProvider.cs" />
+    <Compile Include="Configuration\CoGetConfigSettingsProvider.cs" />
+    <Compile Include="Configuration\NullSettings.cs" />
+    <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Configuration\UserSettings.cs" />
+    <Compile Include="EnvironmentVariableWrapper.cs" />
+    <Compile Include="Extensions\AppDomainExtensions.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
+    <Compile Include="Extensions\AssemblyNameExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\FileSystemExtensions.cs" />
     <Compile Include="Extensions\PackageExtensions.cs" />
     <Compile Include="Extensions\QueryableExtensions.cs" />
+    <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\XElementExtensions.cs" />
+    <Compile Include="IEnvironmentVariableReader.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="PackageOperationEventArgs.cs" />
+    <Compile Include="Packages\Constants.cs" />
+    <Compile Include="Packages\DefaultPackagePathResolver.cs" />
     <Compile Include="Packages\IFrameworkTargetable.cs" />
+    <Compile Include="Packages\IPackagePathResolver.cs" />
     <Compile Include="ProjectSystem\IFileSystem.cs" />
     <Compile Include="ProjectSystem\IProjectSystem.cs" />
     <Compile Include="ProjectSystem\NullFileSystem.cs" />
@@ -80,17 +98,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoGetResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SemanticVersion.cs" />
+    <Compile Include="Runtime\AssemblyBinding.cs" />
+    <Compile Include="Runtime\BindingRedirectManager.cs" />
+    <Compile Include="Runtime\BindingRedirectResolver.cs" />
+    <Compile Include="Runtime\IAssembly.cs" />
+    <Compile Include="Runtime\RemoteAssembly.cs" />
     <Compile Include="Utility\ExceptionUtility.cs" />
     <Compile Include="Utility\HashCodeCombiner.cs" />
     <Compile Include="Utility\IProgressProvider.cs" />
-    <Compile Include="Utility\IVersionSpec.cs" />
     <Compile Include="Utility\PathUtility.cs" />
     <Compile Include="Utility\PathValidator.cs" />
     <Compile Include="Utility\ProgressProvider.cs" />
     <Compile Include="Utility\UriUtility.cs" />
-    <Compile Include="Utility\VersionSpec.cs" />
-    <Compile Include="Utility\VersionUtility.cs" />
+    <Compile Include="Utility\XmlUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CoGetResources.resx">

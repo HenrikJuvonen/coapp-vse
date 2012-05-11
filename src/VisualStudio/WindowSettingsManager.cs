@@ -8,7 +8,7 @@ namespace CoGet.VisualStudio
     internal class WindowSettingsManager : SettingsManagerBase, IWindowSettingsManager
     {
 
-        private const string KeyTemplate = @"NuGet\Windows\";
+        private const string KeyTemplate = @"CoGet\Windows\";
 
         public WindowSettingsManager() :
             this(ServiceLocator.GetInstance<IServiceProvider>())

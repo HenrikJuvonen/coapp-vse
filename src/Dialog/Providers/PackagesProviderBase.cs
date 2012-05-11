@@ -21,12 +21,10 @@ namespace CoGet.Dialog.Providers
 
         private PackagesSearchNode _searchNode;
         private PackagesTreeNodeBase _lastSelectedNode;
-        protected readonly IProgressProvider _progressProvider;
         private IList<IVsSortDescriptor> _sortDescriptors;
         
         public PackagesProviderBase(ResourceDictionary resources,
-                                    ProviderServices providerServices, 
-                                    IProgressProvider progressProvider)
+                                    ProviderServices providerServices)
         {
             if (resources == null)
             {
@@ -38,7 +36,6 @@ namespace CoGet.Dialog.Providers
             }
 
             _providerServices = providerServices;
-            _progressProvider = progressProvider;
             _resources = resources;
         }
 
@@ -263,6 +260,11 @@ namespace CoGet.Dialog.Providers
             return true;
         }
 
+        protected virtual bool ExecuteCore2(PackageItem item)
+        {
+            return true;
+        }
+
         protected virtual void OnExecuteCompleted(PackageItem item)
         {
             // After every operation, just update the status of all packages in the current node.
@@ -296,7 +298,7 @@ namespace CoGet.Dialog.Providers
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Microsoft.Globalization",
             "CA1303:Do not pass literals as localized parameters",
-            MessageId = "NuGet.Dialog.Providers.PackagesProviderBase.WriteLineToOutputWindow(System.String)",
+            MessageId = "CoGet.Dialog.Providers.PackagesProviderBase.WriteLineToOutputWindow(System.String)",
             Justification = "No need to localize the --- strings"),
         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public virtual void Execute(PackageItem item)
@@ -309,12 +311,33 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            _progressProvider.ProgressAvailable += OnProgressAvailable;
+            ProgressManager.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
             var worker = new BackgroundWorker();
             worker.DoWork += OnRunWorkerDoWork;
+            worker.RunWorkerCompleted += OnRunWorkerCompleted;
+            worker.RunWorkerAsync(item);
+
+        }
+
+        public virtual void Execute2(PackageItem item)
+        {
+            if (OperationCoordinator.IsBusy)
+            {
+                return;
+            }
+
+            // disable all operations while this install is in progress
+            OperationCoordinator.IsBusy = true;
+
+            ProgressManager.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+
+            ClearProgressMessages();
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += OnRunWorkerDoWork2;
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
             worker.RunWorkerAsync(item);
 
@@ -353,11 +376,19 @@ namespace CoGet.Dialog.Providers
             e.Result = item;
         }
 
+        private void OnRunWorkerDoWork2(object sender, DoWorkEventArgs e)
+        {
+            var item = (PackageItem)e.Argument;
+            bool succeeded = ExecuteCore2(item);
+            e.Cancel = !succeeded;
+            e.Result = item;
+        }
+
         private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             OperationCoordinator.IsBusy = false;
 
-            _progressProvider.ProgressAvailable -= OnProgressAvailable;
+            ProgressManager.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
             
             if (e.Error == null)
             {

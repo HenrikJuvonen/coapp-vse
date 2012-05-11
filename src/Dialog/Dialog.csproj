@@ -100,6 +100,7 @@
     <Compile Include="Providers\InstalledProvider.cs" />
     <Compile Include="Providers\OnlineProvider.cs" />
     <Compile Include="Providers\PackagesProviderBase.cs" />
+    <Compile Include="Providers\SolutionProvider.cs" />
     <Compile Include="Providers\UpdatesProvider.cs" />
   </ItemGroup>
   <ItemGroup>

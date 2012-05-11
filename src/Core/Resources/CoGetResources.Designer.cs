@@ -232,7 +232,7 @@ namespace CoGet.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The schema version of &apos;{0}&apos; is incompatible with version {1} of NuGet. Please upgrade NuGet to the latest version from http://go.microsoft.com/fwlink/?LinkId=213942..
+        ///   Looks up a localized string similar to The schema version of &apos;{0}&apos; is incompatible with version {1} of CoGet. Please upgrade CoGet to the latest version from http://go.microsoft.com/fwlink/?LinkId=213942..
         /// </summary>
         public static string IncompatibleSchema {
             get {

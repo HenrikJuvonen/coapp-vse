@@ -13,9 +13,8 @@ namespace CoGet.Dialog.Providers
     class OnlineProvider : PackagesProviderBase
     {
         public OnlineProvider(ResourceDictionary resources,
-                                ProviderServices providerServices,
-                                IProgressProvider progressProvider)
-            : base(resources, providerServices, progressProvider)
+                                ProviderServices providerServices)
+            : base(resources, providerServices)
         {
         }
 

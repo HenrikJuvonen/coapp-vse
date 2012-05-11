@@ -1,129 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-  <!--  This is the file that defines the actual layout and type of the commands.
-        It is divided in different sections (e.g. command definition, command
-        placement, ...), with each defining a specific set of properties.
-        See the comment before each section for more details about how to
-        use it. -->
-
-  <!--  The VSCT compiler (the tool that translates this file into the binary 
-        format that VisualStudio will consume) has the ability to run a preprocessor 
-        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so 
-        it is possible to define includes and macros with the same syntax used 
-        in C++ files. Using this ability of the compiler here, we include some files 
-        defining some of the constants that we will use inside the file. -->
-
-  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
   <Extern href="stdidcmd.h"/>
-
-  <!--This header contains the command ids for the menus provided by the shell. -->
   <Extern href="vsshlids.h"/>
 
-  <!--Definition of some VSCT specific constants. In this sample we use it for the IDs inside the guidOfficeIcon group. -->
-  <Extern href="msobtnid.h"/>
+  <Commands package="guidPowerConsolePkg">
 
+    <Menus>
+      <Menu guid="guidToolsGroup" id="idLibraryPackageManager" type="Menu" priority="0x500">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_TOOLS_OTHER2" />
+        <Strings>
+          <ButtonText>CoApp Package Ma&amp;nager</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
 
-
-
-  <!--The Commands section is where we the commands, menus and menu groups are defined.
-      This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidVsExtensionPkg">
-    <!-- Inside this section we have different sub-sections: one for the menus, another  
-    for the menu groups, one for the buttons (the actual commands), one for the combos 
-    and the last one for the bitmaps used. Each element is identified by a command id that  
-    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually  
-    called "command set" and is used to group different command inside a logically related  
-    group; your package should define its own command set in order to avoid collisions  
-    with command ids defined by other packages. -->
-
-    
-    <!-- In this section you can define new menu groups. A menu group is a container for 
-         other menus or buttons (commands); from a visual point of view you can see the 
-         group as the part of a menu contained between two lines. The parent of a group 
-         must be a menu. -->
     <Groups>
-
-      <Group guid="guidVsExtensionCmdSet" id="MyMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      <Group guid="guidToolsGroup" id="idToolsGroup" priority="0x100">
+        <Parent guid="guidToolsGroup" id="idLibraryPackageManager" />
       </Group>
-      
-
-
+      <Group guid="guidPackagesRestoreGroup" id="idPackagesRestoreGroup" priority="0x100">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_SOLNNODE" />
+      </Group>
     </Groups>
-    
-    <!--Buttons section. -->
-    <!--This section defines the elements the user can interact with, like a menu command or a button 
-        or combo box in a toolbar. -->
     <Buttons>
-      <!--To define a menu group you have to specify its ID, the parent menu and its display priority. 
-          The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
-          the CommandFlag node.
-          You can add more than one CommandFlag node e.g.:
-              <CommandFlag>DefaultInvisible</CommandFlag>
-              <CommandFlag>DynamicVisibility</CommandFlag>
-          If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
-
-      <Button guid="guidVsExtensionCmdSet" id="pkm" priority="0x0100" type="Button">
-        <Parent guid="guidVsExtensionCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpPic1" />
+      <Button guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0x0100" type="Button">
+        <Parent guid="guidReferenceContext" id="cmdAddReferenceGroup" />
+        <Icon guid="guidToolbarImages" id="bmpAddCoGetPackage" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
-          <CommandName>pkm</CommandName>
-          <ButtonText>CoApp Package Manager</ButtonText>
+          <CommandName>cmdidAddPackages</CommandName>
+          <ButtonText>Manage &amp;CoApp Packages...</ButtonText>
         </Strings>
       </Button>
 
-
-      <Button guid="guidVsExtensionCmdSet" id="console" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic2" />
+      <Button guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" priority="0x0200" type="Button">
+        <Parent guid="guidReferenceContext" id="cmdAddReferenceGroup" />
+        <Icon guid="guidToolbarImages" id="bmpAddCoGetPackage" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>console</CommandName>
-          <ButtonText>CoApp Console</ButtonText>
+          <CommandName>cmdidAddPackagesForSolution</CommandName>
+          <ButtonText>Manage &amp;CoApp Packages for Solution...</ButtonText>
         </Strings>
       </Button>
 
+      <Button guid="guidPackagesRestoreGroup" id="cmdidRestorePackages" priority="0x001" type="Button">
+        <Parent guid="guidPackagesRestoreGroup" id="idPackagesRestoreGroup" />
+        <Icon guid="guidToolbarImages" id="bmpPackageRestore" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>cmdRestorePackages</CommandName>
+          <ButtonText>Enable CoApp Packa&amp;ge Restore</ButtonText>
+        </Strings>
+      </Button>
 
+      <Button guid="guidToolsGroup" id="idGeneralSettings" priority="0xF200" type="Button">
+        <Parent guid="guidToolsGroup" id="idToolsGroup"/>
+        <Icon guid="guidToolbarImages" id="bmpSourceSettings" />
+        <Strings>
+          <CommandName>cmdidGeneralSettings</CommandName>
+          <ButtonText>&amp;CoApp Package Manager Settings</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
-   
-    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
-    <Bitmaps>
-      <!--  The bitmap id is defined in a way that is a little bit different from the others: 
-            the declaration starts with a guid for the bitmap strip, then there is the resource id of the 
-            bitmap strip containing the bitmaps and then there are the numeric ids of the elements used 
-            inside a button definition. An important aspect of this declaration is that the element id 
-            must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\Images_32bit.bmp" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
 
-    </Bitmaps>
- 
   </Commands>
 
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidDialogCmdSet" id="cmdidAddPackages" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+    <VisibilityItem guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+    <VisibilityItem guid="guidPackagesRestoreGroup" id="cmdidRestorePackages" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+  </VisibilityConstraints>
 
-
-
+  <CommandPlacements>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" priority="0xF100">
+      <Parent guid="guidToolsGroup" id="idToolsGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_BUILD" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_REFROOT_ADD"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_PROJ_OPTIONS"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidVenusCmdId" id="IDG_VENUS_CTX_REFERENCE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
+      <Parent guid="guidVenusCmdId" id="IDG_CTX_REFERENCE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidPackagesRestoreGroup" id="cmdidRestorePackages" priority="0xF101">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_PROJ_OPTIONS" />
+    </CommandPlacement>
+  </CommandPlacements>
 
   <Symbols>
-    <!-- This is the package guid. -->
-    <GuidSymbol name="guidVsExtensionPkg" value="{88b24e3f-acb7-4ee5-acd2-cb591ac6f77b}" />
-    
-    <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidVsExtensionCmdSet" value="{9ac542c2-ba67-4b18-8a21-218af3f70b5c}">
-
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="pkm" value="0x0100" />
-      <IDSymbol name="console" value="0x0101" />
+    <GuidSymbol name="guidPowerConsolePkg" value="{F7D0E7A3-C60B-422A-BFAE-CEED36ADE7D2}" />
+    <GuidSymbol name="guidToolbarImages" value="{C96A41A9-81D8-4F67-A344-E4BED01FBAEC}" >
+      <IDSymbol name="bmpSourceSettings" value="3" />
+      <IDSymbol name="bmpStopHost" value="4" />
+      <IDSymbol name="bmpAddCoGetPackage" value="6" />
+      <IDSymbol name="bmpPackageRestore" value="7" />
     </GuidSymbol>
-    
-    
-    
-    <GuidSymbol name="guidImages" value="{b934ad39-0663-4659-bd98-e4ceaf2c5a1e}" >
-      <IDSymbol name="bmpPic1" value="1" />
-      <IDSymbol name="bmpPic2" value="2" />
-      <IDSymbol name="bmpPicSearch" value="3" />
-      <IDSymbol name="bmpPicX" value="4" />
-      <IDSymbol name="bmpPicArrows" value="5" />
+    <GuidSymbol name="guidToolsGroup" value="{C0D88179-5D25-4982-BFE6-EC5FD59AC103}">
+      <IDSymbol name="idLibraryPackageManager" value="0x100" />
+      <IDSymbol name="idToolsGroup" value="0x200" />
+      <IDSymobl name="idGeneralSettings" value="0x300" />
     </GuidSymbol>
+    <GuidSymbol name="guidPackagesRestoreGroup" value="{B4B288EF-D5B7-4669-9D6A-ACD644F90AC8}">
+      <IDSymbol name="idPackagesRestoreGroup" value="0x0100" />
+      <IDSymbol name="cmdidRestorePackages" value="0x0300" />
+    </GuidSymbol>
+    <GuidSymbol name="guidDialogCmdSet" value="{25fd982b-8cae-4cbd-a440-e03ffccde106}">
+      <IDSymbol name="cmdidAddPackages" value="0x0100" />
+      <IDSymbol name="cmdidAddPackagesForSolution" value="0x0200" />
+    </GuidSymbol>
+    <GuidSymbol name="guidVenusCmdId" value="{C7547851-4E3A-4E5B-9173-FA6E9C8BD82C}" >
+      <IDSymbol name="IDG_VENUS_CTX_REFERENCE" value="27" />
+      <IDSymbol name="IDG_CTX_REFERENCE" value="0x102" />
+    </GuidSymbol>
+    <GuidSymbol name="guidReferenceContext" value="{D309F791-903F-11D0-9EFC-00A0C911004F}">
+      <IdSymbol name="cmdAddReferenceGroup" value="0x450" />
+    </GuidSymbol>
+    <GuidSymbol name="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" value="{D0E4DEEC-1B53-4CDA-8559-D454583AD23B}" />
   </Symbols>
 
 </CommandTable>

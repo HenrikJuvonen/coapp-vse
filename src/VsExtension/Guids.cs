@@ -2,14 +2,23 @@
 // MUST match guids.h
 using System;
 
-namespace CoGet
+namespace CoGet.Tools
 {
     public static class GuidList
     {
-        public const string guidVsExtensionPkgString = "88b24e3f-acb7-4ee5-acd2-cb591ac6f77b";
-        public const string guidVsExtensionCmdSetString = "9ac542c2-ba67-4b18-8a21-218af3f70b5c";
-        public const string guidConsoleWindowPersistanceString = "4a183d63-ad84-4df0-9f1b-92d57c8a0601";
+        public const string guidCoGetPkgString = "F7D0E7A3-C60B-422A-BFAE-CEED36ADE7D2";
 
-        public static readonly Guid guidVsExtensionCmdSet = new Guid(guidVsExtensionCmdSetString);
+        public const string guidCoGetConsoleCmdSetString = "1E8A55F6-C18D-407F-91C8-94B02AE1CED6";
+        public const string guidCoGetDialogCmdSetString = "25fd982b-8cae-4cbd-a440-e03ffccde106";
+        public const string guidCoGetToolsGroupString = "C0D88179-5D25-4982-BFE6-EC5FD59AC103";
+        public const string guidCoGetPackagesRestoreGroupString = "B4B288EF-D5B7-4669-9D6A-ACD644F90AC8";
+
+        // any project system that wants to load CoGet when its project opens needs to activate a UI context with this GUID
+        public const string guidAutoLoadCoGetString = "65B1D035-27A5-4BBA-BAB9-5F61C1E2BC4A";
+
+        public static readonly Guid guidCoGetConsoleCmdSet = new Guid(guidCoGetConsoleCmdSetString);
+        public static readonly Guid guidCoGetDialogCmdSet = new Guid(guidCoGetDialogCmdSetString);
+        public static readonly Guid guidCoGetToolsGroupCmdSet = new Guid(guidCoGetToolsGroupString);
+        public static readonly Guid guidCoGetPackagesRestoreCmdSet = new Guid(guidCoGetPackagesRestoreGroupString);
     };
 }
