@@ -90,7 +90,7 @@ namespace CoGet.Dialog.Providers
 
         protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(string type)
         {
-            return new SimpleTreeNode(this, "All", RootNode, type);
+            return new SimpleTreeNode(this, type.Contains("dev") ? "Dev" : "All", RootNode, type);
         }
 
         protected void SelectNode(PackagesTreeNodeBase node)
@@ -311,7 +311,7 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            ProgressManager.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+            Proxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
@@ -332,7 +332,7 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            ProgressManager.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+            Proxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
@@ -388,7 +388,7 @@ namespace CoGet.Dialog.Providers
         {
             OperationCoordinator.IsBusy = false;
 
-            ProgressManager.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
+            Proxy.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
             
             if (e.Error == null)
             {

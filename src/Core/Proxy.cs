@@ -14,25 +14,6 @@ using System.Security.Principal;
 
 namespace CoGet
 {
-    public static class ProgressManager
-    {
-
-        private static readonly IProgressProvider _progressProvider = new ProgressProvider();
-
-        public static IProgressProvider ProgressProvider
-        {
-            get
-            {
-                return _progressProvider;
-            }
-        }
-
-        public static void UpdateProgress(this string message, long progress)
-        {
-            ProgressProvider.OnProgressAvailable(message, (int)progress);
-        }
-    }
-
     public class Proxy
     {
         private static FourPartVersion? _minVersion = null;
@@ -63,16 +44,35 @@ namespace CoGet
 
         private static IEnumerable<Package> allPackages, updateablePackages, installedPackages, subPackages;
         private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime, subRetrievalTime;
-        
-        private static CancellationTokenSource _cts;
 
-        private readonly static EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
+        private static readonly IProgressProvider _progressProvider = new ProgressProvider();
+
+        public static IProgressProvider ProgressProvider
+        {
+            get
+            {
+                return _progressProvider;
+            }
+        }
+
+        public static CancellationTokenSource CancellationTokenSource
+        {
+            get;
+            set;
+        }
+
+        public static void UpdateProgress(string message, long progress)
+        {
+            ProgressProvider.OnProgressAvailable(message, (int)progress);
+        }
+
+        private static readonly EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
         {
             if (!activeDownloads.Contains(itemUri))
             {
                 activeDownloads.Add(itemUri);
             }
-            "Downloading {0}".format(itemUri.UrlDecode()).UpdateProgress(progress);
+            UpdateProgress("Downloading {0}".format(itemUri.UrlDecode()), progress);
         }, (itemUrl, localLocation) =>
         {
             if (activeDownloads.Contains(itemUrl))
@@ -82,6 +82,26 @@ namespace CoGet
             }
             
         });
+
+        public static void SetArchitecture(string architecture)
+        {
+            _cpuany = null;
+            _x64 = null;
+            _x86 = null;
+
+            switch (architecture)
+            {
+                case "Any":
+                    _cpuany = true;
+                    break;
+                case "x64":
+                    _x64 = true;
+                    break;
+                case "x86":
+                    _x86 = true;
+                    break;
+            }
+        }
 
         public static IEnumerable<Feed> ListFeeds()
         {
@@ -144,16 +164,19 @@ namespace CoGet
             switch (type)
             {
                 case "all":
+                case "all,dev":
                     {
                         pkgs = GetAllPackages();
                         break;
                     }
                 case "installed":
+                case "installed,dev":
                     {
                         pkgs = GetInstalledPackages();
                         break;
                     }
                 case "updateable":
+                case "updateable,dev":
                     {
                         pkgs = GetUpdateablePackages();
                         break;
@@ -164,6 +187,25 @@ namespace CoGet
                         break;
                     }
             }
+
+            if (type.Contains("dev"))
+            {
+                pkgs = pkgs.Where(pkg => pkg.Name.Contains("-dev"));
+            }
+
+            if (true == _cpuany)
+            {
+                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.Any);
+            }
+            else if (true == _x64)
+            {
+                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.x64);
+            }
+            else if (true == _x86)
+            {
+                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.x86);
+            }
+
             return pkgs;
         }
 
@@ -255,12 +297,12 @@ namespace CoGet
 
             IEnumerable<Package> pkgs = null;
 
-            if (_cts.IsCancellationRequested)
+            if (CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
             Task task = preCommandTasks.Continue(() => _easyPackageManager.GetUpdatablePackages(parameters)).Continue(p => pkgs = p);
 
-            if (_cts.IsCancellationRequested)
+            if (CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
             ContinueTask(task);
@@ -278,13 +320,13 @@ namespace CoGet
 
             IEnumerable<Package> pkgs = null;
 
-            if (_cts != null && _cts.IsCancellationRequested)
+            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
             Task task = preCommandTasks.Continue(() => _easyPackageManager.GetPackages(parameters, _minVersion, _maxVersion, false, _installed, _active, null, _blocked, _latest, _location)
                 .Continue(p => pkgs = p));
 
-            if (_cts != null && _cts.IsCancellationRequested)
+            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
             ContinueTask(task);
@@ -295,7 +337,7 @@ namespace CoGet
                 pl[i] = GetDetailedPackage(pl[i]);
             }
 
-            if (_cts != null && _cts.IsCancellationRequested)
+            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
             _latest = null;
@@ -348,24 +390,14 @@ namespace CoGet
             }
             catch (Exception e)
             {
-                _cts.Cancel();
+                CancellationTokenSource.Cancel();
             }
             
         }
 
         public static void InstallPackage(Package package)
         {
-            bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent())
-                    .IsInRole(WindowsBuiltInRole.Administrator) ? true : false;
-
-            if (isAdmin)
-            {
-                Console.WriteLine("you are an administrator");
-            }
-            else
-            {
-                Console.WriteLine("You are not an administrator");
-            }
+            UpdateProgress("", 0);
 
             try
             {
@@ -376,7 +408,7 @@ namespace CoGet
             }
             catch (Exception e)
             {
-                _cts.Cancel();
+                CancellationTokenSource.Cancel();
             }
 
         }
@@ -384,24 +416,18 @@ namespace CoGet
         private static Task InstallPackage(string canonicalName)
         {
             Console.WriteLine("Installing...");
-            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => ProgressManager.UpdateProgress(name, progress));
+            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => UpdateProgress(name, progress));
         }
 
         private static Task RemovePackages(IEnumerable<string> parameters)
         {
             Console.WriteLine("Uninstalling...");
-            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => ProgressManager.UpdateProgress(name, progress));
+            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => UpdateProgress(name, progress));
         }
 
         public static IEnumerable<Package> GetDependents(Package package)
         {
             return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package.CanonicalName));
-        }
-
-
-        public static void SetCancellationTokenSource(CancellationTokenSource cts)
-        {
-            _cts = cts;
         }
 
         public static int ContinueTask(Task task)

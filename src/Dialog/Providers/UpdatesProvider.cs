@@ -47,8 +47,8 @@ namespace CoGet.Dialog.Providers
             Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
-            PackagesTreeNodeBase node = CreateTreeNodeForPackages("updateable");
-            RootNode.Nodes.Add(node);
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable,dev"));
         }
 
         public override bool CanExecute(PackageItem item)

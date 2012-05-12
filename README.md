@@ -5,6 +5,8 @@ Visual Studio plugin for CoApp packages
 
 ![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
 
+![Options](coapp-vsp-prototype/raw/master/options.png)
+
 ### Requirements
 
 - CoApp.Toolkit 1.2.0.165 (for now)
@@ -21,9 +23,12 @@ Visual Studio plugin for CoApp packages
 - Build project and start debugging
 
 ### Progress
+	
+	| = work in progress
+	X = ok
 
 	[|] VsExtension
-		[ ] VisualStudio
+		[|] VisualStudio
 			[ ] Add package to solution
 				[ ] C++
 				[ ] C#
@@ -35,18 +40,19 @@ Visual Studio plugin for CoApp packages
 
 		[X] Search by name
 		[X] Sort by name
+		[X] Filter by architecture
 		[|] Categories
 			[|] Solution
 				[|] All
-			[|] Installed
-				[|] All
-				[ ] Dev
-			[|] Online
-				[|] All
-				[ ] Dev
-			[|] Updates
-				[|] All
-				[ ] Dev
+			[X] Installed
+				[X] All
+				[X] Dev
+			[X] Online
+				[X] All
+				[X] Dev
+			[X] Updates
+				[X] All
+				[X] Dev
 	
 		[|] Options
 			[X] Clear cache
@@ -62,5 +68,4 @@ Visual Studio plugin for CoApp packages
 		[ ] Update Packages (Updates)
 	
 		[ ] Console window
-		[ ] Update notifications
-    
+		[ ] Update-notifications

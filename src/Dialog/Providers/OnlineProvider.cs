@@ -89,7 +89,6 @@ namespace CoGet.Dialog.Providers
 
         protected void InstallPackage(PackageItem item)
         {
-            ProgressManager.UpdateProgress("", 0);
             Proxy.InstallPackage(item.PackageIdentity);
         }
 
@@ -99,8 +98,8 @@ namespace CoGet.Dialog.Providers
             Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
-            PackagesTreeNodeBase node = CreateTreeNodeForPackages("all");
-            RootNode.Nodes.Add(node);
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("all,dev"));
         }
     }
 }

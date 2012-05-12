@@ -266,7 +266,7 @@ namespace CoGet.Dialog.Providers
 
             _currentCancellationSource = new CancellationTokenSource();
 
-            Proxy.SetCancellationTokenSource(_currentCancellationSource);
+            Proxy.CancellationTokenSource = _currentCancellationSource;
 
             TaskScheduler uiScheduler;
             try

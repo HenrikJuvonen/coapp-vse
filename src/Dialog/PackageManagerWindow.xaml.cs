@@ -29,6 +29,8 @@ namespace CoGet.Dialog
         private readonly IOptionsPageActivator _optionsPageActivator;
         private readonly Project _activeProject;
 
+        private ComboBox _archComboBox;
+
         public PackageManagerWindow(Project project) :
             this(project,
                  ServiceLocator.GetInstance<IOptionsPageActivator>())
@@ -43,9 +45,80 @@ namespace CoGet.Dialog
             _activeProject = project;
             _optionsPageActivator = optionPageActivator;
 
+            PrepareArchComboBox();
+
             ProviderServices providerServices = new ProviderServices();
 
             SetupProviders(providerServices, null, null);
+        }
+
+        private void PrepareArchComboBox()
+        {
+            ComboBox fxCombo = FindComboBox("cmb_Fx");
+            if (fxCombo != null)
+            {
+                fxCombo.Items.Clear();
+                fxCombo.Items.Add("All");
+                fxCombo.Items.Add("Architecture: Any");
+                fxCombo.Items.Add("Architecture: x64");
+                fxCombo.Items.Add("Architecture: x86");
+                fxCombo.SelectedIndex = 0;
+                fxCombo.SelectionChanged += OnFxComboBoxSelectionChanged;
+
+                _archComboBox = fxCombo;
+            }
+        }
+
+        private void OnFxComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var combo = (ComboBox)sender;
+            if (combo.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            string arch = combo.SelectedIndex == 0 ? "All" : 
+                          combo.SelectedIndex == 1 ? "Any" : 
+                          combo.SelectedIndex == 2 ? "x64" : "x86";
+
+            Proxy.SetArchitecture(arch);
+
+            var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            if (selectedTreeNode != null)
+            {
+                selectedTreeNode.Refresh(resetQueryBeforeRefresh: true);
+            }
+        }
+
+        private ComboBox FindComboBox(string name)
+        {
+            Grid grid = LogicalTreeHelper.FindLogicalNode(explorer, "resGrid") as Grid;
+            if (grid != null)
+            {
+                return FindChildElementByNameOrType(grid, name, typeof(SortCombo)) as ComboBox;
+            }
+
+            return null;
+        }
+
+        private static UIElement FindChildElementByNameOrType(Grid parent, string childName, Type childType)
+        {
+            UIElement element = parent.FindName(childName) as UIElement;
+            if (element != null)
+            {
+                return element;
+            }
+            else
+            {
+                foreach (UIElement child in parent.Children)
+                {
+                    if (childType.IsInstanceOfType(child))
+                    {
+                        return child;
+                    }
+                }
+                return null;
+            }
         }
         
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
