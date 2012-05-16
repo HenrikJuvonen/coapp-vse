@@ -37,7 +37,8 @@ namespace CoGet.VisualStudio
                                                                           VsConstants.JsProjectTypeGuid,
                                                                           VsConstants.FsharpProjectTypeGuid,
                                                                           VsConstants.NemerleProjectTypeGuid,
-                                                                          VsConstants.WixProjectTypeGuid };
+                                                                          VsConstants.WixProjectTypeGuid,
+                                                                          VsConstants.CppProjectTypeGuid};
 
         private static readonly HashSet<string> _unsupportedProjectTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
                                                                             VsConstants.LightSwitchProjectTypeGuid,
@@ -513,8 +514,14 @@ namespace CoGet.VisualStudio
             {
                 return true;
             }
-            FrameworkName frameworkName = project.GetTargetFrameworkName();
-            return true;
+            var projectTypeGuids = project.GetProjectTypeGuids();
+
+            if ((package.Name.Contains("[vc10]") || package.Name.Contains("-common")) && projectTypeGuids.Contains(VsConstants.CppProjectTypeGuid))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static FrameworkName GetTargetFrameworkName(this Project project)

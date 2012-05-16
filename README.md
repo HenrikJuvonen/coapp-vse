@@ -29,8 +29,8 @@ Visual Studio plugin for CoApp packages
 
 	[|] VsExtension
 		[|] VisualStudio
-			[ ] Add package to solution
-				[ ] C++
+			[|] Add package to solution
+				[|] C++
 				[ ] C#
 			[ ] Remove package from solution
 				[ ] C++

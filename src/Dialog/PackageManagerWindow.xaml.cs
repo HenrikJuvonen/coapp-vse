@@ -33,12 +33,16 @@ namespace CoGet.Dialog
 
         public PackageManagerWindow(Project project) :
             this(project,
-                 ServiceLocator.GetInstance<IOptionsPageActivator>())
+                 ServiceLocator.GetInstance<DTE>(),
+                 ServiceLocator.GetInstance<IOptionsPageActivator>(),
+                 ServiceLocator.GetInstance<ISolutionManager>())
         {
         }
 
         public PackageManagerWindow(Project project,
-                                    IOptionsPageActivator optionPageActivator)
+                                    DTE dte,
+                                    IOptionsPageActivator optionPageActivator,
+                                    ISolutionManager solutionManager)
         {
             InitializeComponent();
 
@@ -49,7 +53,10 @@ namespace CoGet.Dialog
 
             ProviderServices providerServices = new ProviderServices();
 
-            SetupProviders(providerServices, null, null);
+            SetupProviders(providerServices,
+                           _activeProject,
+                           dte,
+                           solutionManager);
         }
 
         private void PrepareArchComboBox()
@@ -123,10 +130,12 @@ namespace CoGet.Dialog
         
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         private void SetupProviders(ProviderServices providerServices,
-                                    Project activeProject, DTE dte)
+                                    Project activeProject,
+                                    DTE dte,
+                                    ISolutionManager solutionManager)
         {
             SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices);
-            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices);
+            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
             OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
             UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
 

@@ -16,12 +16,17 @@ namespace CoGet.Dialog.Providers
     class InstalledProvider : PackagesProviderBase
     {
         private readonly IUserNotifierServices _userNotifierServices;
+        private readonly ISolutionManager _solutionManager;
+
+        private static readonly Dictionary<string, bool> _checkStateCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
         public InstalledProvider(ResourceDictionary resources,
-                                ProviderServices providerServices)
+                                ProviderServices providerServices,
+                                ISolutionManager solutionManager)
             : base(resources, providerServices)
         {
             _userNotifierServices = providerServices.UserNotifierServices;
+            _solutionManager = solutionManager;
         }
 
         public override string Name
@@ -52,6 +57,93 @@ namespace CoGet.Dialog.Providers
         public override bool CanExecute(PackageItem item)
         {
             return item.Name != "CoApp.Toolkit";
+        }
+
+        private static bool DetermineProjectCheckState(Project project)
+        {
+            bool checkState;
+            if (String.IsNullOrEmpty(project.UniqueName) ||
+                !_checkStateCache.TryGetValue(project.UniqueName, out checkState))
+            {
+                checkState = true;
+            }
+            return checkState;
+        }
+
+        private void SaveProjectCheckStates(IList<Project> selectedProjects)
+        {
+            var selectedProjectSet = new HashSet<Project>(selectedProjects);
+
+            foreach (Project project in _solutionManager.GetProjects())
+            {
+                if (!String.IsNullOrEmpty(project.UniqueName))
+                {
+                    bool checkState = selectedProjectSet.Contains(project);
+                    _checkStateCache[project.UniqueName] = checkState;
+                }
+            }
+        }
+
+        protected override bool ExecuteCore2(PackageItem item)
+        {
+            IList<Project> selectedProjectsList;
+
+            var selectedProjects = _userNotifierServices.ShowProjectSelectorWindow(
+                Resources.Dialog_OnlineSolutionInstruction,
+                item.PackageIdentity,
+                DetermineProjectCheckState,
+                ignored => true);
+
+            if (selectedProjects == null)
+            {
+                // user presses Cancel button on the Solution dialog
+                return false;
+            }
+
+            selectedProjectsList = selectedProjects.ToList();
+            if (selectedProjectsList.Count == 0)
+            {
+                return false;
+            }
+
+            // save the checked state of projects so that we can restore them the next time
+            SaveProjectCheckStates(selectedProjectsList);
+
+            // Add package to selected projects here
+            // TODO
+
+            // C++
+            if (item.Name.Contains("[vc10]") || item.Name.Contains("-common"))
+            {
+                if (item.Name.Contains("[vc10]"))
+                {
+                    // lib
+                    // $COAPP_LIB = "c:/.apps/lib/"
+                    // add $COAPP_LIB to lib-path
+                    
+                    // ask which libs are added to linker deps
+                    // add <package.architecture>/name.lib etc to linker deps
+                }
+                else if (item.Name.Contains("-common"))
+                {
+                    // include
+                    // $COAPP_INCLUDE += "c:/.apps/Program Files <package.architecture>/Outercurve Foundation/<package.canonicalname>/include
+                    // add $COAPP_INCLUDE to include-path
+                }
+            }
+
+            // C#
+            if (false)
+            {
+                // lib
+                // ask which lib-references are added
+                // add references
+            }
+
+            // add package to packages.config
+            // 
+
+            return true;
         }
 
         protected override bool ExecuteCore(PackageItem item)
