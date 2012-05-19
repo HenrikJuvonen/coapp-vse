@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace CoGet.Dialog
         public static FolderNode Walk(
             Solution solution,
             Package package,
-            Predicate<Project> checkedStateSelector,
-            Predicate<Project> enabledStateSelector)
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string type)
         {
             if (solution == null)
             {
@@ -28,7 +30,7 @@ namespace CoGet.Dialog
 
             if (checkedStateSelector == null)
             {
-                checkedStateSelector = p => false;
+                checkedStateSelector = (p,q,r,s) => false;
             }
 
             if (enabledStateSelector == null)
@@ -36,7 +38,7 @@ namespace CoGet.Dialog
                 enabledStateSelector = p => true;
             }
 
-            var children = CreateProjectNode(solution.Projects.OfType<Project>(), package, checkedStateSelector, enabledStateSelector).ToArray();
+            var children = CreateProjectNode(solution.Projects.OfType<Project>(), package, checkedStateSelector, enabledStateSelector, type).ToArray();
             Array.Sort(children, ProjectNodeComparer.Default);
 
             return new FolderNode(
@@ -45,21 +47,82 @@ namespace CoGet.Dialog
                 children);
         }
 
+        private static IEnumerable<ProjectNodeBase> CreateConfigurationNode(
+            Project project,
+            Package package,
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector)
+        {
+            Array configurations = (Array)project.ConfigurationManager.ConfigurationRowNames;
+
+            foreach (string config in configurations)
+            {
+                var children = CreateLibraryNode(
+                                project,
+                                package,
+                                checkedStateSelector,
+                                enabledStateSelector,
+                                config
+                            ).ToArray();
+
+                yield return new ConfigurationNode(project, config, children);
+            }
+        }
+
+        private static IEnumerable<ProjectNodeBase> CreateLibraryNode(
+            Project project,
+            Package package,
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string config)
+        {
+            string dir = @"c:\apps\Program Files (" + package.Architecture.ToString() + @")\Outercurve Foundation\" + package.CanonicalName + @"\lib\";
+
+            string[] files = Directory.GetFiles(dir, "*.lib");
+
+            foreach(string file in files)
+            {
+                string filename = file.Substring(file.LastIndexOf('\\') + 1);
+
+                yield return new LibraryNode(project, filename)
+                {
+                    // default checked state of this node will be determined by the passed-in selector
+                    IsSelected = checkedStateSelector(package, project, config, filename),
+                    IsEnabled = enabledStateSelector(project)
+                };
+            }
+        }
+
         private static IEnumerable<ProjectNodeBase> CreateProjectNode(
             IEnumerable<Project> projects,
             Package package,
-            Predicate<Project> checkedStateSelector,
-            Predicate<Project> enabledStateSelector)
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string type)
         {
 
             foreach (var project in projects)
             {
                 if (project.IsSupported() && project.IsCompatible(package))
                 {
-                    yield return new ProjectNode(project)
+                    IList<ProjectNodeBase> children;
+
+                    if (type == "vc,lib")
+                        children = CreateConfigurationNode(
+                            project, 
+                            package,
+                            checkedStateSelector,
+                            enabledStateSelector
+                        ).ToList();
+                    else
+                        children = Enumerable.Empty<ProjectNodeBase>().ToList();
+
+                    bool allChildrenSelected = children.All(n => n.IsSelected == true);
+                    
+                    yield return new ProjectNode(project, children)
                     {
                         // default checked state of this node will be determined by the passed-in selector
-                        IsSelected = checkedStateSelector(project),
+                        IsSelected = allChildrenSelected ? true : checkedStateSelector(package, project, null, null),
                         IsEnabled = enabledStateSelector(project)
                     };
                 }
@@ -74,7 +137,8 @@ namespace CoGet.Dialog
                                 Select(p => p.SubProject),
                             package,
                             checkedStateSelector,
-                            enabledStateSelector
+                            enabledStateSelector,
+                            type
                         ).ToArray();
 
                         if (children.Length > 0)

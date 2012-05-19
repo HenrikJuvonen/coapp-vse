@@ -59,6 +59,12 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.VCProject, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.VCProjectEngine, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -90,6 +96,7 @@
     <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
     <Compile Include="Nodes\RootTreeNode.cs" />
     <Compile Include="Nodes\SimpleTreeNode.cs" />
+    <Compile Include="Nodes\SolutionTreeNode.cs" />
     <Compile Include="PackageItem.cs" />
     <Compile Include="PackageManagerWindow.xaml.cs">
       <DependentUpon>PackageManagerWindow.xaml</DependentUpon>

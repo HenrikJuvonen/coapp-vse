@@ -109,7 +109,7 @@
                 <Button 
                     x:Name="ExecuteButton2"
                     Command="{x:Static selfx:PackageManagerWindowCommands.PackageOperationCommand2}"
-                    Content="{x:Static resources:Resources.Dialog_AddButton}"
+                    Content="{x:Static resources:Resources.Dialog_ManageButton}"
                     IsDefault="True"
                     Visibility="Collapsed"
                     Style="{StaticResource DetailButtonStyle}" />
@@ -127,7 +127,7 @@
             <MultiDataTrigger >
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding IsSelected}" Value="True" />
-                    <Condition Binding="{Binding IsEnabled}" Value="True" />
+                    <Condition Binding="{Binding IsEnabled2}" Value="True" />
                     <Condition Binding="{Binding IsInstalled}" Value="True" />
                     <Condition Binding="{Binding IsDev}" Value="True" />
                 </MultiDataTrigger.Conditions>

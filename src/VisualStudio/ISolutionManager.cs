@@ -33,5 +33,8 @@ namespace CoGet.VisualStudio
         bool IsSolutionOpen { get; }
 
         bool IsSourceControlBound { get; }
+
+        void SetGlobal(string name, string value);
+        string GetGlobal(string name);
     }
 }

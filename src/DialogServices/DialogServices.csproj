@@ -107,7 +107,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SolutionExplorer\ConfigurationNode.cs" />
     <Compile Include="SolutionExplorer\FolderNode.cs" />
+    <Compile Include="SolutionExplorer\LibraryNode.cs" />
     <Compile Include="SolutionExplorer\ProjectNode.cs" />
     <Compile Include="SolutionExplorer\ProjectNodeBase.cs" />
     <Compile Include="SolutionExplorer\ProjectUtilities.cs" />

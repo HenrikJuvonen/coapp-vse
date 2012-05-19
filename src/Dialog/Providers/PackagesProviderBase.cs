@@ -246,6 +246,16 @@ namespace CoGet.Dialog.Providers
 
         public abstract bool CanExecute(PackageItem item);
 
+        public virtual bool CanExecute2(PackageItem item)
+        {
+            return true;
+        }
+
+        public virtual bool CanExecute3(PackageItem item)
+        {
+            return true;
+        }
+
         protected virtual string GetProgressMessage(Package package)
         {
             return package.ToString();

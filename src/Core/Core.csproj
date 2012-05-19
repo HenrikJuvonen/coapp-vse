@@ -64,7 +64,6 @@
     <Compile Include="Configuration\NullSettings.cs" />
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Configuration\UserSettings.cs" />
-    <Compile Include="EnvironmentVariableWrapper.cs" />
     <Compile Include="Extensions\AppDomainExtensions.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\AssemblyNameExtensions.cs" />
@@ -76,7 +75,7 @@
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />
-    <Compile Include="IEnvironmentVariableReader.cs" />
+    <Compile Include="Library.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Logging\NullLogger.cs" />
@@ -92,6 +91,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Repositories\BufferedEnumerable.cs" />
+    <Compile Include="Repositories\PackageReference.cs" />
+    <Compile Include="Repositories\PackageReferenceFile.cs" />
     <Compile Include="Repositories\ProgressEventArgs.cs" />
     <Compile Include="Resources\CoGetResources.Designer.cs">
       <AutoGen>True</AutoGen>

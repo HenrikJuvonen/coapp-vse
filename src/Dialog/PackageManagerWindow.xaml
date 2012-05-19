@@ -46,7 +46,7 @@
 
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationCommand2}"
-            CanExecute="CanExecuteCommandOnPackage"
+            CanExecute="CanExecuteCommandOnPackage2"
             Executed="ExecutedPackageCommand2" />
 
         <CommandBinding 

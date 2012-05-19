@@ -181,6 +181,11 @@ namespace CoGet
                         pkgs = GetUpdateablePackages();
                         break;
                     }
+                case "solution":
+                    {
+                        
+                        break;
+                    }
                 default:
                     {
                         pkgs = new List<Package>();

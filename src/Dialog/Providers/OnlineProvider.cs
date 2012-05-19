@@ -49,7 +49,7 @@ namespace CoGet.Dialog.Providers
 
             return !selected.IsInstalled;
         }
-
+        
         public override IVsExtension CreateExtension(Package package)
         {
             return new PackageItem(this, package)

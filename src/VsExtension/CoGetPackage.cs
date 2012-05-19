@@ -81,6 +81,9 @@ namespace CoGet.Tools
             {
                 _packageRestoreManager.EnableCurrentSolutionForRestore(fromActivation: false);
             }*/
+
+            // Count the number of times an add-in is loaded
+            // and store the value in the solution.
         }
 
         private void AddMenuCommandHandlers()
@@ -145,6 +148,17 @@ namespace CoGet.Tools
 
         private void ShowManageLibraryPackageForSolutionDialog(object sender, EventArgs e)
         {
+            Globals globals = _dte.Solution.Globals;
+
+            /*
+            if (!globals.get_VariableExists("CoGetLibPath"))
+            {
+                globals["CoGetLibPath"] = @"C:\.apps\lib\";
+                globals.set_VariablePersists("CoGetLibPath", true);
+            }
+
+            System.Windows.Forms.MessageBox.Show("$(LIB) = " + globals["LIB"]);
+            */
             ShowManageLibraryPackageDialog(null);
         }
 

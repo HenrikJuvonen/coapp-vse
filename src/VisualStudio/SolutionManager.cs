@@ -455,5 +455,23 @@ namespace CoGet.VisualStudio
             }
             dependents.Add(dependent);
         }
+
+        public void SetGlobal(string name, string value)
+        {
+            Globals globals = _dte.Solution.Globals;
+
+            globals[name] = value;
+            globals.set_VariablePersists(name, true);        
+        }
+
+        public string GetGlobal(string name)
+        {
+            Globals globals = _dte.Solution.Globals;
+            if (globals.get_VariableExists(name))
+            {
+                return globals[name];
+            }
+            return "";
+        }
     }
 }

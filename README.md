@@ -5,6 +5,8 @@ Visual Studio plugin for CoApp packages
 
 ![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
 
+![Package Manager](coapp-vsp-prototype/raw/master/select.png)
+
 ![Options](coapp-vsp-prototype/raw/master/options.png)
 
 ### Requirements
@@ -29,13 +31,15 @@ Visual Studio plugin for CoApp packages
 
 	[|] VsExtension
 		[|] VisualStudio
-			[|] Add package to solution
-				[|] C++
-				[ ] C#
-			[ ] Remove package from solution
-				[ ] C++
-				[ ] C#
-			[ ] Packages.config
+			[|] Manage
+				[|] Add package to solution
+					[X] C++
+					[ ] C#
+				[|] Remove package from solution
+					[X] C++
+					[ ] C#
+				[|] Packages.config
+				[|] Show added packages in Solution-category (parse each project's Packages.config)
 			[ ] Dialog: "Solution requires <list of packages>, install?"
 
 		[X] Search by name

@@ -49,30 +49,33 @@ namespace CoGet.Dialog.PackageManagerUI
             return MessageHelper.ShowQueryMessage(message, title: null, showCancelButton: true);
         }
 
-        public IEnumerable<Project> ShowProjectSelectorWindow(
+        public object[] ShowProjectSelectorWindow(
             string instructionText,
             Package package,
-            Predicate<Project> checkedStateSelector,
-            Predicate<Project> enabledStateSelector)
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string type)
         {
             if (!_uiDispatcher.CheckAccess())
             {
                 // Use Invoke() here to block the worker thread
                 object result = _uiDispatcher.Invoke(
-                    new Func<string, Package, Predicate<Project>, Predicate<Project>, IEnumerable<Project>>(ShowProjectSelectorWindow),
+                    new Func<string, Package, Func<Package, Project, string, string, bool?>, Predicate<Project>, string, object[]>(ShowProjectSelectorWindow),
                     instructionText,
                     package,
                     checkedStateSelector,
-                    enabledStateSelector);
+                    enabledStateSelector,
+                    type);
 
-                return (IEnumerable<Project>)result;
+                return (object[])result;
             }
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,
                 package,
                 checkedStateSelector,
-                enabledStateSelector);
+                enabledStateSelector,
+                type);
 
             // only show the solution explorer window if there is at least one compatible project
             if (viewModel.HasProjects)
@@ -86,7 +89,7 @@ namespace CoGet.Dialog.PackageManagerUI
                 bool? dialogResult = window.ShowModal();
                 if (dialogResult ?? false)
                 {
-                    return viewModel.GetSelectedProjects();
+                    return new object[] { viewModel.GetSelectedProjects(), viewModel.GetLibraries() };
                 }
                 else
                 {

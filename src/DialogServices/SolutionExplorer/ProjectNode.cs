@@ -4,27 +4,16 @@ using CoGet.VisualStudio;
 
 namespace CoGet.Dialog
 {
-    public class ProjectNode : ProjectNodeBase
+    public class ProjectNode : FolderNode
     {
-        private readonly Project _project;
-
-        public Project Project
+        public ProjectNode(Project project, ICollection<ProjectNodeBase> children) :
+            base(project, project.GetDisplayName(), children)
         {
-            get
-            {
-                return _project;
-            }
-        }
-
-        public ProjectNode(Project project) :
-            base(project.GetDisplayName())
-        {
-            _project = project;
         }
 
         public override IEnumerable<Project> GetSelectedProjects()
         {
-            if (IsSelected == true && IsEnabled)
+            if (IsSelected != false && IsEnabled)
             {
                 yield return _project;
             }

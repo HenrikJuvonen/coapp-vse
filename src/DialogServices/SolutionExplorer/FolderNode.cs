@@ -11,7 +11,7 @@ namespace CoGet.Dialog
         private readonly ICollection<ProjectNodeBase> _children;
         private bool _suppressPropagatingIsSelectedProperty;
         private bool _isExpanded = true;
-        private readonly Project _project;
+        protected readonly Project _project;
         private static ImageSource _expandedIcon, _collapsedIcon;
 
         public FolderNode(Project project, string name, ICollection<ProjectNodeBase> children) 
@@ -135,6 +135,11 @@ namespace CoGet.Dialog
             return Children.SelectMany(p => p.GetSelectedProjects());
         }
 
+        public override IEnumerable<Library> GetLibraries()
+        {
+            return Children.SelectMany(p => p.GetLibraries());
+        }
+
         // invoked whenever one of its descendent nodes has its IsSelected property changed directly by user.
         internal void OnChildSelectedChanged()
         {
@@ -150,7 +155,7 @@ namespace CoGet.Dialog
                 {
                     isAllSelected = false;
                 }
-                else if (child.IsSelected != false)
+                if (child.IsSelected != false)
                 {
                     isAllUnselected = false;
                 }

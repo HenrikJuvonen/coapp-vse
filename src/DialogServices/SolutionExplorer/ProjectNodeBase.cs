@@ -7,7 +7,7 @@ namespace CoGet.Dialog
 {
     public abstract class ProjectNodeBase : INotifyPropertyChanged
     {
-        private bool _suppressNotifyParentOfIsSelectedChanged;
+        protected bool _suppressNotifyParentOfIsSelectedChanged;
         private FolderNode _parent;
         private string _name;
         private bool? _isSelected = false;
@@ -29,6 +29,8 @@ namespace CoGet.Dialog
             "CA1024:UsePropertiesWhereAppropriate",
             Justification = "The results need to be calculated dynamically.")]
         public abstract IEnumerable<Project> GetSelectedProjects();
+
+        public abstract IEnumerable<Library> GetLibraries();
 
         public FolderNode Parent
         {

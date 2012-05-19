@@ -134,7 +134,7 @@ namespace CoGet.Dialog
                                     DTE dte,
                                     ISolutionManager solutionManager)
         {
-            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices);
+            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
             InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
             OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
             UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
@@ -223,6 +223,39 @@ namespace CoGet.Dialog
             try
             {
                 e.CanExecute = selectedItem.IsEnabled;
+            }
+            catch (Exception)
+            {
+                e.CanExecute = false;
+            }
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
+        private void CanExecuteCommandOnPackage2(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (OperationCoordinator.IsBusy)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            if (control == null)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            if (selectedItem == null)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            try
+            {
+                e.CanExecute = selectedItem.IsEnabled2;
             }
             catch (Exception)
             {

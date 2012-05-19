@@ -9,10 +9,11 @@ namespace CoGet.Dialog.PackageManagerUI
     {
         void ShowSummaryWindow(object failedProjects);
         bool? ShowRemoveDependenciesWindow(string message);
-        IEnumerable<Project> ShowProjectSelectorWindow(
+        object[] ShowProjectSelectorWindow(
             string instructionText,
             Package package,
-            Predicate<Project> checkedStateSelector,
-            Predicate<Project> enabledStateSelector);
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string type);
     }
 }

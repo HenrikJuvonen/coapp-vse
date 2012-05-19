@@ -235,6 +235,22 @@ namespace CoGet.Dialog.Providers
             }
         }
 
+        public bool IsEnabled2
+        {
+            get
+            {
+                return _provider.CanExecute2(this);
+            }
+        }
+
+        public bool IsEnabled3
+        {
+            get
+            {
+                return _provider.CanExecute3(this);
+            }
+        }
+
         internal void UpdateEnabledStatus()
         {
             OnNotifyPropertyChanged("IsEnabled");

@@ -13,8 +13,9 @@ namespace CoGet.Dialog
         public SolutionExplorerViewModel(
             Solution solution,
             Package package,
-            Predicate<Project> checkedStateSelector,
-            Predicate<Project> enabledStateSelector)
+            Func<Package, Project, string, string, bool?> checkedStateSelector,
+            Predicate<Project> enabledStateSelector,
+            string type)
         {
             if (solution == null)
             {
@@ -22,7 +23,7 @@ namespace CoGet.Dialog
             }
 
             _solutionNode = new Lazy<FolderNode>(
-                () => SolutionWalker.Walk(solution, package, checkedStateSelector, enabledStateSelector));
+                () => SolutionWalker.Walk(solution, package, checkedStateSelector, enabledStateSelector, type));
         }
 
         public bool HasProjects
@@ -50,6 +51,18 @@ namespace CoGet.Dialog
             else
             {
                 return Enumerable.Empty<Project>();
+            }
+        }
+
+        public IEnumerable<Library> GetLibraries()
+        {
+            if (_solutionNode.IsValueCreated)
+            {
+                return _solutionNode.Value.GetLibraries();
+            }
+            else
+            {
+                return Enumerable.Empty<Library>();
             }
         }
     }
