@@ -88,7 +88,7 @@ namespace CoGet.Dialog
                           combo.SelectedIndex == 1 ? "Any" : 
                           combo.SelectedIndex == 2 ? "x64" : "x86";
 
-            Proxy.SetArchitecture(arch);
+            CoAppProxy.SetArchitecture(arch);
 
             var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedTreeNode != null)
@@ -128,7 +128,6 @@ namespace CoGet.Dialog
             }
         }
         
-        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         private void SetupProviders(ProviderServices providerServices,
                                     Project activeProject,
                                     DTE dte,
@@ -197,7 +196,6 @@ namespace CoGet.Dialog
             explorer.SetFocusOnSearchBox();
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
         private void CanExecuteCommandOnPackage(object sender, CanExecuteRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)
@@ -230,7 +228,6 @@ namespace CoGet.Dialog
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
         private void CanExecuteCommandOnPackage2(object sender, CanExecuteRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)
@@ -263,7 +260,6 @@ namespace CoGet.Dialog
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't care about exception handling here.")]
         private void ExecutedPackageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)

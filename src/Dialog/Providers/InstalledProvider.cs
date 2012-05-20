@@ -281,7 +281,7 @@ namespace CoGet.Dialog.Providers
                 // check if there is any other package depends on this package.
                 // if there is, throw to cancel the uninstallation
 
-                var dependents = Proxy.GetDependents(package);
+                var dependents = CoAppProxy.GetDependents(package);
 
                 if (!dependents.IsEmpty())
                 {
@@ -313,7 +313,7 @@ namespace CoGet.Dialog.Providers
 
         protected void UninstallPackage(PackageItem item, bool removeDependencies)
         {
-            Proxy.UninstallPackage(item.PackageIdentity, removeDependencies);
+            CoAppProxy.UninstallPackage(item.PackageIdentity, removeDependencies);
         }
 
         public override IVsExtension CreateExtension(Package package)
@@ -345,10 +345,6 @@ namespace CoGet.Dialog.Providers
             return Resources.Dialog_UninstallProgress + package.ToString();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
             RootNode.Nodes.Add(CreateTreeNodeForPackages("installed"));

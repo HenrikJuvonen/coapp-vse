@@ -72,10 +72,10 @@ namespace Core.Test
         [TestMethod()]
         public void InstallPackageTest()
         {
-            IEnumerable<Package> packages = Proxy.GetPackages(new string[] { "lua-dev[vc10]" });
+            IEnumerable<Package> packages = CoAppProxy.GetPackages(new string[] { "lua-dev[vc10]" });
 
             Package package = packages.First();
-            Proxy.InstallPackage(package);
+            CoAppProxy.InstallPackage(package);
             Assert.IsTrue(true, "pass");
         }
 
@@ -85,10 +85,10 @@ namespace Core.Test
         [TestMethod()]
         public void UninstallPackageTest()
         {
-            IEnumerable<Package> packages = Proxy.GetPackages(new string[] { "lua-dev[vc10]" });
+            IEnumerable<Package> packages = CoAppProxy.GetPackages(new string[] { "lua-dev[vc10]" });
 
             Package package = packages.First();
-            Proxy.UninstallPackage(package);
+            CoAppProxy.UninstallPackage(package);
             Assert.IsTrue(true, "pass");
         }
     }

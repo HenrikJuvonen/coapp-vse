@@ -14,7 +14,7 @@ using System.Security.Principal;
 
 namespace CoGet
 {
-    public class Proxy
+    public class CoAppProxy
     {
         private static FourPartVersion? _minVersion = null;
         private static FourPartVersion? _maxVersion = null;
@@ -235,7 +235,7 @@ namespace CoGet
                         break;
                     }
             }
-            return pkgs.AsQueryable().Find(searchText);
+            return pkgs.Where(n => n.Name.Contains(searchText));
         }
         
         public static IEnumerable<Package> GetAllPackages()

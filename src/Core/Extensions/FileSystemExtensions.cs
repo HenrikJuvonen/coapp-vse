@@ -20,7 +20,6 @@ namespace CoGet
             return GetFilesSafe(fileSystem, path, "*.*");
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We want to log an exception as a warning and move on")]
         internal static IEnumerable<string> GetFilesSafe(this IFileSystem fileSystem, string path, string filter)
         {
             try
@@ -60,7 +59,6 @@ namespace CoGet
             }
         }
 
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for closing the stream")]
         internal static void AddFileWithCheck(this IFileSystem fileSystem, string path, Action<Stream> write)
         {
             fileSystem.AddFileWithCheck(path, () =>
@@ -105,7 +103,6 @@ namespace CoGet
             while (index >= 0);
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We want to log an exception as a warning and move on")]
         private static void DoSafeAction(Action action, ILogger logger)
         {
             try

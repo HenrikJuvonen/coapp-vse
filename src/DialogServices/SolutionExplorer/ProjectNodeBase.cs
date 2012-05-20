@@ -24,10 +24,6 @@ namespace CoGet.Dialog
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1024:UsePropertiesWhereAppropriate",
-            Justification = "The results need to be calculated dynamically.")]
         public abstract IEnumerable<Project> GetSelectedProjects();
 
         public abstract IEnumerable<Library> GetLibraries();

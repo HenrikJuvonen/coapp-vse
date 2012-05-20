@@ -38,7 +38,6 @@ namespace CoGet
 
         private IFileSystem FileSystem { get; set; }
 
-        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "This might be expensive")]
         public IEnumerable<PackageReference> GetPackageReferences()
         {
             XDocument document = GetDocument();

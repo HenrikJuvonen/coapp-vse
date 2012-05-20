@@ -6,7 +6,6 @@ namespace CoGet.VisualStudio
 {
     public static class MessageHelper
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         public static void ShowWarningMessage(string message, string title)
         {
             VsShellUtilities.ShowMessageBox(
@@ -18,7 +17,6 @@ namespace CoGet.VisualStudio
                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         public static void ShowInfoMessage(string message, string title)
         {
             VsShellUtilities.ShowMessageBox(

@@ -13,14 +13,6 @@ namespace CoGet.Options
         {
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Mobility",
-            "CA1601:DoNotUseTimersThatPreventPowerStateChanges",
-            Justification = "This is a ridiculous rule.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Reliability",
-            "CA2000:Dispose objects before losing scope",
-            Justification = "The timer is disposed in the Tick event handler.")]
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);

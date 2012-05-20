@@ -83,7 +83,6 @@ namespace CoGet.VisualStudio
 
         }
 
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing this")]
         private static IServiceProvider GetServiceProvider(_DTE dte)
         {
             IServiceProvider serviceProvider = new ServiceProvider(dte as VsServiceProvider);

@@ -14,7 +14,6 @@ using CoApp.Toolkit.Engine.Client;
 
 namespace CoGet.Dialog.Providers
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     internal abstract class PackagesTreeNodeBase : IVsExtensionsTreeNode, IVsPageDataSource, IVsSortDataSource, IVsProgressPaneConsumer, INotifyPropertyChanged, IVsMessagePaneConsumer
     {
 
@@ -266,7 +265,7 @@ namespace CoGet.Dialog.Providers
 
             _currentCancellationSource = new CancellationTokenSource();
 
-            Proxy.CancellationTokenSource = _currentCancellationSource;
+            CoAppProxy.CancellationTokenSource = _currentCancellationSource;
 
             TaskScheduler uiScheduler;
             try
@@ -310,10 +309,6 @@ namespace CoGet.Dialog.Providers
         /// <summary>
         /// This method executes on background thread.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to show error message inside the dialog, rather than blowing up VS.")]
         private LoadPageResult ExecuteAsync(int pageNumber, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -336,8 +331,7 @@ namespace CoGet.Dialog.Providers
                 // Apply the ordering then sort by id
                 IQueryable<Package> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName);
 
-                // Buffer 3 pages
-                _query = orderedQuery.AsBufferedEnumerable(PageSize * 3);
+                _query = orderedQuery.AsEnumerable();
             }
 
             IQueryable<Package> pkx = _query.Skip((pageNumber - 1) * PageSize)
@@ -399,10 +393,6 @@ namespace CoGet.Dialog.Providers
             return false;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We don't want it to crash VS.")]
         private void QueryExecutionCompleted(Task<LoadPageResult> task)
         {
             // If a task throws, the exception must be handled or the Exception

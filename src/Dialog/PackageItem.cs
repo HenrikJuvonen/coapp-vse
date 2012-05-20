@@ -179,10 +179,6 @@ namespace CoGet.Dialog.Providers
             set;
         }
 
-        [SuppressMessage(
-            "Microsoft.Performance",
-            "CA1811:AvoidUncalledPrivateCode",
-            Justification = "This property is data-bound in XAML.")]
         public string PublisherName
         {
             get
@@ -194,10 +190,6 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        [SuppressMessage(
-            "Microsoft.Performance",
-            "CA1811:AvoidUncalledPrivateCode",
-            Justification = "This property is data-bound in XAML.")]
         public bool RequireLicenseAcceptance
         {
             get

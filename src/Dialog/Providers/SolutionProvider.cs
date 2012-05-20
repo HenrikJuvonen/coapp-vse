@@ -293,11 +293,7 @@ namespace CoGet.Dialog.Providers
         {
             return Resources.Dialog_ManageProgress + package.ToString();
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]
+                
         protected override void FillRootNodes()
         {
             PackagesTreeNodeBase node = new SolutionTreeNode(this, "All", RootNode, _solutionManager);

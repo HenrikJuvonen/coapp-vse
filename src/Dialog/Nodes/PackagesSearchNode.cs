@@ -62,12 +62,12 @@ namespace CoGet.Dialog.Providers
 
         public override IEnumerable<Package> GetPackages()
         {
-            return _baseNode.GetPackages().AsQueryable().Find(_searchText);
+            return _baseNode.GetPackages().Where(n => n.Name.Contains(_searchText));
         }
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return _baseNode.GetDetailedPackages(packages).AsQueryable().Find(_searchText);
+            return _baseNode.GetDetailedPackages(packages).Where(n => n.Name.Contains(_searchText));
         }
     }
 }

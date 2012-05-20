@@ -41,10 +41,6 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]
         protected override void FillRootNodes()
         {
             RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable"));

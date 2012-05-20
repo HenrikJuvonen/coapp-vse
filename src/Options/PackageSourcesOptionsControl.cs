@@ -38,7 +38,7 @@ namespace CoGet.Options
 
         private void UpdateFeeds()
         {
-            _allPackageSources = new BindingSource(Proxy.ListFeeds().Select(feed => feed.Location), null);
+            _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
             PackageSourcesListBox.DataSource = _allPackageSources;
         }
         
@@ -66,7 +66,7 @@ namespace CoGet.Options
             TryAddSourceResults result = TryAddSource();
             if (result != TryAddSourceResults.NothingAdded)
             {
-                _allPackageSources = new BindingSource(Proxy.ListFeeds().Select(feed => feed.Location), null);
+                _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
                 PackageSourcesListBox.DataSource = _allPackageSources;
 
                 return false;
@@ -93,7 +93,7 @@ namespace CoGet.Options
                 return;
             }
 
-            Proxy.RemoveFeed((string)PackageSourcesListBox.SelectedItem);
+            CoAppProxy.RemoveFeed((string)PackageSourcesListBox.SelectedItem);
 
             UpdateFeeds();
         }
@@ -102,7 +102,7 @@ namespace CoGet.Options
         {
             TryAddSource();
 
-            _allPackageSources = new BindingSource(Proxy.ListFeeds().Select(feed => feed.Location), null);
+            _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
             PackageSourcesListBox.DataSource = _allPackageSources;
 
             UpdateFeeds();
@@ -146,7 +146,7 @@ namespace CoGet.Options
                 return TryAddSourceResults.InvalidSource;
             }
 
-            Proxy.AddFeed(source);
+            CoAppProxy.AddFeed(source);
 
             // now clear the text boxes
             ClearNameSource();

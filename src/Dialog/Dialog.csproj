@@ -91,7 +91,6 @@
       <DependentUpon>CommonResources.resx</DependentUpon>
     </Compile>
     <Compile Include="LoadPageResult.cs" />
-    <Compile Include="Nodes\EmptyTreeNode.cs" />
     <Compile Include="Nodes\PackagesSearchNode.cs" />
     <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
     <Compile Include="Nodes\RootTreeNode.cs" />

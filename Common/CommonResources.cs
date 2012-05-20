@@ -46,7 +46,6 @@ namespace CoGet
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static global::System.Globalization.CultureInfo Culture
         {
@@ -63,7 +62,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} cannot be null or an empty string.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Cannot_Be_Null_Or_Empty
         {
             get
@@ -75,7 +73,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be between {1} and {2}.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_Between
         {
             get
@@ -87,7 +84,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be a valid value from the {1} enumeration.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_Enum_Member
         {
             get
@@ -99,7 +95,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be greater than {1}.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_GreaterThan
         {
             get
@@ -111,7 +106,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be greater than or equal to {1}.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_GreaterThanOrEqualTo
         {
             get
@@ -123,7 +117,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be less than {1}.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_LessThan
         {
             get
@@ -135,7 +128,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} must be less than or equal to {1}.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_LessThanOrEqualTo
         {
             get
@@ -147,7 +139,6 @@ namespace CoGet
         /// <summary>
         ///   Looks up a localized string similar to {0} cannot be an empty string, it must either be null or a non-empty string.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Property may not be used in every assembly it is imported into")]
         internal static string Argument_Must_Be_Null_Or_Non_Empty
         {
             get

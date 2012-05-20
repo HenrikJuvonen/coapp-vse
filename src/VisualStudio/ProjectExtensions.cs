@@ -583,23 +583,6 @@ namespace CoGet.VisualStudio
             return projects;
         }
 
-        internal static HashSet<string> GetAssemblyClosure(this Project project, IDictionary<string, HashSet<string>> visitedProjects)
-        {
-            HashSet<string> assemblies;
-            if (visitedProjects.TryGetValue(project.UniqueName, out assemblies))
-            {
-                return assemblies;
-            }
-
-            assemblies = new HashSet<string>(PathComparer.Default);
-            assemblies.AddRange(GetLocalProjectAssemblies(project));
-            assemblies.AddRange(project.GetReferencedProjects().SelectMany(p => GetAssemblyClosure(p, visitedProjects)));
-
-            visitedProjects.Add(project.UniqueName, assemblies);
-
-            return assemblies;
-        }
-
         private static IEnumerable<Project> GetWebsiteReferencedProjects(Project project)
         {
             var projects = new List<Project>();

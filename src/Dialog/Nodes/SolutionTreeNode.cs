@@ -40,7 +40,7 @@ namespace CoGet.Dialog.Providers
 
         public override IEnumerable<Package> GetPackages()
         {
-            IEnumerable<Package> installedPackages = Proxy.GetInstalledPackages();
+            IEnumerable<Package> installedPackages = CoAppProxy.GetInstalledPackages();
             List<Package> resultPackages = new List<Package>();
 
             foreach (Project p in _solutionManager.GetProjects())
@@ -62,7 +62,7 @@ namespace CoGet.Dialog.Providers
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return Proxy.GetDetailedPackages(packages);
+            return CoAppProxy.GetDetailedPackages(packages);
         }
     }
 }

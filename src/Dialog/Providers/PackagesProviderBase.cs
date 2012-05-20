@@ -305,12 +305,6 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Globalization",
-            "CA1303:Do not pass literals as localized parameters",
-            MessageId = "CoGet.Dialog.Providers.PackagesProviderBase.WriteLineToOutputWindow(System.String)",
-            Justification = "No need to localize the --- strings"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public virtual void Execute(PackageItem item)
         {
             if (OperationCoordinator.IsBusy)
@@ -321,7 +315,7 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            Proxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+            CoAppProxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
@@ -342,7 +336,7 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            Proxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+            CoAppProxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
@@ -398,7 +392,7 @@ namespace CoGet.Dialog.Providers
         {
             OperationCoordinator.IsBusy = false;
 
-            Proxy.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
+            CoAppProxy.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
             
             if (e.Error == null)
             {

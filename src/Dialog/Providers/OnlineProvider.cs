@@ -89,13 +89,9 @@ namespace CoGet.Dialog.Providers
 
         protected void InstallPackage(PackageItem item)
         {
-            Proxy.InstallPackage(item.PackageIdentity);
+            CoAppProxy.InstallPackage(item.PackageIdentity);
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Design",
-            "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to suppress all errors to show an empty node.")]
+                
         protected override void FillRootNodes()
         {
             RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));

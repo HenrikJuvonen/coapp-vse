@@ -42,12 +42,12 @@ namespace CoGet.Dialog.Providers
         
         public override IEnumerable<Package> GetPackages()
         {
-            return Proxy.GetPackagesOfType(_type);
+            return CoAppProxy.GetPackagesOfType(_type);
         }
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return Proxy.GetDetailedPackages(packages);
+            return CoAppProxy.GetDetailedPackages(packages);
         }
     }
 }

@@ -6,9 +6,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace CoGet.Options
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Microsoft.Interoperability",
-        "CA1408:DoNotUseAutoDualClassInterfaceType")]
     [Guid("0F052CF7-BF62-4743-B190-87FA4D49421E")]
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.AutoDual)]

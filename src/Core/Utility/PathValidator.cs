@@ -27,7 +27,6 @@ namespace CoGet
         /// </remarks>
         /// <param name="path">The path to validate.</param>
         /// <returns>True if valid, False if invalid.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't want to throw during detection")]
         public static bool IsValidLocalPath(string path)
         {
             try
@@ -50,7 +49,6 @@ namespace CoGet
         /// </remarks>
         /// <param name="path">The path to validate.</param>
         /// <returns>True if valid, False if invalid.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't want to throw during detection")]
         public static bool IsValidUncPath(string path)
         {
             try
@@ -69,7 +67,6 @@ namespace CoGet
         /// </summary>
         /// <param name="url">The url to validate.</param>
         /// <returns>True if valid, False if invalid.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#", Justification = "We're trying to validate that a stirng is infct a uri")]
         public static bool IsValidUrl(string url)
         {
             Uri result;

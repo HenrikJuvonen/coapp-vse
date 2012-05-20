@@ -87,7 +87,6 @@ namespace CoGet
             return MergeWith(source, target, null);
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "No reason to create a new type")]
         public static XElement MergeWith(this XElement source, XElement target, IDictionary<XName, Action<XElement, XElement>> nodeActions)
         {
             if (target == null)

@@ -1,5 +1,4 @@
-﻿
-namespace CoGet.VisualStudio
+﻿namespace CoGet.VisualStudio
 {
     internal class NativeMethods
     {
