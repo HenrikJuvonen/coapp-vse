@@ -1,5 +1,5 @@
-coapp-vsp-prototype
-===================
+coapp-vse
+=========
 
 ### Introduction
 
