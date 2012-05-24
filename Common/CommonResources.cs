@@ -14,9 +14,7 @@ namespace CoApp.VisualStudio
     {
 
         private static global::System.Resources.ResourceManager resourceMan;
-
-        private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -48,7 +46,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Cannot_Be_Null_Or_Empty", resourceCulture);
+                return ResourceManager.GetString("Argument_Cannot_Be_Null_Or_Empty");
             }
         }
 
@@ -59,7 +57,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_Between", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_Between");
             }
         }
 
@@ -70,7 +68,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_Enum_Member", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_Enum_Member");
             }
         }
 
@@ -81,7 +79,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_GreaterThan", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_GreaterThan");
             }
         }
 
@@ -92,7 +90,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_GreaterThanOrEqualTo", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_GreaterThanOrEqualTo");
             }
         }
 
@@ -103,7 +101,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_LessThan", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_LessThan");
             }
         }
 
@@ -114,7 +112,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_LessThanOrEqualTo", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_LessThanOrEqualTo");
             }
         }
 
@@ -125,7 +123,7 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                return ResourceManager.GetString("Argument_Must_Be_Null_Or_Non_Empty", resourceCulture);
+                return ResourceManager.GetString("Argument_Must_Be_Null_Or_Non_Empty");
             }
         }
     }

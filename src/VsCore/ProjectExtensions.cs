@@ -685,17 +685,16 @@ namespace CoApp.VisualStudio.VsCore
             return parentProject.IsExplicitlyUnsupported();
         }
 
-        public static void EnsureCheckedOutIfExists(this Project project, IFileSystem fileSystem, string path)
+        public static void EnsureCheckedOutIfExists(this Project project, string path)
         {
-            var fullPath = fileSystem.GetFullPath(path);
-            if (fileSystem.FileExists(path) &&
+            if (File.Exists(path) &&
                 project.DTE.SourceControl != null &&
-                project.DTE.SourceControl.IsItemUnderSCC(fullPath) &&
-                !project.DTE.SourceControl.IsItemCheckedOut(fullPath))
+                project.DTE.SourceControl.IsItemUnderSCC(path) &&
+                !project.DTE.SourceControl.IsItemCheckedOut(path))
             {
 
                 // Check out the item
-                project.DTE.SourceControl.CheckOutItem(fullPath);
+                project.DTE.SourceControl.CheckOutItem(path);
             }
         }
 

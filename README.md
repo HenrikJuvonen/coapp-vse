@@ -21,7 +21,7 @@ It is currently work in progress and it is not ready for everyday use.
 - Go to "VsExtension" project properties and select Debug tab:
 	- Start external program: C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe
 	- Command line arguments: /rootsuffix Exp
-- Build project and start debugging.
+- Build solution and start debugging.
 
 ## Progress
 	

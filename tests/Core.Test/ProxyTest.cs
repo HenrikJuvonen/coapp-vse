@@ -1,14 +1,10 @@
-﻿using CoGet;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System.Linq;
 using CoApp.Toolkit.Engine.Client;
-using System.Collections.Generic;
-using System.Linq;
+using CoApp.VisualStudio;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Core.Test
 {
-    
-    
     /// <summary>
     ///This is a test class for ProxyTest and is intended
     ///to contain all ProxyTest Unit Tests
@@ -16,8 +12,6 @@ namespace Core.Test
     [TestClass()]
     public class ProxyTest
     {
-
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -72,10 +66,8 @@ namespace Core.Test
         [TestMethod()]
         public void InstallPackageTest()
         {
-            IEnumerable<Package> packages = CoAppProxy.GetPackages(new string[] { "lua-dev[vc10]" });
-
-            Package package = packages.First();
-            CoAppProxy.InstallPackage(package);
+            Package package = CoAppWrapper.GetPackages(new string[] { "lua-dev[vc10]" }).First();
+            CoAppWrapper.InstallPackage(package);
             Assert.IsTrue(true, "pass");
         }
 
@@ -85,10 +77,8 @@ namespace Core.Test
         [TestMethod()]
         public void UninstallPackageTest()
         {
-            IEnumerable<Package> packages = CoAppProxy.GetPackages(new string[] { "lua-dev[vc10]" });
-
-            Package package = packages.First();
-            CoAppProxy.UninstallPackage(package);
+            Package package = CoAppWrapper.GetPackages(new string[] { "lua-dev[vc10]" }).First();
+            CoAppWrapper.UninstallPackage(package);
             Assert.IsTrue(true, "pass");
         }
     }

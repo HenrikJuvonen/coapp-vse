@@ -12,31 +12,17 @@ namespace CoApp.VisualStudio
     public class PackageReferenceFile
     {
         private readonly string _path;
-        private readonly Dictionary<string, string> _constraints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public PackageReferenceFile(string path) :
-            this(new PhysicalFileSystem(Path.GetDirectoryName(path)),
-                                        Path.GetFileName(path))
+        public PackageReferenceFile(string path)
         {
-        }
-
-        public PackageReferenceFile(IFileSystem fileSystem, string path)
-        {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException("fileSystem");
-            }
             if (String.IsNullOrEmpty(path))
             {
                 throw new ArgumentException(CommonResources.Argument_Cannot_Be_Null_Or_Empty, "path");
             }
 
-            FileSystem = fileSystem;
             _path = path;
         }
-
-        private IFileSystem FileSystem { get; set; }
-
+        
         public IEnumerable<PackageReference> GetPackageReferences()
         {
             XDocument document = GetDocument();
@@ -50,9 +36,9 @@ namespace CoApp.VisualStudio
             {
                 List<Library> libraries = new List<Library>();
 
-                string name = e.GetOptionalAttributeValue("name");
-                string version = e.GetOptionalAttributeValue("version");
-                string architecture = e.GetOptionalAttributeValue("architecture");
+                string name = e.Attribute("name").Value;
+                string version = e.Attribute("version").Value;
+                string architecture = e.Attribute("architecture").Value;
 
                 if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(version) || String.IsNullOrEmpty(architecture))
                 {
@@ -62,7 +48,7 @@ namespace CoApp.VisualStudio
 
                 foreach (var ce in e.Elements("configuration"))
                 {
-                    string config = ce.GetOptionalAttributeValue("name");
+                    string config = ce.Attribute("name").Value;
 
                     if (String.IsNullOrEmpty(config))
                     {
@@ -72,7 +58,7 @@ namespace CoApp.VisualStudio
 
                     foreach (var le in ce.Elements("lib"))
                     {
-                        string lib = le.GetOptionalAttributeValue("name");
+                        string lib = le.Attribute("name").Value;
 
                         if (String.IsNullOrEmpty(lib))
                         {
@@ -172,9 +158,9 @@ namespace CoApp.VisualStudio
             }
 
             return (from e in document.Root.Elements("package")
-                    let entryName = e.GetOptionalAttributeValue("name")
-                    let entryVersion = e.GetOptionalAttributeValue("version")
-                    let entryArchitecture = e.GetOptionalAttributeValue("architecture")
+                    let entryName = e.Attribute("name").Value
+                    let entryVersion = e.Attribute("version").Value
+                    let entryArchitecture = e.Attribute("architecture").Value
                     where entryName != null && entryVersion != null && entryArchitecture != null
                     where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) && (version == null || entryVersion.Equals(version))
                     select e).FirstOrDefault();
@@ -184,9 +170,9 @@ namespace CoApp.VisualStudio
         {
             // Sort the elements by package id and only take valid entries (one with both id and version)
             var packageElements = (from e in document.Root.Elements("package")
-                                   let name = e.GetOptionalAttributeValue("name")
-                                   let version = e.GetOptionalAttributeValue("version")
-                                   let architecture = e.GetOptionalAttributeValue("architecture")
+                                   let name = e.Attribute("name").Value
+                                   let version = e.Attribute("version").Value
+                                   let architecture = e.Attribute("architecture").Value
                                    where !String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(version) && !String.IsNullOrEmpty(architecture)
                                    orderby name
                                    select e).ToList();
@@ -197,7 +183,7 @@ namespace CoApp.VisualStudio
             // Re-add them sorted
             document.Root.Add(packageElements);
 
-            FileSystem.AddFile(_path, document.Save);
+            document.Save(_path);
         }
 
         private bool DeleteEntry(XDocument document, string name, string version, string architecture)
@@ -206,14 +192,6 @@ namespace CoApp.VisualStudio
 
             if (element != null)
             {
-                // Preserve the allowedVersions attribute for this package id (if any defined)
-                var versionConstraint = element.GetOptionalAttributeValue("allowedVersions");
-
-                if (!String.IsNullOrEmpty(versionConstraint))
-                {
-                    _constraints[name] = versionConstraint;
-                }
-
                 // Remove the element from the xml dom
                 element.Remove();
 
@@ -223,7 +201,7 @@ namespace CoApp.VisualStudio
                 if (!document.Root.HasElements)
                 {
                     // Remove the file if there are no more elements
-                    FileSystem.DeleteFile(_path);
+                    File.Delete(_path);
 
                     return true;
                 }
@@ -237,12 +215,9 @@ namespace CoApp.VisualStudio
             try
             {
                 // If the file exists then open and return it
-                if (FileSystem.FileExists(_path))
+                if (File.Exists(_path))
                 {
-                    using (Stream stream = FileSystem.OpenFile(_path))
-                    {
-                        return XDocument.Load(stream);
-                    }
+                    return XDocument.Load(_path);
                 }
 
                 // If it doesn't exist and we're creating a new file then return a
@@ -257,7 +232,7 @@ namespace CoApp.VisualStudio
             catch (XmlException e)
             {
                 throw new InvalidOperationException(
-                    String.Format(CultureInfo.CurrentCulture, FSResources.ErrorReadingFile, FileSystem.GetFullPath(_path)), e);
+                    String.Format(CultureInfo.CurrentCulture, FSResources.ErrorReadingFile, _path), e);
             }
         }
     }

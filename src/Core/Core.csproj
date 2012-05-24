@@ -51,14 +51,10 @@
       <Link>Common\CommonResources.cs</Link>
     </Compile>
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\FileSystemExtensions.cs" />
-    <Compile Include="Extensions\XElementExtensions.cs" />
     <Compile Include="Packages\Library.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Logging\NullLogger.cs" />
-    <Compile Include="FileSystem\IFileSystem.cs" />
-    <Compile Include="FileSystem\PhysicalFileSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CoAppWrapper.cs" />
     <Compile Include="Packages\PackageReference.cs" />

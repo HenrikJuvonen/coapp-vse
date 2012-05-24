@@ -8,11 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "notices", "notices", "{E8BE
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFA95EF9-5D18-4BB0-9730-380D81E59B19}"
-	ProjectSection(SolutionItems) = preProject
-		coapp-vsp-prototype.vsmdi = coapp-vsp-prototype.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5C4EB2AE-E3F1-4CF2-B28B-A30050A5B492}"
 EndProject
@@ -34,9 +29,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Test", "tests\Core.Test\Core.Test.csproj", "{A681578D-2B29-498F-948F-FB00192E2DAA}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = coapp-vsp-prototype.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Coverage|Any CPU = Coverage|Any CPU
 		Coverage|Mixed Platforms = Coverage|Mixed Platforms
