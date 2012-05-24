@@ -37,13 +37,6 @@ namespace CoApp.VisualStudio.Options
         
         internal void InitializeOnActivated()
         {
-            if (!Dispatcher.CurrentDispatcher.CheckAccess())
-            {
-                // must use BeginInvoke() here to avoid blocking the worker thread
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(InitializeOnActivated));
-                return;
-            }
-
             if (_initialized)
             {
                 return;

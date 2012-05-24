@@ -31,8 +31,6 @@ namespace CoApp.VisualStudio
         private static bool? _x86 = null;
         private static bool? _cpuany = null;
 
-        private static bool IsFiltering { get { return (true == _x64) || (true == _x86) || (true == _cpuany); } }
-
         private static readonly List<Task> preCommandTasks = new List<Task>();
 
         private static List<string> activeDownloads = new List<string>();
@@ -376,6 +374,8 @@ namespace CoApp.VisualStudio
 
         public static void UninstallPackage(Package package, bool removeDependencies = false)
         {
+            UpdateProgress("Uninstalling packages...", 0);
+
             try
             {
                 IEnumerable<string> pkgs = new List<string>() { package.CanonicalName };
@@ -400,7 +400,7 @@ namespace CoApp.VisualStudio
 
         public static void InstallPackage(Package package)
         {
-            UpdateProgress("", 0);
+            UpdateProgress("Installing packages...", 0);
 
             try
             {
@@ -420,13 +420,13 @@ namespace CoApp.VisualStudio
         private static Task InstallPackage(string canonicalName)
         {
             Console.WriteLine("Installing...");
-            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => UpdateProgress(name, progress));
+            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => UpdateProgress("Installing " + name + "...", progress));
         }
 
         private static Task RemovePackages(IEnumerable<string> parameters)
         {
             Console.WriteLine("Uninstalling...");
-            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => UpdateProgress(name, progress));
+            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
         }
 
         public static IEnumerable<Package> GetDependents(Package package)

@@ -20,6 +20,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private PackagesSearchNode _searchNode;
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
+
+        private string _lastOperation;
         
         public PackagesProviderBase(ResourceDictionary resources,
                                     ProviderServices providerServices)
@@ -317,6 +319,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
+            _lastOperation = null;
+
             ClearProgressMessages();
 
             var worker = new BackgroundWorker();
@@ -354,6 +358,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private void OnProgressAvailable(object sender, ProgressEventArgs e)
         {
             _providerServices.ProgressWindow.ShowProgress(e.Operation, e.PercentComplete);
+
+            if (_lastOperation != e.Operation)
+                Log(MessageLevel.Info, e.Operation);
+
+            _lastOperation = e.Operation;
         }
 
         private void OnRunWorkerDoWorkCore(object sender, DoWorkEventArgs e)
@@ -377,7 +386,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             OperationCoordinator.IsBusy = false;
 
             CoAppWrapper.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
-            
+
             if (e.Error == null)
             {
                 if (e.Cancelled)
