@@ -117,17 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BrowseFolderDialogDescription" xml:space="preserve">
-    <value>Select a Package Source Folder</value>
-  </data>
-  <data name="BrowseFolderDialogSelectButton" xml:space="preserve">
-    <value>Select</value>
-  </data>
   <data name="ShowInfo_ClearPackageCache" xml:space="preserve">
     <value>All packages have been cleared from the cache.</value>
-  </data>
-  <data name="ShowInfo_ClearRecentPackages" xml:space="preserve">
-    <value>All items have been cleared from the recent packages list.</value>
   </data>
   <data name="ShowWarning_InvalidSource" xml:space="preserve">
     <value>The feed specified is invalid. Please provide a valid feed.</value>
@@ -137,8 +128,5 @@
   </data>
   <data name="ShowWarning_Title" xml:space="preserve">
     <value>CoApp Package Manager Options</value>
-  </data>
-  <data name="ShowWarning_UniqueSource" xml:space="preserve">
-    <value>The feed specified has already been added to the list of available package feeds. Please provide a unique feed.</value>
   </data>
 </root>

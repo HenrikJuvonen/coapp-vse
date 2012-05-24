@@ -60,22 +60,9 @@
     <Compile Include="Packages\PackageReference.cs" />
     <Compile Include="Packages\PackageReferenceFile.cs" />
     <Compile Include="Packages\ProgressEventArgs.cs" />
-    <Compile Include="Resources\FSResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FSResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Utility\ExceptionUtility.cs" />
     <Compile Include="Utility\IProgressProvider.cs" />
     <Compile Include="Utility\PathValidator.cs" />
     <Compile Include="Utility\ProgressProvider.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\FSResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>FSResources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

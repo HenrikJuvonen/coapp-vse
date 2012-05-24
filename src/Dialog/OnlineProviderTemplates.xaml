@@ -154,6 +154,12 @@
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Focusable="False">
             <StackPanel Margin="8">
+                <!-- Name -->
+                <DockPanel Visibility="{Binding Name, Converter={StaticResource NullToVisibilityConverter}}">
+                    <eml:TextBlockControl DockPanel.Dock="Left" Text="{x:Static resources:Resources.Dialog_NameLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
+                    <eml:TextBlockControl Text="{Binding Name}" Style="{StaticResource DetailMetadataValueStyle}" TextWrapping="Wrap" />
+                </DockPanel>
+                
                 <!-- Authors -->
                 <DockPanel Visibility="{Binding PublisherName, Converter={StaticResource NullToVisibilityConverter}}">
                     <eml:TextBlockControl DockPanel.Dock="Left" Text="{x:Static resources:Resources.Dialog_PublisherLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />

@@ -124,15 +124,6 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Id:.
-        /// </summary>
-        public static string Dialog_IdLabel {
-            get {
-                return ResourceManager.GetString("Dialog_IdLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Installing and uninstalling....
         /// </summary>
         public static string Dialog_InstallAndUninstallProgress {
@@ -210,6 +201,15 @@ namespace CoApp.VisualStudio.Dialog {
         public static string Dialog_MessageBoxTitle {
             get {
                 return ResourceManager.GetString("Dialog_MessageBoxTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string Dialog_NameLabel {
+            get {
+                return ResourceManager.GetString("Dialog_NameLabel", resourceCulture);
             }
         }
         

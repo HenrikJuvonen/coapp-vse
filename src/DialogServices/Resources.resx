@@ -246,8 +246,8 @@
   <data name="License_DialogTitle" xml:space="preserve">
     <value>License Acceptance</value>
   </data>
-  <data name="Dialog_IdLabel" xml:space="preserve">
-    <value>Id:</value>
+  <data name="Dialog_NameLabel" xml:space="preserve">
+    <value>Name:</value>
   </data>
   <data name="Dialog_RecentPackagesDefaultSort" xml:space="preserve">
     <value>Most Recent</value>

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using CoApp.Toolkit.Engine.Client;
+using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
@@ -392,7 +393,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             else
             {
                 // show error message in the progress window in case of error
-                Log(MessageLevel.Error, ExceptionUtility.Unwrap(e.Error).Message);
+                Log(MessageLevel.Error, e.Error.Unwrap().Message);
                 _providerServices.ProgressWindow.SetCompleted(successful: false);
             }
 

@@ -61,38 +61,11 @@ namespace CoApp.VisualStudio.Options {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select a Package Source Folder.
-        /// </summary>
-        public static string BrowseFolderDialogDescription {
-            get {
-                return ResourceManager.GetString("BrowseFolderDialogDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select.
-        /// </summary>
-        public static string BrowseFolderDialogSelectButton {
-            get {
-                return ResourceManager.GetString("BrowseFolderDialogSelectButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to All packages have been cleared from the cache..
         /// </summary>
         public static string ShowInfo_ClearPackageCache {
             get {
                 return ResourceManager.GetString("ShowInfo_ClearPackageCache", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All items have been cleared from the recent packages list..
-        /// </summary>
-        public static string ShowInfo_ClearRecentPackages {
-            get {
-                return ResourceManager.GetString("ShowInfo_ClearRecentPackages", resourceCulture);
             }
         }
         
@@ -120,15 +93,6 @@ namespace CoApp.VisualStudio.Options {
         public static string ShowWarning_Title {
             get {
                 return ResourceManager.GetString("ShowWarning_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The feed specified has already been added to the list of available package feeds. Please provide a unique feed..
-        /// </summary>
-        public static string ShowWarning_UniqueSource {
-            get {
-                return ResourceManager.GetString("ShowWarning_UniqueSource", resourceCulture);
             }
         }
     }

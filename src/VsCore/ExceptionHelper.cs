@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.Shell;
+using CoApp.Toolkit.Extensions;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -14,7 +15,7 @@ namespace CoApp.VisualStudio.VsCore
                 throw new ArgumentNullException("exception");
             }
 
-            exception = ExceptionUtility.Unwrap(exception);
+            exception = exception.Unwrap();
 
             ActivityLog.LogError(LogEntrySource, exception.Message + exception.StackTrace);
         }

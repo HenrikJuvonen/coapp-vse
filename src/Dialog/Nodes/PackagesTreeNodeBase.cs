@@ -8,8 +8,9 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
+using CoApp.Toolkit.Extensions;
+using Microsoft.VisualStudio.ExtensionsExplorer;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -422,7 +423,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 else if (task.IsFaulted)
                 {
                     // show error message in the Message pane
-                    ShowMessagePane(ExceptionUtility.Unwrap(exception).Message);
+                    ShowMessagePane(exception.Unwrap().Message);
                 }
                 else
                 {

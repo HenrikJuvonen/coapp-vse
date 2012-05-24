@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using CoApp.VisualStudio.Resources;
 
 namespace CoApp.VisualStudio
 {
@@ -232,7 +231,7 @@ namespace CoApp.VisualStudio
             catch (XmlException e)
             {
                 throw new InvalidOperationException(
-                    String.Format(CultureInfo.CurrentCulture, FSResources.ErrorReadingFile, _path), e);
+                    String.Format(CultureInfo.CurrentCulture, "Error reading '{0}'.", _path), e);
             }
         }
     }

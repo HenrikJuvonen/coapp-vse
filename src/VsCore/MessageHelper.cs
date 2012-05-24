@@ -1,4 +1,5 @@
 ﻿using System;
+using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -30,7 +31,7 @@ namespace CoApp.VisualStudio.VsCore
 
         public static void ShowErrorMessage(Exception exception, string title)
         {
-            ShowErrorMessage(ExceptionUtility.Unwrap(exception).Message, title);
+            ShowErrorMessage(exception.Unwrap().Message, title);
         }
 
         public static void ShowErrorMessage(string message, string title)
