@@ -1,13 +1,14 @@
 coapp-vsp-prototype
 ===================
 
-Visual Studio plugin for CoApp packages
+### Introduction
 
-![Package Manager](coapp-vsp-prototype/raw/master/pkgmgr.png)
+This is a Visual Studio extension written in C# (.NET 4.0) for CoApp-packages. It makes it
+possible to install, uninstall, update and manage CoApp-packages with a GUI. The goal is to
+provide a easy way to add developer-libraries to Visual Studio -projects (both C++ and .NET).
+It is currently work in progress and it is not ready for everyday use.
 
-![Package Manager](coapp-vsp-prototype/raw/master/select.png)
-
-![Options](coapp-vsp-prototype/raw/master/options.png)
+![Solution Explorer](coapp-vsp-prototype/raw/master/select.png)
 
 ### Requirements
 
@@ -15,7 +16,7 @@ Visual Studio plugin for CoApp packages
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 
-### Debugging
+### Getting Started
 
 - Run Visual Studio as administrator.
 - Set startup project to "VsExtension".

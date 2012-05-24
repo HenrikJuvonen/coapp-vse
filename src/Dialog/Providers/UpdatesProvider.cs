@@ -28,18 +28,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public override bool RefreshOnNodeSelection
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable"));
             RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable,dev"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable"));
         }
 
         public override bool CanExecuteCore(PackageItem item)

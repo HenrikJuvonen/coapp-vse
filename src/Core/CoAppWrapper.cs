@@ -153,7 +153,7 @@ namespace CoApp.VisualStudio
             ListFeeds();
         }
 
-        public static IEnumerable<Package> GetPackagesOfType(string type)
+        public static IEnumerable<Package> GetPackages(string type, int vsMajorVersion)
         {
             IEnumerable<Package> pkgs = null;
             switch (type)
@@ -190,7 +190,9 @@ namespace CoApp.VisualStudio
 
             if (type.Contains("dev"))
             {
-                pkgs = pkgs.Where(pkg => pkg.Name.Contains("-dev"));
+                pkgs = pkgs.Where(pkg => pkg.Name.Contains("-dev"))
+                           .Where(pkg => pkg.Name.Contains("vc") ?
+                                         pkg.Name.Contains("vc" + vsMajorVersion) : true);
             }
 
             if (true == _cpuany)

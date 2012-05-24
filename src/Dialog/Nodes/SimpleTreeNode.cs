@@ -40,7 +40,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         
         public override IEnumerable<Package> GetPackages()
         {
-            return CoAppWrapper.GetPackagesOfType(_type);
+            return CoAppWrapper.GetPackages(_type, VsCore.VsVersionHelper.VsMajorVersion);
         }
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)

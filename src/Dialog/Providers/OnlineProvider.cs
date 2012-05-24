@@ -89,8 +89,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));
             RootNode.Nodes.Add(CreateTreeNodeForPackages("all,dev"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));
         }
     }
 }
