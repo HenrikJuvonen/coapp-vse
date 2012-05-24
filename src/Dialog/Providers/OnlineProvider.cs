@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Windows;
-using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     class OnlineProvider : PackagesProviderBase
     {
@@ -43,7 +38,7 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        public override bool CanExecute(PackageItem item)
+        public override bool CanExecuteCore(PackageItem item)
         {
             PackageItem selected = (PackageItem)SelectedNode.Extensions.Single(i => i == item);
 
@@ -89,7 +84,7 @@ namespace CoGet.Dialog.Providers
 
         protected void InstallPackage(PackageItem item)
         {
-            CoAppProxy.InstallPackage(item.PackageIdentity);
+            CoAppWrapper.InstallPackage(item.PackageIdentity);
         }
                 
         protected override void FillRootNodes()

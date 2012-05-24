@@ -1,29 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Microsoft.VisualStudio.PlatformUI;
-using System.Diagnostics.CodeAnalysis;
 using EnvDTE;
-using CoApp.Toolkit.Engine.Client;
-using CoGet.VisualStudio;
-using CoGet.Dialog.Providers;
+using CoApp.VisualStudio.VsCore;
+using CoApp.VisualStudio.Dialog.Providers;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public partial class PackageManagerWindow : DialogWindow
     {
-        //private readonly IProviderSettings _providerSettings;
         internal static PackageManagerWindow CurrentInstance;
 
         private readonly IOptionsPageActivator _optionsPageActivator;
@@ -88,7 +78,7 @@ namespace CoGet.Dialog
                           combo.SelectedIndex == 1 ? "Any" : 
                           combo.SelectedIndex == 2 ? "x64" : "x86";
 
-            CoAppProxy.SetArchitecture(arch);
+            CoAppWrapper.SetArchitecture(arch);
 
             var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedTreeNode != null)
@@ -176,7 +166,7 @@ namespace CoGet.Dialog
             }
             catch (TargetInvocationException exception)
             {
-                MessageHelper.ShowErrorMessage(exception, CoGet.Dialog.Resources.Dialog_MessageBoxTitle);
+                MessageHelper.ShowErrorMessage(exception, CoApp.VisualStudio.Dialog.Resources.Dialog_MessageBoxTitle);
                 ExceptionHelper.WriteToActivityLog(exception);
             }
         }
@@ -260,7 +250,7 @@ namespace CoGet.Dialog
             }
         }
 
-        private void ExecutedPackageCommand(object sender, ExecutedRoutedEventArgs e)
+        private void ExecutedPackageOperationCore(object sender, ExecutedRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)
             {
@@ -282,11 +272,11 @@ namespace CoGet.Dialog
             PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
             if (provider != null)
             {
-                provider.Execute(selectedItem);
+                provider.Execute(selectedItem, "core");
             }
         }
 
-        private void ExecutedPackageCommand2(object sender, ExecutedRoutedEventArgs e)
+        private void ExecutedPackageOperationManage(object sender, ExecutedRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)
             {
@@ -308,7 +298,7 @@ namespace CoGet.Dialog
             PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
             if (provider != null)
             {
-                provider.Execute2(selectedItem);
+                provider.Execute(selectedItem, "manage");
             }
         }
 

@@ -9,10 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-//using CoGet.VisualStudio;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal abstract class PackagesTreeNodeBase : IVsExtensionsTreeNode, IVsPageDataSource, IVsSortDataSource, IVsProgressPaneConsumer, INotifyPropertyChanged, IVsMessagePaneConsumer
     {
@@ -265,7 +264,7 @@ namespace CoGet.Dialog.Providers
 
             _currentCancellationSource = new CancellationTokenSource();
 
-            CoAppProxy.CancellationTokenSource = _currentCancellationSource;
+            CoAppWrapper.CancellationTokenSource = _currentCancellationSource;
 
             TaskScheduler uiScheduler;
             try

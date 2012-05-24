@@ -1,4 +1,4 @@
-﻿namespace CoGet.Options
+﻿namespace CoApp.VisualStudio.Options
 {
     partial class GeneralOptionControl
     {

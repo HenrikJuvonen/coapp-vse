@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public static class WindowSizePersistenceHelper
     {

@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     /// <summary>
     /// This class may need to be made thread-safe in the future.

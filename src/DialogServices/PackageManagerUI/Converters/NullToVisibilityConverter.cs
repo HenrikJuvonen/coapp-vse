@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class NullToVisibilityConverter : IValueConverter
     {

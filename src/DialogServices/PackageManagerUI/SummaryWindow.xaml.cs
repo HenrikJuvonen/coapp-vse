@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     /// <summary>
     /// Interaction logic for SummaryWindow.xaml

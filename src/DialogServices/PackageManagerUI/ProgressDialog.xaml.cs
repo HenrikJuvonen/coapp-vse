@@ -5,7 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     /// <summary>
     /// Interaction logic for ProgressDialog.xaml
@@ -32,7 +32,7 @@ namespace CoGet.Dialog.PackageManagerUI
             OkButton.IsEnabled = true;
             ProgressBar.IsIndeterminate = false;
             ProgressBar.Value = ProgressBar.Maximum;
-            StatusText.Text = CoGet.Dialog.Resources.Dialog_OperationFailed;
+            StatusText.Text = CoApp.VisualStudio.Dialog.Resources.Dialog_OperationFailed;
         }
 
         private void OkButton_Click(object sender, System.Windows.RoutedEventArgs e)

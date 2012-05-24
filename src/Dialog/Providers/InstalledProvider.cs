@@ -2,26 +2,21 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 using CoApp.Toolkit.Engine.Client;
-using System.Threading;
-using CoGet.VisualStudio;
-using CoGet.Dialog.PackageManagerUI;
+using CoApp.VisualStudio.VsCore;
+using CoApp.VisualStudio.Dialog.PackageManagerUI;
 using Microsoft.VisualStudio.VCProjectEngine;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     class InstalledProvider : PackagesProviderBase
     {
-        private readonly IUserNotifierServices _userNotifierServices;
-        private readonly ISolutionManager _solutionManager;
-
-        private static readonly Dictionary<string, bool> _checkStateCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-
+        protected readonly IUserNotifierServices _userNotifierServices;
+        protected readonly ISolutionManager _solutionManager;
+        
         public InstalledProvider(ResourceDictionary resources,
                                 ProviderServices providerServices,
                                 ISolutionManager solutionManager)
@@ -56,71 +51,34 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        public override bool CanExecute(PackageItem item)
+        public override bool CanExecuteCore(PackageItem item)
         {
             return item.Name != "CoApp.Toolkit";
         }
 
-        private static bool? DetermineCheckState(Package package, Project project, string config, string lib)
+        public override bool CanExecuteManage(PackageItem item)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/packages.config");
-
-            IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
-
-            bool hasLibraries = false;
-            bool projectHasPackage = false;
-
-            foreach (PackageReference p in packageReferences)
-            {
-                if (p.Name != package.Name)
-                    continue;
-
-                projectHasPackage = true;
-
-                if (p.Libraries != null && !p.Libraries.IsEmpty())
-                    hasLibraries = true;
-
-                foreach (Library l in p.Libraries)
-                {
-                    if (l.Configuration == config && l.Name == lib)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            if (config == null && lib == null && projectHasPackage)
-            {
-                if (hasLibraries)
-                {
-                    return null;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return item.Flavor == "common" ||
+                   item.Flavor.Contains("vc" + VsVersionHelper.VsMajorVersion) ||
+                   item.Flavor.Contains("net");
         }
 
-        protected override bool ExecuteCore2(PackageItem item)
+        protected override bool ExecuteManage(PackageItem item)
         {
-            string type = item.Name.Contains("[vc10]") ? "vc,lib" :
-                item.Name.Contains("-common") ? "vc" : "";
+            string type = item.Type;
+
+            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.CanonicalName, item.Version, item.Architecture, item.Type, item.Path);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
-                item.PackageIdentity,
-                DetermineCheckState,
-                ignored => true,
-                type);
+                packageReference);
 
             if (selected == null)
             {
                 // user presses Cancel button on the Solution dialog
                 return false;
             }
+
             IEnumerable<Project> projects = (IEnumerable<Project>)selected[0];
             IEnumerable<Library> libraries = (IEnumerable<Library>)selected[1];
 
@@ -182,7 +140,7 @@ namespace CoGet.Dialog.Providers
                                 linker.AdditionalDependencies = string.Join(" ", result);
                             }
 
-                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/packages.config");
+                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + @"\packages.config");
 
                             if (projects.Contains(p))
                             {
@@ -217,7 +175,7 @@ namespace CoGet.Dialog.Providers
                                 config = configs.Item(configName);
                                 compiler = config.Tools.Item("VCCLCompilerTool");
 
-                                string dir = @"c:\apps\Program Files\Outercurve Foundation\" + item.PackageIdentity.CanonicalName + @"\include\";
+                                string dir = packageReference.Path + "include";
 
                                 IList<string> dirs = compiler.AdditionalIncludeDirectories.Split(';').Where(n => !n.IsEmpty()).ToList();
 
@@ -233,7 +191,7 @@ namespace CoGet.Dialog.Providers
                                 compiler.AdditionalIncludeDirectories = string.Join(";", dirs);
                             }
 
-                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/packages.config");
+                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + @"\packages.config");
 
                             if (projects.Contains(p))
                             {
@@ -281,7 +239,7 @@ namespace CoGet.Dialog.Providers
                 // check if there is any other package depends on this package.
                 // if there is, throw to cancel the uninstallation
 
-                var dependents = CoAppProxy.GetDependents(package);
+                var dependents = CoAppWrapper.GetDependents(package);
 
                 if (!dependents.IsEmpty())
                 {
@@ -313,7 +271,7 @@ namespace CoGet.Dialog.Providers
 
         protected void UninstallPackage(PackageItem item, bool removeDependencies)
         {
-            CoAppProxy.UninstallPackage(item.PackageIdentity, removeDependencies);
+            CoAppWrapper.UninstallPackage(item.PackageIdentity, removeDependencies);
         }
 
         public override IVsExtension CreateExtension(Package package)

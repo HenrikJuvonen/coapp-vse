@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     /// <summary>
     /// Base implementation of IVsExtensionsTreeNode

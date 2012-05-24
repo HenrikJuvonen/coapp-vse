@@ -4,19 +4,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using EnvDTE;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     internal static class SolutionWalker
     {
         public static FolderNode Walk(
             Solution solution,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector,
-            string type)
+            PackageReference packageReference)
         {
             if (solution == null)
             {
@@ -28,17 +25,7 @@ namespace CoGet.Dialog
                 return null;
             }
 
-            if (checkedStateSelector == null)
-            {
-                checkedStateSelector = (p,q,r,s) => false;
-            }
-
-            if (enabledStateSelector == null)
-            {
-                enabledStateSelector = p => true;
-            }
-
-            var children = CreateProjectNode(solution.Projects.OfType<Project>(), package, checkedStateSelector, enabledStateSelector, type).ToArray();
+            var children = CreateProjectNode(solution.Projects.OfType<Project>(), packageReference).ToArray();
             Array.Sort(children, ProjectNodeComparer.Default);
 
             return new FolderNode(
@@ -47,83 +34,29 @@ namespace CoGet.Dialog
                 children);
         }
 
-        private static IEnumerable<ProjectNodeBase> CreateConfigurationNode(
-            Project project,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector)
-        {
-            Array configurations = (Array)project.ConfigurationManager.ConfigurationRowNames;
-
-            foreach (string config in configurations)
-            {
-                var children = CreateLibraryNode(
-                                project,
-                                package,
-                                checkedStateSelector,
-                                enabledStateSelector,
-                                config
-                            ).ToArray();
-
-                yield return new ConfigurationNode(project, config, children);
-            }
-        }
-
-        private static IEnumerable<ProjectNodeBase> CreateLibraryNode(
-            Project project,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector,
-            string config)
-        {
-            string dir = @"c:\apps\Program Files (" + package.Architecture.ToString() + @")\Outercurve Foundation\" + package.CanonicalName + @"\lib\";
-
-            string[] files = Directory.GetFiles(dir, "*.lib");
-
-            foreach(string file in files)
-            {
-                string filename = file.Substring(file.LastIndexOf('\\') + 1);
-
-                yield return new LibraryNode(project, filename)
-                {
-                    // default checked state of this node will be determined by the passed-in selector
-                    IsSelected = checkedStateSelector(package, project, config, filename),
-                    IsEnabled = enabledStateSelector(project)
-                };
-            }
-        }
-
         private static IEnumerable<ProjectNodeBase> CreateProjectNode(
             IEnumerable<Project> projects,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector,
-            string type)
+            PackageReference packageReference)
         {
-
             foreach (var project in projects)
             {
-                if (project.IsSupported() && project.IsCompatible(package))
+                if (project.IsSupported() && project.IsCompatible(packageReference))
                 {
                     IList<ProjectNodeBase> children;
 
-                    if (type == "vc,lib")
+                    if (packageReference.Type == "vc,lib")
                         children = CreateConfigurationNode(
-                            project, 
-                            package,
-                            checkedStateSelector,
-                            enabledStateSelector
+                            project,
+                            packageReference
                         ).ToList();
                     else
-                        children = Enumerable.Empty<ProjectNodeBase>().ToList();
+                        children = new List<ProjectNodeBase>();
 
-                    bool allChildrenSelected = children.All(n => n.IsSelected == true);
+                    bool allChildrenSelected = children.IsEmpty() ? false : children.All(n => n.IsSelected == true);
                     
                     yield return new ProjectNode(project, children)
                     {
-                        // default checked state of this node will be determined by the passed-in selector
-                        IsSelected = allChildrenSelected ? true : checkedStateSelector(package, project, null, null),
-                        IsEnabled = enabledStateSelector(project)
+                        IsSelected = allChildrenSelected ? true : DetermineCheckState(packageReference, project, null, null)
                     };
                 }
                 else if (project.IsSolutionFolder())
@@ -135,10 +68,7 @@ namespace CoGet.Dialog
                                 OfType<ProjectItem>().
                                 Where(p => p.SubProject != null).
                                 Select(p => p.SubProject),
-                            package,
-                            checkedStateSelector,
-                            enabledStateSelector,
-                            type
+                            packageReference
                         ).ToArray();
 
                         if (children.Length > 0)
@@ -150,6 +80,85 @@ namespace CoGet.Dialog
                     }
                 }
             }
+        }
+
+        private static IEnumerable<ProjectNodeBase> CreateConfigurationNode(
+            Project project,
+            PackageReference packageReference)
+        {
+            Array configurations = (Array)project.ConfigurationManager.ConfigurationRowNames;
+
+            foreach (string config in configurations)
+            {
+                var children = CreateLibraryNode(
+                                project,
+                                packageReference,
+                                config
+                            ).ToArray();
+
+                yield return new ConfigurationNode(project, config, children);
+            }
+        }
+
+        private static IEnumerable<ProjectNodeBase> CreateLibraryNode(
+            Project project,
+            PackageReference packageReference,
+            string config)
+        {
+            string[] files = Directory.GetFiles(packageReference.Path + "lib", "*.lib");
+
+            foreach (string file in files)
+            {
+                string filename = file.Substring(file.LastIndexOf('\\') + 1);
+
+                yield return new LibraryNode(project, filename)
+                {
+                    IsSelected = DetermineCheckState(packageReference, project, config, filename)
+                };
+            }
+        }
+
+        private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string lib)
+        {
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/packages.config");
+
+            IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+
+            bool hasLibraries = false;
+            bool projectHasPackage = false;
+
+            foreach (PackageReference p in packageReferences)
+            {
+                if (p.Name != packageReference.Name)
+                    continue;
+
+                projectHasPackage = true;
+
+                if (p.Libraries != null && !p.Libraries.IsEmpty())
+                    hasLibraries = true;
+
+                foreach (Library l in p.Libraries)
+                {
+                    if (l.Configuration == config && l.Name == lib)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (config == null && lib == null && projectHasPackage)
+            {
+                if (hasLibraries)
+                {
+                    return null;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private class ProjectNodeComparer : IComparer<ProjectNodeBase>

@@ -1,9 +1,9 @@
 ﻿<pfui:DialogWindow 
-    x:Class="CoGet.Dialog.PackageManagerUI.SummaryWindow"
+    x:Class="CoApp.VisualStudio.Dialog.PackageManagerUI.SummaryWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:self="clr-namespace:CoGet.Dialog.PackageManagerUI"
-    xmlns:resources="clr-namespace:CoGet.Dialog"
+    xmlns:self="clr-namespace:CoApp.VisualStudio.Dialog.PackageManagerUI"
+    xmlns:resources="clr-namespace:CoApp.VisualStudio.Dialog"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
     MinWidth="350"

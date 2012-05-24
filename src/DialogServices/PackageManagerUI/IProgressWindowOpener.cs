@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public interface IProgressWindowOpener
     {

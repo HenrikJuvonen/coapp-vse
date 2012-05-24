@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Data;
 using EnvDTE;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class ProjectToDisplayNameConverter : IValueConverter
     {

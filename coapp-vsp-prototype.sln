@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VsExtension", "src\VsExtens
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{D46F169B-4BBF-4687-9899-9E3DB954591D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudio", "src\VisualStudio\VisualStudio.csproj", "{FA3254A6-71B5-4029-B727-3A477AB413E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VsCore", "src\VsCore\VsCore.csproj", "{FA3254A6-71B5-4029-B727-3A477AB413E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialog", "src\Dialog\Dialog.csproj", "{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}"
 EndProject

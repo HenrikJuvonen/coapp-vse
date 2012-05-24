@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public static class QueryExtensions
     {

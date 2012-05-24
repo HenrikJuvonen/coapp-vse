@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using CoGet.Resources;
+using CoApp.VisualStudio.Resources;
 
-namespace CoGet
+namespace CoApp.VisualStudio
 {
     public static class FileSystemExtensions
     {
@@ -48,7 +47,7 @@ namespace CoGet
         {
             if (fileSystem.FileExists(path))
             {
-                fileSystem.Logger.Log(MessageLevel.Warning, CoGetResources.Warning_FileAlreadyExists, path);
+                fileSystem.Logger.Log(MessageLevel.Warning, FSResources.Warning_FileAlreadyExists, path);
             }
             else
             {

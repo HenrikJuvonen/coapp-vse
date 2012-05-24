@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
 
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.AutoDual)]

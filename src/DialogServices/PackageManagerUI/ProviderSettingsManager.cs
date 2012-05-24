@@ -1,13 +1,12 @@
 ﻿using System;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     internal class ProviderSettingsManager : SettingsManagerBase, IProviderSettings
     {
-        private const string SettingsRoot = "CoGet";
+        private const string SettingsRoot = "CoApp.VisualStudio";
         private const string SelectedPropertyName = "SelectedProvider";
-        private const string IncludePrereleaseName = "Prerelease";
 
         public ProviderSettingsManager() :
             base(ServiceLocator.GetInstance<IServiceProvider>())
@@ -27,19 +26,6 @@ namespace CoGet.Dialog.PackageManagerUI
                     throw new ArgumentOutOfRangeException("value");
                 }
                 WriteInt32(SettingsRoot, SelectedPropertyName, value);
-            }
-        }
-
-
-        public bool IncludePrereleasePackages
-        {
-            get
-            {
-                return ReadBool(SettingsRoot, IncludePrereleaseName);
-            }
-            set
-            {
-                WriteBool(SettingsRoot, IncludePrereleaseName, value);
             }
         }
     }

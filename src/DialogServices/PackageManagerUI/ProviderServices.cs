@@ -1,28 +1,24 @@
-﻿using CoGet.Dialog.PackageManagerUI;
-using CoGet.VisualStudio;
+﻿using CoApp.VisualStudio.Dialog.PackageManagerUI;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     public sealed class ProviderServices
     {
         public IProgressWindowOpener ProgressWindow { get; private set; }
-        public IProviderSettings ProviderSettings { get; private set; }
         public IUserNotifierServices UserNotifierServices { get; private set; }
 
         public ProviderServices() :
             this(new ProgressWindowOpener(),
-                 new ProviderSettingsManager(),
                  new UserNotifierServices()) 
         {
         }
 
         public ProviderServices(
             IProgressWindowOpener progressWindow,
-            IProviderSettings selectedProviderSettings,
             IUserNotifierServices userNotifierServices)
         {
             ProgressWindow = progressWindow;
-            ProviderSettings = selectedProviderSettings;
             UserNotifierServices = userNotifierServices;
         }
     }

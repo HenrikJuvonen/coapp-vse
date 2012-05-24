@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using EnvDTE;
-using CoGet.VisualStudio;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public class LibraryNode : ProjectNodeBase
     {

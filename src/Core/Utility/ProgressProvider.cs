@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 
-namespace CoGet
+namespace CoApp.VisualStudio
 {
     [Export(typeof(IProgressProvider))]
     public class ProgressProvider : IProgressProvider

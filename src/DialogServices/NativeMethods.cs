@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     internal static class NativeMethods
     {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using System.Windows;
 using Microsoft.VisualStudio.Shell;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public static class UIResources
     {

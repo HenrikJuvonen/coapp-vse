@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Windows.Threading;
 using EnvDTE;
-using CoGet.VisualStudio;
-using System.Runtime.Versioning;
+using CoApp.VisualStudio.VsCore;
 using CoApp.Toolkit.Engine.Client;
 using CoApp.Toolkit.Win32;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     internal class UserNotifierServices : IUserNotifierServices
     {
@@ -51,31 +48,22 @@ namespace CoGet.Dialog.PackageManagerUI
 
         public object[] ShowProjectSelectorWindow(
             string instructionText,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector,
-            string type)
+            PackageReference packageReference)
         {
             if (!_uiDispatcher.CheckAccess())
             {
                 // Use Invoke() here to block the worker thread
                 object result = _uiDispatcher.Invoke(
-                    new Func<string, Package, Func<Package, Project, string, string, bool?>, Predicate<Project>, string, object[]>(ShowProjectSelectorWindow),
+                    new Func<string, PackageReference, object[]>(ShowProjectSelectorWindow),
                     instructionText,
-                    package,
-                    checkedStateSelector,
-                    enabledStateSelector,
-                    type);
+                    packageReference);
 
                 return (object[])result;
             }
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,
-                package,
-                checkedStateSelector,
-                enabledStateSelector,
-                type);
+                packageReference);
 
             // only show the solution explorer window if there is at least one compatible project
             if (viewModel.HasProjects)
@@ -98,18 +86,11 @@ namespace CoGet.Dialog.PackageManagerUI
             }
             else
             {
-                Architecture architecture = package.Architecture;
-
-                string errorMessage = architecture.Equals("x86") ?
-                    String.Format(
-                        CultureInfo.CurrentCulture,
-                        Resources.Dialog_NoCompatibleProject,
-                        package.Name,
-                        Environment.NewLine + String.Join(Environment.NewLine, architecture)) :
+                string errorMessage = 
                     String.Format(
                         CultureInfo.CurrentCulture,
                         Resources.Dialog_NoCompatibleProjectNoFrameworkNames,
-                        package.Name);
+                        packageReference.Name);
 
                 // if there is no project compatible with the selected package, show an error message and return
                 MessageHelper.ShowWarningMessage(errorMessage, title: null);

@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using CoGet.VisualStudio;
-using CoGet.VisualStudio.Resources;
-using CoApp.Toolkit.Engine.Client;
+using System.Windows.Threading;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     /// <summary>
     /// Represents the Tools - Options - Package Manager dialog
@@ -38,12 +31,19 @@ namespace CoGet.Options
 
         private void UpdateFeeds()
         {
-            _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
+            _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
             PackageSourcesListBox.DataSource = _allPackageSources;
         }
         
         internal void InitializeOnActivated()
         {
+            if (!Dispatcher.CurrentDispatcher.CheckAccess())
+            {
+                // must use BeginInvoke() here to avoid blocking the worker thread
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(InitializeOnActivated));
+                return;
+            }
+
             if (_initialized)
             {
                 return;
@@ -66,7 +66,7 @@ namespace CoGet.Options
             TryAddSourceResults result = TryAddSource();
             if (result != TryAddSourceResults.NothingAdded)
             {
-                _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
+                _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
                 PackageSourcesListBox.DataSource = _allPackageSources;
 
                 return false;
@@ -93,7 +93,7 @@ namespace CoGet.Options
                 return;
             }
 
-            CoAppProxy.RemoveFeed((string)PackageSourcesListBox.SelectedItem);
+            CoAppWrapper.RemoveFeed((string)PackageSourcesListBox.SelectedItem);
 
             UpdateFeeds();
         }
@@ -102,7 +102,7 @@ namespace CoGet.Options
         {
             TryAddSource();
 
-            _allPackageSources = new BindingSource(CoAppProxy.ListFeeds().Select(feed => feed.Location), null);
+            _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
             PackageSourcesListBox.DataSource = _allPackageSources;
 
             UpdateFeeds();
@@ -139,14 +139,14 @@ namespace CoGet.Options
                 return TryAddSourceResults.InvalidSource;
             }
 
-            if (!(PathValidator.IsValidLocalPath(source) || PathValidator.IsValidUncPath(source) || PathValidator.IsValidUrl(source)))
+            if (!(PathValidator.IsValidSource(source)))
             {
                 MessageHelper.ShowWarningMessage(Resources.ShowWarning_InvalidSource, Resources.ShowWarning_Title);
                 SelectAndFocus(NewPackageSource);
                 return TryAddSourceResults.InvalidSource;
             }
 
-            CoAppProxy.AddFeed(source);
+            CoAppWrapper.AddFeed(source);
 
             // now clear the text boxes
             ClearNameSource();
@@ -186,10 +186,8 @@ namespace CoGet.Options
                 drawFormat.LineAlignment = StringAlignment.Near;
                 drawFormat.FormatFlags = StringFormatFlags.NoWrap;
 
-                // the margin between the checkbox and the edge of the list box
+                // the margin between the text and the edge of the list box
                 const int edgeMargin = 8;
-                // the margin between the checkbox and the text
-                const int textMargin = 4;
 
                 GraphicsState oldState = graphics.Save();
                 try
@@ -197,18 +195,8 @@ namespace CoGet.Options
                     // turn on high quality text rendering mode
                     graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-                    // draw each package source as
-                    // 
-                    // [checkbox] Name
-                    //            Source (italics)
+                    var sourceBounds = new Rectangle(e.Bounds.Left + edgeMargin, e.Bounds.Top, e.Bounds.Width - edgeMargin, 24);
 
-                    int textWidth = e.Bounds.Width - edgeMargin - textMargin;
-
-                    var sourceBounds = new Rectangle(
-                        e.Bounds.Left + edgeMargin + textMargin,
-                        e.Bounds.Top,
-                        textWidth,
-                        (int)24);
                     graphics.DrawString((string)currentItem, italicFont, foreBrush, sourceBounds, drawFormat);
                 }
                 finally

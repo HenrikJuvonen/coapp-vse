@@ -1,4 +1,4 @@
-namespace CoGet
+namespace CoApp.VisualStudio
 {
     public enum MessageLevel
     {

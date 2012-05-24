@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CoGet
+namespace CoApp.VisualStudio
 {
     public static class PathValidator
     {

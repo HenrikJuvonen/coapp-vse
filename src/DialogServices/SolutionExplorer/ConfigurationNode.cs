@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Media;
+﻿using System.Collections.Generic;
 using EnvDTE;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public class ConfigurationNode : FolderNode
     {

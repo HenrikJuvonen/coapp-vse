@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using EnvDTE;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public class ProjectNode : FolderNode
     {

@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using EnvDTE;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class ProjectToIconConverter : IValueConverter
     {

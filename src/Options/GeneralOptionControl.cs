@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     public partial class GeneralOptionControl : UserControl
     {

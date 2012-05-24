@@ -4,7 +4,7 @@ using System.Linq;
 using EnvDTE;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     internal class SolutionExplorerViewModel
     {
@@ -12,10 +12,7 @@ namespace CoGet.Dialog
 
         public SolutionExplorerViewModel(
             Solution solution,
-            Package package,
-            Func<Package, Project, string, string, bool?> checkedStateSelector,
-            Predicate<Project> enabledStateSelector,
-            string type)
+            PackageReference packageReference)
         {
             if (solution == null)
             {
@@ -23,7 +20,7 @@ namespace CoGet.Dialog
             }
 
             _solutionNode = new Lazy<FolderNode>(
-                () => SolutionWalker.Walk(solution, package, checkedStateSelector, enabledStateSelector, type));
+                () => SolutionWalker.Walk(solution, packageReference));
         }
 
         public bool HasProjects

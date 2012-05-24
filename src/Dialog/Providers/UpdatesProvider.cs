@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-//using CoGet.VisualStudio;
 using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal class UpdatesProvider : OnlineProvider
     {
@@ -47,7 +42,7 @@ namespace CoGet.Dialog.Providers
             RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable,dev"));
         }
 
-        public override bool CanExecute(PackageItem item)
+        public override bool CanExecuteCore(PackageItem item)
         {
             return true;
         }

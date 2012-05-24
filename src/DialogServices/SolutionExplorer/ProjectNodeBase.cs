@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using EnvDTE;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public abstract class ProjectNodeBase : INotifyPropertyChanged
     {

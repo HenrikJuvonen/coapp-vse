@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Media;
 using EnvDTE;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public class FolderNode : ProjectNodeBase
     {

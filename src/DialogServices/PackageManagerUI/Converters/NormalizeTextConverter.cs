@@ -3,7 +3,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class NormalizeTextConverter : IValueConverter
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Data;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class StringCollectionsToStringConverter : IValueConverter
     {

@@ -10,7 +10,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     internal static class ProjectUtilities
     {

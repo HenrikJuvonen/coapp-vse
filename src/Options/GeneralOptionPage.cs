@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     [Guid("0F052CF7-BF62-4743-B190-87FA4D49421E")]
     [ComVisible(true)]

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace CoGet.Dialog
+namespace CoApp.VisualStudio.Dialog
 {
     public partial class SolutionExplorer : DialogWindow
     {

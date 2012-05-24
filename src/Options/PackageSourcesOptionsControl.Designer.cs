@@ -1,5 +1,5 @@
 using System.Windows.Forms;
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     partial class PackageSourcesOptionsControl
     {

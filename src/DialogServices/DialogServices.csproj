@@ -8,8 +8,8 @@
     <ProjectGuid>{23CBC679-580F-4AF9-8D81-E41AD9672174}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoGet.Dialog</RootNamespace>
-    <AssemblyName>CoGet.DialogServices</AssemblyName>
+    <RootNamespace>CoApp.VisualStudio.Dialog</RootNamespace>
+    <AssemblyName>CoApp.VisualStudio.DialogServices</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -55,11 +55,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +141,9 @@
       <Project>{D46F169B-4BBF-4687-9899-9E3DB954591D}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VisualStudio\VisualStudio.csproj">
+    <ProjectReference Include="..\VsCore\VsCore.csproj">
       <Project>{FA3254A6-71B5-4029-B727-3A477AB413E7}</Project>
-      <Name>VisualStudio</Name>
+      <Name>VsCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

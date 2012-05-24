@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoGet
+namespace CoApp.VisualStudio
 {
     public interface IProgressProvider
     {

@@ -2,9 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 
-namespace CoGet.Options
+namespace CoApp.VisualStudio.Options
 {
     [ComVisible(true)]
     public abstract class OptionsPageBase : DialogPage, IServiceProvider

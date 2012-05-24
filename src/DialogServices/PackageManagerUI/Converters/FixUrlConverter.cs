@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows;
 
-namespace CoGet.Dialog.PackageManagerUI
+namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
     public class FixUrlConverter : IValueConverter
     {
@@ -18,7 +18,7 @@ namespace CoGet.Dialog.PackageManagerUI
             Uri source = new Uri((string)value);
             if (source == null || !source.IsAbsoluteUri || String.IsNullOrEmpty(source.OriginalString))
             {
-                // the CoGet gallery has a bug where it sends down relative path. We ignore them.
+                // the CoApp.VisualStudio gallery has a bug where it sends down relative path. We ignore them.
                 source = null;
             }
 

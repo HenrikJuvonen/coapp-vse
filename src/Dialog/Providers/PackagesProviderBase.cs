@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Linq;
-using System.Text;
-using System.Globalization;
 using System.ComponentModel;
-using EnvDTE;
+using System.Globalization;
+using System.Windows;
+using CoApp.Toolkit.Engine.Client;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
-using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal abstract class PackagesProviderBase : VsExtensionsProvider, ILogger
     {
@@ -244,16 +241,14 @@ namespace CoGet.Dialog.Providers
 
         public abstract IVsExtension CreateExtension(Package package);
 
-        public abstract bool CanExecute(PackageItem item);
-
-        public virtual bool CanExecute2(PackageItem item)
+        public virtual bool CanExecuteCore(PackageItem item)
         {
-            return true;
+            return false;
         }
 
-        public virtual bool CanExecute3(PackageItem item)
+        public virtual bool CanExecuteManage(PackageItem item)
         {
-            return true;
+            return false;
         }
 
         protected virtual string GetProgressMessage(Package package)
@@ -270,7 +265,11 @@ namespace CoGet.Dialog.Providers
             return true;
         }
 
-        protected virtual bool ExecuteCore2(PackageItem item)
+        /// <summary>
+        /// This method is called on background thread.
+        /// </summary>
+        /// <returns><c>true</c> if the method succeeded. <c>false</c> otherwise.</returns>
+        protected virtual bool ExecuteManage(PackageItem item)
         {
             return true;
         }
@@ -305,7 +304,7 @@ namespace CoGet.Dialog.Providers
             }
         }
 
-        public virtual void Execute(PackageItem item)
+        public virtual void Execute(PackageItem item, string type)
         {
             if (OperationCoordinator.IsBusy)
             {
@@ -315,38 +314,22 @@ namespace CoGet.Dialog.Providers
             // disable all operations while this install is in progress
             OperationCoordinator.IsBusy = true;
 
-            CoAppProxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
+            CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
             ClearProgressMessages();
 
             var worker = new BackgroundWorker();
-            worker.DoWork += OnRunWorkerDoWork;
+
+            if (type == "core")
+                worker.DoWork += OnRunWorkerDoWorkCore;
+            else if (type == "manage")
+                worker.DoWork += OnRunWorkerDoWorkManage;
+
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
             worker.RunWorkerAsync(item);
 
         }
-
-        public virtual void Execute2(PackageItem item)
-        {
-            if (OperationCoordinator.IsBusy)
-            {
-                return;
-            }
-
-            // disable all operations while this install is in progress
-            OperationCoordinator.IsBusy = true;
-
-            CoAppProxy.ProgressProvider.ProgressAvailable += OnProgressAvailable;
-
-            ClearProgressMessages();
-
-            var worker = new BackgroundWorker();
-            worker.DoWork += OnRunWorkerDoWork2;
-            worker.RunWorkerCompleted += OnRunWorkerCompleted;
-            worker.RunWorkerAsync(item);
-
-        }
-
+        
         private void ClearProgressMessages()
         {
             _providerServices.ProgressWindow.ClearMessages();
@@ -372,7 +355,7 @@ namespace CoGet.Dialog.Providers
             _providerServices.ProgressWindow.ShowProgress(e.Operation, e.PercentComplete);
         }
 
-        private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
+        private void OnRunWorkerDoWorkCore(object sender, DoWorkEventArgs e)
         {
             var item = (PackageItem)e.Argument;
             bool succeeded = ExecuteCore(item);
@@ -380,10 +363,10 @@ namespace CoGet.Dialog.Providers
             e.Result = item;
         }
 
-        private void OnRunWorkerDoWork2(object sender, DoWorkEventArgs e)
+        private void OnRunWorkerDoWorkManage(object sender, DoWorkEventArgs e)
         {
             var item = (PackageItem)e.Argument;
-            bool succeeded = ExecuteCore2(item);
+            bool succeeded = ExecuteManage(item);
             e.Cancel = !succeeded;
             e.Result = item;
         }
@@ -392,7 +375,7 @@ namespace CoGet.Dialog.Providers
         {
             OperationCoordinator.IsBusy = false;
 
-            CoAppProxy.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
+            CoAppWrapper.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
             
             if (e.Error == null)
             {

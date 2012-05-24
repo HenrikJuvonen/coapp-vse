@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Toolkit.Engine.Client;
-using System.Threading;
-using CoGet.VisualStudio;
+using CoApp.VisualStudio.VsCore;
 using EnvDTE;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     /// <summary>
     /// This tree node lists all packages from a fixed repository.
@@ -40,7 +39,7 @@ namespace CoGet.Dialog.Providers
 
         public override IEnumerable<Package> GetPackages()
         {
-            IEnumerable<Package> installedPackages = CoAppProxy.GetInstalledPackages();
+            IEnumerable<Package> installedPackages = CoAppWrapper.GetInstalledPackages();
             List<Package> resultPackages = new List<Package>();
 
             foreach (Project p in _solutionManager.GetProjects())
@@ -62,7 +61,7 @@ namespace CoGet.Dialog.Providers
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return CoAppProxy.GetDetailedPackages(packages);
+            return CoAppWrapper.GetDetailedPackages(packages);
         }
     }
 }

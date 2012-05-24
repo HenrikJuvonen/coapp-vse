@@ -1,21 +1,20 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows.Media.Imaging;
+using CoApp.Toolkit.Engine.Client;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
 
-namespace CoGet.Dialog.Providers
+namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal class PackageItem : IVsExtension, INotifyPropertyChanged
     {
         private readonly PackagesProviderBase _provider;
         private readonly Package _packageIdentity;
-        private readonly bool _isUpdateItem, _isPrerelease;
+        private readonly bool _isUpdateItem;
         private bool _isSelected;
         private readonly ObservableCollection<Project> _referenceProjectNames;
 
@@ -29,7 +28,6 @@ namespace CoGet.Dialog.Providers
             _provider = provider;
             _packageIdentity = package;
             _isUpdateItem = isUpdateItem;
-            _isPrerelease = false;
             _referenceProjectNames = new ObservableCollection<Project>(referenceProjectNames);
         }
 
@@ -75,6 +73,53 @@ namespace CoGet.Dialog.Providers
             {
                 var date = DateTime.FromFileTime(long.Parse(_packageIdentity.PublishDate));
                 return date.ToShortDateString();
+            }
+        }
+
+        public bool ProviderIsOnlineProvider
+        {
+            get
+            {
+                return _provider is OnlineProvider;
+            }
+        }
+
+        // E.g. "common" or "vc10-ts" or "net40"
+        public string Flavor
+        {
+            get
+            {
+                string canonicalName = PackageIdentity.CanonicalName;
+
+                if (canonicalName.Contains("common"))
+                    return "common";
+
+                int a = canonicalName.IndexOf('[') + 1;
+                int b = canonicalName.LastIndexOf(']');
+
+                if (a == -1 || b == -1)
+                    return "";
+
+                return canonicalName.Substring(a, b - a);
+            }
+        }
+
+        // Returns "vc" or "vc,lib" or "net"
+        public string Type
+        {
+            get
+            {
+                return Flavor == "common" ? "vc" :
+                       Flavor.Contains("vc") ? "vc,lib" :
+                       Flavor.Contains("net") ? "net" : "";
+            }
+        }
+
+        public string Path
+        {
+            get
+            {
+                return @"c:\apps\Program Files (" + Architecture + @")\Outercurve Foundation\" + PackageIdentity.CanonicalName + @"\";
             }
         }
 
@@ -164,15 +209,7 @@ namespace CoGet.Dialog.Providers
                 return _referenceProjectNames;
             }
         }
-
-        public bool IsPrerelease
-        {
-            get
-            {
-                return _isPrerelease;
-            }
-        }
-
+        
         public string CommandName
         {
             get;
@@ -223,7 +260,7 @@ namespace CoGet.Dialog.Providers
         {
             get
             {
-                return _provider.CanExecute(this);
+                return _provider.CanExecuteCore(this);
             }
         }
 
@@ -231,15 +268,7 @@ namespace CoGet.Dialog.Providers
         {
             get
             {
-                return _provider.CanExecute2(this);
-            }
-        }
-
-        public bool IsEnabled3
-        {
-            get
-            {
-                return _provider.CanExecute3(this);
+                return _provider.CanExecuteManage(this);
             }
         }
 
