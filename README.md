@@ -1,7 +1,7 @@
 coapp-vse
 =========
 
-### Introduction
+## Introduction
 
 This is a Visual Studio extension written in C# (.NET 4.0) for CoApp-packages. It makes it
 possible to install, uninstall, update and manage CoApp-packages with a GUI. The goal is to
@@ -10,13 +10,13 @@ It is currently work in progress and it is not ready for everyday use.
 
 ![Solution Explorer](https://github.com/henjuv/coapp-vse/blob/master/select.png?raw=true)
 
-### Requirements
+## Requirements
 
 - CoApp.Toolkit 1.2.0.165 (for now)
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 
-### Getting Started
+## Getting Started
 
 - Run Visual Studio as administrator.
 - Set startup project to "VsExtension".
@@ -25,7 +25,7 @@ It is currently work in progress and it is not ready for everyday use.
 	- Command line arguments: /rootsuffix Exp
 - Build project and start debugging
 
-### Progress
+## Progress
 	
 	| = work in progress
 	X = ok
