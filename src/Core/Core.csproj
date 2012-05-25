@@ -54,7 +54,6 @@
     <Compile Include="Packages\Library.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
-    <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\CoAppWrapper.cs" />
     <Compile Include="Packages\PackageReference.cs" />
