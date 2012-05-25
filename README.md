@@ -1,8 +1,8 @@
 coapp-vse 0.1.0
 ===============
 
-coapp-vse is an open source Visual Studio extension written in C# (.NET 4.0) for CoApp-packages. It makes it
-possible to install, uninstall, update and manage CoApp-packages with a GUI. The goal is to
+coapp-vse is an open source Visual Studio extension written in C# (.NET 4.0). It makes it possible to
+install, uninstall, update and manage CoApp-packages with a GUI within Visual Studio. The goal is to
 provide an easy way to add developer-libraries to Visual Studio -projects (both C++ and .NET).
 It is currently work in progress and it is not ready for everyday use.
 
