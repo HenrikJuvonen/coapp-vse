@@ -6,7 +6,7 @@ install, uninstall, update and manage CoApp-packages with a GUI within Visual St
 provide an easy way to add developer-libraries to Visual Studio -projects (both C++ and .NET).
 It is currently work in progress and it is not ready for everyday use.
 
-![Solution Explorer](https://github.com/henjuv/coapp-vse/blob/master/select.png?raw=true)
+![Solution Explorer](https://github.com/henjuv/coapp-vse/blob/master/content/solutionexplorer.jpg?raw=true)
 
 ## Requirements
 
