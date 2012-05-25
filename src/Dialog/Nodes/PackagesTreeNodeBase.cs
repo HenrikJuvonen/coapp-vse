@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
@@ -328,24 +328,17 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                 token.ThrowIfCancellationRequested();
 
-                // Apply the ordering then sort by id
-                IQueryable<Package> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName);
+                // Apply the ordering then sort by name
+                IQueryable<Package> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
 
                 _query = orderedQuery.AsEnumerable();
             }
 
-            IQueryable<Package> pkx = _query.Skip((pageNumber - 1) * PageSize)
-                                             .Take(PageSize).AsQueryable();
-
-            pkx = GetDetailedPackages(pkx).AsQueryable();
-
-            IList<Package> packages = pkx.ToList();
-
-            // get detailed packages here
-            
-            if (packages.Count < PageSize)
+            IEnumerable<Package> packages = GetDetailedPackages(_query.Skip((pageNumber - 1) * PageSize).Take(PageSize));
+                        
+            if (packages.Count() < PageSize)
             {
-                _totalCount = (pageNumber - 1) * PageSize + packages.Count;
+                _totalCount = (pageNumber - 1) * PageSize + packages.Count();
             }
 
             token.ThrowIfCancellationRequested();
@@ -358,7 +351,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // If the default sort is null then fall back to download count
             if (Provider.CurrentSort == null)
             {
-                return query.OrderByDescending(p => p.CanonicalName);
+                return query.OrderByDescending(p => p.CanonicalName.PackageName);
             }
 
             // Order by the current descriptor

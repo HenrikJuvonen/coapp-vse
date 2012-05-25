@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Threading;
 using EnvDTE;
 using CoApp.VisualStudio.VsCore;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using CoApp.Toolkit.Win32;
 
 namespace CoApp.VisualStudio.Dialog.PackageManagerUI

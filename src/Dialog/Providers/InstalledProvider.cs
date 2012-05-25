@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using CoApp.VisualStudio.VsCore;
 using CoApp.VisualStudio.Dialog.PackageManagerUI;
 using Microsoft.VisualStudio.VCProjectEngine;
@@ -53,21 +53,23 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteCore(PackageItem item)
         {
-            return item.Name != "CoApp.Toolkit";
+            return item.Name != "coapp";
         }
 
         public override bool CanExecuteManage(PackageItem item)
         {
-            return item.Flavor == "common" ||
-                   item.Flavor.Contains("vc" + VsVersionHelper.VsMajorVersion) ||
-                   item.Flavor.Contains("net");
+            string flavor = item.PackageIdentity.CanonicalName.Flavor;
+
+            return flavor == "common" ||
+                   flavor.Contains("vc" + VsVersionHelper.VsMajorVersion) ||
+                   flavor.Contains("net");
         }
 
         protected override bool ExecuteManage(PackageItem item)
         {
             string type = item.Type;
 
-            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.CanonicalName, item.Version, item.Architecture, item.Type, item.Path);
+            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, item.Type, item.Path);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
@@ -130,10 +132,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
                                 List<string> deps = linker.AdditionalDependencies.Split(' ').Where(n => !n.IsEmpty()).ToList();
 
                                 // List of removed deps
-                                List<string> removed = configLibraries.Where(n => !n.IsSelected).Select(n => dir + item.Architecture + "\\" + n.Name).ToList();
+                                List<string> removed = configLibraries.Where(n => !n.IsSelected).Select(n => dir + item.PackageIdentity.Architecture + "\\" + n.Name).ToList();
 
                                 // List of added deps
-                                List<string> added = configLibraries.Where(n => n.IsSelected).Select(n => dir + item.Architecture + "\\" + n.Name).ToList();
+                                List<string> added = configLibraries.Where(n => n.IsSelected).Select(n => dir + item.PackageIdentity.Architecture + "\\" + n.Name).ToList();
 
                                 List<string> result = deps.Except(removed).Union(added).ToList();
 
@@ -144,11 +146,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                             if (projects.Contains(p))
                             {
-                                packageReferenceFile.AddEntry(item.Name, item.Version, item.Architecture, projectLibraries.Where(n => n.IsSelected));
+                                packageReferenceFile.AddEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, projectLibraries.Where(n => n.IsSelected));
                             }
                             else
                             {
-                                packageReferenceFile.DeleteEntry(item.Name, item.Version, item.Architecture);
+                                packageReferenceFile.DeleteEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture);
                             }
                         }
                         break;
@@ -195,11 +197,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                             if (projects.Contains(p))
                             {
-                                packageReferenceFile.AddEntry(item.Name, item.Version, item.Architecture, Enumerable.Empty<Library>());
+                                packageReferenceFile.AddEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, Enumerable.Empty<Library>());
                             }
                             else
                             {
-                                packageReferenceFile.DeleteEntry(item.Name, item.Version, item.Architecture);
+                                packageReferenceFile.DeleteEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture);
                             }
 
                         }
@@ -226,7 +228,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return false;
             }
             ShowProgressWindow();
-            UninstallPackage(item, (bool)removeDependencies);
+            RemovePackage(item, (bool)removeDependencies);
             HideProgressWindow();
             return true;
         }
@@ -269,14 +271,38 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return removeDependencies;
         }
 
-        protected void UninstallPackage(PackageItem item, bool removeDependencies)
+        protected void RemovePackage(PackageItem item, bool removeDependencies)
         {
-            CoAppWrapper.UninstallPackage(item.PackageIdentity, removeDependencies);
+            CoAppWrapper.RemovePackage(item.PackageIdentity, removeDependencies);
+        }
+
+        public IEnumerable<Project> GetReferenceProjects(Package package)
+        {
+            var projects = _solutionManager.GetProjects();
+
+            List<Project> result = new List<Project>();
+
+            foreach (Project project in projects)
+            {
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/packages.config");
+
+                PackageReference packageReference = packageReferenceFile.GetPackageReferences()
+                    .FirstOrDefault(pkg => pkg.Name == package.Name &&
+                                    pkg.Version == package.Version.ToString() &&
+                                    pkg.Architecture == package.Architecture.ToString());
+
+                if (packageReference != null)
+                {
+                    result.Add(project);
+                }
+            }
+
+            return result;
         }
 
         public override IVsExtension CreateExtension(Package package)
         {
-            return new PackageItem(this, package)
+            return new PackageItem(this, package, GetReferenceProjects(package))
             {
                 CommandName = Resources.Dialog_UninstallButton
             };
@@ -305,8 +331,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("installed,dev"));
             RootNode.Nodes.Add(CreateTreeNodeForPackages("installed"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("installed,dev"));
         }
     }
 }

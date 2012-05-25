@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media.Imaging;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
@@ -38,41 +38,19 @@ namespace CoApp.VisualStudio.Dialog.Providers
             get { return _packageIdentity; }
         }
 
-        public string Id
-        {
-            get { return _packageIdentity.CanonicalName; }
-        }
-
         public string Name
         {
             get
             {
-                return String.IsNullOrEmpty(_packageIdentity.Name) ? _packageIdentity.CanonicalName : _packageIdentity.Name;
+                return PackageIdentity.Name;
             }
         }
 
-        public string Version
+        public string Description
         {
             get
             {
-                return _packageIdentity.Version.ToString();
-            }
-        }
-
-        public string Architecture
-        {
-            get
-            {
-                return _packageIdentity.Architecture.ToString();
-            }
-        }
-
-        public string PublishDate
-        {
-            get
-            {
-                var date = DateTime.FromFileTime(long.Parse(_packageIdentity.PublishDate));
-                return date.ToShortDateString();
+                return PackageIdentity.PackageDetails.Description;
             }
         }
 
@@ -84,34 +62,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        // E.g. "common" or "vc10-ts" or "net40"
-        public string Flavor
-        {
-            get
-            {
-                string canonicalName = PackageIdentity.CanonicalName;
-
-                if (canonicalName.Contains("common"))
-                    return "common";
-
-                int a = canonicalName.IndexOf('[') + 1;
-                int b = canonicalName.LastIndexOf(']');
-
-                if (a == -1 || b == -1)
-                    return "";
-
-                return canonicalName.Substring(a, b - a);
-            }
-        }
-
         // Returns "vc" or "vc,lib" or "net"
         public string Type
         {
             get
             {
-                return Flavor == "common" ? "vc" :
-                       Flavor.Contains("vc") ? "vc,lib" :
-                       Flavor.Contains("net") ? "net" : "";
+                string flavor = PackageIdentity.CanonicalName.Flavor;
+
+                return flavor == "common" ? "vc" :
+                       flavor.Contains("vc") ? "vc,lib" :
+                       flavor.Contains("net") ? "net" : "";
             }
         }
 
@@ -119,39 +79,15 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return @"c:\apps\Program Files (" + Architecture + @")\Outercurve Foundation\" + PackageIdentity.CanonicalName + @"\";
+                return @"c:\apps\Program Files (" + PackageIdentity.Architecture + @")\Outercurve Foundation\" + PackageIdentity.CanonicalName + @"\";
             }
         }
-
-        public string License
-        {
-            get
-            {
-                return _packageIdentity.License.ToString();
-            }
-        }
-
-        public bool IsInstalled
-        {
-            get
-            {
-                return _packageIdentity.IsInstalled;
-            }
-        }
-
+        
         public bool IsDev
         {
             get
             {
-                return _packageIdentity.Name.Contains("-dev");
-            }
-        }
-
-        public bool IsUpdateItem
-        {
-            get
-            {
-                return _isUpdateItem;
+                return PackageIdentity.Name.Contains("-dev");
             }
         }
 
@@ -159,46 +95,19 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                if (_packageIdentity.Tags.IsEmpty())
+                if (PackageIdentity.PackageDetails.Tags.IsEmpty())
                     return null;
 
-                return String.Join(", ", _packageIdentity.Tags);
+                return String.Join(", ", _packageIdentity.PackageDetails.Tags);
             }
         }
-
-        public string Description
-        {
-            get
-            {
-                if (_isUpdateItem && !String.IsNullOrEmpty(_packageIdentity.Description))
-                {
-                    return _packageIdentity.Description;
-                }
-
-                return _packageIdentity.Description;
-            }
-        }
-
-        public string Summary
-        {
-            get
-            {
-                return String.IsNullOrEmpty(_packageIdentity.Summary) ? _packageIdentity.Description : _packageIdentity.Summary;
-            }
-        }
-
+        
         public IEnumerable<string> Dependencies
         {
             get
             {
-                List<string> deps = _packageIdentity.Dependencies.ToList();
-
-                for (int i = 0; i < deps.Count; i++)
-                {
-                    deps[i] = deps[i].Substring(0, deps[i].LastIndexOf('-'));
-                }
-
-                return deps;
+                return PackageIdentity.Dependencies.Select(dependency => 
+                    string.Format("{0}-{1}-{2}", dependency.Name, dependency.Version, dependency.Architecture));
             }
         }
 
@@ -209,40 +118,21 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return _referenceProjectNames;
             }
         }
+
+        public Uri IconUri
+        {
+            get
+            {
+                return PackageIdentity.PackageDetails.Icons.FirstOrDefault();
+            }
+        }
         
         public string CommandName
         {
             get;
             set;
         }
-
-        public string PublisherName
-        {
-            get
-            {
-                if (_packageIdentity.PublisherName.IsEmpty())
-                    return null;
-
-                return _packageIdentity.PublisherName;
-            }
-        }
-
-        public bool RequireLicenseAcceptance
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public string LicenseUrl
-        {
-            get
-            {
-                return _packageIdentity.LicenseUrl;
-            }
-        }
-
+                
         public bool IsSelected
         {
             get
@@ -256,7 +146,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public bool IsEnabled
+        public bool IsCoreEnabled
         {
             get
             {
@@ -264,7 +154,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public bool IsEnabled2
+        public bool IsManageEnabled
         {
             get
             {
@@ -280,6 +170,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private void OnNotifyPropertyChanged(string propertyName)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Not used but required by the interface IVsExtension.
+        public string Id
+        {
+            get { return Name; }
         }
 
         // Not used but required by the interface IVsExtension.

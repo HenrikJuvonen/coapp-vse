@@ -5,10 +5,9 @@ namespace CoApp.VisualStudio
 {
     public class PackageReference
     {
-        public PackageReference(string name, string canonicalName, string version, string architecture, string type, string path) :
+        public PackageReference(string name, string version, string architecture, string type, string path) :
             this(name, version, architecture, null)
         {
-            CanonicalName = canonicalName;
             Type = type;
             Path = path;
         }
@@ -21,7 +20,6 @@ namespace CoApp.VisualStudio
             Libraries = libraries;
         }
 
-        public string CanonicalName { get; private set; }
         public string Name { get; private set; }
         public string Version { get; private set; }
         public string Architecture { get; private set; }

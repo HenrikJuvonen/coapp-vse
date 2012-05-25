@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using CoApp.VisualStudio.VsCore;
 using EnvDTE;
 
@@ -50,9 +50,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                 foreach (PackageReference package in packageReferences)
                 {
-                    resultPackages.Add(installedPackages.First(pkg => String.Compare(pkg.Name, package.Name, true) == 0 &&
-                                                                      String.Compare(pkg.Version.ToString(), package.Version, true) == 0 &&
-                                                                      String.Compare(pkg.Architecture.ToString(), package.Architecture, true) == 0));
+                    try
+                    {
+                        resultPackages.Add(installedPackages.First(pkg => pkg.Name == package.Name &&
+                                                                          pkg.Version == package.Version &&
+                                                                          pkg.Architecture == package.Architecture));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
 
             }

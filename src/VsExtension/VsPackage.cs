@@ -52,6 +52,8 @@ namespace CoApp.VisualStudio.Tools
         {
             base.Initialize();
 
+            CoAppWrapper.Initialize();
+
             // get the UI context cookie for the debugging mode
             _vsMonitorSelection = (IVsMonitorSelection)GetService(typeof(IVsMonitorSelection));
             // get debugging context cookie

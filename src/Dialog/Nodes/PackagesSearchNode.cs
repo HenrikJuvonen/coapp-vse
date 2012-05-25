@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -61,12 +61,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IEnumerable<Package> GetPackages()
         {
-            return _baseNode.GetPackages().Where(n => n.Name.Contains(_searchText));
+            return from p in _baseNode.GetPackages()
+                   where p.CanonicalName.PackageName.ToLower().Contains(_searchText.ToLower())
+                   select p;
         }
 
         public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
         {
-            return _baseNode.GetDetailedPackages(packages).Where(n => n.Name.Contains(_searchText));
+            return from p in packages
+                   where p.CanonicalName.PackageName.ToLower().Contains(_searchText.ToLower())
+                   select p;
         }
     }
 }

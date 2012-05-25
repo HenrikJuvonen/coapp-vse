@@ -1,30 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
+using CoApp.Toolkit.Linq;
 using CoApp.Toolkit.Win32;
+using CoApp.Toolkit.Tasks;
 
 namespace CoApp.VisualStudio
 {
     public class CoAppWrapper
     {
-        private static FourPartVersion? _minVersion = null;
-        private static FourPartVersion? _maxVersion = null;
-
-        private static bool? _installed = null;
-        private static bool? _active = null;
-        private static bool? _required = null;
-        private static bool? _blocked = null;
-        private static bool? _latest = null;
         private static bool? _force = null;
 
         private static string _location = null;
-        private static bool? _dependencies = null;
-        private static bool? _download = null;
-        private static bool? _pretend = null;
         private static bool? _autoUpgrade = null;
 
         private static bool? _x64 = null;
@@ -34,6 +27,9 @@ namespace CoApp.VisualStudio
         private static readonly List<Task> preCommandTasks = new List<Task>();
 
         private static List<string> activeDownloads = new List<string>();
+        private static Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter;
+
+        private static readonly PackageManager _packageManager = new PackageManager();
 
         private static IEnumerable<Package> allPackages, updateablePackages, installedPackages, subPackages;
         private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime, subRetrievalTime;
@@ -59,22 +55,26 @@ namespace CoApp.VisualStudio
             ProgressProvider.OnProgressAvailable(message, (int)progress);
         }
 
-        private static readonly EasyPackageManager _easyPackageManager = new EasyPackageManager((itemUri, localLocation, progress) =>
+        public static void Initialize()
         {
-            if (!activeDownloads.Contains(itemUri))
+            CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
-                activeDownloads.Add(itemUri);
-            }
-            UpdateProgress("Downloading {0}".format(itemUri.UrlDecode()), progress);
-        }, (itemUrl, localLocation) =>
-        {
-            if (activeDownloads.Contains(itemUrl))
+                if (!activeDownloads.Contains(remoteLocation))
+                {
+                    activeDownloads.Add(remoteLocation);
+                }
+                UpdateProgress("Downloading " + remoteLocation.UrlDecode(), progress);
+            });
+
+            CurrentTask.Events += new DownloadCompleted((remoteLocation, locallocation) =>
             {
-                Console.WriteLine();
-                activeDownloads.Remove(itemUrl);
-            }
-            
-        });
+                if (activeDownloads.Contains(remoteLocation))
+                {
+                    Console.WriteLine();
+                    activeDownloads.Remove(remoteLocation);
+                }
+            });
+        }
 
         public static void SetArchitecture(string architecture)
         {
@@ -102,7 +102,7 @@ namespace CoApp.VisualStudio
 
             IEnumerable<Feed> feeds = null;
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.Feeds.Continue(fds => feeds = fds));
+            Task task = preCommandTasks.Continue(() => _packageManager.Feeds.Continue(fds => feeds = fds));
 
             ContinueTask(task);
 
@@ -113,7 +113,7 @@ namespace CoApp.VisualStudio
         {
             Console.WriteLine("Adding feed: " + feedLocation);
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.AddSystemFeed(feedLocation));
+            Task task = preCommandTasks.Continue(() => _packageManager.AddSystemFeed(feedLocation));
 
             try
             {
@@ -126,15 +126,13 @@ namespace CoApp.VisualStudio
                     Console.Error.WriteLine(e.Message);
                 }
             }
-
-            ListFeeds();
         }
 
         public static void RemoveFeed(string feedLocation)
         {
             Console.WriteLine("Removing feed: " + feedLocation);
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.RemoveSystemFeed(feedLocation));
+            Task task = preCommandTasks.Continue(() => _packageManager.RemoveSystemFeed(feedLocation));
 
             try
             {
@@ -147,8 +145,6 @@ namespace CoApp.VisualStudio
                     Console.Error.WriteLine(e.Message);
                 }
             }
-
-            ListFeeds();
         }
 
         public static IEnumerable<Package> GetPackages(string type, int vsMajorVersion)
@@ -172,11 +168,6 @@ namespace CoApp.VisualStudio
                 case "updateable,dev":
                     {
                         pkgs = GetUpdateablePackages();
-                        break;
-                    }
-                case "solution":
-                    {
-                        
                         break;
                     }
                 default:
@@ -208,36 +199,12 @@ namespace CoApp.VisualStudio
 
             return pkgs;
         }
-
-        public static IEnumerable<Package> Search(string type, string searchText)
-        {
-            IEnumerable<Package> pkgs = null;
-            switch (type)
-            {
-                case "all":
-                    {
-                        pkgs = GetAllPackages();
-                        break;
-                    }
-                case "installed":
-                    {
-                        pkgs = GetInstalledPackages();
-                        break;
-                    }
-                case "updateable":
-                    {
-                        pkgs = GetUpdateablePackages();
-                        break;
-                    }
-            }
-            return pkgs.Where(n => n.Name.Contains(searchText));
-        }
-        
+                
         public static IEnumerable<Package> GetAllPackages()
         {
             if (allPackages == null || allPackages.IsEmpty() || DateTime.Compare(DateTime.Now, allRetrievalTime.AddSeconds(30)) > 0)
             {
-                allPackages = ListPackages(new string[] { "*" });
+                allPackages = ListPackages(new string[] { "*" }, null);
                 allRetrievalTime = DateTime.Now;
             }
 
@@ -254,7 +221,7 @@ namespace CoApp.VisualStudio
         {
             if (subPackages == null || subPackages.IsEmpty() || DateTime.Compare(DateTime.Now, subRetrievalTime.AddSeconds(30)) > 0)
             {
-                subPackages = ListPackages(parameters);
+                subPackages = ListPackages(parameters, null);
                 subRetrievalTime = DateTime.Now;
             }
 
@@ -265,7 +232,7 @@ namespace CoApp.VisualStudio
         {
             if (updateablePackages == null || updateablePackages.IsEmpty() || DateTime.Compare(DateTime.Now, updateableRetrievalTime.AddSeconds(30)) > 0)
             {
-                updateablePackages = ListUpdateablePackages(new string[] { "*" });
+                updateablePackages = ListUpdateablePackages(new string[] { "*" }, null);
                 updateableRetrievalTime = DateTime.Now;
             }
 
@@ -276,10 +243,9 @@ namespace CoApp.VisualStudio
         {
             if (installedPackages == null || installedPackages.IsEmpty() || DateTime.Compare(DateTime.Now, installedRetrievalTime.AddSeconds(30)) > 0)
             {
-                _installed = true;
-                installedPackages = ListPackages(new string[] { "*" });
+                Filter<IPackage> pkgFilter = Package.Properties.Installed.Is(true);
+                installedPackages = ListPackages(new string[] { "*" }, pkgFilter);
                 installedRetrievalTime = DateTime.Now;
-                _installed = null;
             }
 
             List<Package> pl = installedPackages.ToList();
@@ -291,16 +257,14 @@ namespace CoApp.VisualStudio
             return installedPackages;
         }
 
-        private static IEnumerable<Package> ListUpdateablePackages(string[] parameters)
+        private static IEnumerable<Package> ListUpdateablePackages(string[] parameters, Filter<IPackage> pkgFilter)
         {
-            Console.WriteLine("Fetching package list...");
-
             IEnumerable<Package> pkgs = null;
 
             if (CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.GetUpdatablePackages(parameters)).Continue(p => pkgs = p);
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
 
             if (CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
@@ -309,21 +273,19 @@ namespace CoApp.VisualStudio
             return pkgs;
         }
 
-        private static IEnumerable<Package> ListPackages(string[] parameters)
+        private static IEnumerable<Package> ListPackages(string[] parameters, Filter<IPackage> pkgFilter)
         {
             if (!parameters.Any() || parameters[0] == "*")
             {
-                _latest = true;
+                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
             }
-
-            Console.WriteLine("Fetching package list...");
 
             IEnumerable<Package> pkgs = null;
 
             if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
-            Task task = preCommandTasks.Continue(() => _easyPackageManager.GetPackages(parameters, _minVersion, _maxVersion, false, _installed, _active, null, _blocked, _latest, _location)
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)
                 .Continue(p => pkgs = p));
 
             if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
@@ -340,14 +302,12 @@ namespace CoApp.VisualStudio
             if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
                 return new List<Package>();
 
-            _latest = null;
-
             return pl;
         }
 
         public static Package GetDetailedPackage(Package package)
         {
-            Task task = _easyPackageManager.GetPackageDetails(package.CanonicalName).Continue(detailedPackage =>
+            Task task = _packageManager.GetPackageDetails(package.CanonicalName).Continue(detailedPackage =>
             {
                 package = detailedPackage;
             });
@@ -361,7 +321,7 @@ namespace CoApp.VisualStudio
         {
             IEnumerable<Package> pkgs = null;
 
-            packages.Select(package => _easyPackageManager.GetPackageDetails(package.CanonicalName)).ToArray().Continue(detailedPackages =>
+            packages.Select(package => _packageManager.GetPackageDetails(package.CanonicalName)).ToArray().Continue(detailedPackages =>
             {
                 if (pkgs == null)
                     pkgs = detailedPackages;
@@ -372,18 +332,18 @@ namespace CoApp.VisualStudio
             return packages;
         }
 
-        public static void UninstallPackage(Package package, bool removeDependencies = false)
+        public static void RemovePackage(Package package, bool removeDependencies = false)
         {
-            UpdateProgress("Uninstalling packages...", 0);
+            UpdateProgress("Removing packages...", 0);
 
             try
             {
-                IEnumerable<string> pkgs = new List<string>() { package.CanonicalName };
+                IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
                 if (removeDependencies)
                 {
-                    pkgs = pkgs.Concat(package.Dependencies.Where(name => !name.Contains("coapp.toolkit")));
+                    canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => p.Name != "CoApp.Toolkit").Select(p => p.CanonicalName));
                 }
-                Task task = preCommandTasks.Continue(() => RemovePackages(pkgs));
+                Task task = preCommandTasks.Continue(() => RemovePackages(canonicalNames));
                 ContinueTask(task);
                 
                 installedPackages = null;
@@ -417,21 +377,30 @@ namespace CoApp.VisualStudio
 
         }
 
-        private static Task InstallPackage(string canonicalName)
+        private static Task InstallPackage(CanonicalName canonicalName)
         {
-            Console.WriteLine("Installing...");
-            return _easyPackageManager.InstallPackage(canonicalName, _force == true, (name, progress, val) => UpdateProgress("Installing " + name + "...", progress));
+            CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
+
+            return _packageManager.InstallPackage(canonicalName, _force == true);
         }
 
-        private static Task RemovePackages(IEnumerable<string> parameters)
+        private static Task RemovePackage(CanonicalName canonicalName)
         {
-            Console.WriteLine("Uninstalling...");
-            return _easyPackageManager.RemovePackages(parameters, true, (name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
+            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Removing " + name + "...", progress));
+
+            return _packageManager.RemovePackage(canonicalName, true);// (name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
+        }
+
+        private static Task RemovePackages(IEnumerable<CanonicalName> canonicalNames)
+        {
+            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Removing " + name + "...", progress));
+
+            return _packageManager.RemovePackages(canonicalNames, true);
         }
 
         public static IEnumerable<Package> GetDependents(Package package)
         {
-            return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package.CanonicalName));
+            return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package));
         }
 
         public static int ContinueTask(Task task)

@@ -55,7 +55,7 @@ namespace CoApp.VisualStudio.Dialog
             if (fxCombo != null)
             {
                 fxCombo.Items.Clear();
-                fxCombo.Items.Add("All");
+                fxCombo.Items.Add("Architecture: All");
                 fxCombo.Items.Add("Architecture: Any");
                 fxCombo.Items.Add("Architecture: x64");
                 fxCombo.Items.Add("Architecture: x86");
@@ -210,7 +210,7 @@ namespace CoApp.VisualStudio.Dialog
 
             try
             {
-                e.CanExecute = selectedItem.IsEnabled;
+                e.CanExecute = selectedItem.IsCoreEnabled;
             }
             catch (Exception)
             {
@@ -218,7 +218,7 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        private void CanExecuteCommandOnPackage2(object sender, CanExecuteRoutedEventArgs e)
+        private void CanExecuteManageOnPackage(object sender, CanExecuteRoutedEventArgs e)
         {
             if (OperationCoordinator.IsBusy)
             {
@@ -242,7 +242,7 @@ namespace CoApp.VisualStudio.Dialog
 
             try
             {
-                e.CanExecute = selectedItem.IsEnabled2;
+                e.CanExecute = selectedItem.IsManageEnabled;
             }
             catch (Exception)
             {
@@ -331,7 +331,6 @@ namespace CoApp.VisualStudio.Dialog
 
         private void OnDialogWindowLoaded(object sender, RoutedEventArgs e)
         {
-            // HACK: Keep track of the currently open instance of this class.
             CurrentInstance = this;
         }
     }

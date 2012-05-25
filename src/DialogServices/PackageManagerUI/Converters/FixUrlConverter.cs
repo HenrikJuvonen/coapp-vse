@@ -8,17 +8,10 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            bool empty = value == null || (value != null && ((string)value).Length == 0);
-
-            if (empty && targetType == typeof(Visibility))
-            {
-                return empty ? Visibility.Collapsed : Visibility.Visible;
-            }
+            Uri source = (Uri)value;
             
-            Uri source = new Uri((string)value);
             if (source == null || !source.IsAbsoluteUri || String.IsNullOrEmpty(source.OriginalString))
             {
-                // the CoApp.VisualStudio gallery has a bug where it sends down relative path. We ignore them.
                 source = null;
             }
 

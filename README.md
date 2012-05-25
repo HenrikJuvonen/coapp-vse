@@ -10,7 +10,7 @@ It is currently work in progress and it is not ready for everyday use.
 
 ## Requirements
 
-- CoApp.Toolkit 1.2.0.165 (for now)
+- CoApp.Toolkit 1.2.0.325
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 
@@ -38,8 +38,8 @@ It is currently work in progress and it is not ready for everyday use.
 					[X] C++
 					[ ] C#
 				[|] Packages.config
-				[|] Show added packages in Solution-category (parse each project's Packages.config)
-			[ ] Dialog: "Solution requires <list of packages>, install?"
+				[|] Show added packages in Solution-category
+			[ ] Package restore
 
 		[X] Search by name
 		[X] Sort by name
@@ -53,9 +53,9 @@ It is currently work in progress and it is not ready for everyday use.
 			[X] Online
 				[X] All
 				[X] Dev
-			[X] Updates
-				[X] All
-				[X] Dev
+			[|] Updates
+				[|] All
+				[|] Dev
 	
 		[|] Options
 			[X] Clear cache

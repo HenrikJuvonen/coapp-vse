@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -40,9 +40,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteCore(PackageItem item)
         {
-            PackageItem selected = (PackageItem)SelectedNode.Extensions.Single(i => i == item);
-
-            return !selected.IsInstalled;
+            return !item.PackageIdentity.IsInstalled;
         }
         
         public override IVsExtension CreateExtension(Package package)
@@ -89,8 +87,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("all,dev"));
             RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("all,dev"));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using EnvDTE;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {

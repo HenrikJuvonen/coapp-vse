@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {

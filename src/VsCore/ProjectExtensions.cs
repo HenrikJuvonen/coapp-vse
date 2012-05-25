@@ -15,7 +15,7 @@ using VsWebSite;
 using MsBuildProject = Microsoft.Build.Evaluation.Project;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
-using Package = CoApp.Toolkit.Engine.Client.Package;
+using Package = CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.VsCore
 {

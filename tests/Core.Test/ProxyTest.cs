@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 using CoApp.VisualStudio;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

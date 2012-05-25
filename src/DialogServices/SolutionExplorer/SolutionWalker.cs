@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using EnvDTE;
 using CoApp.VisualStudio.VsCore;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog
 {

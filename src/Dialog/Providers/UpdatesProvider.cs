@@ -1,6 +1,6 @@
 using System.Windows;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Toolkit.Engine.Client;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -30,8 +30,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable,dev"));
             RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("updateable,dev"));
         }
 
         public override bool CanExecuteCore(PackageItem item)
