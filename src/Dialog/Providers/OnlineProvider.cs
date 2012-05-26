@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -42,8 +42,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             return !item.PackageIdentity.IsInstalled;
         }
-        
-        public override IVsExtension CreateExtension(Package package)
+
+        public override IVsExtension CreateExtension(IPackage package)
         {
             return new PackageItem(this, package)
             {
@@ -67,7 +67,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected override string GetProgressMessage(Package package)
+        protected override string GetProgressMessage(IPackage package)
         {
             return Resources.Dialog_InstallProgress + package.ToString();
         }

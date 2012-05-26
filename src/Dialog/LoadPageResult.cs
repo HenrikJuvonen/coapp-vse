@@ -1,18 +1,18 @@
 using System.Collections.Generic;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal class LoadPageResult
     {
-        public LoadPageResult(IEnumerable<Package> packages, int pageNumber, int totalCount)
+        public LoadPageResult(IEnumerable<IPackage> packages, int pageNumber, int totalCount)
         {
             Packages = packages;
             PageNumber = pageNumber;
             TotalCount = totalCount;
         }
 
-        public IEnumerable<Package> Packages
+        public IEnumerable<IPackage> Packages
         {
             get;
             private set;

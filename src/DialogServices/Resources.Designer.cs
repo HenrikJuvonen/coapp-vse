@@ -178,6 +178,15 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Licenses:.
+        /// </summary>
+        public static string Dialog_LicensesLabel {
+            get {
+                return ResourceManager.GetString("Dialog_LicensesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Manage.
         /// </summary>
         public static string Dialog_ManageButton {

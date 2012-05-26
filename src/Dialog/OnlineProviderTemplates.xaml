@@ -119,14 +119,14 @@
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding IsSelected}" Value="True" />
-                    <Condition Binding="{Binding IsEnabled}" Value="True" />
+                    <Condition Binding="{Binding IsCoreEnabled}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter TargetName="ExecuteCoreButton" Property="Visibility" Value="Visible" />
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding IsSelected}" Value="True" />
-                    <Condition Binding="{Binding IsEnabled2}" Value="True" />
+                    <Condition Binding="{Binding IsManageEnabled}" Value="True" />
                     <Condition Binding="{Binding PackageIdentity.IsInstalled}" Value="True" />
                     <Condition Binding="{Binding IsDev}" Value="True" />
                 </MultiDataTrigger.Conditions>
@@ -177,31 +177,33 @@
                 <!-- PublishDate -->
                 <StackPanel Style="{StaticResource DetailMetadataStyle}">
                     <eml:TextBlockControl Text="{x:Static resources:Resources.Dialog_PublishDateLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
-                    <eml:TextBlockControl Text="{Binding PackageIdentity.PackageDetails.PublishDate, Mode=OneWay}" Style="{StaticResource DetailMetadataValueStyle}"  />
+                    <eml:TextBlockControl Text="{Binding PackageIdentity.PackageDetails.PublishDate, Mode=OneWay}" Style="{StaticResource DetailMetadataValueStyle}" />
                 </StackPanel>
                 
                 <!-- Licenses -->
-                <eml:TextBlockControl 
-                    Margin="0,3,0,0" 
-                    Text="Licenses:" 
-                    Style="{StaticResource DetailMetadataLabelStyle}"
-                    Visibility="{Binding Items.Count, ElementName=Licenses, Converter={StaticResource countConverter}}" />
+                <WrapPanel Margin="0,3,0,0">
+                    <eml:TextBlockControl 
+                        Text="{x:Static resources:Resources.Dialog_LicensesLabel}" 
+                        Style="{StaticResource DetailMetadataLabelStyle}"
+                        Visibility="{Binding Items.Count, ElementName=Licenses, Converter={StaticResource countConverter}}" />
 
-                <ItemsControl 
-                    x:Name="Licenses" 
-                    Margin="25,5,0,0"
-                    ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}"
-                    DisplayMemberPath="Name">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock>
-                                <Hyperlink Style="{StaticResource CommonHyperlinkStyle}" NavigateUri="{Binding Location, Mode=OneTime}" Command="{x:Static selfx:PackageManagerWindowCommands.OpenExternalLink}">
-                                    <Run Text="{Binding Name}" ToolTipService.ToolTip="{Binding Name}" />
-                                </Hyperlink>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    <eml:TextBlockControl Style="{StaticResource DetailMetadataValueStyle}">
+                        <ItemsControl 
+                            x:Name="Licenses"
+                            ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}"
+                            DisplayMemberPath="Name">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Hyperlink Style="{StaticResource CommonHyperlinkStyle}" NavigateUri="{Binding Location, Mode=OneTime}" Command="{x:Static selfx:PackageManagerWindowCommands.OpenExternalLink}">
+                                            <Run Text="{Binding Name}" ToolTipService.ToolTip="{Binding Name}" />
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </eml:TextBlockControl>
+                </WrapPanel>
 
                 <!-- Description -->
                 <eml:TextBlockControl Margin="0,3,0,0" Text="{x:Static resources:Resources.Dialog_DescriptionLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />

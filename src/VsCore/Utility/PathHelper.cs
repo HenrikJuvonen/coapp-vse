@@ -54,29 +54,5 @@ namespace CoApp.VisualStudio.VsCore
                     folder);
             }
         }
-
-        public static string EscapePSPath(string path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException("path");
-            }
-
-            // The and [ the ] characters are interpreted as wildcard delimiters. Escape them first.
-            path = path.Replace("[", "`[").Replace("]", "`]");
-
-            if (path.Contains("'"))
-            {
-                // If the path has an apostrophe, then use double quotes to enclose it.
-                // However, in that case, if the path also has $ characters in it, they
-                // will be interpreted as variables. Thus we escape the $ characters.
-                return "\"" + path.Replace("$", "`$") + "\"";
-            }
-            else
-            {
-                // if the path doesn't have apostrophe, then it's safe to enclose it with apostrophes
-                return "'" + path + "'";
-            }
-        }
     }
 }

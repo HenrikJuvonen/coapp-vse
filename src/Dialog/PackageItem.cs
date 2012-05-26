@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media.Imaging;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
@@ -13,17 +13,17 @@ namespace CoApp.VisualStudio.Dialog.Providers
     internal class PackageItem : IVsExtension, INotifyPropertyChanged
     {
         private readonly PackagesProviderBase _provider;
-        private readonly Package _packageIdentity;
+        private readonly IPackage _packageIdentity;
         private readonly bool _isUpdateItem;
         private bool _isSelected;
         private readonly ObservableCollection<Project> _referenceProjectNames;
 
-        public PackageItem(PackagesProviderBase provider, Package package, bool isUpdateItem = false) :
+        public PackageItem(PackagesProviderBase provider, IPackage package, bool isUpdateItem = false) :
             this(provider, package, new Project[0], isUpdateItem)
         {
         }
 
-        public PackageItem(PackagesProviderBase provider, Package package, IEnumerable<Project> referenceProjectNames, bool isUpdateItem = false)
+        public PackageItem(PackagesProviderBase provider, IPackage package, IEnumerable<Project> referenceProjectNames, bool isUpdateItem = false)
         {
             _provider = provider;
             _packageIdentity = package;
@@ -33,7 +33,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
-        public Package PackageIdentity
+        public IPackage PackageIdentity
         {
             get { return _packageIdentity; }
         }

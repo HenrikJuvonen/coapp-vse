@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -38,14 +38,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
         
-        public override IEnumerable<Package> GetPackages()
+        public override IEnumerable<IPackage> GetPackages()
         {
             return CoAppWrapper.GetPackages(_type, VsCore.VsVersionHelper.VsMajorVersion);
-        }
-
-        public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
-        {
-            return CoAppWrapper.GetDetailedPackages(packages);
         }
     }
 }

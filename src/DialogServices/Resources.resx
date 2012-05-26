@@ -348,4 +348,7 @@
   <data name="Dialog_AddButton" xml:space="preserve">
     <value>Add to solution</value>
   </data>
+  <data name="Dialog_LicensesLabel" xml:space="preserve">
+    <value>Licenses:</value>
+  </data>
 </root>

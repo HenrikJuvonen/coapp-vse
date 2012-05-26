@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using CoApp.VisualStudio.VsCore;
 using CoApp.VisualStudio.Dialog.PackageManagerUI;
 using Microsoft.VisualStudio.VCProjectEngine;
@@ -53,7 +53,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteCore(PackageItem item)
         {
-            return item.Name != "coapp";
+            return !(item.Name == "coapp" && item.PackageIdentity.IsActive);
         }
 
         public override bool CanExecuteManage(PackageItem item)
@@ -234,7 +234,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         }
 
 
-        protected bool? AskRemoveDependency(Package package, bool checkDependents)
+        protected bool? AskRemoveDependency(IPackage package, bool checkDependents)
         {
             if (checkDependents)
             {
@@ -276,7 +276,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             CoAppWrapper.RemovePackage(item.PackageIdentity, removeDependencies);
         }
 
-        public IEnumerable<Project> GetReferenceProjects(Package package)
+        public IEnumerable<Project> GetReferenceProjects(IPackage package)
         {
             var projects = _solutionManager.GetProjects();
 
@@ -300,7 +300,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return result;
         }
 
-        public override IVsExtension CreateExtension(Package package)
+        public override IVsExtension CreateExtension(IPackage package)
         {
             return new PackageItem(this, package, GetReferenceProjects(package))
             {
@@ -324,7 +324,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected override string GetProgressMessage(Package package)
+        protected override string GetProgressMessage(IPackage package)
         {
             return Resources.Dialog_UninstallProgress + package.ToString();
         }

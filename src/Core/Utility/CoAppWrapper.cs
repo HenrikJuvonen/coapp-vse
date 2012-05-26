@@ -27,13 +27,9 @@ namespace CoApp.VisualStudio
         private static readonly List<Task> preCommandTasks = new List<Task>();
 
         private static List<string> activeDownloads = new List<string>();
-        private static Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter;
 
         private static readonly PackageManager _packageManager = new PackageManager();
-
-        private static IEnumerable<Package> allPackages, updateablePackages, installedPackages, subPackages;
-        private static DateTime allRetrievalTime, updateableRetrievalTime, installedRetrievalTime, subRetrievalTime;
-
+        
         private static readonly IProgressProvider _progressProvider = new ProgressProvider();
 
         public static IProgressProvider ProgressProvider
@@ -44,11 +40,7 @@ namespace CoApp.VisualStudio
             }
         }
 
-        public static CancellationTokenSource CancellationTokenSource
-        {
-            get;
-            set;
-        }
+        public static CancellationTokenSource CancellationTokenSource { get; set; }
 
         public static void UpdateProgress(string message, long progress)
         {
@@ -119,12 +111,9 @@ namespace CoApp.VisualStudio
             {
                 ContinueTask(task);
             }
-            catch (AggregateException ae)
+            catch (Exception e)
             {
-                foreach (Exception e in ae.InnerExceptions)
-                {
-                    Console.Error.WriteLine(e.Message);
-                }
+                Console.Error.WriteLine(e.Unwrap().Message);
             }
         }
 
@@ -138,18 +127,15 @@ namespace CoApp.VisualStudio
             {
                 ContinueTask(task);
             }
-            catch (AggregateException ae)
+            catch (Exception e)
             {
-                foreach (Exception e in ae.InnerExceptions)
-                {
-                    Console.Error.WriteLine(e.Message);
-                }
+                Console.Error.WriteLine(e.Unwrap().Message);
             }
         }
 
-        public static IEnumerable<Package> GetPackages(string type, int vsMajorVersion)
+        public static IEnumerable<IPackage> GetPackages(string type, int vsMajorVersion)
         {
-            IEnumerable<Package> pkgs = null;
+            IEnumerable<IPackage> pkgs = null;
             switch (type)
             {
                 case "all":
@@ -172,7 +158,7 @@ namespace CoApp.VisualStudio
                     }
                 default:
                     {
-                        pkgs = new List<Package>();
+                        pkgs = new List<IPackage>();
                         break;
                     }
             }
@@ -200,141 +186,68 @@ namespace CoApp.VisualStudio
             return pkgs;
         }
                 
-        public static IEnumerable<Package> GetAllPackages()
+        public static IEnumerable<IPackage> GetAllPackages()
         {
-            if (allPackages == null || allPackages.IsEmpty() || DateTime.Compare(DateTime.Now, allRetrievalTime.AddSeconds(30)) > 0)
-            {
-                allPackages = ListPackages(new string[] { "*" }, null);
-                allRetrievalTime = DateTime.Now;
-            }
-
-            List<Package> pl = allPackages.ToList();
-            for (int i = 10; i < pl.Count; i++)
-            {
-                pl[i] = GetDetailedPackage(pl[i]);
-            }
-
-            return allPackages;
+            return ListPackages(new string[] { "*" }, null, null);
         }
 
-        public static IEnumerable<Package> GetPackages(string[] parameters)
+        public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
-            if (subPackages == null || subPackages.IsEmpty() || DateTime.Compare(DateTime.Now, subRetrievalTime.AddSeconds(30)) > 0)
-            {
-                subPackages = ListPackages(parameters, null);
-                subRetrievalTime = DateTime.Now;
-            }
-
-            return subPackages;
+            return ListPackages(parameters, null, null);
         }
 
-        public static IEnumerable<Package> GetUpdateablePackages()
+        public static IEnumerable<IPackage> GetUpdateablePackages()
         {
-            if (updateablePackages == null || updateablePackages.IsEmpty() || DateTime.Compare(DateTime.Now, updateableRetrievalTime.AddSeconds(30)) > 0)
-            {
-                updateablePackages = ListUpdateablePackages(new string[] { "*" }, null);
-                updateableRetrievalTime = DateTime.Now;
-            }
-
-            return updateablePackages;
+            return Enumerable.Empty<IPackage>(); //ListUpdateablePackages(new string[] { "*" }, null, null);
         }
 
-        public static IEnumerable<Package> GetInstalledPackages()
+        public static IEnumerable<IPackage> GetInstalledPackages()
         {
-            if (installedPackages == null || installedPackages.IsEmpty() || DateTime.Compare(DateTime.Now, installedRetrievalTime.AddSeconds(30)) > 0)
-            {
-                Filter<IPackage> pkgFilter = Package.Properties.Installed.Is(true);
-                installedPackages = ListPackages(new string[] { "*" }, pkgFilter);
-                installedRetrievalTime = DateTime.Now;
-            }
-
-            List<Package> pl = installedPackages.ToList();
-            for (int i = 10; i < pl.Count; i++)
-            {
-                pl[i] = GetDetailedPackage(pl[i]);
-            }
-
-            return installedPackages;
+            var pkgFilter = Package.Properties.Installed.Is(true);
+            return ListPackages(new string[] { "*" }, pkgFilter, null);
         }
 
-        private static IEnumerable<Package> ListUpdateablePackages(string[] parameters, Filter<IPackage> pkgFilter)
-        {
-            IEnumerable<Package> pkgs = null;
-
-            if (CancellationTokenSource.IsCancellationRequested)
-                return new List<Package>();
-
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
-
-            if (CancellationTokenSource.IsCancellationRequested)
-                return new List<Package>();
-
-            ContinueTask(task);
-            return pkgs;
-        }
-
-        private static IEnumerable<Package> ListPackages(string[] parameters, Filter<IPackage> pkgFilter)
+        private static IEnumerable<IPackage> ListUpdateablePackages(string[] parameters, 
+                                                                   Filter<IPackage> pkgFilter,
+                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
         {
             if (!parameters.Any() || parameters[0] == "*")
             {
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
             }
 
-            IEnumerable<Package> pkgs = null;
+            IEnumerable<IPackage> pkgs = null;
+            
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
 
-            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
-                return new List<Package>();
-
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)
-                .Continue(p => pkgs = p));
-
-            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
-                return new List<Package>();
+            if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
 
             ContinueTask(task);
+            return pkgs;
+        }
 
-            List<Package> pl = pkgs.ToList();
-            for (int i = 0; i < pl.Count && i < 10; i++)
+        private static IEnumerable<IPackage> ListPackages(string[] parameters,
+                                                         Filter<IPackage> pkgFilter,
+                                                         Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
+        {
+            if (!parameters.Any() || parameters[0] == "*")
             {
-                pl[i] = GetDetailedPackage(pl[i]);
+                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
             }
 
-            if (CancellationTokenSource != null && CancellationTokenSource.IsCancellationRequested)
-                return new List<Package>();
+            IEnumerable<IPackage> pkgs = null;
 
-            return pl;
-        }
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location).Continue(p => pkgs = p));
 
-        public static Package GetDetailedPackage(Package package)
-        {
-            Task task = _packageManager.GetPackageDetails(package.CanonicalName).Continue(detailedPackage =>
-            {
-                package = detailedPackage;
-            });
+            if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
 
             ContinueTask(task);
-
-            return package;
+            return pkgs;
         }
 
-        public static IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
+        public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
-            IEnumerable<Package> pkgs = null;
-
-            packages.Select(package => _packageManager.GetPackageDetails(package.CanonicalName)).ToArray().Continue(detailedPackages =>
-            {
-                if (pkgs == null)
-                    pkgs = detailedPackages;
-                else
-                    pkgs = pkgs.Concat(detailedPackages);
-            });
-
-            return packages;
-        }
-
-        public static void RemovePackage(Package package, bool removeDependencies = false)
-        {
-            UpdateProgress("Removing packages...", 0);
+            UpdateProgress("Uninstalling packages...", 0);
 
             try
             {
@@ -345,20 +258,15 @@ namespace CoApp.VisualStudio
                 }
                 Task task = preCommandTasks.Continue(() => RemovePackages(canonicalNames));
                 ContinueTask(task);
-                
-                installedPackages = null;
-                updateablePackages = null;
-                allPackages = null;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
             }
-            
         }
 
-        public static void InstallPackage(Package package)
+        public static void InstallPackage(IPackage package)
         {
             UpdateProgress("Installing packages...", 0);
 
@@ -366,39 +274,29 @@ namespace CoApp.VisualStudio
             {
                 Task task = preCommandTasks.Continue(() => InstallPackage(package.CanonicalName));
                 ContinueTask(task);
-                installedPackages = null;
-                allPackages = null;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
             }
-
         }
 
         private static Task InstallPackage(CanonicalName canonicalName)
         {
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
 
-            return _packageManager.InstallPackage(canonicalName, _force == true);
-        }
-
-        private static Task RemovePackage(CanonicalName canonicalName)
-        {
-            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Removing " + name + "...", progress));
-
-            return _packageManager.RemovePackage(canonicalName, true);// (name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
+            return _packageManager.Install(canonicalName, _autoUpgrade == true, _force == true);
         }
 
         private static Task RemovePackages(IEnumerable<CanonicalName> canonicalNames)
         {
-            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Removing " + name + "...", progress));
+            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
 
             return _packageManager.RemovePackages(canonicalNames, true);
         }
 
-        public static IEnumerable<Package> GetDependents(Package package)
+        public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
             return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package));
         }

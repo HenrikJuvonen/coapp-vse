@@ -10,7 +10,7 @@ It is currently work in progress and it is not ready for everyday use.
 
 ## Requirements
 
-- CoApp.Toolkit 1.2.0.325
+- CoApp.Toolkit 1.2.0.348
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 

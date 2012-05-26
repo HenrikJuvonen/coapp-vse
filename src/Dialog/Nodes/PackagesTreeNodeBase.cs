@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
@@ -21,7 +21,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private const int DefaultItemsPerPage = 10;
 
         // We cache the query until it changes (due to sort order or search)
-        private IEnumerable<Package> _query;
+        private IEnumerable<IPackage> _query;
         private int _totalCount;
 
         private IList<IVsExtension> _extensions;
@@ -219,10 +219,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// Get all packages belonging to this node.
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<Package> GetPackages();
-
-        public abstract IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages);
-        
+        public abstract IEnumerable<IPackage> GetPackages();
+                
         /// <summary>
         /// Helper function to raise property changed events
         /// </summary>
@@ -315,7 +313,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             if (_query == null)
             {
-                IQueryable<Package> query = GetPackages().AsQueryable();
+                IQueryable<IPackage> query = GetPackages().AsQueryable();
 
                 token.ThrowIfCancellationRequested();
 
@@ -329,12 +327,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 token.ThrowIfCancellationRequested();
 
                 // Apply the ordering then sort by name
-                IQueryable<Package> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
+                IQueryable<IPackage> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
 
                 _query = orderedQuery.AsEnumerable();
             }
 
-            IEnumerable<Package> packages = GetDetailedPackages(_query.Skip((pageNumber - 1) * PageSize).Take(PageSize));
+            IEnumerable<IPackage> packages = _query.Skip((pageNumber - 1) * PageSize).Take(PageSize);
                         
             if (packages.Count() < PageSize)
             {
@@ -346,7 +344,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return new LoadPageResult(packages, pageNumber, _totalCount);
         }
 
-        private IOrderedQueryable<Package> ApplyOrdering(IQueryable<Package> query)
+        private IOrderedQueryable<IPackage> ApplyOrdering(IQueryable<IPackage> query)
         {
             // If the default sort is null then fall back to download count
             if (Provider.CurrentSort == null)
@@ -355,7 +353,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
 
             // Order by the current descriptor
-            return query.SortBy<Package>(Provider.CurrentSort.SortProperties, Provider.CurrentSort.Direction, typeof(Package));
+            return query.SortBy<IPackage>(Provider.CurrentSort.SortProperties, Provider.CurrentSort.Direction, typeof(IPackage));
         }
 
         public IList<IVsSortDescriptor> GetSortDescriptors()
@@ -435,7 +433,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             PackageLoadCompleted(this, EventArgs.Empty);
         }
 
-        private void UpdateNewPackages(IList<Package> packages)
+        private void UpdateNewPackages(IList<IPackage> packages)
         {
             int newPackagesIndex = 0;
             int oldPackagesIndex = 0;

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.ExtensionsExplorer;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using CoApp.VisualStudio.VsCore;
 using EnvDTE;
 
@@ -37,10 +37,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public override IEnumerable<Package> GetPackages()
+        public override IEnumerable<IPackage> GetPackages()
         {
-            IEnumerable<Package> installedPackages = CoAppWrapper.GetInstalledPackages();
-            List<Package> resultPackages = new List<Package>();
+            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetInstalledPackages();
+            List<IPackage> resultPackages = new List<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
             {
@@ -64,11 +64,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             }
             return resultPackages;
-        }
-
-        public override IEnumerable<Package> GetDetailedPackages(IEnumerable<Package> packages)
-        {
-            return CoAppWrapper.GetDetailedPackages(packages);
         }
     }
 }

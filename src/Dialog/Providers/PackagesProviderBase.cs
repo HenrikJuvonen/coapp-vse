@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
-using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
@@ -242,7 +242,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return Name;
         }
 
-        public abstract IVsExtension CreateExtension(Package package);
+        public abstract IVsExtension CreateExtension(IPackage package);
 
         public virtual bool CanExecuteCore(PackageItem item)
         {
@@ -254,7 +254,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return false;
         }
 
-        protected virtual string GetProgressMessage(Package package)
+        protected virtual string GetProgressMessage(IPackage package)
         {
             return package.ToString();
         }
