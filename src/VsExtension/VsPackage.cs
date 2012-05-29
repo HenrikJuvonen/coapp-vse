@@ -120,6 +120,7 @@ namespace CoApp.VisualStudio.Tools
             else
             {
                 Project project = _vsMonitorSelection.GetActiveProject();
+
                 if (project != null && !project.IsUnloaded() && project.IsSupported())
                 {
                     ShowManageLibraryPackageDialog(project);

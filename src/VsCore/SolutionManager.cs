@@ -9,6 +9,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.VCProjectEngine;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -155,39 +156,6 @@ namespace CoApp.VisualStudio.VsCore
             }
 
             return solutionFilePath;
-        }
-
-        public bool IsSourceControlBound
-        {
-            get
-            {
-                return GetIsSourceControlBound();
-            }
-        }
-
-        private bool GetIsSourceControlBound()
-        {
-            if (!IsSolutionOpen)
-            {
-                return false;
-            }
-
-            string solutionFilePath = GetSolutionFilePath();
-            Debug.Assert(!String.IsNullOrEmpty(solutionFilePath));
-
-            SourceControl2 sourceControl = (SourceControl2)_dte.SourceControl;
-            if (sourceControl != null)
-            {
-                try
-                {
-                    return sourceControl.GetBindings(solutionFilePath) != null;
-                }
-                catch (NotImplementedException)
-                {
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -402,54 +370,54 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        // REVIEW: This might be inefficient, see what we can do with caching projects until references change
-        public IEnumerable<Project> GetDependentProjects(Project project)
+        public void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            if (project == null)
-            {
-                throw new ArgumentNullException("project");
-            }
+            string type = packageReference.Type;
 
-            var dependentProjects = new Dictionary<string, List<Project>>();
-
-            // Get all of the projects in the solution and build the reverse graph. i.e.
-            // if A has a project reference to B (A -> B) the this will return B -> A
-            // We need to run this on the ui thread so that it doesn't freeze for websites. Since there might be a 
-            // large number of references.           
-            ThreadHelper.Generic.Invoke(() =>
+            foreach (Project project in GetProjects())
             {
-                foreach (var proj in GetProjects())
+                IEnumerable<Library> projectLibraries = from lib in libraries
+                                                        where lib.ProjectName == project.Name
+                                                        select lib;
+
+                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
+
+                if (project.IsVcProject())
                 {
-                    if (project.SupportsReferences())
+                    switch (type)
                     {
-                        foreach (var referencedProject in proj.GetReferencedProjects())
-                        {
-                            AddDependentProject(dependentProjects, referencedProject, proj);
-                        }
+                        case "vc,lib":
+                            project.ManageLinkerDependencies(packageReference.Architecture, projectLibraries);
+                            resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                            break;
+                        case "vc":
+                            project.ManageIncludeDirectories(packageReference.Path, projects);
+                            break;
+                        case "net":
+                            project.ManageReferences(packageReference.Architecture, projectLibraries);
+                            resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                            break;
                     }
                 }
-            });
+  
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "\\coapp.config");
 
-            List<Project> dependents;
-            if (dependentProjects.TryGetValue(project.UniqueName, out dependents))
-            {
-                return dependents;
+                if (projects.Contains(project))
+                {
+                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Version, packageReference.Architecture, resultLibraries);
+
+                    project.ProjectItems.AddFromFile(project.GetDirectory() + "\\coapp.config");
+                }
+                else
+                {
+                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
+
+                    ProjectItem item;
+                    project.ProjectItems.TryGetFile(project.GetDirectory() + "\\coapp.config", out item);
+                    item.Delete();
+                }
             }
 
-            return Enumerable.Empty<Project>();
-        }
-
-        private static void AddDependentProject(IDictionary<string, List<Project>> dependentProjects,
-                                         Project project,
-                                         Project dependent)
-        {
-            List<Project> dependents;
-            if (!dependentProjects.TryGetValue(project.UniqueName, out dependents))
-            {
-                dependents = new List<Project>();
-                dependentProjects[project.UniqueName] = dependents;
-            }
-            dependents.Add(dependent);
         }
     }
 }

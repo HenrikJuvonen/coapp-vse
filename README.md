@@ -37,7 +37,7 @@ It is currently work in progress and it is not ready for everyday use.
 				[|] Remove package from solution
 					[X] C++
 					[ ] C#
-				[|] Packages.config
+				[|] coapp.config
 				[|] Show added packages in Solution-category
 			[ ] Package restore
 

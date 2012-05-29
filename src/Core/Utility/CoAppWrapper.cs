@@ -20,9 +20,7 @@ namespace CoApp.VisualStudio
         private static string _location = null;
         private static bool? _autoUpgrade = null;
 
-        private static bool? _x64 = null;
-        private static bool? _x86 = null;
-        private static bool? _cpuany = null;
+        private static Architecture architecture = Architecture.Auto;
 
         private static readonly List<Task> preCommandTasks = new List<Task>();
 
@@ -42,7 +40,7 @@ namespace CoApp.VisualStudio
 
         public static CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public static void UpdateProgress(string message, long progress)
+        private static void UpdateProgress(string message, long progress)
         {
             ProgressProvider.OnProgressAvailable(message, (int)progress);
         }
@@ -68,24 +66,9 @@ namespace CoApp.VisualStudio
             });
         }
 
-        public static void SetArchitecture(string architecture)
+        public static void SetArchitecture(string arch)
         {
-            _cpuany = null;
-            _x64 = null;
-            _x86 = null;
-
-            switch (architecture)
-            {
-                case "Any":
-                    _cpuany = true;
-                    break;
-                case "x64":
-                    _x64 = true;
-                    break;
-                case "x86":
-                    _x86 = true;
-                    break;
-            }
+            architecture = Architecture.Parse(arch);
         }
 
         public static IEnumerable<Feed> ListFeeds()
@@ -133,92 +116,48 @@ namespace CoApp.VisualStudio
             }
         }
 
-        public static IEnumerable<IPackage> GetPackages(string type, int vsMajorVersion)
+        public static IEnumerable<IPackage> GetPackages(string type, int vsMajorVersion = 0)
         {
-            IEnumerable<IPackage> pkgs = null;
+            IEnumerable<IPackage> packages = null;
+            Filter<IPackage> pkgFilter = null;
+
             switch (type)
             {
                 case "all":
                 case "all,dev":
-                    {
-                        pkgs = GetAllPackages();
-                        break;
-                    }
+                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null);
+                    break;
                 case "installed":
                 case "installed,dev":
-                    {
-                        pkgs = GetInstalledPackages();
-                        break;
-                    }
+                    pkgFilter = Package.Properties.Installed.Is(true);
+                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null);                        
+                    break;
                 case "updateable":
                 case "updateable,dev":
-                    {
-                        pkgs = GetUpdateablePackages();
-                        break;
-                    }
-                default:
-                    {
-                        pkgs = new List<IPackage>();
-                        break;
-                    }
+                    packages = Enumerable.Empty<IPackage>();
+                    break;
             }
 
-            if (type.Contains("dev"))
-            {
-                pkgs = pkgs.Where(pkg => pkg.Name.Contains("-dev"))
-                           .Where(pkg => pkg.Name.Contains("vc") ?
-                                         pkg.Name.Contains("vc" + vsMajorVersion) : true);
-            }
-
-            if (true == _cpuany)
-            {
-                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.Any);
-            }
-            else if (true == _x64)
-            {
-                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.x64);
-            }
-            else if (true == _x86)
-            {
-                pkgs = pkgs.Where(pkg => pkg.Architecture == Architecture.x86);
-            }
-
-            return pkgs;
-        }
-                
-        public static IEnumerable<IPackage> GetAllPackages()
-        {
-            return ListPackages(new string[] { "*" }, null, null);
+            return FilterPackages(packages, type, vsMajorVersion);
         }
 
         public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
-            return ListPackages(parameters, null, null);
+            return QueryPackages(parameters, null, null);
         }
 
-        public static IEnumerable<IPackage> GetUpdateablePackages()
+        private static IEnumerable<IPackage> QueryPackages(string[] queries,
+                                                           Filter<IPackage> pkgFilter,
+                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
         {
-            return Enumerable.Empty<IPackage>(); //ListUpdateablePackages(new string[] { "*" }, null, null);
-        }
-
-        public static IEnumerable<IPackage> GetInstalledPackages()
-        {
-            var pkgFilter = Package.Properties.Installed.Is(true);
-            return ListPackages(new string[] { "*" }, pkgFilter, null);
-        }
-
-        private static IEnumerable<IPackage> ListUpdateablePackages(string[] parameters, 
-                                                                   Filter<IPackage> pkgFilter,
-                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
-        {
-            if (!parameters.Any() || parameters[0] == "*")
+            if (!queries.Any() || queries[0] == "*")
             {
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
             }
 
             IEnumerable<IPackage> pkgs = null;
-            
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
+
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, _location).Continue(p => pkgs = p));
 
             if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
 
@@ -226,18 +165,18 @@ namespace CoApp.VisualStudio
             return pkgs;
         }
 
-        private static IEnumerable<IPackage> ListPackages(string[] parameters,
-                                                         Filter<IPackage> pkgFilter,
-                                                         Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
+        private static IEnumerable<IPackage> QueryUpdateablePackages(string[] queries,
+                                                                   Filter<IPackage> pkgFilter,
+                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
         {
-            if (!parameters.Any() || parameters[0] == "*")
+            if (!queries.Any() || queries[0] == "*")
             {
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
             }
 
             IEnumerable<IPackage> pkgs = null;
 
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(parameters, pkgFilter, collectionFilter, _location).Continue(p => pkgs = p));
+            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
 
             if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
 
@@ -298,10 +237,28 @@ namespace CoApp.VisualStudio
 
         public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
-            return GetInstalledPackages().Where(pkg => pkg.Dependencies.Contains(package));
+            return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
         }
 
-        public static int ContinueTask(Task task)
+        private static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, string type, int vsMajorVersion)
+        {
+            if (type.Contains("dev"))
+            {
+                packages = from package in packages
+                           where package.Name.Contains("-dev")
+                           where package.Name.Contains("vc") ? package.Name.Contains("vc" + vsMajorVersion) : true
+                           select package;
+            }
+
+            if (architecture != Architecture.Auto)
+            {
+                packages = packages.Where(package => package.Architecture == architecture);
+            }
+
+            return packages;
+        }
+
+        private static void ContinueTask(Task task)
         {
             task.ContinueOnCanceled(() =>
             {
@@ -323,9 +280,6 @@ namespace CoApp.VisualStudio
             {
                 Console.WriteLine("Done.");
             }).Wait();
-
-            return 0;
         }
-
     }
 }

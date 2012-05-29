@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using EnvDTE;
-using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using VSLangProj;
-using VsWebSite;
-using MsBuildProject = Microsoft.Build.Evaluation.Project;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
-using Package = CoApp.Packaging.Client;
+using Microsoft.VisualStudio.VCProjectEngine;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -38,7 +32,8 @@ namespace CoApp.VisualStudio.VsCore
                                                                           VsConstants.FsharpProjectTypeGuid,
                                                                           VsConstants.NemerleProjectTypeGuid,
                                                                           VsConstants.WixProjectTypeGuid,
-                                                                          VsConstants.CppProjectTypeGuid};
+                                                                          VsConstants.VcProjectTypeGuid
+                                                                        };
 
         private static readonly HashSet<string> _unsupportedProjectTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
                                                                             VsConstants.LightSwitchProjectTypeGuid,
@@ -70,7 +65,7 @@ namespace CoApp.VisualStudio.VsCore
             // Both types have the ProjectItems property that we want to access.
             dynamic cursor = project;
 
-            string fullPath = project.GetFullPath();
+            string fullPath = project.GetDirectory();
             string folderRelativePath = String.Empty;
 
             foreach (string part in pathParts)
@@ -204,25 +199,7 @@ namespace CoApp.VisualStudio.VsCore
 
             return projectItem != null;
         }
-
-        public static bool SupportsConfig(this Project project)
-        {
-            return !IsClassLibrary(project);
-        }
-
-        private static bool IsClassLibrary(this Project project)
-        {
-            if (project.IsWebSite())
-            {
-                return false;
-            }
-
-            // Consider class libraries projects that have one project type guid and an output type of project library.
-            var outputType = project.GetPropertyValue<prjOutputType>("OutputType");
-            return project.GetProjectTypeGuids().Count() == 1 &&
-                   outputType == prjOutputType.prjOutputTypeLibrary;
-        }
-
+        
         public static string GetName(this Project project)
         {
             string name = project.Name;
@@ -244,13 +221,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             return project != null && VsConstants.JsProjectTypeGuid.Equals(project.Kind, StringComparison.OrdinalIgnoreCase);
         }
-
-        // TODO: Return null for library projects
-        public static string GetConfigurationFile(this Project project)
-        {
-            return project.IsWebProject() ? WebConfig : AppConfig;
-        }
-
+        
         private static ProjectItem GetProjectItem(this ProjectItems projectItems, string name, IEnumerable<string> allowedItemKinds)
         {
             try
@@ -268,50 +239,9 @@ namespace CoApp.VisualStudio.VsCore
             return null;
         }
 
-        public static IEnumerable<ProjectItem> GetChildItems(this Project project, string path, string filter, params string[] kinds)
+        public static string GetDirectory(this Project project)
         {
-            ProjectItems projectItems = GetProjectItems(project, path);
-
-            if (projectItems == null)
-            {
-                return Enumerable.Empty<ProjectItem>();
-            }
-
-            Regex matcher = filter.Equals("*.*", StringComparison.OrdinalIgnoreCase) ? null : GetFilterRegex(filter);
-
-            return from ProjectItem p in projectItems
-                   where kinds.Contains(p.Kind) && (matcher == null || matcher.IsMatch(p.Name))
-                   select p;
-        }
-
-        public static string GetFullPath(this Project project)
-        {
-            string fullPath = project.GetPropertyValue<string>("FullPath");
-            if (!String.IsNullOrEmpty(fullPath))
-            {
-                // Some Project System implementations (JS metro app) return the project 
-                // file as FullPath. We only need the parent directory
-                if (File.Exists(fullPath))
-                {
-                    fullPath = Path.GetDirectoryName(fullPath);
-                }
-            }
-            return fullPath;
-        }
-
-        public static string GetTargetFramework(this Project project)
-        {
-            if (project.IsJavaScriptProject())
-            {
-                // HACK: The JS Metro project does not have a TargetFrameworkMoniker property set. 
-                // We hard-code the return value so that it behaves as if it had a WinRT target 
-                // framework, i.e. .NETCore, Version=4.5
-
-                // Review: What about future versions? Let's not worry about that for now.
-                return ".NETCore, Version=4.5";
-            }
-
-            return project.GetPropertyValue<string>("TargetFrameworkMoniker");
+            return Path.GetDirectoryName(project.FullName);
         }
 
         public static T GetPropertyValue<T>(this Project project, string propertyName)
@@ -331,18 +261,7 @@ namespace CoApp.VisualStudio.VsCore
             }
             return default(T);
         }
-
-        private static Regex GetFilterRegex(string wildcard)
-        {
-            string pattern = String.Join(String.Empty, wildcard.Split('.').Select(GetPattern));
-            return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
-        }
-
-        private static string GetPattern(string token)
-        {
-            return token == "*" ? @"(.*)" : @"(" + token + ")";
-        }
-
+        
         // 'parentItem' can be either a Project or ProjectItem
         private static ProjectItem GetOrCreateFolder(
             Project project,
@@ -427,15 +346,14 @@ namespace CoApp.VisualStudio.VsCore
             return ErrorHandler.Succeeded(hr);
         }
 
-        public static bool IsWebProject(this Project project)
-        {
-            var types = new HashSet<string>(project.GetProjectTypeGuids(), StringComparer.OrdinalIgnoreCase);
-            return types.Contains(VsConstants.WebSiteProjectTypeGuid) || types.Contains(VsConstants.WebApplicationProjectTypeGuid);
-        }
-
         public static bool IsWebSite(this Project project)
         {
             return project.Kind != null && project.Kind.Equals(VsConstants.WebSiteProjectTypeGuid, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsVcProject(this Project project)
+        {
+            return project.Kind != null && project.Kind.Equals(VsConstants.VcProjectTypeGuid, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsSupported(this Project project)
@@ -452,24 +370,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             return project.Kind != null && project.Kind.Equals(VsConstants.VsProjectItemKindSolutionFolder, StringComparison.OrdinalIgnoreCase);
         }
-
-        public static bool IsTopLevelSolutionFolder(this Project project)
-        {
-            return IsSolutionFolder(project) && project.ParentProjectItem == null;
-        }
-
-        public static bool SupportsReferences(this Project project)
-        {
-            return project.Kind != null &&
-                !_unsupportedProjectTypesForAddingReferences.Contains(project.Kind, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public static bool SupportsBindingRedirects(this Project project)
-        {
-            return project.Kind != null &
-                !_unsupportedProjectTypesForBindingRedirects.Contains(project.Kind, StringComparer.OrdinalIgnoreCase);
-        }
-
+                
         public static bool IsUnloaded(this Project project)
         {
             return VsConstants.UnloadedProjectTypeGuid.Equals(project.Kind, StringComparison.OrdinalIgnoreCase);
@@ -479,7 +380,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             // For Websites the output path is the bin folder
             string outputPath = project.IsWebSite() ? BinFolder : project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
-            return Path.Combine(project.GetFullPath(), outputPath);
+            return Path.Combine(project.GetDirectory(), outputPath);
         }
 
         public static IVsHierarchy ToVsHierarchy(this Project project)
@@ -497,17 +398,7 @@ namespace CoApp.VisualStudio.VsCore
 
             return hierarchy;
         }
-
-        public static IVsProjectBuildSystem ToVsProjectBuildSystem(this Project project)
-        {
-            if (project == null)
-            {
-                throw new ArgumentNullException("project");
-            }
-            // Convert the project to an IVsHierarchy and see if it implements IVsProjectBuildSystem
-            return project.ToVsHierarchy() as IVsProjectBuildSystem;
-        }
-
+        
         public static bool IsCompatible(this Project project, PackageReference packageReference)
         {
             if (packageReference == null)
@@ -516,25 +407,14 @@ namespace CoApp.VisualStudio.VsCore
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
 
-            if (packageReference.Type.Contains("vc") && projectTypeGuids.Contains(VsConstants.CppProjectTypeGuid))
+            if (packageReference.Type.Contains("vc") && projectTypeGuids.Contains(VsConstants.VcProjectTypeGuid))
             {
                 return true;
             }
 
             return false;
         }
-
-        public static FrameworkName GetTargetFrameworkName(this Project project)
-        {
-            string targetFrameworkMoniker = project.GetTargetFramework();
-            if (targetFrameworkMoniker != null)
-            {
-                return new FrameworkName(targetFrameworkMoniker);
-            }
-
-            return null;
-        }
-
+        
         public static IEnumerable<string> GetProjectTypeGuids(this Project project)
         {
             // Get the vs hierarchy as an IVsAggregatableProject to get the project type guids
@@ -562,86 +442,7 @@ namespace CoApp.VisualStudio.VsCore
                 return new string[0];
             }
         }
-
-        internal static IEnumerable<Project> GetReferencedProjects(this Project project)
-        {
-            if (project.IsWebSite())
-            {
-                return GetWebsiteReferencedProjects(project);
-            }
-
-            var projects = new List<Project>();
-            References references = project.Object.References;
-            foreach (Reference reference in references)
-            {
-                // Get the referenced project from the reference if any
-                if (reference.SourceProject != null)
-                {
-                    projects.Add(reference.SourceProject);
-                }
-            }
-            return projects;
-        }
-
-        private static IEnumerable<Project> GetWebsiteReferencedProjects(Project project)
-        {
-            var projects = new List<Project>();
-            AssemblyReferences references = project.Object.References;
-            foreach (AssemblyReference reference in references)
-            {
-                if (reference.ReferencedProject != null)
-                {
-                    projects.Add(reference.ReferencedProject);
-                }
-            }
-            return projects;
-        }
-
-        private static HashSet<string> GetLocalProjectAssemblies(Project project)
-        {
-            if (project.IsWebSite())
-            {
-                return GetWebsiteLocalAssemblies(project);
-            }
-
-            var assemblies = new HashSet<string>(PathComparer.Default);
-            References references = project.Object.References;
-            foreach (Reference reference in references)
-            {
-                // Get the referenced project from the reference if any
-                if (reference.SourceProject == null &&
-                    reference.CopyLocal &&
-                    File.Exists(reference.Path))
-                {
-                    assemblies.Add(reference.Path);
-                }
-            }
-            return assemblies;
-        }
-
-        private static HashSet<string> GetWebsiteLocalAssemblies(Project project)
-        {
-            var assemblies = new HashSet<string>(PathComparer.Default);
-            AssemblyReferences references = project.Object.References;
-            foreach (AssemblyReference reference in references)
-            {
-                // For websites only include bin assemblies
-                if (reference.ReferencedProject == null &&
-                    reference.ReferenceKind == AssemblyReferenceType.AssemblyReferenceBin &&
-                    File.Exists(reference.FullPath))
-                {
-                    assemblies.Add(reference.FullPath);
-                }
-            }
-            return assemblies;
-        }
-
-        public static MsBuildProject AsMSBuildProject(this Project project)
-        {
-            return ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FullName).FirstOrDefault() ??
-                   ProjectCollection.GlobalProjectCollection.LoadProject(project.FullName);
-        }
-
+                
         /// <summary>
         /// Returns the unique name of the specified project including all solution folder names containing it.
         /// </summary>
@@ -685,28 +486,6 @@ namespace CoApp.VisualStudio.VsCore
             return parentProject.IsExplicitlyUnsupported();
         }
 
-        public static void EnsureCheckedOutIfExists(this Project project, string path)
-        {
-            if (File.Exists(path) &&
-                project.DTE.SourceControl != null &&
-                project.DTE.SourceControl.IsItemUnderSCC(path) &&
-                !project.DTE.SourceControl.IsItemCheckedOut(path))
-            {
-
-                // Check out the item
-                project.DTE.SourceControl.CheckOutItem(path);
-            }
-        }
-
-        /// <summary>
-        /// This method truncates Website projects into the VS-format, e.g. C:\..\WebSite1
-        /// This is used for displaying in the projects combo box.
-        /// </summary>
-        public static string GetDisplayName(this Project project, ISolutionManager solutionManager)
-        {
-            return GetDisplayName(project, solutionManager.GetProjectSafeName);
-        }
-
         /// <summary>
         /// This method truncates Website projects into the VS-format, e.g. C:\..\WebSite1, but it uses Name instead of SafeName from Solution Manager.
         /// </summary>
@@ -725,18 +504,64 @@ namespace CoApp.VisualStudio.VsCore
             return name;
         }
 
-        private class PathComparer : IEqualityComparer<string>
+        public static void ManageReferences(this Project project, string architecture, IEnumerable<Library> libraries)
         {
-            public static readonly PathComparer Default = new PathComparer();
-            public bool Equals(string x, string y)
-            {
-                return Path.GetFileName(x).Equals(Path.GetFileName(y));
-            }
 
-            public int GetHashCode(string obj)
+        }
+
+        public static void ManageLinkerDependencies(this Project project, string architecture, IEnumerable<Library> libraries)
+        {
+            string path = @"c:\apps\lib\" + architecture + "\\";
+
+            VCProject vcProject = (VCProject)project.Object;
+            IVCCollection configs = vcProject.Configurations;
+
+            foreach (VCConfiguration config in configs)
             {
-                return Path.GetFileName(obj).GetHashCode();
+                VCLinkerTool linker = config.Tools.Item("Linker Tool");
+
+                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == config.Name);
+                
+                IEnumerable<string> current = linker.AdditionalDependencies.Split(' ');
+
+                IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
+                                                             .Select(n => path + n.Name);
+                
+                IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
+                                                           .Select(n => path + n.Name);
+
+                IEnumerable<string> result = current.Except(removed)
+                                                    .Union(added);
+
+                linker.AdditionalDependencies = string.Join(" ", result);
             }
         }
+
+        public static void ManageIncludeDirectories(this Project project, string path, IEnumerable<Project> projects)
+        {
+            path += "\\include";
+
+            VCProject vcProject = (VCProject)project.Object;
+            IVCCollection configs = vcProject.Configurations;
+
+            foreach (VCConfiguration config in configs)
+            {
+                VCCLCompilerTool compiler = config.Tools.Item("VCCLCompilerTool");
+
+                ISet<string> paths = new HashSet<string>(compiler.AdditionalIncludeDirectories.Split(';'));
+
+                if (projects.Contains(project))
+                {
+                    paths.Add(path);
+                }
+                else
+                {
+                    paths.Remove(path);
+                }
+
+                compiler.AdditionalIncludeDirectories = string.Join(";", paths);
+            }
+        }
+
     }
 }

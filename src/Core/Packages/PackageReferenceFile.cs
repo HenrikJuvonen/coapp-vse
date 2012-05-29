@@ -123,7 +123,7 @@ namespace CoApp.VisualStudio
                                   new XAttribute("version", version),
                                   new XAttribute("architecture", architecture));
 
-            IEnumerable<string> configs = libraries.Select(n => n.Configuration).Distinct();
+            IEnumerable<string> configs = libraries.Select(n => n.ConfigurationName).Distinct();
 
             foreach (string config in configs)
             {
@@ -132,7 +132,7 @@ namespace CoApp.VisualStudio
 
                 foreach (Library library in libraries)
                 {
-                    if (library.Configuration == config)
+                    if (library.ConfigurationName == config)
                     {
                         var libraryElement = new XElement("lib",
                                              new XAttribute("name", library.Name));
@@ -161,7 +161,9 @@ namespace CoApp.VisualStudio
                     let entryVersion = e.Attribute("version").Value
                     let entryArchitecture = e.Attribute("architecture").Value
                     where entryName != null && entryVersion != null && entryArchitecture != null
-                    where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) && (version == null || entryVersion.Equals(version))
+                    where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) && 
+                          (version == null || entryVersion.Equals(version)) &&
+                          (architecture == null || entryArchitecture.Equals(architecture))
                     select e).FirstOrDefault();
         }
 
@@ -194,7 +196,7 @@ namespace CoApp.VisualStudio
                 // Remove the element from the xml dom
                 element.Remove();
 
-                // Always try and save the document, this works around a source control issue for solution-level packages.config.
+                // Always try and save the document, this works around a source control issue for solution-level coapp.config.
                 SaveDocument(document);
 
                 if (!document.Root.HasElements)

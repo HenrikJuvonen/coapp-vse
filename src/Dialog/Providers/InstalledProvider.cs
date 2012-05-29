@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Packaging.Common;
 using CoApp.VisualStudio.VsCore;
 using CoApp.VisualStudio.Dialog.PackageManagerUI;
-using Microsoft.VisualStudio.VCProjectEngine;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -16,7 +15,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
     {
         protected readonly IUserNotifierServices _userNotifierServices;
         protected readonly ISolutionManager _solutionManager;
-        
+
         public InstalledProvider(ResourceDictionary resources,
                                 ProviderServices providerServices,
                                 ISolutionManager solutionManager)
@@ -84,137 +83,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             IEnumerable<Project> projects = (IEnumerable<Project>)selected[0];
             IEnumerable<Library> libraries = (IEnumerable<Library>)selected[1];
 
-            // C++
-            switch (type)
-            {
-                case "vc,lib":
-                    {
-                        // vc,lib
-
-                        VCProject vcProject;
-                        IVCCollection configs;
-                        VCConfiguration config;
-                        VCLinkerTool linker;
-
-                        foreach (Project p in _solutionManager.GetProjects())
-                        {
-                            if (!p.GetProjectTypeGuids().Contains(VsConstants.CppProjectTypeGuid))
-                                break;
-
-                            vcProject = (VCProject)p.Object;
-                            configs = vcProject.Configurations;
-
-                            IEnumerable<Library> projectLibraries = libraries.Where(lib => lib.Project == p.Name);
-
-                            foreach (string configName in (Array)p.ConfigurationManager.ConfigurationRowNames)
-                            {
-                                IEnumerable<Library> configLibraries = projectLibraries.Where(lib => lib.Configuration == configName);
-
-                                config = configs.Item(configName);
-                                linker = config.Tools.Item("Linker Tool");
-                                
-                                string dir = @"c:\apps\lib\";
-                                /*
-                                IList<string> dirs = linker.AdditionalLibraryDirectories.Split(';').Where(n => !n.IsEmpty()).ToList();
-
-                                if (!dirs.Contains(dir) && projects.Contains(p))
-                                {
-                                    dirs.Add(dir);
-                                }
-                                else if (projects.IsEmpty())
-                                {
-                                    dirs.Remove(dir);
-                                }
-
-                                linker.AdditionalLibraryDirectories = string.Join(";", dirs);*/
-
-                                // List of current deps
-                                List<string> deps = linker.AdditionalDependencies.Split(' ').Where(n => !n.IsEmpty()).ToList();
-
-                                // List of removed deps
-                                List<string> removed = configLibraries.Where(n => !n.IsSelected).Select(n => dir + item.PackageIdentity.Architecture + "\\" + n.Name).ToList();
-
-                                // List of added deps
-                                List<string> added = configLibraries.Where(n => n.IsSelected).Select(n => dir + item.PackageIdentity.Architecture + "\\" + n.Name).ToList();
-
-                                List<string> result = deps.Except(removed).Union(added).ToList();
-
-                                linker.AdditionalDependencies = string.Join(" ", result);
-                            }
-
-                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + @"\packages.config");
-
-                            if (projects.Contains(p))
-                            {
-                                packageReferenceFile.AddEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, projectLibraries.Where(n => n.IsSelected));
-                            }
-                            else
-                            {
-                                packageReferenceFile.DeleteEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture);
-                            }
-                        }
-                        break;
-                    }
-                case "vc":
-                    {
-                        // vc,include
-
-                        VCProject vcProject;
-                        IVCCollection configs;
-                        VCConfiguration config;
-                        VCCLCompilerTool compiler;
-
-                        foreach (Project p in _solutionManager.GetProjects())
-                        {
-                            if (!p.GetProjectTypeGuids().Contains(VsConstants.CppProjectTypeGuid))
-                                break;
-
-                            vcProject = (VCProject)p.Object;
-                            configs = vcProject.Configurations;
-
-                            foreach (string configName in (Array)p.ConfigurationManager.ConfigurationRowNames)
-                            {
-                                config = configs.Item(configName);
-                                compiler = config.Tools.Item("VCCLCompilerTool");
-
-                                string dir = packageReference.Path + "include";
-
-                                IList<string> dirs = compiler.AdditionalIncludeDirectories.Split(';').Where(n => !n.IsEmpty()).ToList();
-
-                                if (!dirs.Contains(dir) && projects.Contains(p))
-                                {
-                                    dirs.Add(dir);
-                                }
-                                else if (!projects.Contains(p))
-                                {
-                                    dirs.Remove(dir);
-                                }
-
-                                compiler.AdditionalIncludeDirectories = string.Join(";", dirs);
-                            }
-
-                            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + @"\packages.config");
-
-                            if (projects.Contains(p))
-                            {
-                                packageReferenceFile.AddEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, Enumerable.Empty<Library>());
-                            }
-                            else
-                            {
-                                packageReferenceFile.DeleteEntry(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture);
-                            }
-
-                        }
-                        break;
-                    }
-                case ".net":
-                    {
-                        // lib
-                        // ask which references are to be added
-                        // add references
-                        break;
-                    }
-            }
+            _solutionManager.ManagePackage(packageReference, projects, libraries);
 
             return true;
         }
@@ -284,7 +153,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             foreach (Project project in projects)
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/packages.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.config");
 
                 PackageReference packageReference = packageReferenceFile.GetPackageReferences()
                     .FirstOrDefault(pkg => pkg.Name == package.Name &&

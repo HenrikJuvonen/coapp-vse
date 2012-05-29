@@ -39,12 +39,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IEnumerable<IPackage> GetPackages()
         {
-            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetInstalledPackages();
+            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed");
             List<IPackage> resultPackages = new List<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/packages.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.config");
 
                 IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 

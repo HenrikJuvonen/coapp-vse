@@ -28,10 +28,8 @@ namespace CoApp.VisualStudio.VsCore
         /// </remarks>
         string GetProjectSafeName(Project project);
 
-        IEnumerable<Project> GetDependentProjects(Project project);
-
         bool IsSolutionOpen { get; }
 
-        bool IsSourceControlBound { get; }
+        void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries);
     }
 }

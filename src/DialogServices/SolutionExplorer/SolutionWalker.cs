@@ -120,7 +120,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string lib)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/packages.config");
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.config");
 
             IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 
@@ -139,7 +139,7 @@ namespace CoApp.VisualStudio.Dialog
 
                 foreach (Library l in p.Libraries)
                 {
-                    if (l.Configuration == config && l.Name == lib)
+                    if (l.ConfigurationName == config && l.Name == lib)
                     {
                         return true;
                     }

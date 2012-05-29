@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 using CoApp.VisualStudio.VsCore;
 
@@ -27,7 +28,7 @@ namespace CoApp.VisualStudio.Options
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
         {
-            System.IO.DirectoryInfo cache = new DirectoryInfo(@"C:\apps\.cache\packages");
+            DirectoryInfo cache = new DirectoryInfo(@"C:\apps\.cache\packages");
 
             foreach (FileInfo file in cache.GetFiles())
             {
@@ -43,7 +44,7 @@ namespace CoApp.VisualStudio.Options
 
         private void OnBrowsePackageCacheClick(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(@"C:\apps\.cache\packages");
+            Process.Start(@"C:\apps\.cache\packages");
         }
     }
 }

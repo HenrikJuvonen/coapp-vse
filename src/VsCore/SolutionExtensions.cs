@@ -82,39 +82,5 @@ namespace CoApp.VisualStudio.VsCore
         {
             return solution.Properties.Item("Name").Value;
         }
-
-        public static Project GetSolutionFolder(this Solution solution, string solutionFolderName)
-        {
-            Solution2 solution2 = (Solution2)solution;
-
-            Project project = solution2.Projects
-                                       .OfType<Project>()
-                                       .FirstOrDefault(p => p.Name.Equals(solutionFolderName, StringComparison.OrdinalIgnoreCase));
-            if (project == null)
-            {
-                try
-                {
-                    project = solution2.AddSolutionFolder(solutionFolderName);
-                }
-                catch (Exception)
-                {
-                    // VWD doesn't allow adding solution folder.
-                    // In that case, just silently ignore and return
-                }
-            }
-            return project;
-        }
-
-        public static void AddFolderToSolution(this Solution solution, string solutionFolderName, string physicalFolderPath)
-        {
-            var project = solution.GetSolutionFolder(solutionFolderName);
-            if (project != null)
-            {
-                foreach (string file in Directory.EnumerateFiles(physicalFolderPath))
-                {
-                    project.ProjectItems.AddFromFile(file);
-                }
-            }
-        }
     }
 }
