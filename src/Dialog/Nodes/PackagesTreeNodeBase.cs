@@ -470,6 +470,27 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
+        public void RefreshSelectedPackage()
+        {
+            for (int i = 0; i < _extensions.Count; i++)
+            {
+                if (_extensions[i].IsSelected)
+                {
+                    ShowProgressPane();
+
+                    PackageItem item = (PackageItem)_extensions[i];
+
+                    _extensions[i] = Provider.CreateExtension(CoAppWrapper.GetPackage(item.PackageIdentity.CanonicalName));
+                    
+                    _extensions[i].IsSelected = true;
+
+                    HideProgressPane();
+                    
+                    return;
+                }
+            }
+        }
+
         protected void OnNotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

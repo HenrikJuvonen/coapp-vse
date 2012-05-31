@@ -6,15 +6,14 @@ using EnvDTE;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    public class FolderNode : ProjectNodeBase
+    public abstract class FolderNode : ViewModelNodeBase
     {
-        private readonly ICollection<ProjectNodeBase> _children;
+        private readonly ICollection<ViewModelNodeBase> _children;
         private bool _suppressPropagatingIsSelectedProperty;
         private bool _isExpanded = true;
         protected readonly Project _project;
-        private static ImageSource _expandedIcon, _collapsedIcon;
 
-        public FolderNode(Project project, string name, ICollection<ProjectNodeBase> children) 
+        public FolderNode(Project project, string name, ICollection<ViewModelNodeBase> children) 
             : base(name)
         {
 
@@ -60,32 +59,9 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        public ImageSource Icon
+        public abstract ImageSource Icon
         {
-            get
-            {
-                if (IsRootFolder)
-                {
-                    return ProjectUtilities.GetSolutionImage();
-                }
-
-                if (IsExpanded)
-                {
-                    if (_expandedIcon == null)
-                    {
-                        _expandedIcon = ProjectUtilities.GetImage(Project, folderExpandedView: true);
-                    }
-                    return _expandedIcon;
-                }
-                else
-                {
-                    if (_collapsedIcon == null)
-                    {
-                        _collapsedIcon = ProjectUtilities.GetImage(Project);
-                    }
-                    return _collapsedIcon;
-                }
-            }
+            get;
         }
 
         public bool IsExpanded
@@ -105,7 +81,7 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        public ICollection<ProjectNodeBase> Children
+        public ICollection<ViewModelNodeBase> Children
         {
             get
             {
@@ -124,7 +100,7 @@ namespace CoApp.VisualStudio.Dialog
 
             bool? isSelected = IsSelected;
             // propagate the IsSelected value down to all children, recursively
-            foreach (ProjectNodeBase child in _children)
+            foreach (ViewModelNodeBase child in _children)
             {
                 child.OnParentIsSelectedChange(isSelected);
             }

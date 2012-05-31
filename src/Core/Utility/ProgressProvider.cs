@@ -3,8 +3,7 @@ using System.ComponentModel.Composition;
 
 namespace CoApp.VisualStudio
 {
-    [Export(typeof(IProgressProvider))]
-    public class ProgressProvider : IProgressProvider
+    public class ProgressProvider
     {
         public ProgressProvider()
         {

@@ -20,8 +20,6 @@
     Background="{DynamicResource {x:Static local:UIResources.WindowBackgroundBrushKey}}">
     
     <Window.Resources>        
-        <self:ProjectToIconConverter x:Key="ProjectToIconConverter" />
-        
         <Style TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="10,10,0,0" />
             <Setter Property="MinWidth" Value="75" />
@@ -29,38 +27,13 @@
             <Setter Property="Padding" Value="4,0" />
         </Style>
 
-        <DataTemplate DataType="{x:Type local:LibraryNode}">
-            <StackPanel Orientation="Horizontal" Margin="2,0">
-                <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
-                <Image x:Name="FolderImage" Margin="2,0" Stretch="None" Source="{Binding Icon}" />
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-            </StackPanel>
-        </DataTemplate>
-        
-        <HierarchicalDataTemplate DataType="{x:Type local:ConfigurationNode}" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" Margin="2,0">
-                <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
-                <Image x:Name="FolderImage" Margin="2,0" Stretch="None" Source="{Binding Icon}" />
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-            </StackPanel>
-        </HierarchicalDataTemplate>
-        
-        <HierarchicalDataTemplate DataType="{x:Type local:ProjectNode}" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" Margin="2,0">
-                <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
-                <Image x:Name="FolderImage" Margin="2,0" Stretch="None" Source="{Binding Project, Converter={StaticResource ProjectToIconConverter}}" />
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
         <HierarchicalDataTemplate DataType="{x:Type local:FolderNode}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal" Margin="2,0">
                 <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
                 <Image x:Name="FolderImage" Margin="2,0" Stretch="None" Source="{Binding Icon}" />
-                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
             </StackPanel>
         </HierarchicalDataTemplate>
-        
     </Window.Resources>
     
     <DockPanel Margin="10,10,10,8">

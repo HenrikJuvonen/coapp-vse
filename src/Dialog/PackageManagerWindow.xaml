@@ -5,7 +5,7 @@
     xmlns:shared="clr-namespace:Microsoft.VisualStudio.ExtensionsExplorer.UI;assembly=Microsoft.VisualStudio.ExtensionsExplorer.UI"
     xmlns:resources="clr-namespace:CoApp.VisualStudio.Dialog;assembly=CoApp.VisualStudio.DialogServices"
     xmlns:dialogServices="clr-namespace:CoApp.VisualStudio.Dialog;assembly=CoApp.VisualStudio.DialogServices"
-    xmlns:dialogCommands="clr-namespace:CoApp.VisualStudio.Dialog.PackageManagerUI"
+    xmlns:dialogCommands="clr-namespace:CoApp.VisualStudio.Dialog.PackageManagerUI;assembly=CoApp.VisualStudio.DialogServices"
     xmlns:local="clr-namespace:CoApp.VisualStudio.Dialog"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
@@ -37,22 +37,22 @@
         <CommandBinding
             Command="ApplicationCommands.Close"
             CanExecute="CanExecuteClose"
-            Executed="ExecutedClose" />
+            Executed="ExecuteClose" />
         
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationCore}"
             CanExecute="CanExecuteCommandOnPackage"
-            Executed="ExecutedPackageOperationCore" />
+            Executed="ExecutePackageOperationCore" />
 
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationManage}"
             CanExecute="CanExecuteManageOnPackage"
-            Executed="ExecutedPackageOperationManage" />
+            Executed="ExecutePackageOperationManage" />
 
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.ShowOptionsPage}"
             CanExecute="CanExecuteClose"
-            Executed="ExecutedShowOptionsPage" />
+            Executed="ExecuteShowOptionsPage" />
 
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.OpenExternalLink}"
@@ -61,6 +61,34 @@
         <CommandBinding
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.FocusOnSearchBox}"
             Executed="ExecuteSetFocusOnSearchBox" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetWanted}"
+            Executed="ExecutePackageOperationSetWanted" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetBlocked}"
+            Executed="ExecutePackageOperationSetBlocked" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetLocked}"
+            Executed="ExecutePackageOperationSetLocked" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetRequired}"
+            Executed="ExecutePackageOperationSetRequired" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetUpdatable}"
+            Executed="ExecutePackageOperationSetUpdatable" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetUpgradable}"
+            Executed="ExecutePackageOperationSetUpgradable" />
+
+        <CommandBinding 
+            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetActive}"
+            Executed="ExecutePackageOperationSetActive" />
     </Window.CommandBindings>
 
     <Window.InputBindings>

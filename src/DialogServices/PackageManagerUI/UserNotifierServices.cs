@@ -5,6 +5,7 @@ using EnvDTE;
 using CoApp.VisualStudio.VsCore;
 using CoApp.Packaging.Client;
 using CoApp.Toolkit.Win32;
+using CoApp.VisualStudio.Dialog;
 
 namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
@@ -15,22 +16,6 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
         public UserNotifierServices()
         {
             _uiDispatcher = Dispatcher.CurrentDispatcher;
-        }
-
-        public void ShowSummaryWindow(object failedProjects)
-        {
-            if (!_uiDispatcher.CheckAccess())
-            {
-                _uiDispatcher.Invoke(new Action<object>(ShowSummaryWindow), failedProjects);
-                return;
-            }
-
-            var window = new SummaryWindow()
-            {
-                DataContext = failedProjects
-            };
-
-            window.ShowModal();
         }
 
         public bool? ShowRemoveDependenciesWindow(string message)

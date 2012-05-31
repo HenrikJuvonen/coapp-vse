@@ -178,7 +178,7 @@
     <value>Search Results</value>
   </data>
   <data name="Dialog_Settings" xml:space="preserve">
-    <value>_Settings</value>
+    <value>_Options</value>
   </data>
   <data name="Dialog_SortAscending" xml:space="preserve">
     <value>Ascending</value>

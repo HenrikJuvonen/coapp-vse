@@ -14,20 +14,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
     {
         private readonly PackagesProviderBase _provider;
         private readonly IPackage _packageIdentity;
-        private readonly bool _isUpdateItem;
         private bool _isSelected;
         private readonly ObservableCollection<Project> _referenceProjectNames;
 
-        public PackageItem(PackagesProviderBase provider, IPackage package, bool isUpdateItem = false) :
-            this(provider, package, new Project[0], isUpdateItem)
+        public PackageItem(PackagesProviderBase provider, IPackage package) :
+            this(provider, package, new Project[0])
         {
         }
 
-        public PackageItem(PackagesProviderBase provider, IPackage package, IEnumerable<Project> referenceProjectNames, bool isUpdateItem = false)
+        public PackageItem(PackagesProviderBase provider, IPackage package, IEnumerable<Project> referenceProjectNames)
         {
             _provider = provider;
             _packageIdentity = package;
-            _isUpdateItem = isUpdateItem;
             _referenceProjectNames = new ObservableCollection<Project>(referenceProjectNames);
         }
 
@@ -43,6 +41,22 @@ namespace CoApp.VisualStudio.Dialog.Providers
             get
             {
                 return PackageIdentity.Name;
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                return Name + VersionAndArchitecture;
+            }
+        }
+
+        public string VersionAndArchitecture
+        {
+            get
+            {
+                return "-" + PackageIdentity.Version + "-" + PackageIdentity.Architecture;
             }
         }
 
@@ -95,10 +109,34 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                if (PackageIdentity.PackageDetails.Tags.IsEmpty())
+                if (!PackageIdentity.PackageDetails.Tags.Any())
                     return null;
 
                 return String.Join(", ", _packageIdentity.PackageDetails.Tags);
+            }
+        }
+
+        public bool IsLocked
+        {
+            get
+            {
+                return PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange);
+            }
+        }
+
+        public bool IsUpdatable
+        {
+            get
+            {
+                return PackageIdentity.PackageState.HasFlag(PackageState.Updatable);
+            }
+        }
+
+        public bool IsUpgradable
+        {
+            get
+            {
+                return PackageIdentity.PackageState.HasFlag(PackageState.Upgradable);
             }
         }
         
@@ -158,7 +196,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return _provider.CanExecuteManage(this);
+                return _provider.CanExecuteManage(this) && PackageIdentity.IsInstalled && IsDev && IsSelected;
             }
         }
 

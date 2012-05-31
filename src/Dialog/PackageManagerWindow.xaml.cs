@@ -39,7 +39,7 @@ namespace CoApp.VisualStudio.Dialog
             _activeProject = project;
             _optionsPageActivator = optionPageActivator;
 
-            PrepareArchComboBox();
+            PrepareArchitectureComboBox();
 
             ProviderServices providerServices = new ProviderServices();
 
@@ -48,8 +48,233 @@ namespace CoApp.VisualStudio.Dialog
                            dte,
                            solutionManager);
         }
+       
+        private void SetupProviders(ProviderServices providerServices,
+                                    Project activeProject,
+                                    DTE dte,
+                                    ISolutionManager solutionManager)
+        {
+            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
+            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
+            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
+            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
 
-        private void PrepareArchComboBox()
+            explorer.Providers.Add(solutionProvider);
+            explorer.Providers.Add(installedProvider);
+            explorer.Providers.Add(onlineProvider);
+            explorer.Providers.Add(updatesProvider);
+
+            explorer.SelectedProvider = explorer.Providers[0];
+        }
+
+        /// <summary>
+        /// Called when coming back from the Options dialog
+        /// </summary>
+        private static void OnActivated(Project project)
+        {
+            var window = new PackageManagerWindow(project);
+            try
+            {
+                window.ShowModal();
+            }
+            catch (TargetInvocationException exception)
+            {
+                MessageHelper.ShowErrorMessage(exception, CoApp.VisualStudio.Dialog.Resources.Dialog_MessageBoxTitle);
+                ExceptionHelper.WriteToActivityLog(exception);
+            }
+        }
+
+        private void CanExecuteCommandOnPackage(object sender, CanExecuteRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, n) =>
+            {
+                try
+                {
+                    e.CanExecute = selectedItem.IsCoreEnabled;
+                }
+                catch (Exception)
+                {
+                    e.CanExecute = false;
+                }
+            });
+        }
+
+        private void CanExecuteManageOnPackage(object sender, CanExecuteRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, n) =>
+            {
+                try
+                {
+                    e.CanExecute = selectedItem.IsManageEnabled;
+                }
+                catch (Exception)
+                {
+                    e.CanExecute = false;
+                }
+            });
+        }
+
+        private void ExecutePackageOperationCore(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                provider.Execute(selectedItem, "core"));
+        }
+
+        private void ExecutePackageOperationManage(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                provider.Execute(selectedItem, "manage"));
+        }
+
+        private void ExecutePackageOperationSetWanted(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "wanted"));
+
+            RefreshSelectedNode();
+        }
+
+        private void ExecutePackageOperationSetBlocked(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "blocked"));
+
+            RefreshSelectedNode();
+        }
+
+        private void ExecutePackageOperationSetLocked(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "locked"));
+
+            RefreshSelectedNode();
+        }
+
+        private void ExecutePackageOperationSetUpdatable(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "updatable"));
+
+            RefreshSelectedNode();
+        }
+
+        private void ExecutePackageOperationSetUpgradable(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecutePackageOperation(e, (selectedItem, provider) =>
+                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "upgradable"));
+
+            RefreshSelectedNode();
+        }
+
+        private void ExecutePackageOperationSetActive(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void ExecutePackageOperationSetRequired(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void ExecutePackageOperation(RoutedEventArgs e, Action<PackageItem, PackagesProviderBase> action)
+        {
+            if (OperationCoordinator.IsBusy)
+            {
+                return;
+            }
+
+            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            if (control == null)
+            {
+                return;
+            }
+
+            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
+            if (provider != null)
+            {
+                action(selectedItem, provider);
+            }
+        }
+
+        private void CanExecuteClose(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !OperationCoordinator.IsBusy;
+            e.Handled = true;
+        }
+
+        private void ExecuteClose(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ExecuteShowOptionsPage(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+            _optionsPageActivator.ActivatePage(
+                OptionsPage.PackageSources,
+                () => OnActivated(_activeProject));
+        }
+
+        private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)
+        {
+            Hyperlink hyperlink = e.OriginalSource as Hyperlink;
+            if (hyperlink != null && hyperlink.NavigateUri != null)
+            {
+                UriHelper.OpenExternalLink(hyperlink.NavigateUri);
+                e.Handled = true;
+            }
+        }
+
+        private void ExecuteSetFocusOnSearchBox(object sender, ExecutedRoutedEventArgs e)
+        {
+            explorer.SetFocusOnSearchBox();
+        }
+
+        private void OnCategorySelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            if (selectedNode != null)
+            {
+                // notify the selected node that it is opened.
+                selectedNode.OnOpened();
+            }
+        }
+
+        private void RefreshSelectedNode()
+        {
+            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            if (selectedNode != null)
+            {
+                selectedNode.RefreshSelectedPackage();
+            }
+        }
+
+        private void OnDialogWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // don't allow the dialog to be closed if an operation is pending
+            if (OperationCoordinator.IsBusy)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void OnDialogWindowClosed(object sender, EventArgs e)
+        {
+            explorer.Providers.Clear();
+
+            CurrentInstance = null;
+        }
+
+        private void OnDialogWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            CurrentInstance = this;
+        }
+
+        private void PrepareArchitectureComboBox()
         {
             ComboBox fxCombo = FindComboBox("cmb_Fx");
             if (fxCombo != null)
@@ -74,8 +299,8 @@ namespace CoApp.VisualStudio.Dialog
                 return;
             }
 
-            string arch = combo.SelectedIndex == 0 ? "All" : 
-                          combo.SelectedIndex == 1 ? "Any" : 
+            string arch = combo.SelectedIndex == 0 ? "All" :
+                          combo.SelectedIndex == 1 ? "Any" :
                           combo.SelectedIndex == 2 ? "x64" : "x86";
 
             CoAppWrapper.SetArchitecture(arch);
@@ -116,222 +341,6 @@ namespace CoApp.VisualStudio.Dialog
                 }
                 return null;
             }
-        }
-        
-        private void SetupProviders(ProviderServices providerServices,
-                                    Project activeProject,
-                                    DTE dte,
-                                    ISolutionManager solutionManager)
-        {
-            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
-            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
-            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
-            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
-
-            explorer.Providers.Add(solutionProvider);
-            explorer.Providers.Add(installedProvider);
-            explorer.Providers.Add(onlineProvider);
-            explorer.Providers.Add(updatesProvider);
-
-            explorer.SelectedProvider = explorer.Providers[0];
-        }
-
-        private void OnCategorySelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
-            if (selectedNode != null)
-            {
-                // notify the selected node that it is opened.
-                selectedNode.OnOpened();
-            }
-        }
-
-        private void ExecutedShowOptionsPage(object sender, ExecutedRoutedEventArgs e)
-        {
-            Close();
-            _optionsPageActivator.ActivatePage(
-                OptionsPage.PackageSources,
-                () => OnActivated(_activeProject));
-        }
-
-        /// <summary>
-        /// Called when coming back from the Options dialog
-        /// </summary>
-        private static void OnActivated(Project project)
-        {
-            var window = new PackageManagerWindow(project);
-            try
-            {
-                window.ShowModal();
-            }
-            catch (TargetInvocationException exception)
-            {
-                MessageHelper.ShowErrorMessage(exception, CoApp.VisualStudio.Dialog.Resources.Dialog_MessageBoxTitle);
-                ExceptionHelper.WriteToActivityLog(exception);
-            }
-        }
-
-        private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)
-        {
-            Hyperlink hyperlink = e.OriginalSource as Hyperlink;
-            if (hyperlink != null && hyperlink.NavigateUri != null)
-            {
-                UriHelper.OpenExternalLink(hyperlink.NavigateUri);
-                e.Handled = true;
-            }
-        }
-
-        private void ExecuteSetFocusOnSearchBox(object sender, ExecutedRoutedEventArgs e)
-        {
-            explorer.SetFocusOnSearchBox();
-        }
-
-        private void CanExecuteCommandOnPackage(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (OperationCoordinator.IsBusy)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
-            if (control == null)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            PackageItem selectedItem = control.SelectedExtension as PackageItem;
-            if (selectedItem == null)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            try
-            {
-                e.CanExecute = selectedItem.IsCoreEnabled;
-            }
-            catch (Exception)
-            {
-                e.CanExecute = false;
-            }
-        }
-
-        private void CanExecuteManageOnPackage(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (OperationCoordinator.IsBusy)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
-            if (control == null)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            PackageItem selectedItem = control.SelectedExtension as PackageItem;
-            if (selectedItem == null)
-            {
-                e.CanExecute = false;
-                return;
-            }
-
-            try
-            {
-                e.CanExecute = selectedItem.IsManageEnabled;
-            }
-            catch (Exception)
-            {
-                e.CanExecute = false;
-            }
-        }
-
-        private void ExecutedPackageOperationCore(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (OperationCoordinator.IsBusy)
-            {
-                return;
-            }
-
-            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
-            if (control == null)
-            {
-                return;
-            }
-
-            PackageItem selectedItem = control.SelectedExtension as PackageItem;
-            if (selectedItem == null)
-            {
-                return;
-            }
-
-            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
-            if (provider != null)
-            {
-                provider.Execute(selectedItem, "core");
-            }
-        }
-
-        private void ExecutedPackageOperationManage(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (OperationCoordinator.IsBusy)
-            {
-                return;
-            }
-
-            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
-            if (control == null)
-            {
-                return;
-            }
-
-            PackageItem selectedItem = control.SelectedExtension as PackageItem;
-            if (selectedItem == null)
-            {
-                return;
-            }
-
-            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
-            if (provider != null)
-            {
-                provider.Execute(selectedItem, "manage");
-            }
-        }
-
-        private void CanExecuteClose(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = !OperationCoordinator.IsBusy;
-            e.Handled = true;
-        }
-
-        private void ExecutedClose(object sender, ExecutedRoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void OnDialogWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            // don't allow the dialog to be closed if an operation is pending
-            if (OperationCoordinator.IsBusy)
-            {
-                e.Cancel = true;
-            }
-        }
-
-        private void OnDialogWindowClosed(object sender, EventArgs e)
-        {
-            explorer.Providers.Clear();
-
-            CurrentInstance = null;
-        }
-
-        private void OnDialogWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            CurrentInstance = this;
         }
     }
 }

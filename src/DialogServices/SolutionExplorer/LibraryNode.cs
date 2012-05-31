@@ -1,24 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Media;
 using EnvDTE;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    public class LibraryNode : ProjectNodeBase
+    public class LibraryNode : FolderNode
     {
-        private readonly Project _project;
-
-        public Project Project
-        {
-            get
-            {
-                return _project;
-            }
-        }
-
         public LibraryNode(Project project, string name) :
-            base(name)
+            base(project, name, null)
         {
-            _project = project;
         }
 
         public override IEnumerable<Project> GetSelectedProjects()
@@ -32,6 +22,14 @@ namespace CoApp.VisualStudio.Dialog
         public override IEnumerable<Library> GetLibraries()
         {
             yield return new Library(Name, Project.Name, Parent.Name, IsSelected == true);
+        }
+
+        public override ImageSource Icon
+        {
+            get
+            {
+                return null;
+            }
         }
     }
 }

@@ -112,7 +112,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                 var dependents = CoAppWrapper.GetDependents(package);
 
-                if (!dependents.IsEmpty())
+                if (dependents.Any())
                 {
                     ShowProgressWindow();
                     throw new Exception("Uninstall depending packages first:\n" + String.Join("\n", dependents.Select(pkg => pkg.CanonicalName)));

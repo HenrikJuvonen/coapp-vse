@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Media;
 using EnvDTE;
 using CoApp.VisualStudio.VsCore;
 
@@ -6,7 +7,9 @@ namespace CoApp.VisualStudio.Dialog
 {
     public class ProjectNode : FolderNode
     {
-        public ProjectNode(Project project, ICollection<ProjectNodeBase> children) :
+        private static ImageSource _expandedIcon, _collapsedIcon;
+
+        public ProjectNode(Project project, ICollection<ViewModelNodeBase> children) :
             base(project, project.GetDisplayName(), children)
         {
         }
@@ -18,5 +21,28 @@ namespace CoApp.VisualStudio.Dialog
                 yield return _project;
             }
         }
+
+        public override ImageSource Icon
+        {
+            get
+            {
+                if (IsExpanded)
+                {
+                    if (_expandedIcon == null)
+                    {
+                        _expandedIcon = ProjectUtilities.GetImage(Project, true);
+                    }
+                    return _expandedIcon;
+                }
+                else
+                {
+                    if (_collapsedIcon == null)
+                    {
+                        _collapsedIcon = ProjectUtilities.GetImage(Project);
+                    }
+                    return _collapsedIcon;
+                }
+            }
+        } 
     }
 }

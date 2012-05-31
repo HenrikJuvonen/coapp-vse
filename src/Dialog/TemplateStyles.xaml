@@ -14,6 +14,11 @@
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
+    <Style x:Key="TileTitleTextBoxStyle2" TargetType="{x:Type eml:TextBlockControl}">
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
     <Style x:Key="TileDescriptionTextBoxStyle" TargetType="{x:Type eml:TextBlockControl}">
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
         <Setter Property="MaxHeight" Value="44" />

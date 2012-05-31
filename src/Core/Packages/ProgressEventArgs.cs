@@ -4,11 +4,6 @@ namespace CoApp.VisualStudio
 {
     public class ProgressEventArgs : EventArgs
     {
-        public ProgressEventArgs(int percentComplete)
-            : this(null, percentComplete)
-        {
-        }
-
         public ProgressEventArgs(string operation, int percentComplete)
         {
             Operation = operation;

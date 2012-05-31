@@ -41,7 +41,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IVsExtension CreateExtension(IPackage package)
         {
-            return new PackageItem(this, package, isUpdateItem: true)
+            return new PackageItem(this, package)
             {
                 CommandName = Resources.Dialog_UpdateButton
             };

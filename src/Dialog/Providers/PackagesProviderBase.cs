@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
-    internal abstract class PackagesProviderBase : VsExtensionsProvider, ILogger
+    internal abstract class PackagesProviderBase : VsExtensionsProvider
     {
         private readonly ResourceDictionary _resources;
         private readonly ProviderServices _providerServices;

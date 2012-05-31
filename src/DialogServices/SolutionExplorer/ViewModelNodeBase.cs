@@ -5,7 +5,7 @@ using EnvDTE;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    public abstract class ProjectNodeBase : INotifyPropertyChanged
+    public abstract class ViewModelNodeBase : INotifyPropertyChanged
     {
         protected bool _suppressNotifyParentOfIsSelectedChanged;
         private FolderNode _parent;
@@ -13,7 +13,7 @@ namespace CoApp.VisualStudio.Dialog
         private bool? _isSelected = false;
         private bool _isEnabled = true;
 
-        protected ProjectNodeBase(string name)
+        protected ViewModelNodeBase(string name)
         {
             if (name == null)
             {

@@ -79,7 +79,6 @@
     <Compile Include="PackageManagerWindow.xaml.cs">
       <DependentUpon>PackageManagerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManagerWindowCommands.cs" />
     <Compile Include="PackageSortDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\InstalledProvider.cs" />

@@ -28,13 +28,13 @@ namespace CoApp.VisualStudio.Dialog
             var children = CreateProjectNode(solution.Projects.OfType<Project>(), packageReference).ToArray();
             Array.Sort(children, ProjectNodeComparer.Default);
 
-            return new FolderNode(
+            return new SolutionNode(
                 null,
                 String.Format(CultureInfo.CurrentCulture, Resources.Dialog_SolutionNode, solution.GetName()),
                 children);
         }
 
-        private static IEnumerable<ProjectNodeBase> CreateProjectNode(
+        private static IEnumerable<ViewModelNodeBase> CreateProjectNode(
             IEnumerable<Project> projects,
             PackageReference packageReference)
         {
@@ -42,7 +42,7 @@ namespace CoApp.VisualStudio.Dialog
             {
                 if (project.IsSupported() && project.IsCompatible(packageReference))
                 {
-                    IList<ProjectNodeBase> children;
+                    IList<ViewModelNodeBase> children;
 
                     if (packageReference.Type == "vc,lib")
                         children = CreateConfigurationNode(
@@ -50,9 +50,9 @@ namespace CoApp.VisualStudio.Dialog
                             packageReference
                         ).ToList();
                     else
-                        children = new List<ProjectNodeBase>();
+                        children = new List<ViewModelNodeBase>();
 
-                    bool allChildrenSelected = children.IsEmpty() ? false : children.All(n => n.IsSelected == true);
+                    bool allChildrenSelected = children.Any() ? children.All(n => n.IsSelected == true) : false;
                     
                     yield return new ProjectNode(project, children)
                     {
@@ -75,14 +75,14 @@ namespace CoApp.VisualStudio.Dialog
                         {
                             Array.Sort(children, ProjectNodeComparer.Default);
                             // only create a folder node if it has at least one child
-                            yield return new FolderNode(project, project.Name, children);
+                            yield return new SolutionNode(project, project.Name, children);
                         }
                     }
                 }
             }
         }
 
-        private static IEnumerable<ProjectNodeBase> CreateConfigurationNode(
+        private static IEnumerable<ViewModelNodeBase> CreateConfigurationNode(
             Project project,
             PackageReference packageReference)
         {
@@ -100,7 +100,7 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        private static IEnumerable<ProjectNodeBase> CreateLibraryNode(
+        private static IEnumerable<ViewModelNodeBase> CreateLibraryNode(
             Project project,
             PackageReference packageReference,
             string config)
@@ -134,7 +134,7 @@ namespace CoApp.VisualStudio.Dialog
 
                 projectHasPackage = true;
 
-                if (p.Libraries != null && !p.Libraries.IsEmpty())
+                if (p.Libraries != null && p.Libraries.Any())
                     hasLibraries = true;
 
                 foreach (Library l in p.Libraries)
@@ -161,7 +161,7 @@ namespace CoApp.VisualStudio.Dialog
             return false;
         }
 
-        private class ProjectNodeComparer : IComparer<ProjectNodeBase>
+        private class ProjectNodeComparer : IComparer<ViewModelNodeBase>
         {
             public static readonly ProjectNodeComparer Default = new ProjectNodeComparer();
 
@@ -169,7 +169,7 @@ namespace CoApp.VisualStudio.Dialog
             {
             }
 
-            public int Compare(ProjectNodeBase first, ProjectNodeBase second)
+            public int Compare(ViewModelNodeBase first, ViewModelNodeBase second)
             {
                 if (first == null && second == null)
                 {

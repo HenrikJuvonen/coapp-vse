@@ -2,10 +2,7 @@
 {
     public class Library
     {
-        public Library(string name,
-                       string projectName,
-                       string configurationName,
-                       bool isSelected)
+        public Library(string name, string projectName, string configurationName, bool isSelected)
         {
             Name = name;
             ProjectName = projectName;

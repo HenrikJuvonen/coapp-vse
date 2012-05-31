@@ -31,7 +31,7 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        public IEnumerable<ProjectNodeBase> ProjectNodes
+        public IEnumerable<ViewModelNodeBase> ProjectNodes
         {
             get
             {

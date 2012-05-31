@@ -28,9 +28,9 @@ namespace CoApp.VisualStudio
 
         private static readonly PackageManager _packageManager = new PackageManager();
         
-        private static readonly IProgressProvider _progressProvider = new ProgressProvider();
+        private static readonly ProgressProvider _progressProvider = new ProgressProvider();
 
-        public static IProgressProvider ProgressProvider
+        public static ProgressProvider ProgressProvider
         {
             get
             {
@@ -69,6 +69,37 @@ namespace CoApp.VisualStudio
         public static void SetArchitecture(string arch)
         {
             architecture = Architecture.Parse(arch);
+        }
+
+        public static void SetPackageState(IPackage package, string state)
+        {
+            Task task = preCommandTasks.Continue(() =>
+            {
+                switch (state)
+                {
+                    case "wanted":
+                        if (package.IsWanted)
+                            _packageManager.SetPackageWanted(package.CanonicalName, false);
+                        else
+                            _packageManager.SetPackageWanted(package.CanonicalName, true);
+                        break;
+                    case "updatable":
+                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
+                        break;
+                    case "upgradable":
+                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
+                        break;
+                    case "blocked":
+                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
+                        break;
+                    case "locked":
+                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
+                        break;
+                }
+                
+            });
+
+            ContinueTask(task);
         }
 
         public static IEnumerable<Feed> ListFeeds()
@@ -144,6 +175,11 @@ namespace CoApp.VisualStudio
         public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
             return QueryPackages(parameters, null, null);
+        }
+
+        public static IPackage GetPackage(CanonicalName canonicalName)
+        {
+            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
         }
 
         private static IEnumerable<IPackage> QueryPackages(string[] queries,

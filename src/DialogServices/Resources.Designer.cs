@@ -448,7 +448,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Settings.
+        ///   Looks up a localized string similar to _Options.
         /// </summary>
         public static string Dialog_Settings {
             get {

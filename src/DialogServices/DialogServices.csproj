@@ -86,15 +86,13 @@
     <Compile Include="PackageManagerUI\IProviderSettings.cs" />
     <Compile Include="PackageManagerUI\IUserNotifierServices.cs" />
     <Compile Include="PackageManagerUI\OperationCoordinator.cs" />
+    <Compile Include="PackageManagerUI\PackageManagerWindowCommands.cs" />
     <Compile Include="PackageManagerUI\ProgressDialog.xaml.cs">
       <DependentUpon>ProgressDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManagerUI\ProgressWindowOpener.cs" />
     <Compile Include="PackageManagerUI\ProviderServices.cs" />
     <Compile Include="PackageManagerUI\ProviderSettingsManager.cs" />
-    <Compile Include="PackageManagerUI\SummaryWindow.xaml.cs">
-      <DependentUpon>SummaryWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PackageManagerUI\UserNotifierServices.cs" />
     <Compile Include="QueryExtensions.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -106,12 +104,13 @@
     <Compile Include="SolutionExplorer\FolderNode.cs" />
     <Compile Include="SolutionExplorer\LibraryNode.cs" />
     <Compile Include="SolutionExplorer\ProjectNode.cs" />
-    <Compile Include="SolutionExplorer\ProjectNodeBase.cs" />
+    <Compile Include="SolutionExplorer\ViewModelNodeBase.cs" />
     <Compile Include="SolutionExplorer\ProjectUtilities.cs" />
     <Compile Include="SolutionExplorer\SolutionExplorer.xaml.cs">
       <DependentUpon>SolutionExplorer.xaml</DependentUpon>
     </Compile>
     <Compile Include="SolutionExplorer\SolutionExplorerViewModel.cs" />
+    <Compile Include="SolutionExplorer\SolutionNode.cs" />
     <Compile Include="SolutionExplorer\SolutionWalker.cs" />
     <Compile Include="UIResources.cs" />
     <Compile Include="WindowSizePersistenceHelper.cs" />
@@ -124,10 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="PackageManagerUI\ProgressDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PackageManagerUI\SummaryWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
