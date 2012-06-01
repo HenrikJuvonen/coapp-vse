@@ -25,7 +25,7 @@ namespace CoApp.VisualStudio.Tools
     [InstalledProductRegistration("#110", "#112", VsPackage.ProductVersion, IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     
-    [ProvideOptionPage(typeof(PackageSourceOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
+    [ProvideOptionPage(typeof(FeedOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
     [ProvideOptionPage(typeof(GeneralOptionPage), "CoApp Package Manager", "General", 113, 115, true)]
     [ProvideBindingPath] // Definition dll needs to be on VS binding path
     [ProvideAutoLoad(GuidList.guidAutoLoadVSString)]
@@ -212,7 +212,7 @@ namespace CoApp.VisualStudio.Tools
 
         private void ShowPackageSourcesOptionPage(object sender, EventArgs args)
         {
-            ShowOptionPageSafe(typeof(PackageSourceOptionsPage));
+            ShowOptionPageSafe(typeof(FeedOptionsPage));
         }
 
         private void ShowGeneralSettingsOptionPage(object sender, EventArgs args)

@@ -62,7 +62,7 @@
         <Icon guid="guidToolbarImages" id="bmpSourceSettings" />
         <Strings>
           <CommandName>cmdidGeneralSettings</CommandName>
-          <ButtonText>&amp;CoApp Package Manager Settings</ButtonText>
+          <ButtonText>&amp;Options...</ButtonText>
         </Strings>
       </Button>
     </Buttons>

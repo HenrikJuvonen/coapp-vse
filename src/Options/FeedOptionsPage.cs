@@ -9,21 +9,21 @@ namespace CoApp.VisualStudio.Options
 {
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.AutoDual)]
-    public class PackageSourceOptionsPage : OptionsPageBase
+    public class FeedOptionsPage : OptionsPageBase
     {
         private FeedsOptionsControl _optionsWindow;
 
         protected override void OnActivate(CancelEventArgs e)
         {
             base.OnActivate(e);
-            PackageSourcesControl.Font = VsShellUtilities.GetEnvironmentFont(this);
-            PackageSourcesControl.InitializeOnActivated();
+            FeedsControl.Font = VsShellUtilities.GetEnvironmentFont(this);
+            FeedsControl.InitializeOnActivated();
         }
 
         protected override void OnApply(PageApplyEventArgs e)
         {
             // Do not need to call base.OnApply() here.
-            bool wasApplied = PackageSourcesControl.ApplyChangedSettings();
+            bool wasApplied = FeedsControl.ApplyChangedSettings();
             if (!wasApplied)
             {
                 e.ApplyBehavior = ApplyKind.CancelNoNavigate;
@@ -32,11 +32,11 @@ namespace CoApp.VisualStudio.Options
 
         protected override void OnClosed(EventArgs e)
         {
-            PackageSourcesControl.ClearSettings();
+            FeedsControl.ClearSettings();
             base.OnClosed(e);
         }
 
-        private FeedsOptionsControl PackageSourcesControl
+        private FeedsOptionsControl FeedsControl
         {
             get
             {
@@ -55,7 +55,7 @@ namespace CoApp.VisualStudio.Options
         {
             get
             {
-                return PackageSourcesControl;
+                return FeedsControl;
             }
         }
     }

@@ -63,10 +63,10 @@ namespace CoApp.VisualStudio.Options
             resources.ApplyResources(this.PackageSourcesContextMenu, "PackageSourcesContextMenu");
             this.PackageSourcesContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.FeedsContextMenu_ItemClicked);
             // 
-            // CopyPackageSourceStripMenuItem
+            // CopyFeedsStripMenuItem
             // 
-            this.CopyFeedsStripMenuItem.Name = "CopyPackageSourceStripMenuItem";
-            resources.ApplyResources(this.CopyFeedsStripMenuItem, "CopyPackageSourceStripMenuItem");
+            this.CopyFeedsStripMenuItem.Name = "CopyFeedsStripMenuItem";
+            resources.ApplyResources(this.CopyFeedsStripMenuItem, "CopyFeedsStripMenuItem");
             // 
             // removeButton
             // 
@@ -91,25 +91,25 @@ namespace CoApp.VisualStudio.Options
             this.addButton.UseVisualStyleBackColor = true;
             this.addButton.Click += new System.EventHandler(this.OnAddButtonClick);
             // 
-            // NewPackageSource
+            // NewPackageFeed
             // 
-            resources.ApplyResources(this.NewPackageFeed, "NewPackageSource");
-            this.NewPackageFeed.Name = "NewPackageSource";
+            resources.ApplyResources(this.NewPackageFeed, "NewPackageFeed");
+            this.NewPackageFeed.Name = "NewPackageFeed";
             // 
             // NewPackageSourceLabel
             // 
             resources.ApplyResources(this.NewPackageSourceLabel, "NewPackageSourceLabel");
             this.NewPackageSourceLabel.Name = "NewPackageSourceLabel";
             // 
-            // PackageSourcesListBox
+            // FeedsListBox
             // 
-            resources.ApplyResources(this.FeedsListBox, "PackageSourcesListBox");
+            resources.ApplyResources(this.FeedsListBox, "FeedsListBox");
             this.FeedsListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tableLayoutPanel1.SetColumnSpan(this.FeedsListBox, 4);
             this.FeedsListBox.ContextMenuStrip = this.PackageSourcesContextMenu;
             this.FeedsListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.FeedsListBox.FormattingEnabled = true;
-            this.FeedsListBox.Name = "PackageSourcesListBox";
+            this.FeedsListBox.Name = "FeedsListBox";
             this.FeedsListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.FeedsListBox_DrawItem);
             this.FeedsListBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.FeedsListBox_MeasureItem);
             this.FeedsListBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FeedsListBox_MouseMove);
@@ -140,12 +140,12 @@ namespace CoApp.VisualStudio.Options
             this.imageList2.Images.SetKeyName(1, "downarrow.png");
             this.imageList2.Images.SetKeyName(2, "delete.png");
             // 
-            // PackageSourcesOptionsControl
+            // FeedsOptionsControl
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Name = "PackageSourcesOptionsControl";
+            this.Name = "FeedsOptionsControl";
             this.PackageSourcesContextMenu.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

@@ -23,7 +23,9 @@
 
         private void UpdateFeeds()
         {
-            _allFeeds = new BindingSource(CoAppWrapper.GetFeeds().Select(feed => feed.Location), null);
+            var feeds = CoAppWrapper.GetFeeds().Select(feed => feed.Location);
+
+            _allFeeds = new BindingSource(feeds, null);
             FeedsListBox.DataSource = _allFeeds;
         }
         
