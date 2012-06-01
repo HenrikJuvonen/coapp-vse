@@ -1,0 +1,130 @@
+#product-info {
+    product-name: "coapp vse";
+    version: "0.1.0";
+    original-source-location: "git@github.com:henjuv/coapp-vse.git";
+    original-source-website: "https://github.com/henjuv/coapp-vse";
+    license: "Apache2.0";
+    packager: "henrik juvonen <henjuv@utu.fi>";
+}
+
+release { 
+    default : true;
+    // builds the binaries in "Release" mode but does not sign them.
+    set : cfg = "Release";
+    
+    uses : {
+        anycpu 
+    };
+    
+    build-command: @"
+    echo build done.";
+}
+
+package { 
+    default: false;
+    set : cfg = "Release";
+    uses : sign;
+    build-command: @"
+        rem cscript //e:jscript scripts\increment-build-version.js
+        REM Add the newly built folder to the path, 
+        REM And coapp tools folder to the end of the path, in case we don't have the tools available.
+        PATH=%CD%\output\any\Release\bin\;%PATH%;%CD%\ext\tools
+        
+        cd copkg
+        autopackage coapp.vse.autopkg  || goto failed
+        erase /Q *.wixpdb
+        echo Done Packaging!
+    ";
+}
+
+install {
+    default: false;
+    set : cfg = "Release";
+    uses : package;
+    build-command: @"
+    for /F %%G in ('dir /s /b /o-n  coapp.vse*.msi') do ( 
+        coapp install %%G
+        goto :eof
+    )
+    ";
+}
+
+debug {
+    // builds binaries in debug mode
+    default: false;
+    set : cfg = "Debug";
+    uses : {
+        anycpu 
+    };
+    
+    build-command: @"echo build done.";
+}
+
+sign { 
+    // builds all the binaries in "Release" mode and digitally signs and 
+    // strong-names the binaries.
+    
+    set : cfg = "Release";
+    set : release_dir = @"output\any\Release\bin\";
+    
+    default: false;
+    
+    uses: {
+        anycpu
+    };
+        
+    targets: {
+    };
+    
+    build-command: @"
+        REM Add the coapp tools folder to the end of the path, in case we don't have the tools in the path
+        PATH=%PATH%;%CD%\ext\tools
+     
+        REM sign files in release directory
+        rem simplesigner --nologo  --sign --strong-name ""${release_dir}CoApp.VisualStudio.Tools.vsix""
+    ";
+}
+
+
+export {
+    set : release_dir = @"output\any\Release\bin\";
+    set : tools_dir = @"..\tools\";
+    
+    default: false;
+    uses: {
+        sign
+    };
+    
+    build-command: @"
+        REM copy tools into ..\tools folder (this should be the one that is committed back when exported)
+        xcopy /Q /D /Y  ""${release_dir}CoApp.VisualStudio.Tools.vsix""  ""${tools_dir}"" || goto failed
+    ";
+}
+
+
+anycpu {
+    default: no;
+    platform : x86;
+    compiler: vc10;
+    
+    uses: clean;
+    
+    targets: { 
+        @"output\any\${cfg}\bin\CoApp.VisualStudio.Tools.vsix",
+    };
+
+    build-command: @"
+        REM then everything else
+        msbuild  /p:Configuration=${cfg} ""/p:Platform=Any CPU"" coapp-vse.sln || goto failed
+    ";
+}
+
+clean {
+    default: no;
+
+    clean-command: @"
+        rmdir /s /q output intermediate bin obj > nul 2>&1
+        for /d %%v in (*) do if exist %%v\obj rmdir /s /q %%v\obj        
+        for /d %%v in (*) do if exist %%v\bin rmdir /s /q %%v\bin
+    ";
+}

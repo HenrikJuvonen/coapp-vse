@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CoApp.VisualStudio.VsCore.Resources {
+namespace CoApp.VisualStudio.VsCore {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CoApp.VisualStudio.VsCore.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VisualStudio.VsCore.Resources.VsResources", typeof(VsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CoApp.VisualStudio.VsCore.VsResources", typeof(VsResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

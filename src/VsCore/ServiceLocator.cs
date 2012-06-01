@@ -1,22 +1,19 @@
-﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using EnvDTE;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using VsServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-
-namespace CoApp.VsExtension.VisualStudio
+﻿namespace CoApp.VisualStudio.VsCore
 {
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using EnvDTE;
+    using Microsoft.VisualStudio.ComponentModelHost;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
+    using VsServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
     /// <summary>
     /// This class unifies all the different ways of getting services within visual studio.
     /// </summary>
-    // REVIEW: Make this internal 
     public static class ServiceLocator
     {
-
         public static TService GetInstance<TService>() where TService : class
         {
             // Special case IServiceProvider
@@ -26,7 +23,7 @@ namespace CoApp.VsExtension.VisualStudio
             }
 
             // then try to find the service as a component model, then try dte then lastly try global service
-            // Per bug #2072, avoid calling GetGlobalService() from within the Initialize() method of NuGetPackage class. 
+            // Per bug #2072, avoid calling GetGlobalService() from within the Initialize() method of CoApp.VisualStudioPackage class. 
             // Doing so is illegal and may cause VS to hang. As a result of that, we defer calling GetGlobalService to the last option.
             return GetGlobalService<TService, TService>() ??
                    GetDTEService<TService>() ??
@@ -83,7 +80,6 @@ namespace CoApp.VsExtension.VisualStudio
 
         }
 
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing this")]
         private static IServiceProvider GetServiceProvider(_DTE dte)
         {
             IServiceProvider serviceProvider = new ServiceProvider(dte as VsServiceProvider);

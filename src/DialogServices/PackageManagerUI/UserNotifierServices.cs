@@ -1,14 +1,14 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Threading;
-using EnvDTE;
-using CoApp.VisualStudio.VsCore;
-using CoApp.Packaging.Client;
-using CoApp.Toolkit.Win32;
-using CoApp.VisualStudio.Dialog;
-
-namespace CoApp.VisualStudio.Dialog.PackageManagerUI
+﻿namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
+    using System;
+    using System.Globalization;
+    using System.Windows.Threading;
+    using EnvDTE;
+    using CoApp.VisualStudio.VsCore;
+    using CoApp.Packaging.Client;
+    using CoApp.Toolkit.Win32;
+    using CoApp.VisualStudio.Dialog;
+
     public class UserNotifierServices
     {
         private readonly Dispatcher _uiDispatcher;

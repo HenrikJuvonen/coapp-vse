@@ -31,13 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CoApp.Client, Version=1.2.0.347, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
+    <Reference Include="CoApp.Client, Version=1.2.0.360, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\ProgramData\ReferenceAssemblies\any\CoApp.Client.dll</HintPath>
     </Reference>
-    <Reference Include="CoApp.Toolkit, Version=1.2.0.347, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
+    <Reference Include="CoApp.Toolkit, Version=1.2.0.360, Culture=neutral, PublicKeyToken=1e373a58e25250cb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\ProgramData\ReferenceAssemblies\any\CoApp.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -85,17 +83,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SolutionExplorer\ConfigurationNode.cs" />
-    <Compile Include="SolutionExplorer\FolderNode.cs" />
-    <Compile Include="SolutionExplorer\LibraryNode.cs" />
-    <Compile Include="SolutionExplorer\ProjectNode.cs" />
-    <Compile Include="SolutionExplorer\ViewModelNodeBase.cs" />
+    <Compile Include="SolutionExplorer\Nodes\ConfigurationNode.cs" />
+    <Compile Include="SolutionExplorer\Nodes\FolderNode.cs" />
+    <Compile Include="SolutionExplorer\Nodes\LibraryNode.cs" />
+    <Compile Include="SolutionExplorer\Nodes\ProjectNode.cs" />
+    <Compile Include="SolutionExplorer\Nodes\ViewModelNodeBase.cs" />
     <Compile Include="SolutionExplorer\ProjectUtilities.cs" />
     <Compile Include="SolutionExplorer\SolutionExplorer.xaml.cs">
       <DependentUpon>SolutionExplorer.xaml</DependentUpon>
     </Compile>
     <Compile Include="SolutionExplorer\SolutionExplorerViewModel.cs" />
-    <Compile Include="SolutionExplorer\SolutionNode.cs" />
+    <Compile Include="SolutionExplorer\Nodes\SolutionNode.cs" />
     <Compile Include="SolutionExplorer\SolutionWalker.cs" />
     <Compile Include="UIResources.cs" />
     <EmbeddedResource Include="Resources.resx">

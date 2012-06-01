@@ -1,12 +1,12 @@
-﻿using System;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Interop;
-using System.Windows.Media;
-using Microsoft.VisualStudio.PlatformUI;
-
-namespace CoApp.VisualStudio.Dialog.PackageManagerUI
+﻿namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
+    using System;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Interop;
+    using System.Windows.Media;
+    using Microsoft.VisualStudio.PlatformUI;
+
     /// <summary>
     /// Interaction logic for ProgressDialog.xaml
     /// </summary>

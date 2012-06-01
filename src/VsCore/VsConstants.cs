@@ -25,8 +25,6 @@ namespace CoApp.VisualStudio.VsCore
         // All unloaded projects have this Kind value
         internal const string UnloadedProjectTypeGuid = "{67294A52-A4F0-11D2-AA88-00C04F688DDE}";
         
-        internal const string SolutionSettingsFolder = ".coapp";
-
         // HResults
         internal const int S_OK = 0;
     }

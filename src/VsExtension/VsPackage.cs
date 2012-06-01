@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using CoApp.VisualStudio.Options;
 using CoApp.VisualStudio.VsCore;
-using CoApp.VisualStudio.VsCore.Resources;
 
 using ManagePackageDialog = CoApp.VisualStudio.Dialog.PackageManagerWindow;
 

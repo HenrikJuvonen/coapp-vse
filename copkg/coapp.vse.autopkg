@@ -1,0 +1,51 @@
+// autopackage file for coapp.devtools
+@import "outercurve.inc";
+
+package {
+    name: "CoApp.Vse";
+    display-name: "CoApp for Visual Studio";
+}
+
+provides {
+    feature: "coapp.vse" = "0.1.0";
+}
+
+metadata {
+    summary: "Visual Studio Extension";
+    description: @""; 
+    icon: @"images\logo3.png";
+    
+    author-version : "0.1.0";
+    bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
+    stability : "-100";
+}
+
+compatability-policy {
+    minimum: "0.0.0.0";
+    maximum: "${OneLessThanCurrent}"; // this is the default
+    versions : {
+        "0.1.0",
+    }; // if not specified, find the versions by looking at the feeds and finding all the major/minor versions in range.
+}
+
+files[exes] {
+    root: "..\output\any\release\bin";
+    
+    include: {
+        "CoApp.VisualStudio.Tools.vsix",
+    };
+    
+    trim-path: minimal;
+};
+
+application {
+    include : {
+    exes
+    };
+}
+
+package-composition {
+    symlinks : { 
+        exes => @"${bin}\${each.Name}" = @"${packagedir}\${each.Name}";
+    };
+}
