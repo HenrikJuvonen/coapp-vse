@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace CoApp.VisualStudio
 {
+    /// <summary>
+    /// Represents a package.
+    /// </summary>
     public class PackageReference
     {
         public PackageReference(string name, string version, string architecture, string type, string path) :

@@ -1,5 +1,8 @@
 ﻿namespace CoApp.VisualStudio
 {
+    /// <summary>
+    /// Represents a static/dynamic library in a project.
+    /// </summary>
     public class Library
     {
         public Library(string name, string projectName, string configurationName, bool isSelected)

@@ -8,6 +8,9 @@ using System.Xml.Linq;
 
 namespace CoApp.VisualStudio
 {
+    /// <summary>
+    /// Represents an XML-document containing information about added packages
+    /// </summary>
     public class PackageReferenceFile
     {
         private readonly string _path;

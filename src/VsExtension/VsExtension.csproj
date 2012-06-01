@@ -122,7 +122,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Guids.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ProvideBindingPath.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

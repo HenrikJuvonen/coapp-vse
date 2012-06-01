@@ -1,38 +1,30 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using CoApp.VisualStudio.VsCore;
-
-namespace CoApp.VisualStudio.Options
+﻿namespace CoApp.VisualStudio.Options
 {
+    using System;
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+    using System.Linq;
+    using System.Windows.Forms;
+    using CoApp.VisualStudio.VsCore;
+
     /// <summary>
     /// Represents the Tools - Options - Package Manager dialog
     /// </summary>
-    /// <remarks>
-    /// The code in this class assumes that while the dialog is open, noone is modifying the VSPackageSourceProvider directly.
-    /// Otherwise, we have a problem with synchronization with the package source provider.
-    /// </remarks>
-    public partial class PackageSourcesOptionsControl : UserControl
+    public partial class FeedsOptionsControl : UserControl
     {
-        private readonly IServiceProvider _serviceProvider;
         private bool _initialized;
 
-        private BindingSource _allPackageSources;
+        private BindingSource _allFeeds;
 
-        public PackageSourcesOptionsControl(IServiceProvider serviceProvider)
+        public FeedsOptionsControl()
         {
             InitializeComponent();
-
-            _serviceProvider = serviceProvider;
         }
 
         private void UpdateFeeds()
         {
-            _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
-            PackageSourcesListBox.DataSource = _allPackageSources;
+            _allFeeds = new BindingSource(CoAppWrapper.GetFeeds().Select(feed => feed.Location), null);
+            FeedsListBox.DataSource = _allFeeds;
         }
         
         internal void InitializeOnActivated()
@@ -48,7 +40,7 @@ namespace CoApp.VisualStudio.Options
         }
 
         /// <summary>
-        /// Persist the package sources, which was add/removed via the Options page, to the VS Settings store.
+        /// Persist the feeds, which was add/removed via the Options page, to the VS Settings store.
         /// This gets called when users click OK button.
         /// </summary>
         internal bool ApplyChangedSettings()
@@ -56,11 +48,10 @@ namespace CoApp.VisualStudio.Options
             // if user presses Enter after filling in Name/Source but doesn't click Add
             // the options will be closed without adding the source, try adding before closing
             // Only apply if nothing was added
-            TryAddSourceResults result = TryAddSource();
-            if (result != TryAddSourceResults.NothingAdded)
+            TryAddFeedResults result = TryAddFeed();
+            if (result != TryAddFeedResults.NothingAdded)
             {
-                _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
-                PackageSourcesListBox.DataSource = _allPackageSources;
+                UpdateFeeds();
 
                 return false;
             }
@@ -76,75 +67,72 @@ namespace CoApp.VisualStudio.Options
             // clear this flag so that we will set up the bindings again when the option page is activated next time
             _initialized = false;
 
-            ClearNameSource();
+            ClearFeed();
         }
 
         private void OnRemoveButtonClick(object sender, EventArgs e)
         {
-            if (PackageSourcesListBox.SelectedItem == null)
+            if (FeedsListBox.SelectedItem == null)
             {
                 return;
             }
 
-            CoAppWrapper.RemoveFeed((string)PackageSourcesListBox.SelectedItem);
+            CoAppWrapper.RemoveFeed((string)FeedsListBox.SelectedItem);
 
             UpdateFeeds();
         }
 
         private void OnAddButtonClick(object sender, EventArgs e)
         {
-            TryAddSource();
-
-            _allPackageSources = new BindingSource(CoAppWrapper.ListFeeds().Select(feed => feed.Location), null);
-            PackageSourcesListBox.DataSource = _allPackageSources;
-
+            TryAddFeed();
+            
             UpdateFeeds();
         }
 
 
-        private void PackageSourcesContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void FeedsContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem == CopyPackageSourceStripMenuItem && PackageSourcesListBox.SelectedItem != null)
+            if (e.ClickedItem == CopyFeedsStripMenuItem && FeedsListBox.SelectedItem != null)
             {
-                CopySelectedItem((string)PackageSourcesListBox.SelectedItem);
+                CopySelectedItem((string)FeedsListBox.SelectedItem);
             }
         }
 
-        private static void CopySelectedItem(string selectedPackageSource)
+        private static void CopySelectedItem(string selectedFeed)
         {
             Clipboard.Clear();
-            Clipboard.SetText(selectedPackageSource);
+            Clipboard.SetText(selectedFeed);
         }
 
-        private TryAddSourceResults TryAddSource()
+        private TryAddFeedResults TryAddFeed()
         {
-            var source = NewPackageSource.Text.Trim();
-            if (String.IsNullOrWhiteSpace(source))
+            var feed = NewPackageFeed.Text.Trim();
+            if (String.IsNullOrWhiteSpace(feed))
             {
-                return TryAddSourceResults.NothingAdded;
+                return TryAddFeedResults.NothingAdded;
             }
 
             // validate source
-            if (String.IsNullOrWhiteSpace(source))
+            if (String.IsNullOrWhiteSpace(feed))
             {
                 MessageHelper.ShowWarningMessage(Resources.ShowWarning_SourceRequried, Resources.ShowWarning_Title);
-                SelectAndFocus(NewPackageSource);
-                return TryAddSourceResults.InvalidSource;
+                SelectAndFocus(NewPackageFeed);
+                return TryAddFeedResults.InvalidFeed;
             }
 
-            if (!(PathValidator.IsValidSource(source)))
+            if (!(PathValidator.IsValidSource(feed)))
             {
                 MessageHelper.ShowWarningMessage(Resources.ShowWarning_InvalidSource, Resources.ShowWarning_Title);
-                SelectAndFocus(NewPackageSource);
-                return TryAddSourceResults.InvalidSource;
+                SelectAndFocus(NewPackageFeed);
+                return TryAddFeedResults.InvalidFeed;
             }
 
-            CoAppWrapper.AddFeed(source);
+            CoAppWrapper.AddFeed(feed);
 
             // now clear the text boxes
-            ClearNameSource();
+            ClearFeed();
 
-            return TryAddSourceResults.SourceAdded;
+            return TryAddFeedResults.FeedAdded;
         }
 
         private static void SelectAndFocus(TextBox textBox)
@@ -153,22 +141,22 @@ namespace CoApp.VisualStudio.Options
             textBox.SelectAll();
         }
 
-        private void ClearNameSource()
+        private void ClearFeed()
         {
-            NewPackageSource.Text = String.Empty;
+            NewPackageFeed.Text = String.Empty;
         }
 
-        private void PackageSourcesListBox_DrawItem(object sender, DrawItemEventArgs e)
+        private void FeedsListBox_DrawItem(object sender, DrawItemEventArgs e)
         {
             Graphics graphics = e.Graphics;
             e.DrawBackground();
 
-            if (e.Index < 0 || e.Index >= PackageSourcesListBox.Items.Count)
+            if (e.Index < 0 || e.Index >= FeedsListBox.Items.Count)
             {
                 return;
             }
 
-            string currentItem = (string)PackageSourcesListBox.Items[e.Index];
+            string currentItem = (string)FeedsListBox.Items[e.Index];
 
             using (StringFormat drawFormat = new StringFormat())
             using (Brush foreBrush = new SolidBrush(e.ForeColor))
@@ -188,9 +176,9 @@ namespace CoApp.VisualStudio.Options
                     // turn on high quality text rendering mode
                     graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-                    var sourceBounds = new Rectangle(e.Bounds.Left + edgeMargin, e.Bounds.Top, e.Bounds.Width - edgeMargin, 24);
+                    var feedBounds = new Rectangle(e.Bounds.Left + edgeMargin, e.Bounds.Top, e.Bounds.Width - edgeMargin, 24);
 
-                    graphics.DrawString((string)currentItem, italicFont, foreBrush, sourceBounds, drawFormat);
+                    graphics.DrawString((string)currentItem, italicFont, foreBrush, feedBounds, drawFormat);
                 }
                 finally
                 {
@@ -202,14 +190,14 @@ namespace CoApp.VisualStudio.Options
             }
         }
 
-        private void PackageSourcesListBox_MeasureItem(object sender, MeasureItemEventArgs e)
+        private void FeedsListBox_MeasureItem(object sender, MeasureItemEventArgs e)
         {
-            if (e.Index < 0 || e.Index >= PackageSourcesListBox.Items.Count)
+            if (e.Index < 0 || e.Index >= FeedsListBox.Items.Count)
             {
                 return;
             }
 
-            string currentItem = (string)PackageSourcesListBox.Items[e.Index];
+            string currentItem = (string)FeedsListBox.Items[e.Index];
             using (StringFormat drawFormat = new StringFormat())
             using (Font italicFont = new Font(Font, FontStyle.Italic))
             {
@@ -218,44 +206,44 @@ namespace CoApp.VisualStudio.Options
                 drawFormat.LineAlignment = StringAlignment.Near;
                 drawFormat.FormatFlags = StringFormatFlags.NoWrap;
 
-                SizeF sourceLineHeight = e.Graphics.MeasureString((string)currentItem, italicFont, e.ItemWidth, drawFormat);
+                SizeF feedLineHeight = e.Graphics.MeasureString((string)currentItem, italicFont, e.ItemWidth, drawFormat);
 
-                e.ItemHeight = (int)Math.Ceiling(sourceLineHeight.Height);
+                e.ItemHeight = (int)Math.Ceiling(feedLineHeight.Height);
             }
         }
 
-        private void PackageSourcesListBox_MouseMove(object sender, MouseEventArgs e)
+        private void FeedsListBox_MouseMove(object sender, MouseEventArgs e)
         {
-            int index = PackageSourcesListBox.IndexFromPoint(e.X, e.Y);
+            int index = FeedsListBox.IndexFromPoint(e.X, e.Y);
 
-            if (index >= 0 && index < PackageSourcesListBox.Items.Count && e.Y <= PackageSourcesListBox.PreferredHeight)
+            if (index >= 0 && index < FeedsListBox.Items.Count && e.Y <= FeedsListBox.PreferredHeight)
             {
-                string newToolTip = ((string)PackageSourcesListBox.Items[index]);
-                string currentToolTip = packageListToolTip.GetToolTip(PackageSourcesListBox);
+                string newToolTip = ((string)FeedsListBox.Items[index]);
+                string currentToolTip = packageListToolTip.GetToolTip(FeedsListBox);
                 if (currentToolTip != newToolTip)
                 {
-                    packageListToolTip.SetToolTip(PackageSourcesListBox, newToolTip);
+                    packageListToolTip.SetToolTip(FeedsListBox, newToolTip);
                 }
             }
             else
             {
-                packageListToolTip.SetToolTip(PackageSourcesListBox, null);
-                packageListToolTip.Hide(PackageSourcesListBox);
+                packageListToolTip.SetToolTip(FeedsListBox, null);
+                packageListToolTip.Hide(FeedsListBox);
             }
         }
 
-        private static Rectangle NewBounds(Rectangle sourceBounds, int xOffset, int yOffset)
+        private static Rectangle NewBounds(Rectangle feedBounds, int xOffset, int yOffset)
         {
-            return new Rectangle(sourceBounds.Left + xOffset, sourceBounds.Top + yOffset,
-                sourceBounds.Width - xOffset, sourceBounds.Height - yOffset);
+            return new Rectangle(feedBounds.Left + xOffset, feedBounds.Top + yOffset,
+                feedBounds.Width - xOffset, feedBounds.Height - yOffset);
         }
     }
 
-    internal enum TryAddSourceResults
+    internal enum TryAddFeedResults
     {
         NothingAdded = 0,
-        SourceAdded = 1,
-        InvalidSource = 2,
-        SourceAlreadyAdded = 3
+        FeedAdded = 1,
+        InvalidFeed = 2,
+        FeedAlreadyAdded = 3
     }
 }

@@ -1,9 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Text.RegularExpressions;
-
-namespace CoApp.VisualStudio
+﻿namespace CoApp.VisualStudio
 {
+    using System;
+    using System.IO;
+    using System.Text.RegularExpressions;
+
+    /// <summary>
+    /// Validates paths (local, unc, url)
+    /// </summary>
     public static class PathValidator
     {
         private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();

@@ -9,7 +9,7 @@ using CoApp.VisualStudio.Dialog;
 
 namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
-    internal class UserNotifierServices : IUserNotifierServices
+    public class UserNotifierServices
     {
         private readonly Dispatcher _uiDispatcher;
 

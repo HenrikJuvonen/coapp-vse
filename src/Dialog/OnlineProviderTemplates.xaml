@@ -9,11 +9,8 @@
         <ResourceDictionary Source="TemplateStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <self:DescriptionLabelConverter x:Key="DescriptionLabelConverter" />
     <self:NormalizeTextConverter x:Key="NormalizeTextConverter" />
     <self:FixUrlConverter x:Key="urlConverter" />
-    <self:BooleanToVisibilityConverter Inverted="True" x:Key="invertedBoolToVis" />
-    <self:BooleanToVisibilityConverter x:Key="boolToVis" />
     <self:CountToVisibilityConverter x:Key="countConverter" />
     <self:CountToVisibilityConverter Inverted="True" x:Key="invertedCountConverter" />
     <self:ProjectToDisplayNameConverter x:Key="ProjectToNameConverter" />
@@ -41,6 +38,7 @@
 
     <!-- data template for the package extension item -->
     <DataTemplate x:Key="PackageItemTemplate">
+
         <Grid Style="{StaticResource TileTemplateGridStyle}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="38" SharedSizeGroup="IconColumn" />
@@ -53,13 +51,13 @@
                     <MenuItem Header="Wanted" IsEnabled="True" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsWanted, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetWanted}" />
                     <MenuItem Header="Blocked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsBlocked, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetBlocked}" />
                     <MenuItem Header="Locked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsLocked, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetLocked}" />
-                    <MenuItem Header="Updateable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpdatable, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetUpdatable}" />
+                    <MenuItem Header="Updatable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpdatable, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetUpdatable}" />
                     <MenuItem Header="Upgradeable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpgradable, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetUpgradable}" />
                     <MenuItem Header="Required" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsRequired, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetRequired}" />
                     <MenuItem Header="Active" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsActive, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetActive}" />
                 </ContextMenu>
             </Grid.ContextMenu>
-
+            
             <StackPanel Orientation="Vertical" Margin="0,3,0,0">
                 <Image Style="{StaticResource TileImageStyle}" Source="{Binding IconUri, Converter={StaticResource urlConverter}, TargetNullValue={StaticResource BitmapImage_DefaultIcon}}" />
             </StackPanel>

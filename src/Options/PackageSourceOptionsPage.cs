@@ -11,7 +11,7 @@ namespace CoApp.VisualStudio.Options
     [ClassInterface(ClassInterfaceType.AutoDual)]
     public class PackageSourceOptionsPage : OptionsPageBase
     {
-        private PackageSourcesOptionsControl _optionsWindow;
+        private FeedsOptionsControl _optionsWindow;
 
         protected override void OnActivate(CancelEventArgs e)
         {
@@ -36,13 +36,13 @@ namespace CoApp.VisualStudio.Options
             base.OnClosed(e);
         }
 
-        private PackageSourcesOptionsControl PackageSourcesControl
+        private FeedsOptionsControl PackageSourcesControl
         {
             get
             {
                 if (_optionsWindow == null)
                 {
-                    _optionsWindow = new PackageSourcesOptionsControl(this);
+                    _optionsWindow = new FeedsOptionsControl();
                     _optionsWindow.Location = new Point(0, 0);
                 }
 

@@ -1,7 +1,10 @@
-﻿using System;
-
-namespace CoApp.VisualStudio
+﻿namespace CoApp.VisualStudio
 {
+    using System;
+
+    /// <summary>
+    /// Used by ProgressProvider
+    /// </summary>
     public class ProgressEventArgs : EventArgs
     {
         public ProgressEventArgs(string operation, int percentComplete)

@@ -241,7 +241,12 @@ namespace CoApp.VisualStudio.VsCore
 
         public static string GetDirectory(this Project project)
         {
-            return Path.GetDirectoryName(project.FullName);
+            Property path = project.Properties.Item("Path");
+
+            if (path != null)
+                return Path.GetDirectoryName(path.Value);
+
+            return null;
         }
 
         public static T GetPropertyValue<T>(this Project project, string propertyName)

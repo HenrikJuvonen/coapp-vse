@@ -41,14 +41,14 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public void ActivatePage(OptionsPage page, Action closeCallback)
+        public void ActivatePage(string page, Action closeCallback)
         {
             _closeCallback = closeCallback;
-            if (page == OptionsPage.General)
+            if (page == "General")
             {
                 ShowOptionsPage(_generalGUID);
             }
-            else if (page == OptionsPage.PackageSources)
+            else if (page == "Package Feeds")
             {
                 ShowOptionsPage(_packageSourcesGUID);
             }

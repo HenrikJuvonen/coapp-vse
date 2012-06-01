@@ -1,7 +1,7 @@
 using System.Windows.Forms;
 namespace CoApp.VisualStudio.Options
 {
-    partial class PackageSourcesOptionsControl
+    partial class FeedsOptionsControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -30,17 +30,17 @@ namespace CoApp.VisualStudio.Options
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PackageSourcesOptionsControl));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FeedsOptionsControl));
             this.HeaderLabel = new System.Windows.Forms.Label();
             this.PackageSourcesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.CopyPackageSourceStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyFeedsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeButton = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.packageListToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.addButton = new System.Windows.Forms.Button();
-            this.NewPackageSource = new System.Windows.Forms.TextBox();
+            this.NewPackageFeed = new System.Windows.Forms.TextBox();
             this.NewPackageSourceLabel = new System.Windows.Forms.Label();
-            this.PackageSourcesListBox = new System.Windows.Forms.ListBox();
+            this.FeedsListBox = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
@@ -58,15 +58,15 @@ namespace CoApp.VisualStudio.Options
             // PackageSourcesContextMenu
             // 
             this.PackageSourcesContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CopyPackageSourceStripMenuItem});
+            this.CopyFeedsStripMenuItem});
             this.PackageSourcesContextMenu.Name = "contextMenuStrip1";
             resources.ApplyResources(this.PackageSourcesContextMenu, "PackageSourcesContextMenu");
-            this.PackageSourcesContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.PackageSourcesContextMenu_ItemClicked);
+            this.PackageSourcesContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.FeedsContextMenu_ItemClicked);
             // 
             // CopyPackageSourceStripMenuItem
             // 
-            this.CopyPackageSourceStripMenuItem.Name = "CopyPackageSourceStripMenuItem";
-            resources.ApplyResources(this.CopyPackageSourceStripMenuItem, "CopyPackageSourceStripMenuItem");
+            this.CopyFeedsStripMenuItem.Name = "CopyPackageSourceStripMenuItem";
+            resources.ApplyResources(this.CopyFeedsStripMenuItem, "CopyPackageSourceStripMenuItem");
             // 
             // removeButton
             // 
@@ -93,8 +93,8 @@ namespace CoApp.VisualStudio.Options
             // 
             // NewPackageSource
             // 
-            resources.ApplyResources(this.NewPackageSource, "NewPackageSource");
-            this.NewPackageSource.Name = "NewPackageSource";
+            resources.ApplyResources(this.NewPackageFeed, "NewPackageSource");
+            this.NewPackageFeed.Name = "NewPackageSource";
             // 
             // NewPackageSourceLabel
             // 
@@ -103,25 +103,25 @@ namespace CoApp.VisualStudio.Options
             // 
             // PackageSourcesListBox
             // 
-            resources.ApplyResources(this.PackageSourcesListBox, "PackageSourcesListBox");
-            this.PackageSourcesListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableLayoutPanel1.SetColumnSpan(this.PackageSourcesListBox, 4);
-            this.PackageSourcesListBox.ContextMenuStrip = this.PackageSourcesContextMenu;
-            this.PackageSourcesListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.PackageSourcesListBox.FormattingEnabled = true;
-            this.PackageSourcesListBox.Name = "PackageSourcesListBox";
-            this.PackageSourcesListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.PackageSourcesListBox_DrawItem);
-            this.PackageSourcesListBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.PackageSourcesListBox_MeasureItem);
-            this.PackageSourcesListBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PackageSourcesListBox_MouseMove);
+            resources.ApplyResources(this.FeedsListBox, "PackageSourcesListBox");
+            this.FeedsListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tableLayoutPanel1.SetColumnSpan(this.FeedsListBox, 4);
+            this.FeedsListBox.ContextMenuStrip = this.PackageSourcesContextMenu;
+            this.FeedsListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.FeedsListBox.FormattingEnabled = true;
+            this.FeedsListBox.Name = "PackageSourcesListBox";
+            this.FeedsListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.FeedsListBox_DrawItem);
+            this.FeedsListBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.FeedsListBox_MeasureItem);
+            this.FeedsListBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FeedsListBox_MouseMove);
             // 
             // tableLayoutPanel1
             // 
             resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.HeaderLabel, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.PackageSourcesListBox, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.FeedsListBox, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.NewPackageSourceLabel, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.NewPackageSource, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.NewPackageFeed, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.addButton, 3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             // 
@@ -160,13 +160,13 @@ namespace CoApp.VisualStudio.Options
         private System.Windows.Forms.Label HeaderLabel;
         private System.Windows.Forms.Button removeButton;
         private ContextMenuStrip PackageSourcesContextMenu;
-        private ToolStripMenuItem CopyPackageSourceStripMenuItem;
+        private ToolStripMenuItem CopyFeedsStripMenuItem;
         private ToolTip packageListToolTip;
         private Button addButton;
-        private TextBox NewPackageSource;
+        private TextBox NewPackageFeed;
         private Label NewPackageSourceLabel;
         private TableLayoutPanel tableLayoutPanel1;
-        private ListBox PackageSourcesListBox;
+        private ListBox FeedsListBox;
         private TableLayoutPanel tableLayoutPanel2;
         private ImageList imageList1;
         private ImageList imageList2;

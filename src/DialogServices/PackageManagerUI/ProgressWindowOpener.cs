@@ -5,7 +5,7 @@ using System.Windows.Threading;
 
 namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 {
-    public sealed class ProgressWindowOpener : IProgressWindowOpener
+    public sealed class ProgressWindowOpener
     {
         private static readonly TimeSpan DelayInterval = TimeSpan.FromMilliseconds(500);
 

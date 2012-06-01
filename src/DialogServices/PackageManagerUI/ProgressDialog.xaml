@@ -14,7 +14,6 @@
     Height="250" 
     MinHeight="230" 
     MinWidth="300"
-    resources:WindowSizePersistenceHelper.WindowToken="ProgressWindow"
     Background="{DynamicResource {x:Static resources:UIResources.WindowBackgroundBrushKey}}">
     
     <DockPanel>

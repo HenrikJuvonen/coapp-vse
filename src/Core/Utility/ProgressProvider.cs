@@ -1,8 +1,11 @@
-﻿using System;
-using System.ComponentModel.Composition;
-
-namespace CoApp.VisualStudio
+﻿namespace CoApp.VisualStudio
 {
+    using System;
+    using System.ComponentModel.Composition;
+
+    /// <summary>
+    /// Used for updating progress.
+    /// </summary>
     public class ProgressProvider
     {
         public ProgressProvider()

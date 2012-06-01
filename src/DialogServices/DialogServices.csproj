@@ -59,16 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="PackageManagerUI\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="PackageManagerUI\Converters\ProjectToDisplayNameConverter.cs" />
-    <Compile Include="PackageManagerUI\Converters\ProjectToIconConverter.cs" />
-    <Compile Include="PackageManagerUI\IProgressWindowOpener.cs" />
-    <Compile Include="PackageManagerUI\Converters\BooleanToVisibilityConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PackageManagerUI\Converters\CountToVisibilityConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PackageManagerUI\Converters\DescriptionLabelConverter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PackageManagerUI\Converters\FixUrlConverter.cs">
@@ -77,14 +70,7 @@
     <Compile Include="PackageManagerUI\Converters\NormalizeTextConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PackageManagerUI\Converters\NullToVisibilityConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PackageManagerUI\Converters\StringCollectionsToStringConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PackageManagerUI\IProviderSettings.cs" />
-    <Compile Include="PackageManagerUI\IUserNotifierServices.cs" />
+    <Compile Include="PackageManagerUI\Converters\StringCollectionsToStringConverter.cs" />
     <Compile Include="PackageManagerUI\OperationCoordinator.cs" />
     <Compile Include="PackageManagerUI\PackageManagerWindowCommands.cs" />
     <Compile Include="PackageManagerUI\ProgressDialog.xaml.cs">
@@ -92,7 +78,6 @@
     </Compile>
     <Compile Include="PackageManagerUI\ProgressWindowOpener.cs" />
     <Compile Include="PackageManagerUI\ProviderServices.cs" />
-    <Compile Include="PackageManagerUI\ProviderSettingsManager.cs" />
     <Compile Include="PackageManagerUI\UserNotifierServices.cs" />
     <Compile Include="QueryExtensions.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -113,7 +98,6 @@
     <Compile Include="SolutionExplorer\SolutionNode.cs" />
     <Compile Include="SolutionExplorer\SolutionWalker.cs" />
     <Compile Include="UIResources.cs" />
-    <Compile Include="WindowSizePersistenceHelper.cs" />
     <EmbeddedResource Include="Resources.resx">
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>

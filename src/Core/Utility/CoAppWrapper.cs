@@ -1,52 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using CoApp.Packaging.Client;
-using CoApp.Packaging.Common;
-using CoApp.Toolkit.Extensions;
-using CoApp.Toolkit.Linq;
-using CoApp.Toolkit.Win32;
-using CoApp.Toolkit.Tasks;
-
-namespace CoApp.VisualStudio
+﻿namespace CoApp.VisualStudio
 {
-    public class CoAppWrapper
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using CoApp.Packaging.Client;
+    using CoApp.Packaging.Common;
+    using CoApp.Toolkit.Extensions;
+    using CoApp.Toolkit.Linq;
+    using CoApp.Toolkit.Tasks;
+    using CoApp.Toolkit.Win32;
+
+    /// <summary>
+    /// Interface between the GUI and CoApp.
+    /// </summary>
+    public static class CoAppWrapper
     {
-        private static bool? _force = null;
-
-        private static string _location = null;
-        private static bool? _autoUpgrade = null;
-
         private static Architecture architecture = Architecture.Auto;
 
         private static readonly List<Task> preCommandTasks = new List<Task>();
-
-        private static List<string> activeDownloads = new List<string>();
-
+        private static readonly List<string> activeDownloads = new List<string>();
         private static readonly PackageManager _packageManager = new PackageManager();
         
         private static readonly ProgressProvider _progressProvider = new ProgressProvider();
 
-        public static ProgressProvider ProgressProvider
-        {
-            get
-            {
-                return _progressProvider;
-            }
-        }
-
         public static CancellationTokenSource CancellationTokenSource { get; set; }
 
-        private static void UpdateProgress(string message, long progress)
-        {
-            ProgressProvider.OnProgressAvailable(message, (int)progress);
-        }
+        public static ProgressProvider ProgressProvider { get { return _progressProvider; } }
 
+        /// <summary>
+        /// Initializes the CoAppWrapper.
+        /// </summary>
         public static void Initialize()
         {
+            CancellationTokenSource = new CancellationTokenSource();
+
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
                 if (!activeDownloads.Contains(remoteLocation))
@@ -60,17 +50,22 @@ namespace CoApp.VisualStudio
             {
                 if (activeDownloads.Contains(remoteLocation))
                 {
-                    Console.WriteLine();
                     activeDownloads.Remove(remoteLocation);
                 }
             });
         }
 
+        /// <summary>
+        /// Used for filtering packages by architecture in PackageManagerWindow.
+        /// </summary>
         public static void SetArchitecture(string arch)
         {
             architecture = Architecture.Parse(arch);
         }
 
+        /// <summary>
+        /// Used for setting package states in PackageManagerWindow.
+        /// </summary>
         public static void SetPackageState(IPackage package, string state)
         {
             Task task = preCommandTasks.Continue(() =>
@@ -102,7 +97,10 @@ namespace CoApp.VisualStudio
             ContinueTask(task);
         }
 
-        public static IEnumerable<Feed> ListFeeds()
+        /// <summary>
+        /// Used for listing feeds in PackagesSourcesOptionsControl.
+        /// </summary>
+        public static IEnumerable<Feed> GetFeeds()
         {
             Console.WriteLine("Fetching feed list...");
 
@@ -115,6 +113,9 @@ namespace CoApp.VisualStudio
             return feeds;
         }
 
+        /// <summary>
+        /// Used for adding a feed in PackagesSourcesOptionsControl.
+        /// </summary>
         public static void AddFeed(string feedLocation)
         {
             Console.WriteLine("Adding feed: " + feedLocation);
@@ -131,6 +132,9 @@ namespace CoApp.VisualStudio
             }
         }
 
+        /// <summary>
+        /// Used for removing a feed in PackagesSourcesOptionsControl.
+        /// </summary>
         public static void RemoveFeed(string feedLocation)
         {
             Console.WriteLine("Removing feed: " + feedLocation);
@@ -147,6 +151,9 @@ namespace CoApp.VisualStudio
             }
         }
 
+        /// <summary>
+        /// Used for getting packages in SimpleTreeNode.
+        /// </summary>
         public static IEnumerable<IPackage> GetPackages(string type, int vsMajorVersion = 0)
         {
             IEnumerable<IPackage> packages = null;
@@ -163,8 +170,8 @@ namespace CoApp.VisualStudio
                     pkgFilter = Package.Properties.Installed.Is(true);
                     packages = QueryPackages(new string[] { "*" }, pkgFilter, null);                        
                     break;
-                case "updateable":
-                case "updateable,dev":
+                case "updatable":
+                case "updatable,dev":
                     packages = Enumerable.Empty<IPackage>();
                     break;
             }
@@ -172,78 +179,21 @@ namespace CoApp.VisualStudio
             return FilterPackages(packages, type, vsMajorVersion);
         }
 
+        /// <summary>
+        /// Used for getting packages in CoAppWrapperTest.
+        /// </summary>
         public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
             return QueryPackages(parameters, null, null);
         }
 
-        public static IPackage GetPackage(CanonicalName canonicalName)
-        {
-            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
-        }
-
-        private static IEnumerable<IPackage> QueryPackages(string[] queries,
-                                                           Filter<IPackage> pkgFilter,
-                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
-        {
-            if (!queries.Any() || queries[0] == "*")
-            {
-                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-            }
-
-            IEnumerable<IPackage> pkgs = null;
-
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, _location).Continue(p => pkgs = p));
-
-            if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
-
-            ContinueTask(task);
-            return pkgs;
-        }
-
-        private static IEnumerable<IPackage> QueryUpdateablePackages(string[] queries,
-                                                                   Filter<IPackage> pkgFilter,
-                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
-        {
-            if (!queries.Any() || queries[0] == "*")
-            {
-                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-            }
-
-            IEnumerable<IPackage> pkgs = null;
-
-            Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, _location)).Continue(p => pkgs = p);
-
-            if (CancellationTokenSource.IsCancellationRequested) return Enumerable.Empty<IPackage>();
-
-            ContinueTask(task);
-            return pkgs;
-        }
-
-        public static void RemovePackage(IPackage package, bool removeDependencies = false)
-        {
-            UpdateProgress("Uninstalling packages...", 0);
-
-            try
-            {
-                IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
-                if (removeDependencies)
-                {
-                    canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => p.Name != "CoApp.Toolkit").Select(p => p.CanonicalName));
-                }
-                Task task = preCommandTasks.Continue(() => RemovePackages(canonicalNames));
-                ContinueTask(task);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                CancellationTokenSource.Cancel();
-            }
-        }
-
+        /// <summary>
+        /// Used for installing packages in OnlineProvider.
+        /// </summary>
         public static void InstallPackage(IPackage package)
         {
             UpdateProgress("Installing packages...", 0);
+            Console.Write("Installing packages...");
 
             try
             {
@@ -257,13 +207,120 @@ namespace CoApp.VisualStudio
             }
         }
 
+        /// <summary>
+        /// Used for getting dependents in InstalledProvider.
+        /// </summary>
+        public static IEnumerable<IPackage> GetDependents(IPackage package)
+        {
+            return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
+        }
+
+        /// <summary>
+        /// Used for refreshing a package in PackagesTreeNodeBase.
+        /// </summary>
+        public static IPackage GetPackage(CanonicalName canonicalName)
+        {
+            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Used for querying packages.
+        /// </summary>
+        private static IEnumerable<IPackage> QueryPackages(string[] queries,
+                                                           Filter<IPackage> pkgFilter,
+                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
+        {
+            if (!queries.Any() || queries[0] == "*")
+            {
+                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
+            }
+
+            IEnumerable<IPackage> pkgs = null;
+
+            try
+            {
+                Console.Write("Querying packages...");
+
+                Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null).Continue(p => pkgs = p));
+
+                ContinueTask(task);
+            }
+            catch (OperationCanceledException)
+            {
+                return Enumerable.Empty<IPackage>();
+            }
+
+            return pkgs;
+        }
+
+        /// <summary>
+        /// Used for querying updatable packages.
+        /// </summary>
+        private static IEnumerable<IPackage> QueryUpdatablePackages(string[] queries,
+                                                                   Filter<IPackage> pkgFilter,
+                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
+        {
+            if (!queries.Any() || queries[0] == "*")
+            {
+                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
+            }
+
+            IEnumerable<IPackage> pkgs = null;
+
+            try
+            {
+                Console.Write("Querying packages...");
+
+                Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null)).Continue(p => pkgs = p);
+
+                ContinueTask(task);
+            }
+            catch (OperationCanceledException)
+            {
+                return Enumerable.Empty<IPackage>();
+            }
+                        
+            return pkgs;
+        }
+
+        /// <summary>
+        /// Used for removing packages in InstalledProvider.
+        /// </summary>
+        public static void RemovePackage(IPackage package, bool removeDependencies = false)
+        {
+            UpdateProgress("Uninstalling packages...", 0);
+            Console.Write("Removing packages...");
+
+            try
+            {
+                IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
+                if (removeDependencies)
+                {
+                    canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
+                }
+                Task task = preCommandTasks.Continue(() => RemovePackages(canonicalNames));
+                ContinueTask(task);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                CancellationTokenSource.Cancel();
+            }
+        }
+
+        /// <summary>
+        /// Used for installing packages.
+        /// </summary>
         private static Task InstallPackage(CanonicalName canonicalName)
         {
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
 
-            return _packageManager.Install(canonicalName, _autoUpgrade == true, _force == true);
+            return _packageManager.Install(canonicalName);
         }
 
+        /// <summary>
+        /// Used for removing packages.
+        /// </summary>
         private static Task RemovePackages(IEnumerable<CanonicalName> canonicalNames)
         {
             CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
@@ -271,11 +328,9 @@ namespace CoApp.VisualStudio
             return _packageManager.RemovePackages(canonicalNames, true);
         }
 
-        public static IEnumerable<IPackage> GetDependents(IPackage package)
-        {
-            return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
-        }
-
+        /// <summary>
+        /// Used for filtering packages.
+        /// </summary>
         private static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, string type, int vsMajorVersion)
         {
             if (type.Contains("dev"))
@@ -292,6 +347,14 @@ namespace CoApp.VisualStudio
             }
 
             return packages;
+        }
+
+        /// <summary>
+        /// Used for updating progress in ProgressDialog.
+        /// </summary>
+        private static void UpdateProgress(string message, int progress)
+        {
+            ProgressProvider.OnProgressAvailable(message, progress);
         }
 
         private static void ContinueTask(Task task)

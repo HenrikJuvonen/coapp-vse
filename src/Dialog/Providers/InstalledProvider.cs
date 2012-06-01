@@ -13,7 +13,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 {
     class InstalledProvider : PackagesProviderBase
     {
-        protected readonly IUserNotifierServices _userNotifierServices;
+        protected readonly UserNotifierServices _userNotifierServices;
         protected readonly ISolutionManager _solutionManager;
 
         public InstalledProvider(ResourceDictionary resources,

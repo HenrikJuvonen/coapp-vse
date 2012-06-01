@@ -5,8 +5,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 {
     public sealed class ProviderServices
     {
-        public IProgressWindowOpener ProgressWindow { get; private set; }
-        public IUserNotifierServices UserNotifierServices { get; private set; }
+        public ProgressWindowOpener ProgressWindow { get; private set; }
+        public UserNotifierServices UserNotifierServices { get; private set; }
 
         public ProviderServices() :
             this(new ProgressWindowOpener(),
@@ -15,8 +15,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         }
 
         public ProviderServices(
-            IProgressWindowOpener progressWindow,
-            IUserNotifierServices userNotifierServices)
+            ProgressWindowOpener progressWindow,
+            UserNotifierServices userNotifierServices)
         {
             ProgressWindow = progressWindow;
             UserNotifierServices = userNotifierServices;

@@ -215,7 +215,7 @@ namespace CoApp.VisualStudio.Dialog
         {
             Close();
             _optionsPageActivator.ActivatePage(
-                OptionsPage.PackageSources,
+                "Package Feeds",
                 () => OnActivated(_activeProject));
         }
 
