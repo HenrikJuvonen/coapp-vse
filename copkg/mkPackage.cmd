@@ -1,10 +1,9 @@
 @echo off
 cd %~dp0
 
-erase *.msi 
+erase *.msi
 erase *.wixpdb
 
-autopackage coapp.vse.autopkg  || goto EOF:
+msbuild ../coapp-vse.sln /p:Configuration=Release /verbosity:q
 
-rem for %%v  in (*.msi) do curl -T  %%v http://coapp.org/upload/ || goto EOF:
-rem echo "Uploaded to repository"
+autopackage coapp.vse.autopkg

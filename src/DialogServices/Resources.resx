@@ -351,4 +351,7 @@
   <data name="Dialog_LicensesLabel" xml:space="preserve">
     <value>Licenses:</value>
   </data>
+  <data name="Dialog_FlavorLabel" xml:space="preserve">
+    <value>Flavor:</value>
+  </data>
 </root>

@@ -28,7 +28,7 @@ namespace CoApp.VisualStudio.Options
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
         {
-            DirectoryInfo cache = new DirectoryInfo(@"C:\apps\.cache\packages");
+            DirectoryInfo cache = new DirectoryInfo(@"C:\ProgramData\.cache\packages");
 
             foreach (FileInfo file in cache.GetFiles())
             {
@@ -44,7 +44,7 @@ namespace CoApp.VisualStudio.Options
 
         private void OnBrowsePackageCacheClick(object sender, EventArgs e)
         {
-            Process.Start(@"C:\apps\.cache\packages");
+            Process.Start(@"C:\ProgramData\.cache\packages");
         }
     }
 }

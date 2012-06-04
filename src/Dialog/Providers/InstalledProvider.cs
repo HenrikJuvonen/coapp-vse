@@ -57,11 +57,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteManage(PackageItem item)
         {
-            string flavor = item.PackageIdentity.CanonicalName.Flavor;
-
-            return flavor == "common" ||
-                   flavor.Contains("vc" + VsVersionHelper.VsMajorVersion) ||
-                   flavor.Contains("net");
+            return item.Name.Contains("common") ||
+                   item.PackageIdentity.Flavor.IsWildcardMatch("*vc" + VsVersionHelper.VsMajorVersion + "*") ||
+                   item.PackageIdentity.Flavor.IsWildcardMatch("*net*");
         }
 
         protected override bool ExecuteManage(PackageItem item)

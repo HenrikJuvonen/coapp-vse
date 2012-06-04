@@ -3,36 +3,54 @@
 
 package {
     name: "CoApp.Vse";
+	version: "0.1.0.0";
+	architecture: "any";
     display-name: "CoApp for Visual Studio";
 }
 
 provides {
-    feature: "coapp.vse" = "0.1.0";
+    feature: "coapp.vse" = "0.1.0.0";
 }
 
 metadata {
     summary: "Visual Studio Extension";
-    description: @""; 
-    icon: @"images\logo3.png";
     
-    author-version : "0.1.0";
+    author-version : "0.1.0.0";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
     stability : "-100";
 }
 
 compatability-policy {
     minimum: "0.0.0.0";
-    maximum: "${OneLessThanCurrent}"; // this is the default
+    maximum: "${OneLessThanCurrent}";
     versions : {
-        "0.1.0",
-    }; // if not specified, find the versions by looking at the feeds and finding all the major/minor versions in range.
+        "0.1.0.0",
+    };
 }
 
-files[exes] {
-    root: "..\output\any\release\bin";
+files[all] {
+    include: {
+		dlls,
+		other
+    };
+};
+
+files[dlls] {
+    root: "..\src\VsExtension\bin\Release";
     
     include: {
-        "CoApp.VisualStudio.Tools.vsix",
+        "*.dll",
+    };
+    
+    trim-path: minimal;
+};
+
+files[other] {
+    root: "..\src\VsExtension\bin\Release";
+    
+    include: {
+		"CoApp.VisualStudio.Tools.pkgdef",
+		"extension.vsixmanifest",
     };
     
     trim-path: minimal;
@@ -40,12 +58,13 @@ files[exes] {
 
 application {
     include : {
-    exes
+        dlls
     };
 }
 
 package-composition {
     symlinks : { 
-        exes => @"${bin}\${each.Name}" = @"${packagedir}\${each.Name}";
+        all => @"%appdata%\Local\Microsoft\VisualStudio\10.0\Extensions\coapp\coapp-vse\${each.Name}" = @"${packagedir}\${each.Name}";
+
     };
 }

@@ -241,12 +241,12 @@ namespace CoApp.VisualStudio.VsCore
 
         public static string GetDirectory(this Project project)
         {
-            Property path = project.Properties.Item("Path");
+            Property path = null;// project.Properties.Item("Path");
 
             if (path != null)
                 return Path.GetDirectoryName(path.Value);
 
-            return null;
+            return Path.GetDirectoryName(project.FullName);
         }
 
         public static T GetPropertyValue<T>(this Project project, string propertyName)
@@ -514,9 +514,9 @@ namespace CoApp.VisualStudio.VsCore
 
         }
 
-        public static void ManageLinkerDependencies(this Project project, string architecture, IEnumerable<Library> libraries)
+        public static void ManageLinkerDependencies(this Project project, string path, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            string path = @"c:\apps\lib\" + architecture + "\\";
+            path += "lib";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;
@@ -525,15 +525,28 @@ namespace CoApp.VisualStudio.VsCore
             {
                 VCLinkerTool linker = config.Tools.Item("Linker Tool");
 
-                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == config.Name);
+                ISet<string> paths = new HashSet<string>(linker.AdditionalLibraryDirectories.Split(';'));
+
+                if (projects.Contains(project))
+                {
+                    paths.Add(path);
+                }
+                else
+                {
+                    paths.Remove(path);
+                }
+
+                linker.AdditionalLibraryDirectories = string.Join(";", paths);
+
+                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == config.ConfigurationName);
                 
                 IEnumerable<string> current = linker.AdditionalDependencies.Split(' ');
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
-                                                             .Select(n => path + n.Name);
+                                                             .Select(n => n.Name);
                 
                 IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
-                                                           .Select(n => path + n.Name);
+                                                           .Select(n => n.Name);
 
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
@@ -544,7 +557,7 @@ namespace CoApp.VisualStudio.VsCore
 
         public static void ManageIncludeDirectories(this Project project, string path, IEnumerable<Project> projects)
         {
-            path += "\\include";
+            path += "include";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;

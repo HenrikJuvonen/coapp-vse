@@ -155,6 +155,7 @@
     <DataTemplate x:Key="PackageDetailTemplate">
         <DataTemplate.Resources>
             <self:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <self:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter" />
             <self:StringCollectionsToStringConverter x:Key="authorNamesConverter" />
         </DataTemplate.Resources>
 
@@ -165,7 +166,7 @@
                     <eml:TextBlockControl DockPanel.Dock="Left" Text="{x:Static resources:Resources.Dialog_NameLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
                     <eml:TextBlockControl Text="{Binding PackageIdentity.Name}" Style="{StaticResource DetailMetadataValueStyle}" TextWrapping="Wrap" />
                 </DockPanel>
-                
+
                 <!-- Version -->
                 <StackPanel Style="{StaticResource DetailMetadataStyle}">
                     <eml:TextBlockControl Text="{x:Static resources:Resources.Dialog_VersionLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
@@ -178,10 +179,17 @@
                     <eml:TextBlockControl Text="{Binding PackageIdentity.Architecture, Mode=OneWay}" Style="{StaticResource DetailMetadataValueStyle}" />
                 </StackPanel>
 
+                <!-- Flavor -->
+                <StackPanel Style="{StaticResource DetailMetadataStyle}"
+                            Visibility="{Binding PackageIdentity.Flavor, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                    <eml:TextBlockControl Text="{x:Static resources:Resources.Dialog_FlavorLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
+                    <eml:TextBlockControl Text="{Binding PackageIdentity.Flavor, Mode=OneWay}" Style="{StaticResource DetailMetadataValueStyle}" />
+                </StackPanel>
+
                 <!-- Publisher -->
                 <DockPanel
                     Margin="0,3,0,0"
-                    Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource NullToVisibilityConverter}}">
+                    Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
                     <eml:TextBlockControl DockPanel.Dock="Left" Text="{x:Static resources:Resources.Dialog_PublisherLabel}" Style="{StaticResource DetailMetadataLabelStyle}" />
                     <eml:TextBlockControl Style="{StaticResource DetailMetadataValueStyle}" TextWrapping="Wrap">
                         <Hyperlink Style="{StaticResource CommonHyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location, Mode=OneTime}" Command="{x:Static self:PackageManagerWindowCommands.OpenExternalLink}">

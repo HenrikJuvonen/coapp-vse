@@ -387,7 +387,7 @@ namespace CoApp.VisualStudio.VsCore
                     switch (type)
                     {
                         case "vc,lib":
-                            project.ManageLinkerDependencies(packageReference.Architecture, projectLibraries);
+                            project.ManageLinkerDependencies(packageReference.Path, projects, projectLibraries);
                             resultLibraries = projectLibraries.Where(n => n.IsSelected);
                             break;
                         case "vc":
@@ -399,22 +399,28 @@ namespace CoApp.VisualStudio.VsCore
                             break;
                     }
                 }
+
+                string path = project.GetDirectory() + "\\coapp.config";
   
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "\\coapp.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
 
                 if (projects.Contains(project))
                 {
                     packageReferenceFile.AddEntry(packageReference.Name, packageReference.Version, packageReference.Architecture, resultLibraries);
 
-                    project.ProjectItems.AddFromFile(project.GetDirectory() + "\\coapp.config");
+                    project.ProjectItems.AddFromFile(path);
                 }
                 else
                 {
                     packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
 
                     ProjectItem item;
-                    project.ProjectItems.TryGetFile(project.GetDirectory() + "\\coapp.config", out item);
-                    item.Delete();
+                    project.ProjectItems.TryGetFile(path, out item);
+
+                    if (item != null && File.Exists(path))
+                    {
+                        item.Delete();
+                    }
                 }
             }
 

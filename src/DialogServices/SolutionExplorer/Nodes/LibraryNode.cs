@@ -7,7 +7,7 @@ namespace CoApp.VisualStudio.Dialog
     public class LibraryNode : FolderNode
     {
         public LibraryNode(Project project, string name) :
-            base(project, name, null)
+            base(project, name, new ViewModelNodeBase[0])
         {
         }
 

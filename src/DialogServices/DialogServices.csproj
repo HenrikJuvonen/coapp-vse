@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="PackageManagerUI\Converters\NullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="PackageManagerUI\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="PackageManagerUI\Converters\ProjectToDisplayNameConverter.cs" />
     <Compile Include="PackageManagerUI\Converters\CountToVisibilityConverter.cs">

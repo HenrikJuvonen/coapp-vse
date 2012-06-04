@@ -124,6 +124,15 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Flavor:.
+        /// </summary>
+        public static string Dialog_FlavorLabel {
+            get {
+                return ResourceManager.GetString("Dialog_FlavorLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Installing and uninstalling....
         /// </summary>
         public static string Dialog_InstallAndUninstallProgress {

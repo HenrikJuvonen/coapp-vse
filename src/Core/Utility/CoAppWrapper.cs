@@ -335,10 +335,9 @@
         {
             if (type.Contains("dev"))
             {
-                packages = from package in packages
-                           where package.Name.Contains("-dev")
-                           where package.Name.Contains("vc") ? package.Name.Contains("vc" + vsMajorVersion) : true
-                           select package;
+                packages = packages.Where(package => package.Name.Contains("-dev"))
+                                   .Where(package => package.Name.Contains("vc") ?
+                                                     package.Name.Contains("vc" + vsMajorVersion) : true);
             }
 
             if (architecture != Architecture.Auto)

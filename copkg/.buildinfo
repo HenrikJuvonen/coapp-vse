@@ -81,7 +81,7 @@ sign {
         PATH=%PATH%;%CD%\ext\tools
      
         REM sign files in release directory
-        rem simplesigner --nologo  --sign --strong-name ""${release_dir}CoApp.VisualStudio.Tools.vsix""
+        simplesigner --nologo  --sign --strong-name ""${release_dir}CoApp.VisualStudio.Tools.vsix""
     ";
 }
 

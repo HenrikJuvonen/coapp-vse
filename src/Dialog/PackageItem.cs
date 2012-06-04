@@ -81,11 +81,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                string flavor = PackageIdentity.CanonicalName.Flavor;
-
-                return flavor == "common" ? "vc" :
-                       flavor.Contains("vc") ? "vc,lib" :
-                       flavor.Contains("net") ? "net" : "";
+                return Name.Contains("common") ? "vc" :
+                       PackageIdentity.Flavor.IsWildcardMatch("*vc*") ? "vc,lib" :
+                       PackageIdentity.Flavor.IsWildcardMatch("*net*") ? "net" : "";
             }
         }
 
@@ -93,7 +91,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return @"c:\apps\Program Files (" + PackageIdentity.Architecture + @")\Outercurve Foundation\" + PackageIdentity.CanonicalName + @"\";
+                string architecture =
+                    PackageIdentity.Architecture == "x64" ? " (x64)" :
+                    PackageIdentity.Architecture == "x86" ? " (x86)" : "";
+
+                return @"c:\ProgramData\Program Files" + architecture + @"\Outercurve Foundation\" + PackageIdentity.CanonicalName.PackageName + @"\";
             }
         }
         
@@ -101,7 +103,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return PackageIdentity.Name.Contains("-dev");
+                return Name.Contains("-dev");
             }
         }
 
