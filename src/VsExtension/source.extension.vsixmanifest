@@ -3,7 +3,7 @@
   <Identifier Id="5768BF8A-114F-4C02-BCB2-D7B8D4A9A611">
     <Name>CoApp for Visual Studio</Name>
     <Author>CoApp Project, Outercurve Foundation</Author>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Description xml:space="preserve">Visual Studio plugin for CoApp package manager.</Description>
     <Locale>1033</Locale>
     <InstalledByMsi>false</InstalledByMsi>

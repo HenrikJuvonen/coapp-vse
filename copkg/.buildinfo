@@ -1,6 +1,6 @@
 #product-info {
     product-name: "coapp vse";
-    version: "0.1.0";
+    version: "0.2.0";
     original-source-location: "git@github.com:henjuv/coapp-vse.git";
     original-source-website: "https://github.com/henjuv/coapp-vse";
     license: "Apache2.0";

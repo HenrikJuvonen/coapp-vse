@@ -3,19 +3,19 @@
 
 package {
     name: "CoApp.Vse";
-	version: "0.1.0.0";
+	version: "0.2.0.0";
 	architecture: "any";
     display-name: "CoApp for Visual Studio";
 }
 
 provides {
-    feature: "coapp.vse" = "0.1.0.0";
+    feature: "coapp.vse" = "0.2.0.0";
 }
 
 metadata {
     summary: "Visual Studio Extension";
     
-    author-version : "0.1.0.0";
+    author-version : "0.2.0.0";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
     stability : "-100";
 }
@@ -24,7 +24,7 @@ compatability-policy {
     minimum: "0.0.0.0";
     maximum: "${OneLessThanCurrent}";
     versions : {
-        "0.1.0.0",
+        "0.2.0.0",
     };
 }
 
