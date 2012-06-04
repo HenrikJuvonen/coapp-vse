@@ -98,7 +98,7 @@
         }
 
         /// <summary>
-        /// Used for listing feeds in PackagesSourcesOptionsControl.
+        /// Used for listing feeds in FeedsOptionsControl.
         /// </summary>
         public static IEnumerable<Feed> GetFeeds()
         {
@@ -114,7 +114,7 @@
         }
 
         /// <summary>
-        /// Used for adding a feed in PackagesSourcesOptionsControl.
+        /// Used for adding a feed in FeedsOptionsControl.
         /// </summary>
         public static void AddFeed(string feedLocation)
         {
@@ -133,7 +133,7 @@
         }
 
         /// <summary>
-        /// Used for removing a feed in PackagesSourcesOptionsControl.
+        /// Used for removing a feed in FeedsOptionsControl.
         /// </summary>
         public static void RemoveFeed(string feedLocation)
         {

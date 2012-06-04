@@ -413,14 +413,6 @@ namespace CoApp.VisualStudio.VsCore
                 else
                 {
                     packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
-
-                    ProjectItem item;
-                    project.ProjectItems.TryGetFile(path, out item);
-
-                    if (item != null && File.Exists(path))
-                    {
-                        item.Delete();
-                    }
                 }
             }
 

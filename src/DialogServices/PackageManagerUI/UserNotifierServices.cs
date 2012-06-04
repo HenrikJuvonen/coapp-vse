@@ -18,12 +18,12 @@
             _uiDispatcher = Dispatcher.CurrentDispatcher;
         }
 
-        public bool? ShowRemoveDependenciesWindow(string message)
+        public bool? ShowQuestionWindow(string message)
         {
             if (!_uiDispatcher.CheckAccess())
             {
                 object result = _uiDispatcher.Invoke(
-                    new Func<string, bool?>(ShowRemoveDependenciesWindow),
+                    new Func<string, bool?>(ShowQuestionWindow),
                     message);
                 return (bool?)result;
             }

@@ -21,7 +21,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
 
-        private string _lastOperation;
+        private List<string> _lastOperations;
         
         public PackagesProviderBase(ResourceDictionary resources,
                                     ProviderServices providerServices)
@@ -37,6 +37,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             _providerServices = providerServices;
             _resources = resources;
+
+            _lastOperations = new List<string>();
         }
 
         public override IVsExtensionsTreeNode ExtensionsTree
@@ -319,7 +321,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
-            _lastOperation = null;
+            _lastOperations.Clear();
 
             ClearProgressMessages();
 
@@ -359,10 +361,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             _providerServices.ProgressWindow.ShowProgress(e.Operation, e.PercentComplete);
 
-            if (_lastOperation != e.Operation)
+            if (!_lastOperations.Contains(e.Operation))
+            {
+                _lastOperations.Add(e.Operation);
                 Log(MessageLevel.Info, e.Operation);
-
-            _lastOperation = e.Operation;
+            }
         }
 
         private void OnRunWorkerDoWorkCore(object sender, DoWorkEventArgs e)

@@ -430,6 +430,15 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Package &apos;{0}&apos; is added in the following projects. Do you want remove the package from them?.
+        /// </summary>
+        public static string Dialog_RemoveFromSolutionMessage {
+            get {
+                return ResourceManager.GetString("Dialog_RemoveFromSolutionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Report Abuse.
         /// </summary>
         public static string Dialog_ReportAbuse {

@@ -6,7 +6,7 @@ using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    internal class SolutionExplorerViewModel
+    public class SolutionExplorerViewModel
     {
         private Lazy<FolderNode> _solutionNode;
 

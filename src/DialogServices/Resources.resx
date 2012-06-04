@@ -354,4 +354,7 @@
   <data name="Dialog_FlavorLabel" xml:space="preserve">
     <value>Flavor:</value>
   </data>
+  <data name="Dialog_RemoveFromSolutionMessage" xml:space="preserve">
+    <value>Package '{0}' is added in the following projects. Do you want remove the package from them?</value>
+  </data>
 </root>

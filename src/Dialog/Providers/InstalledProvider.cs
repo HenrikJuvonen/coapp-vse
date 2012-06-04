@@ -89,17 +89,82 @@ namespace CoApp.VisualStudio.Dialog.Providers
         protected override bool ExecuteCore(PackageItem item)
         {
             bool? removeDependencies = AskRemoveDependency(item.PackageIdentity, checkDependents: true);
+
             if (removeDependencies == null)
             {
                 // user presses Cancel
                 return false;
             }
+
+            bool? removeFromSolution = AskRemovePackagesFromSolution(item.PackageIdentity);
+
+            if (removeFromSolution == true)
+            {
+                // user presses Yes
+
+                PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, item.Type, item.Path);
+
+                var viewModel = new SolutionExplorerViewModel(
+                    ServiceLocator.GetInstance<DTE>().Solution,
+                    packageReference);
+
+                IEnumerable<Project> projects = viewModel.GetSelectedProjects();
+                IEnumerable<Library> libraries = viewModel.GetLibraries();
+
+                foreach (Library lib in libraries)
+                {
+                    lib.IsSelected = false;
+                }
+
+                _solutionManager.ManagePackage(packageReference, projects, libraries);
+            }
+            else if (removeFromSolution == null)
+            {
+                // user presses Cancel
+                return false;
+            }
+
             ShowProgressWindow();
             RemovePackage(item, (bool)removeDependencies);
             HideProgressWindow();
             return true;
         }
 
+        public bool? AskRemovePackagesFromSolution(IPackage package)
+        {
+            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed");
+            List<Project> projects = new List<Project>();
+
+            foreach (Project p in _solutionManager.GetProjects())
+            {
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.config");
+
+                if (packageReferenceFile.GetPackageReferences().Any(pkg => pkg.Name == package.Name &&
+                                                                           pkg.Version == package.Version &&
+                                                                           pkg.Architecture == package.Architecture))
+                {
+                    projects.Add(p);
+                }
+
+            }
+
+            bool? remove = false;
+
+            if (projects.Any())
+            {
+                // show each project on one line
+                String projectNames = String.Join(Environment.NewLine, projects.Select(p => p.GetName()));
+                String message = String.Format(Resources.Dialog_RemoveFromSolutionMessage, package.CanonicalName.PackageName)
+                        + Environment.NewLine
+                        + Environment.NewLine
+                        + projectNames;
+
+                remove = _userNotifierServices.ShowQuestionWindow(message);
+            }
+
+            return remove;
+            
+        }
 
         protected bool? AskRemoveDependency(IPackage package, bool checkDependents)
         {
@@ -113,11 +178,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 if (dependents.Any())
                 {
                     ShowProgressWindow();
-                    throw new Exception("Uninstall depending packages first:\n" + String.Join("\n", dependents.Select(pkg => pkg.CanonicalName)));
+                    throw new Exception("Uninstall depending packages first:\n" + String.Join("\n", dependents.Select(pkg => pkg.CanonicalName.PackageName)));
                 }
             }
 
-            //var uninstallPackageNames = package.Dependencies.Where(name => !name.Contains("coapp.toolkit"));
+            //var uninstallPackageNames = package.Dependencies.Where(name => name != "coapp");
 
             bool? removeDependencies = false;
 
@@ -126,12 +191,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 // show each dependency package on one line
                 String packageNames = String.Join(Environment.NewLine, uninstallPackageNames);
-                String message = String.Format(Resources.Dialog_RemoveDependencyMessage, package)
+                String message = String.Format(Resources.Dialog_RemoveDependencyMessage, package.CanonicalName.PackageName)
                         + Environment.NewLine
                         + Environment.NewLine
                         + packageNames;
 
-                removeDependencies = _userNotifierServices.ShowRemoveDependenciesWindow(message);
+                removeDependencies = _userNotifierServices.ShowQuestionWindow(message);
             }
             */
 
