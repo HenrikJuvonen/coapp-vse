@@ -40,7 +40,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         public override IEnumerable<IPackage> GetPackages()
         {
             IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed");
-            List<IPackage> resultPackages = new List<IPackage>();
+            ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
             {

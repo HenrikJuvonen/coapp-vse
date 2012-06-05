@@ -362,6 +362,11 @@ namespace CoApp.VisualStudio.VsCore
             return project.Kind != null && project.Kind.Equals(VsConstants.VcProjectTypeGuid, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool IsNetProject(this Project project)
+        {
+            return project.IsSupported();
+        }
+
         public static bool IsSupported(this Project project)
         {
             return project.Kind != null && _supportedProjectTypes.Contains(project.Kind);
@@ -413,11 +418,8 @@ namespace CoApp.VisualStudio.VsCore
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
 
-            if (packageReference.Type.Contains("vc") && projectTypeGuids.Contains(VsConstants.VcProjectTypeGuid))
-            {
-                return true;
-            }
-            else if (packageReference.Type == "net" && projectTypeGuids.Contains(VsConstants.CsharpProjectTypeGuid))
+            if ((packageReference.Type.Contains("vc") && project.IsVcProject()) ||
+                (packageReference.Type == "net" && project.IsNetProject()))
             {
                 return true;
             }

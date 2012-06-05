@@ -81,6 +81,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
+                if (Name == "coapp" ||  Name == "coapp.devtools")
+                    return "net";
+
                 return Name.Contains("common") ? "vc" :
                        PackageIdentity.Flavor.IsWildcardMatch("*vc*") ? "vc,lib" :
                        PackageIdentity.Flavor.IsWildcardMatch("*net*") ? "net" : "";

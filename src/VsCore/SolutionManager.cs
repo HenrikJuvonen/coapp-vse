@@ -382,26 +382,22 @@ namespace CoApp.VisualStudio.VsCore
 
                 IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
 
-                if (project.IsVcProject())
+                if (type.Contains("vc") && project.IsVcProject())
                 {
-                    switch (type)
+                    if (type == "vc,lib")
                     {
-                        case "vc,lib":
-                            project.ManageLinkerDependencies(packageReference.Path, projects, projectLibraries);
-                            resultLibraries = projectLibraries.Where(n => n.IsSelected);
-                            break;
-                        case "vc":
-                            project.ManageIncludeDirectories(packageReference.Path, projects);
-                            break;
-                    }
-                }
-                else
-                {
-                    if (type == "net")
-                    {
-                        project.ManageReferences(packageReference.Architecture, projectLibraries);
+                        project.ManageLinkerDependencies(packageReference.Path, projects, projectLibraries);
                         resultLibraries = projectLibraries.Where(n => n.IsSelected);
                     }
+                    else if (type == "vc")
+                    {
+                        project.ManageIncludeDirectories(packageReference.Path, projects);
+                    }
+                }
+                else if (type == "net" && project.IsNetProject())
+                {
+                    project.ManageReferences(packageReference.Architecture, projectLibraries);
+                    resultLibraries = projectLibraries.Where(n => n.IsSelected);
                 }
 
                 string path = project.GetDirectory() + "\\coapp.config";

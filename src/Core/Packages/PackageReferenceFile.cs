@@ -70,10 +70,7 @@ namespace CoApp.VisualStudio
                                 continue;
                             }
 
-                            libraries.Add(new Library(lib,
-                                                      "",
-                                                      config,
-                                                      true));
+                            libraries.Add(new Library(lib, "", config, true));
                         }
                     }
                 }
@@ -89,10 +86,7 @@ namespace CoApp.VisualStudio
                             continue;
                         }
 
-                        libraries.Add(new Library(lib,
-                                                  "",
-                                                  null,
-                                                  true));
+                        libraries.Add(new Library(lib, "", null,true));
                     }
                 }
 
@@ -156,14 +150,14 @@ namespace CoApp.VisualStudio
                 foreach (string config in configs)
                 {
                     var configElement = new XElement("configuration",
-                                        new XAttribute("name", config));
+                                            new XAttribute("name", config));
 
                     foreach (Library library in libraries)
                     {
                         if (library.ConfigurationName == config)
                         {
                             var libraryElement = new XElement("lib",
-                                                 new XAttribute("name", library.Name));
+                                                     new XAttribute("name", library.Name));
 
                             configElement.Add(libraryElement);
                         }

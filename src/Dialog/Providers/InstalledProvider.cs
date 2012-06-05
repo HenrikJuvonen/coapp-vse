@@ -68,8 +68,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             string type = item.Type;
 
-            if (item.Name == "coapp" || item.Name == "coapp.devtools") type = "net";
-
             PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(

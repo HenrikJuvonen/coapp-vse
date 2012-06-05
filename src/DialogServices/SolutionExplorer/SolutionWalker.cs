@@ -213,11 +213,11 @@ namespace CoApp.VisualStudio.Dialog
                 }
 
                 // solution folder goes before projects
-                if (first is FolderNode && second is ProjectNode)
+                if (first is SolutionNode && second is ProjectNode)
                 {
                     return -1;
                 }
-                else if (first is ProjectNode && second is FolderNode)
+                else if (first is ProjectNode && second is SolutionNode)
                 {
                     return 1;
                 }
