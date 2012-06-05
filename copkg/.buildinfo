@@ -14,17 +14,14 @@ build {
 release {
     set: cfg = "Release";
     uses: anycpu;
-    
-    build-command: @"
-		echo Build done.";
 }
 
 package {
     uses: sign;
     build-command: @"
-        autopackage coapp.vse.autopkg  || goto failed
-        erase /Q *.wixpdb
-        echo Packaging done.
+		cd copkg
+        autopackage coapp.vse.autopkg || goto failed
+		erase /Q *.wixpdb
     ";
 }
 
@@ -44,15 +41,6 @@ sign {
     set: bin_path = @"src\VsExtension\bin\${cfg}\";
     
     uses: release;
-        
-    targets: {
-		"${bin_path}CoApp.VisualStudio.Core.dll",
-		"${bin_path}CoApp.VisualStudio.Dialog.dll",
-		"${bin_path}CoApp.VisualStudio.DialogServices.dll",
-		"${bin_path}CoApp.VisualStudio.Options.dll",
-		"${bin_path}CoApp.VisualStudio.VsCore.dll",
-		"${bin_path}CoApp.VisualStudio.Tools.dll",
-    };
     
     build-command: @"
         simplesigner --nologo  --sign --strong-name ""${bin_path}CoApp.VisualStudio.Core.dll"" ""${bin_path}CoApp.VisualStudio.Dialog.dll"" ""${bin_path}CoApp.VisualStudio.DialogServices.dll"" ""${bin_path}CoApp.VisualStudio.Options.dll"" ""${bin_path}CoApp.VisualStudio.VsCore.dll"" ""${bin_path}CoApp.VisualStudio.Tools.dll""

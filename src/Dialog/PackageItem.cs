@@ -103,7 +103,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return Name.Contains("-dev");
+                return Name.Contains("-dev") ||
+                   Name == "coapp" ||
+                   Name == "coapp.devtools"; ;
             }
         }
 

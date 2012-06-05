@@ -48,17 +48,38 @@ namespace CoApp.VisualStudio
                     continue;
                 }
 
-                foreach (var ce in e.Elements("configuration"))
+                if (e.Elements("configuration").Any())
                 {
-                    string config = ce.Attribute("name").Value;
-
-                    if (String.IsNullOrEmpty(config))
+                    foreach (var ce in e.Elements("configuration"))
                     {
-                        // If the config is empty, ignore the record.
-                        continue;
-                    }
+                        string config = ce.Attribute("name").Value;
 
-                    foreach (var le in ce.Elements("lib"))
+                        if (String.IsNullOrEmpty(config))
+                        {
+                            // If the config is empty, ignore the record.
+                            continue;
+                        }
+
+                        foreach (var le in ce.Elements("lib"))
+                        {
+                            string lib = le.Attribute("name").Value;
+
+                            if (String.IsNullOrEmpty(lib))
+                            {
+                                // If the lib is empty, ignore the record.
+                                continue;
+                            }
+
+                            libraries.Add(new Library(lib,
+                                                      "",
+                                                      config,
+                                                      true));
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var le in e.Elements("lib"))
                     {
                         string lib = le.Attribute("name").Value;
 
@@ -70,7 +91,7 @@ namespace CoApp.VisualStudio
 
                         libraries.Add(new Library(lib,
                                                   "",
-                                                  config,
+                                                  null,
                                                   true));
                     }
                 }
@@ -126,25 +147,40 @@ namespace CoApp.VisualStudio
                                   new XAttribute("version", version),
                                   new XAttribute("architecture", architecture));
 
-            IEnumerable<string> configs = libraries.Select(n => n.ConfigurationName).Distinct();
+            IEnumerable<string> configs = libraries.Select(n => n.ConfigurationName)
+                                                   .Where(n => !string.IsNullOrEmpty(n))
+                                                   .Distinct();
 
-            foreach (string config in configs)
+            if (configs.Any())
             {
-                var configElement = new XElement("configuration",
-                                    new XAttribute("name", config));
+                foreach (string config in configs)
+                {
+                    var configElement = new XElement("configuration",
+                                        new XAttribute("name", config));
 
+                    foreach (Library library in libraries)
+                    {
+                        if (library.ConfigurationName == config)
+                        {
+                            var libraryElement = new XElement("lib",
+                                                 new XAttribute("name", library.Name));
+
+                            configElement.Add(libraryElement);
+                        }
+                    }
+
+                    newElement.Add(configElement);
+                }
+            }
+            else
+            {
                 foreach (Library library in libraries)
                 {
-                    if (library.ConfigurationName == config)
-                    {
-                        var libraryElement = new XElement("lib",
-                                             new XAttribute("name", library.Name));
+                    var libraryElement = new XElement("lib",
+                                            new XAttribute("name", library.Name));
 
-                        configElement.Add(libraryElement);
-                    }
+                    newElement.Add(libraryElement);
                 }
-
-                newElement.Add(configElement);
             }
             
             document.Root.Add(newElement);

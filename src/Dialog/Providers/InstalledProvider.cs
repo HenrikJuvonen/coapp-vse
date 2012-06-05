@@ -59,14 +59,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             return item.Name.Contains("common") ||
                    item.PackageIdentity.Flavor.IsWildcardMatch("*vc" + VsVersionHelper.VsMajorVersion + "*") ||
-                   item.PackageIdentity.Flavor.IsWildcardMatch("*net*");
+                   item.PackageIdentity.Flavor.IsWildcardMatch("*net*") ||
+                   item.Name == "coapp" ||
+                   item.Name == "coapp.devtools";
         }
 
         protected override bool ExecuteManage(PackageItem item)
         {
             string type = item.Type;
 
-            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, item.Type, item.Path);
+            if (item.Name == "coapp" || item.Name == "coapp.devtools") type = "net";
+
+            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,

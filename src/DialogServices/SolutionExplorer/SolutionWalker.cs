@@ -45,12 +45,23 @@ namespace CoApp.VisualStudio.Dialog
                     IList<ViewModelNodeBase> children;
 
                     if (packageReference.Type == "vc,lib")
+                    {
                         children = CreateConfigurationNode(
                             project,
                             packageReference
                         ).ToList();
+                    }
+                    else if (packageReference.Type == "net")
+                    {
+                        children = CreateAssemblyNode(
+                            project,
+                            packageReference
+                        ).ToList();
+                    }
                     else
+                    {
                         children = new List<ViewModelNodeBase>();
+                    }
 
                     bool allChildrenSelected = children.Any() ? children.All(n => n.IsSelected == true) : false;
                     
@@ -109,7 +120,7 @@ namespace CoApp.VisualStudio.Dialog
 
             foreach (string file in files)
             {
-                string filename = file.Substring(file.LastIndexOf('\\') + 1);
+                string filename = Path.GetFileName(file);
 
                 yield return new LibraryNode(project, filename)
                 {
@@ -118,7 +129,24 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string lib)
+        private static IEnumerable<ViewModelNodeBase> CreateAssemblyNode(
+            Project project,
+            PackageReference packageReference)
+        {
+            string[] files = Directory.GetFiles(packageReference.Path + "ReferenceAssemblies", "*.dll");
+
+            foreach (string file in files)
+            {
+                string filename = Path.GetFileName(file);
+
+                yield return new LibraryNode(project, filename)
+                {
+                    IsSelected = DetermineCheckState(packageReference, project, null, filename)
+                };
+            }
+        }
+
+        private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string filename)
         {
             PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.config");
 
@@ -139,14 +167,14 @@ namespace CoApp.VisualStudio.Dialog
 
                 foreach (Library l in p.Libraries)
                 {
-                    if (l.ConfigurationName == config && l.Name == lib)
+                    if (config == null ? l.Name == filename : l.ConfigurationName == config && l.Name == filename)
                     {
                         return true;
                     }
                 }
             }
 
-            if (config == null && lib == null && projectHasPackage)
+            if (config == null && filename == null && projectHasPackage)
             {
                 if (hasLibraries)
                 {

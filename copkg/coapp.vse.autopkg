@@ -14,7 +14,9 @@ provides {
 
 metadata {
     summary: "Visual Studio Extension";
-    
+	description: "";
+	icon: @"images\logo3.png";
+	
     author-version : "0.2.0.0";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
     stability : "-100";
@@ -64,7 +66,7 @@ application {
 
 package-composition {
     symlinks : {
-        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\coapp\coapp-vse\${each.Name}" = @"${packagedir}\${each.Name}";
+        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\CoApp Project, Outercurve Foundation\CoApp for Visual Studio\0.2.0\${each.Name}" = @"${packagedir}\${each.Name}";
 
     };
 }

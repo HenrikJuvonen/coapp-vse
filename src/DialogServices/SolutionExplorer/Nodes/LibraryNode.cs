@@ -21,7 +21,7 @@ namespace CoApp.VisualStudio.Dialog
 
         public override IEnumerable<Library> GetLibraries()
         {
-            yield return new Library(Name, Project.Name, Parent.Name, IsSelected == true);
+            yield return new Library(Name, Project.Name, Parent is ConfigurationNode ? Parent.Name : null, IsSelected == true);
         }
 
         public override ImageSource Icon

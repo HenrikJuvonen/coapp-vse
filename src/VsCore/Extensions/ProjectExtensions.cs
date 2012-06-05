@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 using Microsoft.VisualStudio.VCProjectEngine;
+using VSLangProj;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -416,6 +417,10 @@ namespace CoApp.VisualStudio.VsCore
             {
                 return true;
             }
+            else if (packageReference.Type == "net" && projectTypeGuids.Contains(VsConstants.CsharpProjectTypeGuid))
+            {
+                return true;
+            }
 
             return false;
         }
@@ -511,7 +516,19 @@ namespace CoApp.VisualStudio.VsCore
 
         public static void ManageReferences(this Project project, string architecture, IEnumerable<Library> libraries)
         {
+            string path = @"C:\ProgramData\ReferenceAssemblies\" + architecture + @"\";
 
+            VSProject vsProject = (VSProject)project.Object;
+
+            foreach (Library lib in libraries)
+            {
+                Reference reference = vsProject.References.Find(Path.GetFileNameWithoutExtension(lib.Name));
+
+                if (reference == null && lib.IsSelected)
+                    vsProject.References.Add(path + lib.Name);
+                else if (reference != null && !lib.IsSelected)
+                    reference.Remove();
+            }
         }
 
         public static void ManageLinkerDependencies(this Project project, string path, IEnumerable<Project> projects, IEnumerable<Library> libraries)

@@ -393,10 +393,14 @@ namespace CoApp.VisualStudio.VsCore
                         case "vc":
                             project.ManageIncludeDirectories(packageReference.Path, projects);
                             break;
-                        case "net":
-                            project.ManageReferences(packageReference.Architecture, projectLibraries);
-                            resultLibraries = projectLibraries.Where(n => n.IsSelected);
-                            break;
+                    }
+                }
+                else
+                {
+                    if (type == "net")
+                    {
+                        project.ManageReferences(packageReference.Architecture, projectLibraries);
+                        resultLibraries = projectLibraries.Where(n => n.IsSelected);
                     }
                 }
 
@@ -414,8 +418,9 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
                 }
-            }
 
+                project.Save(project.FullName);
+            }
         }
     }
 }
