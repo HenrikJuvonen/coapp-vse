@@ -63,8 +63,8 @@ application {
 }
 
 package-composition {
-    symlinks : { 
-        all => @"%appdata%\Local\Microsoft\VisualStudio\10.0\Extensions\coapp\coapp-vse\${each.Name}" = @"${packagedir}\${each.Name}";
+    symlinks : {
+        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\coapp\coapp-vse\${each.Name}" = @"${packagedir}\${each.Name}";
 
     };
 }
