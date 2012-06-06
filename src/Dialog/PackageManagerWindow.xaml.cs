@@ -19,8 +19,6 @@ namespace CoApp.VisualStudio.Dialog
         private readonly IOptionsPageActivator _optionsPageActivator;
         private readonly Project _activeProject;
 
-        private ComboBox _archComboBox;
-
         public PackageManagerWindow(Project project) :
             this(project,
                  ServiceLocator.GetInstance<DTE>(),
@@ -39,7 +37,7 @@ namespace CoApp.VisualStudio.Dialog
             _activeProject = project;
             _optionsPageActivator = optionPageActivator;
 
-            PrepareArchitectureComboBox();
+            PrepareFilterComboBox();
 
             ProviderServices providerServices = new ProviderServices();
 
@@ -215,7 +213,7 @@ namespace CoApp.VisualStudio.Dialog
         {
             Close();
             _optionsPageActivator.ActivatePage(
-                "Package Feeds",
+                "General",
                 () => OnActivated(_activeProject));
         }
 
@@ -274,36 +272,77 @@ namespace CoApp.VisualStudio.Dialog
             CurrentInstance = this;
         }
 
-        private void PrepareArchitectureComboBox()
+        private void PrepareFilterComboBox()
         {
             ComboBox fxCombo = FindComboBox("cmb_Fx");
             if (fxCombo != null)
             {
-                fxCombo.Items.Clear();
-                fxCombo.Items.Add("Architecture: All");
-                fxCombo.Items.Add("Architecture: Any");
-                fxCombo.Items.Add("Architecture: x64");
-                fxCombo.Items.Add("Architecture: x86");
-                fxCombo.SelectedIndex = 0;
-                fxCombo.SelectionChanged += OnFxComboBoxSelectionChanged;
+                Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
 
-                _archComboBox = fxCombo;
+                CheckBox archAny = new CheckBox(); archAny.Content = "Architecture: any";
+                CheckBox archX64 = new CheckBox(); archX64.Content = "Architecture: x64";
+                CheckBox archX86 = new CheckBox(); archX86.Content = "Architecture: x86";
+                CheckBox roleApp = new CheckBox(); roleApp.Content = "Role: Application";
+                CheckBox roleAsy = new CheckBox(); roleAsy.Content = "Role: Assembly";
+                CheckBox roleDev = new CheckBox(); roleDev.Content = "Role: DeveloperLibrary";
+                
+                fxCombo.Items.Clear();
+                fxCombo.Items.Add(label);
+                fxCombo.Items.Add(archAny);
+                fxCombo.Items.Add(archX64);
+                fxCombo.Items.Add(archX86);
+                fxCombo.Items.Add(roleApp);
+                fxCombo.Items.Add(roleAsy);
+                fxCombo.Items.Add(roleDev);
+
+                fxCombo.SelectedIndex = 0;
+                fxCombo.SelectionChanged += OnFxComboSelectionChanged;
+
+                foreach (object obj in fxCombo.Items)
+                {
+                    CheckBox c = obj is CheckBox ? (CheckBox)obj : null;
+
+                    if (c != null)
+                    {
+                        c.IsChecked = true;
+                        c.Checked += OnFilterChecked;
+                        c.Unchecked += OnFilterChecked;
+                    }
+                }
             }
         }
 
-        private void OnFxComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnFxComboSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var combo = (ComboBox)sender;
-            if (combo.SelectedIndex == -1)
+            combo.SelectedIndex = 0;
+        }
+
+        private void OnFilterChecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+
+            switch ((string)checkbox.Content)
             {
-                return;
+                case "Architecture: any":
+                    CoAppWrapper.SetArchitectureFilter("any", checkbox.IsChecked == true);
+                    break;
+                case "Architecture: x64":
+                    CoAppWrapper.SetArchitectureFilter("x64", checkbox.IsChecked == true);
+                    break;
+                case "Architecture: x86":
+                    CoAppWrapper.SetArchitectureFilter("x86", checkbox.IsChecked == true);
+                    break;
+                case "Role: Application":
+                    CoAppWrapper.SetRoleFilter("Application", checkbox.IsChecked == true);
+                    break;
+                case "Role: Assembly":
+                    CoAppWrapper.SetRoleFilter("Assembly", checkbox.IsChecked == true);
+                    break;
+                case "Role: DeveloperLibrary":
+                    CoAppWrapper.SetRoleFilter("DeveloperLibrary", checkbox.IsChecked == true);
+                    break;
             }
-
-            string arch = combo.SelectedIndex == 0 ? "All" :
-                          combo.SelectedIndex == 1 ? "Any" :
-                          combo.SelectedIndex == 2 ? "x64" : "x86";
-
-            CoAppWrapper.SetArchitecture(arch);
 
             var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedTreeNode != null)

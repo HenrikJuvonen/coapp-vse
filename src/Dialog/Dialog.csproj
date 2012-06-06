@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LoadPageResult.cs" />
+    <Compile Include="Nodes\AggregateTreeNode.cs" />
     <Compile Include="Nodes\PackagesSearchNode.cs" />
     <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
     <Compile Include="Nodes\RootTreeNode.cs" />

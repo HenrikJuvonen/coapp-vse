@@ -90,9 +90,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(string type)
+        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(string name, string location, string type)
         {
-            return new SimpleTreeNode(this, type.Contains("dev") ? "Dev" : "All", RootNode, type);
+            return new SimpleTreeNode(RootNode, this, name, location, type);
         }
 
         protected void SelectNode(PackagesTreeNodeBase node)

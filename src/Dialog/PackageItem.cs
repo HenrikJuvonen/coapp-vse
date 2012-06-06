@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using CoApp.Packaging.Common;
+using CoApp.Packaging.Common.Model;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
@@ -97,7 +98,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 string architecture =
                     PackageIdentity.Architecture == "x64" ? " (x64)" :
                     PackageIdentity.Architecture == "x86" ? " (x86)" : "";
-
+                
                 return @"c:\ProgramData\Program Files" + architecture + @"\Outercurve Foundation\" + PackageIdentity.CanonicalName.PackageName + @"\";
             }
         }
@@ -106,9 +107,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return Name.Contains("-dev") ||
-                   Name == "coapp" ||
-                   Name == "coapp.devtools"; ;
+                return PackageIdentity.Roles.Any(n => n.PackageRole == PackageRole.DeveloperLibrary);
             }
         }
 

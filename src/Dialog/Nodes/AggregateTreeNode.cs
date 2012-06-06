@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Packaging.Common;
@@ -7,15 +8,15 @@ using CoApp.VisualStudio.VsCore;
 namespace CoApp.VisualStudio.Dialog.Providers
 {
     /// <summary>
-    /// This tree node lists all packages from a fixed repository.
+    /// This tree node lists all packages from multiple repositories.
     /// </summary>
-    internal class SimpleTreeNode : PackagesTreeNodeBase
+    internal class AggregateTreeNode : PackagesTreeNodeBase
     {
         private readonly string _name;
         private readonly string _location;
         private readonly string _type;
 
-        public SimpleTreeNode(IVsExtensionsTreeNode parent, PackagesProviderBase provider, string name, string location, string type) :
+        public AggregateTreeNode(IVsExtensionsTreeNode parent, PackagesProviderBase provider, string name, string location, string type) :
             base(parent, provider)
         {
             if (name == null)
@@ -39,10 +40,22 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return _name;
             }
         }
-        
+
         public override IEnumerable<IPackage> GetPackages()
         {
-            return CoAppWrapper.GetPackages(_type, _location, VsVersionHelper.VsMajorVersion);
+            IEnumerable<IPackage> packages = Enumerable.Empty<IPackage>();
+
+            foreach (IVsExtensionsTreeNode treeNode in Nodes)
+            {
+                var node = treeNode as PackagesTreeNodeBase;
+
+                if (node != null)
+                {
+                    packages = packages.Union(node.GetPackages());
+                }
+            }
+
+            return packages;
         }
     }
 }

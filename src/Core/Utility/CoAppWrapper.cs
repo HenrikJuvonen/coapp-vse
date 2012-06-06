@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
     using CoApp.Packaging.Client;
     using CoApp.Packaging.Common;
+    using CoApp.Packaging.Common.Model;
     using CoApp.Toolkit.Extensions;
     using CoApp.Toolkit.Linq;
     using CoApp.Toolkit.Tasks;
@@ -18,17 +19,18 @@
     /// </summary>
     public static class CoAppWrapper
     {
-        private static Architecture architecture = Architecture.Auto;
+        private static ISet<Architecture> architectureFilters = new HashSet<Architecture>();
+        private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
 
         private static readonly List<Task> preCommandTasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
-        private static readonly PackageManager _packageManager = new PackageManager();
+        private static readonly PackageManager packageManager = new PackageManager();
         
-        private static readonly ProgressProvider _progressProvider = new ProgressProvider();
+        private static readonly ProgressProvider progressProvider = new ProgressProvider();
 
         public static CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public static ProgressProvider ProgressProvider { get { return _progressProvider; } }
+        public static ProgressProvider ProgressProvider { get { return progressProvider; } }
 
         /// <summary>
         /// Initializes the CoAppWrapper.
@@ -37,6 +39,14 @@
         {
             CancellationTokenSource = new CancellationTokenSource();
 
+            architectureFilters.Add(Architecture.Any);
+            architectureFilters.Add(Architecture.x64);
+            architectureFilters.Add(Architecture.x86);
+
+            roleFilters.Add(PackageRole.Application);
+            roleFilters.Add(PackageRole.Assembly);
+            roleFilters.Add(PackageRole.DeveloperLibrary);
+            
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
                 if (!activeDownloads.Contains(remoteLocation))
@@ -58,9 +68,46 @@
         /// <summary>
         /// Used for filtering packages by architecture in PackageManagerWindow.
         /// </summary>
-        public static void SetArchitecture(string arch)
+        /// <param name="enabled">
+        /// If true: packages of architectureName are displayed.
+        /// </param>
+        public static void SetArchitectureFilter(string architectureName, bool enabled)
         {
-            architecture = Architecture.Parse(arch);
+            Architecture architecture = Architecture.Parse(architectureName);
+
+            if (enabled)
+                architectureFilters.Add(architecture);
+            else
+                architectureFilters.Remove(architecture);
+        }
+
+        /// <summary>
+        /// Used for filtering packages by role in PackageManagerWindow.
+        /// </summary>
+        /// <param name="enabled">
+        /// If true: packages of roleName are displayed.
+        /// </param>
+        public static void SetRoleFilter(string roleName, bool enabled)
+        {
+            PackageRole role = PackageRole.Application;
+
+            switch(roleName)
+            {
+                case "Application":
+                    role = PackageRole.Application;
+                    break;
+                case "Assembly":
+                    role = PackageRole.Assembly;
+                    break;
+                case "DeveloperLibrary":
+                    role = PackageRole.DeveloperLibrary;
+                    break;
+            }
+
+            if (enabled)
+                roleFilters.Add(role);
+            else
+                roleFilters.Remove(role);
         }
 
         /// <summary>
@@ -74,21 +121,21 @@
                 {
                     case "wanted":
                         if (package.IsWanted)
-                            _packageManager.SetPackageWanted(package.CanonicalName, false);
+                            packageManager.SetPackageWanted(package.CanonicalName, false);
                         else
-                            _packageManager.SetPackageWanted(package.CanonicalName, true);
+                            packageManager.SetPackageWanted(package.CanonicalName, true);
                         break;
                     case "updatable":
-                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
+                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
                         break;
                     case "upgradable":
-                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
+                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
                         break;
                     case "blocked":
-                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
+                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
                         break;
                     case "locked":
-                        _packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
+                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
                         break;
                 }
                 
@@ -106,9 +153,16 @@
 
             IEnumerable<Feed> feeds = null;
 
-            Task task = preCommandTasks.Continue(() => _packageManager.Feeds.Continue(fds => feeds = fds));
+            try
+            {
+                Task task = preCommandTasks.Continue(() => packageManager.Feeds.Continue(fds => feeds = fds));
 
-            ContinueTask(task);
+                ContinueTask(task);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Unwrap().Message);
+            }
 
             return feeds;
         }
@@ -120,10 +174,10 @@
         {
             Console.WriteLine("Adding feed: " + feedLocation);
 
-            Task task = preCommandTasks.Continue(() => _packageManager.AddSystemFeed(feedLocation));
-
             try
             {
+                Task task = preCommandTasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
+
                 ContinueTask(task);
             }
             catch (Exception e)
@@ -139,10 +193,10 @@
         {
             Console.WriteLine("Removing feed: " + feedLocation);
 
-            Task task = preCommandTasks.Continue(() => _packageManager.RemoveSystemFeed(feedLocation));
-
             try
             {
+                Task task = preCommandTasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
+
                 ContinueTask(task);
             }
             catch (Exception e)
@@ -154,29 +208,26 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type, int vsMajorVersion = 0)
+        public static IEnumerable<IPackage> GetPackages(string type, string location = null, int vsMajorVersion = 0)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
 
             switch (type)
             {
-                case "all":
-                case "all,dev":
-                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null);
+                case "online":
+                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);
                     break;
                 case "installed":
-                case "installed,dev":
                     pkgFilter = Package.Properties.Installed.Is(true);
-                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null);                        
+                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);                        
                     break;
                 case "updatable":
-                case "updatable,dev":
                     packages = Enumerable.Empty<IPackage>();
                     break;
             }
 
-            return FilterPackages(packages, type, vsMajorVersion);
+            return FilterPackages(packages, vsMajorVersion);
         }
 
         /// <summary>
@@ -184,7 +235,7 @@
         /// </summary>
         public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
-            return QueryPackages(parameters, null, null);
+            return QueryPackages(parameters, null, null, null);
         }
 
         /// <summary>
@@ -220,7 +271,7 @@
         /// </summary>
         public static IPackage GetPackage(CanonicalName canonicalName)
         {
-            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
+            return QueryPackages(new string[] { canonicalName.PackageName }, null, null, null).FirstOrDefault();
         }
 
         /// <summary>
@@ -228,7 +279,8 @@
         /// </summary>
         private static IEnumerable<IPackage> QueryPackages(string[] queries,
                                                            Filter<IPackage> pkgFilter,
-                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
+                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter,
+                                                           string location)
         {
             if (!queries.Any() || queries[0] == "*")
             {
@@ -241,7 +293,7 @@
             {
                 Console.Write("Querying packages...");
 
-                Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null).Continue(p => pkgs = p));
+                Task task = preCommandTasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p));
 
                 ContinueTask(task);
             }
@@ -271,7 +323,7 @@
             {
                 Console.Write("Querying packages...");
 
-                Task task = preCommandTasks.Continue(() => _packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null)).Continue(p => pkgs = p);
+                Task task = preCommandTasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null)).Continue(p => pkgs = p);
 
                 ContinueTask(task);
             }
@@ -315,7 +367,7 @@
         {
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
 
-            return _packageManager.Install(canonicalName);
+            return packageManager.Install(canonicalName);
         }
 
         /// <summary>
@@ -325,25 +377,25 @@
         {
             CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
 
-            return _packageManager.RemovePackages(canonicalNames, true);
+            return packageManager.RemovePackages(canonicalNames, true);
         }
 
         /// <summary>
         /// Used for filtering packages.
         /// </summary>
-        private static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, string type, int vsMajorVersion)
+        private static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, int vsMajorVersion)
         {
-            if (type.Contains("dev"))
+            packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
+
+            if (roleFilters.Contains(PackageRole.DeveloperLibrary))
             {
-                packages = packages.Where(package => package.Name.Contains("-dev"))
-                                   .Where(package => package.Name.Contains("vc") ?
-                                                     package.Name.Contains("vc" + vsMajorVersion) : true);
+                packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
+
+                packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
+                                                     package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
             }
 
-            if (architecture != Architecture.Auto)
-            {
-                packages = packages.Where(package => package.Architecture == architecture);
-            }
+            packages = packages.Where(package => architectureFilters.Contains(package.Architecture));
 
             return packages;
         }

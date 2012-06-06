@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using System.Windows;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Packaging.Common;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -87,8 +91,42 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("all"));
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("all,dev"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "online"));
+
+            IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
+
+            IEnumerable<string> hosts = new HashSet<string>(
+                feeds.Select(f => 
+                {
+                    Uri uri = new Uri(f.Location);
+                    return uri.Host;
+                }));
+
+            foreach (string host in hosts)
+            {
+                string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
+
+                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName, null, "online");
+
+                foreach (Feed f in feeds)
+                {
+                    Uri uri = new Uri(f.Location);
+
+                    if (uri.Host == host)
+                    {
+                        string name = uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped);
+
+                        if (aggregateName == "Local")
+                        {
+                            name = Path.GetFileNameWithoutExtension(name);
+                        }
+
+                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, "online"));
+                    }
+                }
+                
+                RootNode.Nodes.Add(treeNode);
+            }
         }
     }
 }

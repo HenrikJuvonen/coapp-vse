@@ -30,8 +30,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("updatable"));
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("updatable,dev"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "updatable"));
         }
 
         public override bool CanExecuteCore(PackageItem item)
