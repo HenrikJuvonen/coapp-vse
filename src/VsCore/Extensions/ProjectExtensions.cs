@@ -533,9 +533,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public static void ManageLinkerDependencies(this Project project, string path, IEnumerable<Project> projects, IEnumerable<Library> libraries)
+        public static void ManageLinkerDependencies(this Project project, string architecture, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            path += "lib";
+            string path = @"C:\ProgramData\lib\" + architecture + @"\";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;
@@ -574,9 +574,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public static void ManageIncludeDirectories(this Project project, string path, IEnumerable<Project> projects)
+        public static void ManageIncludeDirectories(this Project project, string packageNameAndVersion, IEnumerable<Project> projects)
         {
-            path += "include";
+            string path = @"C:\ProgramData\include\" + packageNameAndVersion + @"\";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;
