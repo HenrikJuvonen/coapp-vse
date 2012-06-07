@@ -162,7 +162,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                         + Environment.NewLine
                         + projectNames;
 
-                remove = _userNotifierServices.ShowQuestionWindow(message);
+                remove = _userNotifierServices.ShowQueryMessage(message);
             }
 
             return remove;
@@ -180,8 +180,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                 if (dependents.Any())
                 {
-                    ShowProgressWindow();
-                    throw new Exception("Uninstall depending packages first:\n" + String.Join("\n", dependents.Select(pkg => pkg.CanonicalName.PackageName)));
+                    _userNotifierServices.ShowErrorMessage("Uninstall depending packages first:\n" +
+                        String.Join("\n", dependents.Select(pkg => pkg.CanonicalName.PackageName)));
+
+                    return null;
                 }
             }
 

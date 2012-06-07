@@ -386,17 +386,17 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     if (type == "vc,lib")
                     {
-                        project.ManageLinkerDependencies(packageReference.Architecture, projects, projectLibraries);
+                        project.ManageLinkerDependencies(packageReference, projects, projectLibraries);
                         resultLibraries = projectLibraries.Where(n => n.IsSelected);
                     }
                     else if (type == "vc")
                     {
-                        project.ManageIncludeDirectories(packageReference.Name.Substring(0, packageReference.Name.IndexOf('-')) + "-" + packageReference.Version, projects);
+                        project.ManageIncludeDirectories(packageReference, projects);
                     }
                 }
                 else if (type == "net" && project.IsNetProject())
                 {
-                    project.ManageReferences(packageReference.Architecture, projectLibraries);
+                    project.ManageReferences(packageReference, projectLibraries);
                     resultLibraries = projectLibraries.Where(n => n.IsSelected);
                 }
 

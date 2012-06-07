@@ -213,19 +213,12 @@
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
 
-            switch (type)
-            {
-                case "online":
-                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);
-                    break;
-                case "installed":
-                    pkgFilter = Package.Properties.Installed.Is(true);
-                    packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);                        
-                    break;
-                case "updatable":
-                    packages = Enumerable.Empty<IPackage>();
-                    break;
-            }
+            if (type == "installed")
+                pkgFilter = Package.Properties.Installed.Is(true);
+            else if (type == "updatable")
+                pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null);
+
+            packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);
 
             return FilterPackages(packages, vsMajorVersion);
         }
@@ -302,36 +295,6 @@
                 return Enumerable.Empty<IPackage>();
             }
 
-            return pkgs;
-        }
-
-        /// <summary>
-        /// Used for querying updatable packages.
-        /// </summary>
-        private static IEnumerable<IPackage> QueryUpdatablePackages(string[] queries,
-                                                                   Filter<IPackage> pkgFilter,
-                                                                   Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter)
-        {
-            if (!queries.Any() || queries[0] == "*")
-            {
-                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-            }
-
-            IEnumerable<IPackage> pkgs = null;
-
-            try
-            {
-                Console.Write("Querying packages...");
-
-                Task task = preCommandTasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, null)).Continue(p => pkgs = p);
-
-                ContinueTask(task);
-            }
-            catch (OperationCanceledException)
-            {
-                return Enumerable.Empty<IPackage>();
-            }
-                        
             return pkgs;
         }
 

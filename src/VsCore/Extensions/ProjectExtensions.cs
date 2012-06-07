@@ -516,9 +516,9 @@ namespace CoApp.VisualStudio.VsCore
             return name;
         }
 
-        public static void ManageReferences(this Project project, string architecture, IEnumerable<Library> libraries)
+        public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<Library> libraries)
         {
-            string path = @"C:\ProgramData\ReferenceAssemblies\" + architecture + @"\";
+            string path = packageReference.Path + @"ReferenceAssemblies\";
 
             VSProject vsProject = (VSProject)project.Object;
 
@@ -533,9 +533,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public static void ManageLinkerDependencies(this Project project, string architecture, IEnumerable<Project> projects, IEnumerable<Library> libraries)
+        public static void ManageLinkerDependencies(this Project project, PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            string path = @"C:\ProgramData\lib\" + architecture + @"\";
+            string path = @"C:\ProgramData\lib\" + packageReference.Architecture + @"\";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;
@@ -562,10 +562,10 @@ namespace CoApp.VisualStudio.VsCore
                 IEnumerable<string> current = linker.AdditionalDependencies.Split(' ');
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
-                                                             .Select(n => n.Name);
+                                                             .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
                 
                 IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
-                                                           .Select(n => n.Name);
+                                                           .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
 
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
@@ -574,9 +574,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public static void ManageIncludeDirectories(this Project project, string packageNameAndVersion, IEnumerable<Project> projects)
+        public static void ManageIncludeDirectories(this Project project, PackageReference packageReference, IEnumerable<Project> projects)
         {
-            string path = @"C:\ProgramData\include\" + packageNameAndVersion + @"\";
+            string path = @"C:\ProgramData\include\" + packageReference.Name.Split('-')[0] + "-" + packageReference.Version + @"\";
 
             VCProject vcProject = (VCProject)project.Object;
             IVCCollection configs = vcProject.Configurations;

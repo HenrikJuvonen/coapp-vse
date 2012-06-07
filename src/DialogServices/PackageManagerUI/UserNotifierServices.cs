@@ -18,17 +18,56 @@
             _uiDispatcher = Dispatcher.CurrentDispatcher;
         }
 
-        public bool? ShowQuestionWindow(string message)
+        public bool? ShowQueryMessage(string message)
         {
             if (!_uiDispatcher.CheckAccess())
             {
                 object result = _uiDispatcher.Invoke(
-                    new Func<string, bool?>(ShowQuestionWindow),
+                    new Func<string, bool?>(ShowQueryMessage),
                     message);
                 return (bool?)result;
             }
 
-            return MessageHelper.ShowQueryMessage(message, title: null, showCancelButton: true);
+            return MessageHelper.ShowQueryMessage(message, null, true);
+        }
+
+        public void ShowInfoMessage(string message)
+        {
+            if (!_uiDispatcher.CheckAccess())
+            {
+                object result = _uiDispatcher.Invoke(
+                    new Action<string>(ShowInfoMessage),
+                    message);
+                return;
+            }
+
+            MessageHelper.ShowInfoMessage(message, null);
+        }
+
+        public void ShowErrorMessage(string message)
+        {
+            if (!_uiDispatcher.CheckAccess())
+            {
+                object result = _uiDispatcher.Invoke(
+                    new Action<string>(ShowErrorMessage),
+                    message);
+                return;
+            }
+
+            MessageHelper.ShowErrorMessage(message, null);
+        }
+
+        public void ShowWarningMessage(string message)
+        {
+            if (!_uiDispatcher.CheckAccess())
+            {
+                object result = _uiDispatcher.Invoke(
+                    new Action<string>(ShowWarningMessage),
+                    message);
+                return;
+            }
+
+            MessageHelper.ShowWarningMessage(message, null);
         }
 
         public object[] ShowProjectSelectorWindow(
