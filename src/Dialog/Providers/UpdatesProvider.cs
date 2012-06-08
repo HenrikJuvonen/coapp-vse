@@ -4,7 +4,7 @@ using CoApp.Packaging.Common;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
-    internal class UpdatesProvider : OnlineProvider
+    internal class UpdatesProvider : PackagesProviderBase
     {
         public UpdatesProvider(ResourceDictionary resources,
                                 ProviderServices providerServices)
@@ -35,6 +35,14 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteCore(PackageItem item)
         {
+            return true;
+        }
+
+        protected override bool ExecuteCore(PackageItem item)
+        {
+            ShowProgressWindow();
+            CoAppWrapper.UpdatePackage(item.PackageIdentity);
+            HideProgressWindow();
             return true;
         }
 

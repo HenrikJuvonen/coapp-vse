@@ -7,9 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.VCProjectEngine;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -400,7 +398,7 @@ namespace CoApp.VisualStudio.VsCore
                     resultLibraries = projectLibraries.Where(n => n.IsSelected);
                 }
 
-                string path = project.GetDirectory() + "\\coapp.config";
+                string path = project.GetDirectory() + "\\coapp.packages.config";
   
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
 

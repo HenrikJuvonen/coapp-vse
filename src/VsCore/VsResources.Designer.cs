@@ -61,11 +61,74 @@ namespace CoApp.VisualStudio.VsCore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CoApp for Visual Studio.
+        /// </summary>
+        public static string DialogTitle {
+            get {
+                return ResourceManager.GetString("DialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The project &apos;{0}&apos; is unsupported.
         /// </summary>
         public static string DTE_ProjectUnsupported {
             get {
                 return ResourceManager.GetString("DTE_ProjectUnsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished restoring packages..
+        /// </summary>
+        public static string PackageRestoreCompleted {
+            get {
+                return ResourceManager.GetString("PackageRestoreCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to restore all the missing packages?.
+        /// </summary>
+        public static string PackageRestoreConfirmation {
+            get {
+                return ResourceManager.GetString("PackageRestoreConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading package &apos;{0}&apos; failed..
+        /// </summary>
+        public static string PackageRestoreDownloadPackageFailed {
+            get {
+                return ResourceManager.GetString("PackageRestoreDownloadPackageFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while trying to restore packages..
+        /// </summary>
+        public static string PackageRestoreErrorMessage {
+            get {
+                return ResourceManager.GetString("PackageRestoreErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while trying to restore packages. Please try again..
+        /// </summary>
+        public static string PackageRestoreErrorTryAgain {
+            get {
+                return ResourceManager.GetString("PackageRestoreErrorTryAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restoring packages....
+        /// </summary>
+        public static string PackageRestoreWaitMessage {
+            get {
+                return ResourceManager.GetString("PackageRestoreWaitMessage", resourceCulture);
             }
         }
     }

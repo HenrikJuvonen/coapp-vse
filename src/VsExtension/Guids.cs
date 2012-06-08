@@ -1,21 +1,16 @@
-﻿// Guids.cs
-// MUST match guids.h
-using System;
+﻿using System;
 
 namespace CoApp.VisualStudio.Tools
 {
     public static class GuidList
     {
-        public const string guidVSPkgString = "F7D0E7A3-C60B-422A-BFAE-CEED36ADE7D2";
+        public const string guidVSPkgString = "5F058D4C-1DA8-4FA4-8FF7-CB039283F751";
 
-        public const string guidVSConsoleCmdSetString = "1E8A55F6-C18D-407F-91C8-94B02AE1CED6";
-        public const string guidVSDialogCmdSetString = "25fd982b-8cae-4cbd-a440-e03ffccde106";
-        public const string guidVSToolsGroupString = "C0D88179-5D25-4982-BFE6-EC5FD59AC103";
-        public const string guidVSPackagesRestoreGroupString = "B4B288EF-D5B7-4669-9D6A-ACD644F90AC8";
-
-        // any project system that wants to load CoApp.VisualStudio when its project opens needs to activate a UI context with this GUID
-        public const string guidAutoLoadVSString = "65B1D035-27A5-4BBA-BAB9-5F61C1E2BC4A";
-
+        public const string guidVSConsoleCmdSetString = "B0E5EDF5-DC3C-4D7E-922E-02E7A6FFD50D";
+        public const string guidVSDialogCmdSetString = "3B9792BD-7B73-42DF-804A-17BCB3CA67E6";
+        public const string guidVSToolsGroupString = "6290196F-BA6A-4D72-9E80-433B2C32BAAF";
+        public const string guidVSPackagesRestoreGroupString = "26999603-9B0C-468A-980D-EB1F55FB24B5";
+        
         public static readonly Guid guidVSConsoleCmdSet = new Guid(guidVSConsoleCmdSetString);
         public static readonly Guid guidVSDialogCmdSet = new Guid(guidVSDialogCmdSetString);
         public static readonly Guid guidVSToolsGroupCmdSet = new Guid(guidVSToolsGroupString);

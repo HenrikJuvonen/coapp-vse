@@ -44,7 +44,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             foreach (Project p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
 
                 IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 

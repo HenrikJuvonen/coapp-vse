@@ -16,6 +16,7 @@ namespace CoApp.VisualStudio.Dialog
     {
         internal static PackageManagerWindow CurrentInstance;
 
+        private readonly IPackageRestoreManager _packageRestoreManager;
         private readonly IOptionsPageActivator _optionsPageActivator;
         private readonly Project _activeProject;
 
@@ -23,20 +24,23 @@ namespace CoApp.VisualStudio.Dialog
             this(project,
                  ServiceLocator.GetInstance<DTE>(),
                  ServiceLocator.GetInstance<IOptionsPageActivator>(),
-                 ServiceLocator.GetInstance<ISolutionManager>())
+                 ServiceLocator.GetInstance<ISolutionManager>(),
+                 ServiceLocator.GetInstance<IPackageRestoreManager>())
         {
         }
 
         public PackageManagerWindow(Project project,
                                     DTE dte,
                                     IOptionsPageActivator optionPageActivator,
-                                    ISolutionManager solutionManager)
+                                    ISolutionManager solutionManager,
+                                    IPackageRestoreManager packageRestoreManager)
         {
             InitializeComponent();
 
             _activeProject = project;
             _optionsPageActivator = optionPageActivator;
-
+            _packageRestoreManager = packageRestoreManager;
+            
             PrepareFilterComboBox();
 
             ProviderServices providerServices = new ProviderServices();
@@ -46,7 +50,7 @@ namespace CoApp.VisualStudio.Dialog
                            dte,
                            solutionManager);
         }
-       
+
         private void SetupProviders(ProviderServices providerServices,
                                     Project activeProject,
                                     DTE dte,
@@ -272,6 +276,20 @@ namespace CoApp.VisualStudio.Dialog
             CurrentInstance = this;
         }
 
+        private void OnHeaderBarSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // when the update bar appears, we adjust the window position 
+            // so that it doesn't push the main content area down
+            if (e.HeightChanged)
+            {
+                double heightDifference = e.NewSize.Height - e.PreviousSize.Height;
+                if (heightDifference > 0)
+                {
+                    Top = Math.Max(0, Top - heightDifference);
+                }
+            }
+        }
+
         private void PrepareFilterComboBox()
         {
             ComboBox fxCombo = FindComboBox("cmb_Fx");
@@ -279,6 +297,7 @@ namespace CoApp.VisualStudio.Dialog
             {
                 Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
 
+                CheckBox verHigh = new CheckBox(); verHigh.Content = "Version: Highest only";
                 CheckBox archAny = new CheckBox(); archAny.Content = "Architecture: any";
                 CheckBox archX64 = new CheckBox(); archX64.Content = "Architecture: x64";
                 CheckBox archX86 = new CheckBox(); archX86.Content = "Architecture: x86";
@@ -288,6 +307,7 @@ namespace CoApp.VisualStudio.Dialog
                 
                 fxCombo.Items.Clear();
                 fxCombo.Items.Add(label);
+                fxCombo.Items.Add(verHigh);
                 fxCombo.Items.Add(archAny);
                 fxCombo.Items.Add(archX64);
                 fxCombo.Items.Add(archX86);
@@ -324,6 +344,9 @@ namespace CoApp.VisualStudio.Dialog
 
             switch ((string)checkbox.Content)
             {
+                case "Version: Highest only":
+                    CoAppWrapper.SetVersionFilter("Highest", checkbox.IsChecked == true);
+                    break;
                 case "Architecture: any":
                     CoAppWrapper.SetArchitectureFilter("any", checkbox.IsChecked == true);
                     break;

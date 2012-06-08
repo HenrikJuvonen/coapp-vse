@@ -79,16 +79,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         protected override bool ExecuteCore(PackageItem item)
         {
             ShowProgressWindow();
-            InstallPackage(item);
+            CoAppWrapper.InstallPackage(item.PackageIdentity);
             HideProgressWindow();
             return true;
         }
-
-        protected void InstallPackage(PackageItem item)
-        {
-            CoAppWrapper.InstallPackage(item.PackageIdentity);
-        }
-                
+                        
         protected override void FillRootNodes()
         {
             RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "online"));

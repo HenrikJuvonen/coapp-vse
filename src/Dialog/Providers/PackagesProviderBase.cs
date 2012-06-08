@@ -79,7 +79,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public void Log(MessageLevel level, string message, params object[] args)
+        private void Log(MessageLevel level, string message, params object[] args)
         {
             string formattedMessage = String.Format(CultureInfo.CurrentCulture, message, args);
 
@@ -321,8 +321,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
 
-            _lastOperations.Clear();
-
             ClearProgressMessages();
 
             var worker = new BackgroundWorker();
@@ -339,6 +337,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         
         private void ClearProgressMessages()
         {
+            _lastOperations.Clear();
+
             _providerServices.ProgressWindow.ClearMessages();
         }
 

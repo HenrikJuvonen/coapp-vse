@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using CoApp.VisualStudio.Options;
 using CoApp.VisualStudio.VsCore;
+using CoApp.VisualStudio.Dialog.PackageManagerUI;
 
 using ManagePackageDialog = CoApp.VisualStudio.Dialog.PackageManagerWindow;
 
@@ -23,11 +24,11 @@ namespace CoApp.VisualStudio.Tools
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", VsPackage.ProductVersion, IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    
+
     [ProvideOptionPage(typeof(FeedOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
     [ProvideOptionPage(typeof(GeneralOptionPage), "CoApp Package Manager", "General", 113, 115, true)]
     [ProvideBindingPath] // Definition dll needs to be on VS binding path
-    [ProvideAutoLoad(GuidList.guidAutoLoadVSString)]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     
     [Guid(GuidList.guidVSPkgString)]
     public sealed class VsPackage : Package
@@ -38,6 +39,7 @@ namespace CoApp.VisualStudio.Tools
         private DTE _dte;
         private IVsMonitorSelection _vsMonitorSelection;
         private ISolutionManager _solutionManager;
+        private IPackageRestoreManager _packageRestoreManager;
 
         public VsPackage()
         {
@@ -65,22 +67,13 @@ namespace CoApp.VisualStudio.Tools
 
             _dte = ServiceLocator.GetInstance<DTE>();
             Debug.Assert(_dte != null);
-            //_packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
-            //Debug.Assert(_packageRestoreManager != null);
+            _packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
+            Debug.Assert(_packageRestoreManager != null);
             _solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
             Debug.Assert(_solutionManager != null);
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             AddMenuCommandHandlers();
-
-            // when CoApp.VisualStudio loads, if the current solution has package 
-            // restore mode enabled, we make sure every thing is set up correctly.
-            // For example, projects which were added outside of VS need to have
-            // the <Import> element added.
-            /*if (_packageRestoreManager.IsCurrentSolutionEnabledForRestore)
-            {
-                _packageRestoreManager.EnableCurrentSolutionForRestore(fromActivation: false);
-            }*/
         }
 
         private void AddMenuCommandHandlers()
@@ -107,7 +100,24 @@ namespace CoApp.VisualStudio.Tools
                 CommandID generalSettingsCommandID = new CommandID(GuidList.guidVSToolsGroupCmdSet, PkgCmdIDList.cmdIdGeneralSettings);
                 OleMenuCommand generalSettingsCommand = new OleMenuCommand(ShowGeneralSettingsOptionPage, generalSettingsCommandID);
                 mcs.AddCommand(generalSettingsCommand);
+
+                // menu command for Package Restore command
+                CommandID restorePackagesCommandID = new CommandID(GuidList.guidVSPackagesRestoreCmdSet, PkgCmdIDList.cmdidRestorePackages);
+                var restorePackagesCommand = new OleMenuCommand(EnablePackagesRestore, null, QueryStatusEnablePackagesRestore, restorePackagesCommandID);
+                mcs.AddCommand(restorePackagesCommand);
             }
+        }
+
+        private void EnablePackagesRestore(object sender, EventArgs args)
+        {
+            _packageRestoreManager.BeginRestore(fromActivation: true);
+        }
+
+        private void QueryStatusEnablePackagesRestore(object sender, EventArgs args)
+        {
+            OleMenuCommand command = (OleMenuCommand)sender;
+            command.Visible = _solutionManager.IsSolutionOpen && _packageRestoreManager.CheckForMissingPackages();
+            command.Enabled = true;
         }
 
         private void ShowManageLibraryPackageDialog(object sender, EventArgs e)

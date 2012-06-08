@@ -9,7 +9,7 @@ The extension requires Visual Studio 2010 SP1 and the latest CoApp to work.
 
 ## Requirements
 
-- CoApp 1.2.0.384
+- CoApp 1.2.0.391
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 

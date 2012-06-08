@@ -148,7 +148,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string filename)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.config");
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
 
             IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 

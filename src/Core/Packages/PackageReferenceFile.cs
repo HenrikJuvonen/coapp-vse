@@ -229,7 +229,7 @@ namespace CoApp.VisualStudio
                 // Remove the element from the xml dom
                 element.Remove();
 
-                // Always try and save the document, this works around a source control issue for solution-level coapp.config.
+                // Always try and save the document, this works around a source control issue for solution-level coapp.packages.config.
                 SaveDocument(document);
 
                 if (!document.Root.HasElements)

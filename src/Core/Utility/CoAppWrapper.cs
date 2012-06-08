@@ -6,6 +6,7 @@
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using CoApp.Toolkit.Collections;
     using CoApp.Packaging.Client;
     using CoApp.Packaging.Common;
     using CoApp.Packaging.Common.Model;
@@ -21,6 +22,7 @@
     {
         private static ISet<Architecture> architectureFilters = new HashSet<Architecture>();
         private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
+        private static bool onlyHighestPackages = true;
 
         private static readonly List<Task> preCommandTasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
@@ -46,6 +48,8 @@
             roleFilters.Add(PackageRole.Application);
             roleFilters.Add(PackageRole.Assembly);
             roleFilters.Add(PackageRole.DeveloperLibrary);
+
+            packageManager.Elevate().Wait();
             
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
@@ -108,6 +112,22 @@
                 roleFilters.Add(role);
             else
                 roleFilters.Remove(role);
+        }
+
+        /// <summary>
+        /// Used for filtering packages by version in PackageManagerWindow.
+        /// </summary>
+        /// <param name="enabled">
+        /// If true: packages of versionName are displayed.
+        /// </param>
+        public static void SetVersionFilter(string versionName, bool enabled)
+        {
+            switch (versionName)
+            {
+                case "Highest":
+                    onlyHighestPackages = enabled;
+                    break;
+            }
         }
 
         /// <summary>
@@ -212,13 +232,17 @@
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
+            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter = null;
 
             if (type == "installed")
                 pkgFilter = Package.Properties.Installed.Is(true);
             else if (type == "updatable")
-                pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null);
+                pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null) & Package.Properties.Installed.Is(true);
 
-            packages = QueryPackages(new string[] { "*" }, pkgFilter, null, location);
+            if (onlyHighestPackages)
+                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
+
+            packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
 
             return FilterPackages(packages, vsMajorVersion);
         }
@@ -252,6 +276,26 @@
         }
 
         /// <summary>
+        /// Used for installing packages in OnlineProvider.
+        /// </summary>
+        public static void UpdatePackage(IPackage package)
+        {
+            UpdateProgress("Updating packages...", 0);
+            Console.Write("Updating packages...");
+
+            try
+            {
+                Task task = preCommandTasks.Continue(() => UpdatePackage(package.AvailableNewestUpdate.CanonicalName));
+                ContinueTask(task);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                CancellationTokenSource.Cancel();
+            }
+        }
+
+        /// <summary>
         /// Used for getting dependents in InstalledProvider.
         /// </summary>
         public static IEnumerable<IPackage> GetDependents(IPackage package)
@@ -272,14 +316,9 @@
         /// </summary>
         private static IEnumerable<IPackage> QueryPackages(string[] queries,
                                                            Filter<IPackage> pkgFilter,
-                                                           Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>> collectionFilter,
+                                                           XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
-            if (!queries.Any() || queries[0] == "*")
-            {
-                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-            }
-
             IEnumerable<IPackage> pkgs = null;
 
             try
@@ -329,6 +368,16 @@
         private static Task InstallPackage(CanonicalName canonicalName)
         {
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
+
+            return packageManager.Install(canonicalName);
+        }
+
+        /// <summary>
+        /// Used for updating packages.
+        /// </summary>
+        private static Task UpdatePackage(CanonicalName canonicalName)
+        {
+            CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Updating " + name + "...", progress));
 
             return packageManager.Install(canonicalName);
         }

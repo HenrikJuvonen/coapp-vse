@@ -128,7 +128,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
 
             ShowProgressWindow();
-            RemovePackage(item, (bool)removeDependencies);
+            CoAppWrapper.RemovePackage(item.PackageIdentity, (bool)removeDependencies);
             HideProgressWindow();
             return true;
         }
@@ -140,7 +140,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             foreach (Project p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 if (packageReferenceFile.GetPackageReferences().Any(pkg => pkg.Name == package.Name &&
                                                                            pkg.Version == package.Version &&
@@ -208,11 +208,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return removeDependencies;
         }
 
-        protected void RemovePackage(PackageItem item, bool removeDependencies)
-        {
-            CoAppWrapper.RemovePackage(item.PackageIdentity, removeDependencies);
-        }
-
         public IEnumerable<Project> GetReferenceProjects(IPackage package)
         {
             var projects = _solutionManager.GetProjects();
@@ -221,7 +216,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             foreach (Project project in projects)
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
 
                 PackageReference packageReference = packageReferenceFile.GetPackageReferences()
                     .FirstOrDefault(pkg => pkg.Name == package.Name &&
