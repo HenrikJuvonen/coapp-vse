@@ -16,7 +16,6 @@ namespace CoApp.VisualStudio.Dialog
     {
         internal static PackageManagerWindow CurrentInstance;
 
-        private readonly IPackageRestoreManager _packageRestoreManager;
         private readonly IOptionsPageActivator _optionsPageActivator;
         private readonly Project _activeProject;
 
@@ -24,22 +23,19 @@ namespace CoApp.VisualStudio.Dialog
             this(project,
                  ServiceLocator.GetInstance<DTE>(),
                  ServiceLocator.GetInstance<IOptionsPageActivator>(),
-                 ServiceLocator.GetInstance<ISolutionManager>(),
-                 ServiceLocator.GetInstance<IPackageRestoreManager>())
+                 ServiceLocator.GetInstance<ISolutionManager>())
         {
         }
 
         public PackageManagerWindow(Project project,
                                     DTE dte,
                                     IOptionsPageActivator optionPageActivator,
-                                    ISolutionManager solutionManager,
-                                    IPackageRestoreManager packageRestoreManager)
+                                    ISolutionManager solutionManager)
         {
             InitializeComponent();
 
             _activeProject = project;
             _optionsPageActivator = optionPageActivator;
-            _packageRestoreManager = packageRestoreManager;
             
             PrepareFilterComboBox();
 
@@ -274,20 +270,6 @@ namespace CoApp.VisualStudio.Dialog
         private void OnDialogWindowLoaded(object sender, RoutedEventArgs e)
         {
             CurrentInstance = this;
-        }
-
-        private void OnHeaderBarSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // when the update bar appears, we adjust the window position 
-            // so that it doesn't push the main content area down
-            if (e.HeightChanged)
-            {
-                double heightDifference = e.NewSize.Height - e.PreviousSize.Height;
-                if (heightDifference > 0)
-                {
-                    Top = Math.Max(0, Top - heightDifference);
-                }
-            }
         }
 
         private void PrepareFilterComboBox()
