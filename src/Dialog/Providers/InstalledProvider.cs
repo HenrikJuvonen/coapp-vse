@@ -58,11 +58,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteManage(PackageItem item)
         {
-            return item.Name.Contains("common") ||
-                   item.PackageIdentity.Flavor.IsWildcardMatch("*vc" + VsVersionHelper.VsMajorVersion + "*") ||
-                   item.PackageIdentity.Flavor.IsWildcardMatch("*net*") ||
-                   item.Name == "coapp" ||
-                   item.Name == "coapp.devtools";
+            return item.Type == "net" ||
+                   item.Type == "vc" ||
+                   item.PackageIdentity.Flavor.IsWildcardMatch("*vc" + VsVersionHelper.VsMajorVersion + "*");
         }
 
         protected override bool ExecuteManage(PackageItem item)

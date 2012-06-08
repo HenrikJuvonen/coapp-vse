@@ -22,7 +22,8 @@
     {
         private static ISet<Architecture> architectureFilters = new HashSet<Architecture>();
         private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
-        private static bool onlyHighestPackages = true;
+        private static bool onlyHighestVersions = true;
+        private static bool onlyStableVersions = true;
 
         private static readonly List<Task> preCommandTasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
@@ -125,7 +126,10 @@
             switch (versionName)
             {
                 case "Highest":
-                    onlyHighestPackages = enabled;
+                    onlyHighestVersions = enabled;
+                    break;
+                case "Stable":
+                    onlyStableVersions = enabled;
                     break;
             }
         }
@@ -239,10 +243,15 @@
             else if (type == "updatable")
                 pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null) & Package.Properties.Installed.Is(true);
 
-            if (onlyHighestPackages)
+            if (onlyHighestVersions)
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-
+            
             packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+
+            if (type == "updatable")
+            {
+                packages = packages.Select(package => package.AvailableNewestUpdate);
+            }
 
             return FilterPackages(packages, vsMajorVersion);
         }
@@ -285,7 +294,7 @@
 
             try
             {
-                Task task = preCommandTasks.Continue(() => UpdatePackage(package.AvailableNewestUpdate.CanonicalName));
+                Task task = preCommandTasks.Continue(() => UpdatePackage(package.CanonicalName));
                 ContinueTask(task);
             }
             catch (Exception e)
@@ -406,6 +415,9 @@
                 packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
                                                      package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
             }
+
+            if (onlyStableVersions)
+                packages = packages.Where(package => package.PackageDetails.Stability == 0);
 
             packages = packages.Where(package => architectureFilters.Contains(package.Architecture));
 

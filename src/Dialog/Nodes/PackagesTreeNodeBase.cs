@@ -18,7 +18,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
     {
 
         // The number of extensions to show per page.
-        private const int DefaultItemsPerPage = 10;
+        private const int DefaultItemsPerPage = 100;
 
         // We cache the query until it changes (due to sort order or search)
         private IEnumerable<IPackage> _query;

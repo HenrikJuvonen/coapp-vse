@@ -50,7 +50,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             return new PackageItem(this, package)
             {
-                CommandName = Resources.Dialog_UpdateButton
+                CommandName = Resources.Dialog_InstallButton
             };
         }
 

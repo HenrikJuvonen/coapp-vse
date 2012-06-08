@@ -280,6 +280,7 @@ namespace CoApp.VisualStudio.Dialog
                 Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
 
                 CheckBox verHigh = new CheckBox(); verHigh.Content = "Version: Highest only";
+                CheckBox verStab = new CheckBox(); verStab.Content = "Version: Stable only";
                 CheckBox archAny = new CheckBox(); archAny.Content = "Architecture: any";
                 CheckBox archX64 = new CheckBox(); archX64.Content = "Architecture: x64";
                 CheckBox archX86 = new CheckBox(); archX86.Content = "Architecture: x86";
@@ -290,6 +291,7 @@ namespace CoApp.VisualStudio.Dialog
                 fxCombo.Items.Clear();
                 fxCombo.Items.Add(label);
                 fxCombo.Items.Add(verHigh);
+                fxCombo.Items.Add(verStab);
                 fxCombo.Items.Add(archAny);
                 fxCombo.Items.Add(archX64);
                 fxCombo.Items.Add(archX86);
@@ -328,6 +330,9 @@ namespace CoApp.VisualStudio.Dialog
             {
                 case "Version: Highest only":
                     CoAppWrapper.SetVersionFilter("Highest", checkbox.IsChecked == true);
+                    break;
+                case "Version: Stable only":
+                    CoAppWrapper.SetVersionFilter("Stable", checkbox.IsChecked == true);
                     break;
                 case "Architecture: any":
                     CoAppWrapper.SetArchitectureFilter("any", checkbox.IsChecked == true);
