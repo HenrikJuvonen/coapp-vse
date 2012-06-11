@@ -82,15 +82,20 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                if (PackageIdentity.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) &&
-                                                   n.PackageRole.HasFlag(PackageRole.DeveloperLibrary)))
+                if (Name.Contains("common"))
+                {
+                    return "vc";
+                }
+                else if (PackageIdentity.Flavor.IsWildcardMatch("*vc*"))
+                {
+                    return "vc,lib";
+                }
+                else if (PackageIdentity.Flavor.IsWildcardMatch("*net*") || (PackageIdentity.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) && n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
                 {
                     return "net";
                 }
 
-                return Name.Contains("common") ? "vc" :
-                       PackageIdentity.Flavor.IsWildcardMatch("*vc*") ? "vc,lib" :
-                       PackageIdentity.Flavor.IsWildcardMatch("*net*") ? "net" : "";
+                return "";
             }
         }
 

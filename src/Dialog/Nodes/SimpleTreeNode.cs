@@ -22,10 +22,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 throw new ArgumentNullException("name");
             }
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
 
             _name = name;
             _location = location;

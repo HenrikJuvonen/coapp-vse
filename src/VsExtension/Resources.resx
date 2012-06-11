@@ -123,9 +123,6 @@
   <data name="ErrorDialogBoxTitle" xml:space="preserve">
     <value>Operation failed</value>
   </data>
-  <data name="ManagePackageForSolutionLabel" xml:space="preserve">
-    <value>Manage CoApp Packages for &amp;Solution...</value>
-  </data>
   <data name="ManagePackageLabel" xml:space="preserve">
     <value>Manage &amp;CoApp Packages...</value>
   </data>

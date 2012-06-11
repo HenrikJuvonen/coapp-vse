@@ -109,12 +109,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public event EventHandler<PackagesMissingStatusEventArgs> PackagesMissingStatusChanged = delegate { };
-
         public bool CheckForMissingPackages()
         {
             bool missing = GetMissingPackages().Any();
-            PackagesMissingStatusChanged(this, new PackagesMissingStatusEventArgs(missing));
             return missing;
         }
 
@@ -130,7 +127,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages("online", null, VsVersionHelper.VsMajorVersion, true);
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, true);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
@@ -159,7 +156,8 @@ namespace CoApp.VisualStudio.VsCore
         
         private void OnSolutionOpened(object sender, EventArgs e)
         {
-            BeginRestore(fromActivation: false);
+            // Can be enabled in 0.4 through options.
+            //BeginRestore(fromActivation: false);
         }
 
         private void OnProjectAdded(object sender, ProjectEventArgs e)

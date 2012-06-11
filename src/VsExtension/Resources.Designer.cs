@@ -79,15 +79,6 @@ namespace CoApp.VisualStudio.Tools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage CoApp Packages for &amp;Solution....
-        /// </summary>
-        public static string ManagePackageForSolutionLabel {
-            get {
-                return ResourceManager.GetString("ManagePackageForSolutionLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Manage &amp;CoApp Packages....
         /// </summary>
         public static string ManagePackageLabel {

@@ -50,6 +50,55 @@ namespace CoApp.VisualStudio.VsCore
                 OnSolutionOpened();
             }
         }
+        
+        public void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
+        {
+            string type = packageReference.Type;
+
+            foreach (Project project in GetProjects())
+            {
+                IEnumerable<Library> projectLibraries = from lib in libraries
+                                                        where lib.ProjectName == project.Name
+                                                        select lib;
+
+                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
+
+                if (type.Contains("vc") && project.IsVcProject())
+                {
+                    if (type == "vc,lib")
+                    {
+                        project.ManageLinkerDependencies(packageReference, projects, projectLibraries);
+                        resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                    }
+                    else if (type == "vc")
+                    {
+                        project.ManageIncludeDirectories(packageReference, projects);
+                    }
+                }
+                else if (type == "net" && project.IsNetProject())
+                {
+                    project.ManageReferences(packageReference, projectLibraries);
+                    resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                }
+
+                string path = project.GetDirectory() + "\\coapp.packages.config";
+  
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
+
+                if (projects.Contains(project))
+                {
+                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Version, packageReference.Architecture, resultLibraries);
+
+                    project.ProjectItems.AddFromFile(path);
+                }
+                else
+                {
+                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
+                }
+
+                project.Save(project.FullName);
+            }
+        }
 
         public string DefaultProjectName
         {
@@ -130,32 +179,6 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        private string GetSolutionFilePath()
-        {
-            // Use .Properties.Item("Path") instead of .FullName because .FullName might not be
-            // available if the solution is just being created
-            string solutionFilePath = null;
-
-            Property property = _dte.Solution.Properties.Item("Path");
-            if (property == null)
-            {
-                return null;
-            }
-            try
-            {
-                // When using a temporary solution, (such as by saying File -> New File), querying this value throws.
-                // Since we wouldn't be able to do manage any packages at this point, we return null. Consumers of this property typically 
-                // use a String.IsNullOrEmpty check either way, so it's alright.
-                solutionFilePath = property.Value;
-            }
-            catch (COMException)
-            {
-                return null;
-            }
-
-            return solutionFilePath;
-        }
-
         /// <summary>
         /// Gets a list of supported projects currently loaded in the solution
         /// </summary>
@@ -204,6 +227,32 @@ namespace CoApp.VisualStudio.VsCore
             }
 
             return null;
+        }
+
+        private string GetSolutionFilePath()
+        {
+            // Use .Properties.Item("Path") instead of .FullName because .FullName might not be
+            // available if the solution is just being created
+            string solutionFilePath = null;
+
+            Property property = _dte.Solution.Properties.Item("Path");
+            if (property == null)
+            {
+                return null;
+            }
+            try
+            {
+                // When using a temporary solution, (such as by saying File -> New File), querying this value throws.
+                // Since we wouldn't be able to do manage any packages at this point, we return null. Consumers of this property typically 
+                // use a String.IsNullOrEmpty check either way, so it's alright.
+                solutionFilePath = property.Value;
+            }
+            catch (COMException)
+            {
+                return null;
+            }
+
+            return solutionFilePath;
         }
 
         private void OnAfterClosing()
@@ -365,55 +414,6 @@ namespace CoApp.VisualStudio.VsCore
                                              projectName.ShortName;
                     }
                 }
-            }
-        }
-
-        public void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
-        {
-            string type = packageReference.Type;
-
-            foreach (Project project in GetProjects())
-            {
-                IEnumerable<Library> projectLibraries = from lib in libraries
-                                                        where lib.ProjectName == project.Name
-                                                        select lib;
-
-                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
-
-                if (type.Contains("vc") && project.IsVcProject())
-                {
-                    if (type == "vc,lib")
-                    {
-                        project.ManageLinkerDependencies(packageReference, projects, projectLibraries);
-                        resultLibraries = projectLibraries.Where(n => n.IsSelected);
-                    }
-                    else if (type == "vc")
-                    {
-                        project.ManageIncludeDirectories(packageReference, projects);
-                    }
-                }
-                else if (type == "net" && project.IsNetProject())
-                {
-                    project.ManageReferences(packageReference, projectLibraries);
-                    resultLibraries = projectLibraries.Where(n => n.IsSelected);
-                }
-
-                string path = project.GetDirectory() + "\\coapp.packages.config";
-  
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
-
-                if (projects.Contains(project))
-                {
-                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Version, packageReference.Architecture, resultLibraries);
-
-                    project.ProjectItems.AddFromFile(path);
-                }
-                else
-                {
-                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
-                }
-
-                project.Save(project.FullName);
             }
         }
     }

@@ -53,6 +53,8 @@
             roleFilters.Add(PackageRole.DeveloperLibrary);
 
             packageManager.Elevate().Wait();
+
+            GetPackages();
             
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
@@ -234,7 +236,10 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type, string location = null, int vsMajorVersion = 0, bool useCache = false)
+        /// <param name="useCache">
+        /// Use cached packages to avoid slowdowns.
+        /// </param>
+        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0, bool useCache = false)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;

@@ -1,20 +1,15 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Globalization;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using CoApp.VisualStudio.Dialog;
 using CoApp.VisualStudio.Options;
 using CoApp.VisualStudio.VsCore;
-using CoApp.VisualStudio.Dialog.PackageManagerUI;
-
-using ManagePackageDialog = CoApp.VisualStudio.Dialog.PackageManagerWindow;
 
 namespace CoApp.VisualStudio.Tools
 {
@@ -66,11 +61,8 @@ namespace CoApp.VisualStudio.Tools
             _vsMonitorSelection.GetCmdUIContextCookie(ref solutionBuildingContextGuid, out _solutionBuildingContextCookie);
 
             _dte = ServiceLocator.GetInstance<DTE>();
-            Debug.Assert(_dte != null);
             _packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
-            Debug.Assert(_packageRestoreManager != null);
             _solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
-            Debug.Assert(_solutionManager != null);
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             AddMenuCommandHandlers();
@@ -85,11 +77,6 @@ namespace CoApp.VisualStudio.Tools
                 CommandID managePackageDialogCommandID = new CommandID(GuidList.guidVSDialogCmdSet, PkgCmdIDList.cmdidAddPackageDialog);
                 OleMenuCommand managePackageDialogCommand = new OleMenuCommand(ShowManageLibraryPackageDialog, null, BeforeQueryStatusForAddPackageDialog, managePackageDialogCommandID);
                 mcs.AddCommand(managePackageDialogCommand);
-
-                // menu command for opening "Manage CoApp packages for solution" dialog
-                CommandID managePackageForSolutionDialogCommandID = new CommandID(GuidList.guidVSDialogCmdSet, PkgCmdIDList.cmdidAddPackageDialogForSolution);
-                OleMenuCommand managePackageForSolutionDialogCommand = new OleMenuCommand(ShowManageLibraryPackageForSolutionDialog, null, BeforeQueryStatusForAddPackageForSolutionDialog, managePackageForSolutionDialogCommandID);
-                mcs.AddCommand(managePackageForSolutionDialogCommand);
 
                 // menu command for opening Package feed settings options page
                 CommandID settingsCommandID = new CommandID(GuidList.guidVSConsoleCmdSet, PkgCmdIDList.cmdidSourceSettings);
@@ -122,46 +109,12 @@ namespace CoApp.VisualStudio.Tools
 
         private void ShowManageLibraryPackageDialog(object sender, EventArgs e)
         {
-            if (_vsMonitorSelection.GetIsSolutionNodeSelected())
-            {
-                ShowManageLibraryPackageDialog(null);
-            }
-            else
-            {
-                Project project = _vsMonitorSelection.GetActiveProject();
-
-                if (project != null && !project.IsUnloaded() && project.IsSupported())
-                {
-                    ShowManageLibraryPackageDialog(project);
-                }
-                else
-                {
-                    // show error message when no supported project is selected.
-                    string projectName = project != null ? project.Name : String.Empty;
-
-                    string errorMessage;
-                    if (String.IsNullOrEmpty(projectName))
-                    {
-                        errorMessage = Resources.NoProjectSelected;
-                    }
-                    else
-                    {
-                        errorMessage = String.Format(CultureInfo.CurrentCulture, VsResources.DTE_ProjectUnsupported, projectName);
-                    }
-
-                    MessageHelper.ShowWarningMessage(errorMessage, Resources.ErrorDialogBoxTitle);
-                }
-            }
+            ShowManageLibraryPackageDialog();
         }
 
-        private void ShowManageLibraryPackageForSolutionDialog(object sender, EventArgs e)
+        private static void ShowManageLibraryPackageDialog()
         {
-            ShowManageLibraryPackageDialog(null);
-        }
-
-        private static void ShowManageLibraryPackageDialog(Project project)
-        {
-            DialogWindow window = GetPackageManagerWindow(project);
+            DialogWindow window = new PackageManagerWindow();
             try
             {
                 window.ShowModal();
@@ -172,24 +125,15 @@ namespace CoApp.VisualStudio.Tools
                 ExceptionHelper.WriteToActivityLog(exception);
             }
         }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static DialogWindow GetPackageManagerWindow(Project project)
-        {
-            return new ManagePackageDialog(project);
-        }
-
+        
         private void BeforeQueryStatusForAddPackageDialog(object sender, EventArgs args)
         {
-            bool isSolutionSelected = _vsMonitorSelection.GetIsSolutionNodeSelected();
-
             OleMenuCommand command = (OleMenuCommand)sender;
-            command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext() && (isSolutionSelected || HasActiveLoadedSupportedProject);
-            // disable the dialog menu if the console is busy executing a command;
+            command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
             command.Enabled = true;
             if (command.Visible)
             {
-                command.Text = isSolutionSelected ? Resources.ManagePackageForSolutionLabel : Resources.ManagePackageLabel;
+                command.Text = Resources.ManagePackageLabel;
             }
         }
 
@@ -197,7 +141,6 @@ namespace CoApp.VisualStudio.Tools
         {
             OleMenuCommand command = (OleMenuCommand)sender;
             command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
-            // disable the dialog menu if the console is busy executing a command;
             command.Enabled = true;
         }
 
@@ -239,19 +182,6 @@ namespace CoApp.VisualStudio.Tools
             {
                 MessageHelper.ShowErrorMessage(exception, Resources.ErrorDialogBoxTitle);
                 ExceptionHelper.WriteToActivityLog(exception);
-            }
-        }
-
-        /// <summary>
-        /// Gets whether the current IDE has an active, supported and non-unloaded project, which is a precondition for
-        /// showing the Add Library Package Reference dialog
-        /// </summary>
-        private bool HasActiveLoadedSupportedProject
-        {
-            get
-            {
-                Project project = _vsMonitorSelection.GetActiveProject();
-                return project != null && !project.IsUnloaded() && project.IsSupported();
             }
         }
     }

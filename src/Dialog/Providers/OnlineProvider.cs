@@ -86,7 +86,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                         
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "online"));
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, null));
 
             IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
 
@@ -101,7 +101,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
 
-                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName, null, "online");
+                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName);
 
                 foreach (Feed f in feeds)
                 {
@@ -116,7 +116,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                             name = Path.GetFileNameWithoutExtension(name);
                         }
 
-                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, "online"));
+                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, null));
                     }
                 }
                 

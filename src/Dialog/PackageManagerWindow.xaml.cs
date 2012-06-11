@@ -17,24 +17,20 @@ namespace CoApp.VisualStudio.Dialog
         internal static PackageManagerWindow CurrentInstance;
 
         private readonly IOptionsPageActivator _optionsPageActivator;
-        private readonly Project _activeProject;
 
-        public PackageManagerWindow(Project project) :
-            this(project,
-                 ServiceLocator.GetInstance<DTE>(),
+        public PackageManagerWindow() :
+            this(ServiceLocator.GetInstance<DTE>(),
                  ServiceLocator.GetInstance<IOptionsPageActivator>(),
                  ServiceLocator.GetInstance<ISolutionManager>())
         {
         }
 
-        public PackageManagerWindow(Project project,
-                                    DTE dte,
+        public PackageManagerWindow(DTE dte,
                                     IOptionsPageActivator optionPageActivator,
                                     ISolutionManager solutionManager)
         {
             InitializeComponent();
 
-            _activeProject = project;
             _optionsPageActivator = optionPageActivator;
             
             PrepareFilterComboBox();
@@ -42,13 +38,11 @@ namespace CoApp.VisualStudio.Dialog
             ProviderServices providerServices = new ProviderServices();
 
             SetupProviders(providerServices,
-                           _activeProject,
                            dte,
                            solutionManager);
         }
 
         private void SetupProviders(ProviderServices providerServices,
-                                    Project activeProject,
                                     DTE dte,
                                     ISolutionManager solutionManager)
         {
@@ -68,9 +62,9 @@ namespace CoApp.VisualStudio.Dialog
         /// <summary>
         /// Called when coming back from the Options dialog
         /// </summary>
-        private static void OnActivated(Project project)
+        private static void OnActivated()
         {
-            var window = new PackageManagerWindow(project);
+            var window = new PackageManagerWindow();
             try
             {
                 window.ShowModal();
@@ -214,7 +208,7 @@ namespace CoApp.VisualStudio.Dialog
             Close();
             _optionsPageActivator.ActivatePage(
                 "General",
-                () => OnActivated(_activeProject));
+                () => OnActivated());
         }
 
         private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)

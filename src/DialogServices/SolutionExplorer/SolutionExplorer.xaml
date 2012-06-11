@@ -43,7 +43,7 @@
             <Button Content="{x:Static resources:Resources.Dialog_Cancel}" IsCancel="True" Click="OnCancelButtonClicked" />
         </UniformGrid>
 
-        <TreeView ItemsSource="{Binding ProjectNodes}">
+        <TreeView ItemsSource="{Binding ViewModelNodes}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

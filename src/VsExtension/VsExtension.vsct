@@ -29,21 +29,9 @@
         <Icon guid="guidToolbarImages" id="bmpAddVSPackage" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <CommandName>cmdidAddPackages</CommandName>
           <ButtonText>Manage &amp;CoApp Packages...</ButtonText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" priority="0x0200" type="Button">
-        <Parent guid="guidReferenceContext" id="cmdAddReferenceGroup" />
-        <Icon guid="guidToolbarImages" id="bmpAddVSPackage" />
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <CommandName>cmdidAddPackagesForSolution</CommandName>
-          <ButtonText>Manage &amp;CoApp Packages for Solution...</ButtonText>
         </Strings>
       </Button>
 
@@ -86,12 +74,11 @@
 
   <VisibilityConstraints>
     <VisibilityItem guid="guidDialogCmdSet" id="cmdidAddPackages" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
-    <VisibilityItem guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
     <VisibilityItem guid="guidPackagesRestoreGroup" id="cmdidRestorePackages" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
   </VisibilityConstraints>
 
   <CommandPlacements>
-    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackagesForSolution" priority="0xF100">
+    <CommandPlacement guid="guidDialogCmdSet" id="cmdidAddPackages" priority="0xF100">
       <Parent guid="guidToolsGroup" id="idToolsGroup"/>
     </CommandPlacement>
     <CommandPlacement guid="guidPackagesRestoreGroup" id="cmdidRestorePackages" priority="0xF101">
@@ -141,7 +128,6 @@
     </GuidSymbol>
     <GuidSymbol name="guidDialogCmdSet" value="{3B9792BD-7B73-42DF-804A-17BCB3CA67E6}">
       <IDSymbol name="cmdidAddPackages" value="0x0100" />
-      <IDSymbol name="cmdidAddPackagesForSolution" value="0x0200" />
     </GuidSymbol>
     <GuidSymbol name="guidVenusCmdId" value="{C7547851-4E3A-4E5B-9173-FA6E9C8BD82C}" >
       <IDSymbol name="IDG_VENUS_CTX_REFERENCE" value="27" />

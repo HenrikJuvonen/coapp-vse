@@ -12,11 +12,6 @@ namespace CoApp.VisualStudio.VsCore
         void BeginRestore(bool fromActivation);
 
         /// <summary>
-        /// Occurs when it is detected that the packages are missing or restored for the current solution.
-        /// </summary>
-        event EventHandler<PackagesMissingStatusEventArgs> PackagesMissingStatusChanged;
-
-        /// <summary>
         /// Checks the current solution if there is any package missing.
         /// </summary>
         bool CheckForMissingPackages();

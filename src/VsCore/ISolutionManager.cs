@@ -4,6 +4,9 @@ using EnvDTE;
 
 namespace CoApp.VisualStudio.VsCore
 {
+    /// <summary>
+    /// Solution manager caches projects, handles events and is used for adding packages to projects (or removing them).
+    /// </summary>
     public interface ISolutionManager
     {
         event EventHandler SolutionOpened;

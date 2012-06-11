@@ -28,7 +28,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="CommonStyles.xaml" />
                 <ResourceDictionary Source="TemplateStyles.xaml" />
-                <ResourceDictionary Source="OnlineProviderTemplates.xaml" />
+                <ResourceDictionary Source="ProviderTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

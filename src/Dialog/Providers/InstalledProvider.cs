@@ -276,7 +276,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
 
-                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName, null, "installed");
+                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName);
 
                 foreach (Feed f in feeds)
                 {

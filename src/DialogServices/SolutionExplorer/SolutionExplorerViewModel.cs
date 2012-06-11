@@ -8,7 +8,7 @@ namespace CoApp.VisualStudio.Dialog
 {
     public class SolutionExplorerViewModel
     {
-        private Lazy<FolderNode> _solutionNode;
+        private Lazy<SolutionNode> _solutionNode;
 
         public SolutionExplorerViewModel(
             Solution solution,
@@ -19,7 +19,7 @@ namespace CoApp.VisualStudio.Dialog
                 throw new ArgumentNullException("solution");
             }
 
-            _solutionNode = new Lazy<FolderNode>(
+            _solutionNode = new Lazy<SolutionNode>(
                 () => SolutionWalker.Walk(solution, packageReference));
         }
 
@@ -31,7 +31,7 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
-        public IEnumerable<ViewModelNodeBase> ProjectNodes
+        public IEnumerable<ViewModelNodeBase> ViewModelNodes
         {
             get
             {

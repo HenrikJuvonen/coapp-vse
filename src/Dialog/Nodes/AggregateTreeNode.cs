@@ -13,24 +13,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
     internal class AggregateTreeNode : PackagesTreeNodeBase
     {
         private readonly string _name;
-        private readonly string _location;
-        private readonly string _type;
 
-        public AggregateTreeNode(IVsExtensionsTreeNode parent, PackagesProviderBase provider, string name, string location, string type) :
+        public AggregateTreeNode(IVsExtensionsTreeNode parent, PackagesProviderBase provider, string name) :
             base(parent, provider)
         {
             if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
 
             _name = name;
-            _location = location;
-            _type = type;
         }
 
         public override string Name

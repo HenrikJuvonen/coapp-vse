@@ -11,7 +11,7 @@ namespace CoApp.VisualStudio.Dialog
 {
     internal static class SolutionWalker
     {
-        public static FolderNode Walk(
+        public static SolutionNode Walk(
             Solution solution,
             PackageReference packageReference)
         {
