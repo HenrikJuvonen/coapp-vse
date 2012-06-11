@@ -130,7 +130,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages("online", null, VsVersionHelper.VsMajorVersion);
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages("online", null, VsVersionHelper.VsMajorVersion, true);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())

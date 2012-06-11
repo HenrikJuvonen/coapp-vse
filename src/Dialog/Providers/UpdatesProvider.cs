@@ -41,7 +41,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         protected override bool ExecuteCore(PackageItem item)
         {
             ShowProgressWindow();
-            CoAppWrapper.UpdatePackage(item.PackageIdentity);
+            CoAppWrapper.InstallPackage(item.PackageIdentity);
             HideProgressWindow();
             return true;
         }

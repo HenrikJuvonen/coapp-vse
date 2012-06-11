@@ -32,7 +32,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private bool _isExpanded;
         private bool _isSelected;
         private bool _loadingInProgress;
-        private readonly bool _collapseVersions;
 
         private CancellationTokenSource _currentCancellationSource;
 
@@ -43,7 +42,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             Debug.Assert(provider != null);
 
-            _collapseVersions = collapseVersions;
             Parent = parent;
             Provider = provider;
             PageSize = DefaultItemsPerPage;
@@ -253,7 +251,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             EnsureExtensionCollection();
 
-            // Bug #1930: this will clear the content of details pane
             Extensions.Clear();
 
             ShowProgressPane();

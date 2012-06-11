@@ -25,6 +25,8 @@
         private static bool onlyHighestVersions = true;
         private static bool onlyStableVersions = true;
 
+        private static IEnumerable<IPackage> packageCache;
+
         private static readonly List<Task> preCommandTasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
         private static readonly PackageManager packageManager = new PackageManager();
@@ -232,7 +234,7 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type, string location = null, int vsMajorVersion = 0)
+        public static IEnumerable<IPackage> GetPackages(string type, string location = null, int vsMajorVersion = 0, bool useCache = false)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
@@ -245,8 +247,11 @@
 
             if (onlyHighestVersions)
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-            
-            packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+
+            if (useCache && packageCache != null)
+                packages = packageCache;
+            else
+                packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
 
             if (type == "updatable")
             {
@@ -272,6 +277,8 @@
             UpdateProgress("Installing packages...", 0);
             Console.Write("Installing packages...");
 
+            packageCache = null;
+
             try
             {
                 Task task = preCommandTasks.Continue(() => InstallPackage(package.CanonicalName));
@@ -291,6 +298,8 @@
         {
             UpdateProgress("Updating packages...", 0);
             Console.Write("Updating packages...");
+
+            packageCache = null;
 
             try
             {
@@ -353,6 +362,8 @@
         {
             UpdateProgress("Uninstalling packages...", 0);
             Console.Write("Removing packages...");
+
+            packageCache = null;
 
             try
             {
@@ -429,7 +440,7 @@
         /// </summary>
         private static void UpdateProgress(string message, int progress)
         {
-            ProgressProvider.OnProgressAvailable(message, progress);
+            ProgressProvider.UpdateProgress(message, progress);
         }
 
         private static void ContinueTask(Task task)

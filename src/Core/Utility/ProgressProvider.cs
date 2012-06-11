@@ -14,7 +14,7 @@
 
         public event EventHandler<ProgressEventArgs> ProgressAvailable = delegate { };
 
-        public void OnProgressAvailable(string operation, int percentage)
+        public void UpdateProgress(string operation, int percentage)
         {
             ProgressAvailable(this, new ProgressEventArgs(operation, percentage));
         }
