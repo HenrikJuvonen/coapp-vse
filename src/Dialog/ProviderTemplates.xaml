@@ -72,7 +72,7 @@
                         </TextBlock.ToolTip>
                     </eml:TextBlockControl>
                     <eml:TextBlockControl  
-                        Text="{Binding VersionAndArchitecture}" 
+                        Text="{Binding FlavorVersionArchitecture}" 
                         Style="{StaticResource TileTitleTextBoxStyle2}">
                         <TextBlock.ToolTip>
                             <TextBlock Text="{Binding Title}" Style="{StaticResource TileToolTipStyle}"/>

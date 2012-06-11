@@ -19,33 +19,25 @@ namespace CoApp.VisualStudio.Dialog
         private readonly IOptionsPageActivator _optionsPageActivator;
 
         public PackageManagerWindow() :
-            this(ServiceLocator.GetInstance<DTE>(),
-                 ServiceLocator.GetInstance<IOptionsPageActivator>(),
+            this(ServiceLocator.GetInstance<IOptionsPageActivator>(),
                  ServiceLocator.GetInstance<ISolutionManager>())
         {
         }
 
-        public PackageManagerWindow(DTE dte,
-                                    IOptionsPageActivator optionPageActivator,
-                                    ISolutionManager solutionManager)
+        public PackageManagerWindow(IOptionsPageActivator optionPageActivator, ISolutionManager solutionManager)
         {
             InitializeComponent();
 
             _optionsPageActivator = optionPageActivator;
-            
-            PrepareFilterComboBox();
 
-            ProviderServices providerServices = new ProviderServices();
-
-            SetupProviders(providerServices,
-                           dte,
-                           solutionManager);
+            SetupFilters();
+            SetupProviders(solutionManager);
         }
 
-        private void SetupProviders(ProviderServices providerServices,
-                                    DTE dte,
-                                    ISolutionManager solutionManager)
+        private void SetupProviders(ISolutionManager solutionManager)
         {
+            ProviderServices providerServices = new ProviderServices();
+
             SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
             InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
             OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
@@ -56,7 +48,7 @@ namespace CoApp.VisualStudio.Dialog
             explorer.Providers.Add(onlineProvider);
             explorer.Providers.Add(updatesProvider);
 
-            explorer.SelectedProvider = explorer.Providers[0];
+            explorer.SelectedProvider = explorer.Providers[2];
         }
 
         /// <summary>
@@ -266,11 +258,13 @@ namespace CoApp.VisualStudio.Dialog
             CurrentInstance = this;
         }
 
-        private void PrepareFilterComboBox()
+        private void SetupFilters()
         {
             ComboBox fxCombo = FindComboBox("cmb_Fx");
             if (fxCombo != null)
             {
+                CoAppWrapper.ResetFilters();
+
                 Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
 
                 CheckBox verHigh = new CheckBox(); verHigh.Content = "Version: Highest only";

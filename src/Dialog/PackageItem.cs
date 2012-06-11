@@ -49,15 +49,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return Name + VersionAndArchitecture;
+                return Name + FlavorVersionArchitecture;
             }
         }
 
-        public string VersionAndArchitecture
+        public string FlavorVersionArchitecture
         {
             get
             {
-                return "-" + PackageIdentity.Version + "-" + PackageIdentity.Architecture;
+                string flavor = string.IsNullOrEmpty(PackageIdentity.Flavor) ? "" : PackageIdentity.Flavor.ToString();
+                return flavor + "-" + PackageIdentity.Version + "-" + PackageIdentity.Architecture;
             }
         }
 

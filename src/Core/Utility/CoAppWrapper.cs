@@ -44,13 +44,7 @@
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            architectureFilters.Add(Architecture.Any);
-            architectureFilters.Add(Architecture.x64);
-            architectureFilters.Add(Architecture.x86);
-
-            roleFilters.Add(PackageRole.Application);
-            roleFilters.Add(PackageRole.Assembly);
-            roleFilters.Add(PackageRole.DeveloperLibrary);
+            ResetFilters();
 
             packageManager.Elevate().Wait();
 
@@ -72,6 +66,20 @@
                     activeDownloads.Remove(remoteLocation);
                 }
             });
+        }
+
+        public static void ResetFilters()
+        {
+            architectureFilters.Add(Architecture.Any);
+            architectureFilters.Add(Architecture.x64);
+            architectureFilters.Add(Architecture.x86);
+
+            roleFilters.Add(PackageRole.Application);
+            roleFilters.Add(PackageRole.Assembly);
+            roleFilters.Add(PackageRole.DeveloperLibrary);
+
+            onlyHighestVersions = true;
+            onlyStableVersions = true;
         }
 
         /// <summary>
@@ -277,7 +285,7 @@
         /// <summary>
         /// Used for installing packages in OnlineProvider.
         /// </summary>
-        public static void InstallPackage(IPackage package)
+        public static bool InstallPackage(IPackage package)
         {
             UpdateProgress("Installing packages...", 0);
             Console.Write("Installing packages...");
@@ -293,7 +301,10 @@
             {
                 Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>

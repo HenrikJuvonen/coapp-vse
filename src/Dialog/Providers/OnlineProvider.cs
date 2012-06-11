@@ -79,9 +79,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
         protected override bool ExecuteCore(PackageItem item)
         {
             ShowProgressWindow();
-            CoAppWrapper.InstallPackage(item.PackageIdentity);
+            bool result = CoAppWrapper.InstallPackage(item.PackageIdentity);
             HideProgressWindow();
-            return true;
+            return result;
         }
                         
         protected override void FillRootNodes()
