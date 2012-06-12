@@ -395,7 +395,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 if (e.Cancelled)
                 {
                     CloseProgressWindow();
-                    _providerServices.UserNotifierServices.ShowErrorMessage("Error occured during the operation. File might not exist in the server.");
+                    //_providerServices.UserNotifierServices.ShowErrorMessage("Error occured during the operation. File might not exist in the server.");
                 }
                 else
                 {
