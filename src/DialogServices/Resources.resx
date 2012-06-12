@@ -201,12 +201,6 @@
   <data name="Dialog_UninstallProgress" xml:space="preserve">
     <value>Uninstalling...</value>
   </data>
-  <data name="Dialog_UpdateButton" xml:space="preserve">
-    <value>_Update</value>
-  </data>
-  <data name="Dialog_UpdateProgress" xml:space="preserve">
-    <value>Updating...</value>
-  </data>
   <data name="Dialog_UpdateProvider" xml:space="preserve">
     <value>Updates</value>
   </data>

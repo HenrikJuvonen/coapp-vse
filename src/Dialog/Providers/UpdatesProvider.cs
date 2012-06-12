@@ -42,7 +42,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             ShowProgressWindow();
             CoAppWrapper.InstallPackage(item.PackageIdentity);
-            HideProgressWindow();
+
             return true;
         }
 
@@ -66,13 +66,13 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return Resources.Dialog_UpdateProgress;
+                return Resources.Dialog_InstallProgress;
             }
         }
 
         protected override string GetProgressMessage(IPackage package)
         {
-            return Resources.Dialog_UpdateProgress + package.ToString();
+            return Resources.Dialog_InstallProgress + package.ToString();
         }
     }
 }

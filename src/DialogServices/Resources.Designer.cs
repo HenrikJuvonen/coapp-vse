@@ -619,24 +619,6 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Update.
-        /// </summary>
-        public static string Dialog_UpdateButton {
-            get {
-                return ResourceManager.GetString("Dialog_UpdateButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updating....
-        /// </summary>
-        public static string Dialog_UpdateProgress {
-            get {
-                return ResourceManager.GetString("Dialog_UpdateProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Updates.
         /// </summary>
         public static string Dialog_UpdateProvider {

@@ -83,7 +83,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                if (Name.Contains("common"))
+                if (Name.Contains("-common"))
                 {
                     return "vc";
                 }

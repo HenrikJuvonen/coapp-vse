@@ -27,7 +27,7 @@
 
         private static IEnumerable<IPackage> packageCache;
 
-        private static readonly List<Task> preCommandTasks = new List<Task>();
+        private static readonly List<Task> tasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
         private static readonly PackageManager packageManager = new PackageManager();
         
@@ -49,6 +49,12 @@
             packageManager.Elevate().Wait();
 
             GetPackages();
+
+            CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
+                UpdateProgress("Installing " + name, progress));
+
+            CurrentTask.Events += new PackageRemoveProgress((name, progress) =>
+                UpdateProgress("Uninstalling " + name, progress));
             
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
@@ -151,7 +157,7 @@
         /// </summary>
         public static void SetPackageState(IPackage package, string state)
         {
-            Task task = preCommandTasks.Continue(() =>
+            Task task = tasks.Continue(() =>
             {
                 switch (state)
                 {
@@ -191,7 +197,7 @@
 
             try
             {
-                Task task = preCommandTasks.Continue(() => packageManager.Feeds.Continue(fds => feeds = fds));
+                Task task = tasks.Continue(() => packageManager.Feeds.Continue(fds => feeds = fds));
 
                 ContinueTask(task);
             }
@@ -212,7 +218,7 @@
 
             try
             {
-                Task task = preCommandTasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
+                Task task = tasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
 
                 ContinueTask(task);
             }
@@ -231,7 +237,7 @@
 
             try
             {
-                Task task = preCommandTasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
+                Task task = tasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
 
                 ContinueTask(task);
             }
@@ -283,50 +289,11 @@
         }
 
         /// <summary>
-        /// Used for installing packages in OnlineProvider.
+        /// Used for refreshing a package in PackagesTreeNodeBase.
         /// </summary>
-        public static bool InstallPackage(IPackage package)
+        public static IPackage GetPackage(CanonicalName canonicalName)
         {
-            UpdateProgress("Installing packages...", 0);
-            Console.Write("Installing packages...");
-
-            packageCache = null;
-
-            try
-            {
-                Task task = preCommandTasks.Continue(() => InstallPackage(package.CanonicalName));
-                ContinueTask(task);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                CancellationTokenSource.Cancel();
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Used for installing packages in OnlineProvider.
-        /// </summary>
-        public static void UpdatePackage(IPackage package)
-        {
-            UpdateProgress("Updating packages...", 0);
-            Console.Write("Updating packages...");
-
-            packageCache = null;
-
-            try
-            {
-                Task task = preCommandTasks.Continue(() => UpdatePackage(package.CanonicalName));
-                ContinueTask(task);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                CancellationTokenSource.Cancel();
-            }
+            return QueryPackages(new string[] { canonicalName.PackageName }, null, null, null).FirstOrDefault();
         }
 
         /// <summary>
@@ -335,14 +302,6 @@
         public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
             return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
-        }
-
-        /// <summary>
-        /// Used for refreshing a package in PackagesTreeNodeBase.
-        /// </summary>
-        public static IPackage GetPackage(CanonicalName canonicalName)
-        {
-            return QueryPackages(new string[] { canonicalName.PackageName }, null, null, null).FirstOrDefault();
         }
 
         /// <summary>
@@ -359,7 +318,7 @@
             {
                 Console.Write("Querying packages...");
 
-                Task task = preCommandTasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p));
+                Task task = tasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p));
 
                 ContinueTask(task);
             }
@@ -369,6 +328,28 @@
             }
 
             return pkgs;
+        }
+
+        /// <summary>
+        /// Used for installing packages in OnlineProvider.
+        /// </summary>
+        public static void InstallPackage(IPackage package)
+        {
+            UpdateProgress("Installing packages...", 0);
+            Console.Write("Installing packages...");
+
+            packageCache = null;
+
+            try
+            {
+                Task task = tasks.Continue(() => packageManager.Install(package.CanonicalName, false, true));
+                ContinueTask(task);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                CancellationTokenSource.Cancel();
+            }
         }
 
         /// <summary>
@@ -388,7 +369,7 @@
                 {
                     canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
                 }
-                Task task = preCommandTasks.Continue(() => RemovePackages(canonicalNames));
+                Task task = tasks.Continue(() => packageManager.RemovePackages(canonicalNames, true));
                 ContinueTask(task);
             }
             catch (Exception e)
@@ -396,36 +377,6 @@
                 Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
             }
-        }
-
-        /// <summary>
-        /// Used for installing packages.
-        /// </summary>
-        private static Task InstallPackage(CanonicalName canonicalName)
-        {
-            CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Installing " + name + "...", progress));
-
-            return packageManager.Install(canonicalName);
-        }
-
-        /// <summary>
-        /// Used for updating packages.
-        /// </summary>
-        private static Task UpdatePackage(CanonicalName canonicalName)
-        {
-            CurrentTask.Events += new PackageInstallProgress((name, progress, overall) => UpdateProgress("Updating " + name + "...", progress));
-
-            return packageManager.Install(canonicalName);
-        }
-
-        /// <summary>
-        /// Used for removing packages.
-        /// </summary>
-        private static Task RemovePackages(IEnumerable<CanonicalName> canonicalNames)
-        {
-            CurrentTask.Events += new PackageRemoveProgress((name, progress) => UpdateProgress("Uninstalling " + name + "...", progress));
-
-            return packageManager.RemovePackages(canonicalNames, true);
         }
 
         /// <summary>
