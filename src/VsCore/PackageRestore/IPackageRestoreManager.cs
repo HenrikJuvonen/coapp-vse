@@ -8,7 +8,7 @@ namespace CoApp.VisualStudio.VsCore
         /// <summary>
         /// Begins restoring packages.
         /// </summary>
-        /// <param name="fromActivation">if set to <c>false</c>, the method will not show any error message, and will not ask questions.</param>
+        /// <param name="fromActivation">if set to <c>false</c>, the method will not show any info/error message.</param>
         void BeginRestore(bool fromActivation);
 
         /// <summary>

@@ -71,9 +71,11 @@ namespace CoApp.VisualStudio.VsCore
                 RestoreMissingPackages();
 
                 // after we're done with restoring packages, do the check again
-                if (!CheckForMissingPackages())
+                if (CheckForMissingPackages())
                 {
-                    throw new Exception("Some packages were not restored.");
+                    string packages = string.Join("\n", GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+
+                    throw new Exception("Following packages were not restored:\n" + packages);
                 }
             }
             catch (Exception ex)
@@ -97,22 +99,21 @@ namespace CoApp.VisualStudio.VsCore
                             Environment.NewLine +
                             Environment.NewLine +
                             exception.Unwrap().Message,
-                        VsResources.DialogTitle);
+                        null);
                 }
                 else
                 {
                     // show success message
                     MessageHelper.ShowInfoMessage(
                         VsResources.PackageRestoreCompleted,
-                        VsResources.DialogTitle);
+                        null);
                 }
             }
         }
 
         public bool CheckForMissingPackages()
         {
-            bool missing = GetMissingPackages().Any();
-            return missing;
+            return GetMissingPackages().Any();
         }
 
         public void RestoreMissingPackages()
@@ -127,7 +128,11 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, true);
+            CoAppWrapper.ResetFilters();
+            CoAppWrapper.SetVersionFilter("Highest", false);
+            CoAppWrapper.SetVersionFilter("Stable", false);
+
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())

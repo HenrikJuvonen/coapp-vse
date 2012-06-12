@@ -24,9 +24,7 @@
         private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
         private static bool onlyHighestVersions = true;
         private static bool onlyStableVersions = true;
-
-        private static IEnumerable<IPackage> packageCache;
-
+        
         private static readonly List<Task> tasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
         private static readonly PackageManager packageManager = new PackageManager();
@@ -250,10 +248,7 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        /// <param name="useCache">
-        /// Use cached packages to avoid slowdowns.
-        /// </param>
-        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0, bool useCache = false)
+        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
@@ -267,10 +262,7 @@
             if (onlyHighestVersions)
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
 
-            if (useCache && packageCache != null)
-                packages = packageCache;
-            else
-                packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+            packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
 
             if (type == "updatable")
             {
@@ -338,8 +330,6 @@
             UpdateProgress("Installing packages...", 0);
             Console.Write("Installing packages...");
 
-            packageCache = null;
-
             try
             {
                 Task task = tasks.Continue(() => packageManager.Install(package.CanonicalName, false, true));
@@ -359,8 +349,6 @@
         {
             UpdateProgress("Uninstalling packages...", 0);
             Console.Write("Removing packages...");
-
-            packageCache = null;
 
             try
             {
