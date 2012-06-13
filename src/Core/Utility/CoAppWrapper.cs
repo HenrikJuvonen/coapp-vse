@@ -330,21 +330,34 @@
         /// </summary>
         public static void InstallPackage(IPackage package)
         {
-            UpdateProgress("Installing packages...", 0);
             Console.Write("Installing packages...");
 
             try
             {
                 Task task = tasks.Continue(() =>
                 {
-                    try
+
+                    var pkgs = new List<Package>() { (Package)package };
+
+                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(pkgs, false);
+
+                    planTask.Continue(allPackages =>
                     {
-                        packageManager.Install(package.CanonicalName, false, true).Wait();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Unwrap().Message);
-                    }
+                        foreach (var pkg in allPackages)
+                        {
+                            try
+                            {
+                                packageManager.Install(pkg.CanonicalName, false, true).Wait();
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Unwrap().Message);
+                            }
+                        }
+                    });
+
+                        
+                    
                 }
                 );
                 ContinueTask(task);
@@ -361,7 +374,6 @@
         /// </summary>
         public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
-            UpdateProgress("Uninstalling packages...", 0);
             Console.Write("Removing packages...");
 
             try

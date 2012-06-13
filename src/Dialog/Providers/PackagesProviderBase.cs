@@ -24,7 +24,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
 
-        private List<string> _lastOperations;
+        private List<ProgressEventArgs> _progress;
         
         public PackagesProviderBase(ResourceDictionary resources,
                                     ProviderServices providerServices)
@@ -41,7 +41,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             _providerServices = providerServices;
             _resources = resources;
 
-            _lastOperations = new List<string>();
+            _progress = new List<ProgressEventArgs>();
         }
 
         public override IVsExtensionsTreeNode ExtensionsTree
@@ -305,11 +305,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return false;
         }
 
-        protected virtual string GetProgressMessage(IPackage package)
-        {
-            return package.ToString();
-        }
-
         /// <summary>
         /// This method is called on background thread.
         /// </summary>
@@ -365,7 +360,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return;
             }
 
-            // disable all operations while this install is in progress
+            // disable all operations while this operation is in progress
             OperationCoordinator.IsBusy = true;
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
@@ -385,7 +380,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         
         private void ClearProgressMessages()
         {
-            _lastOperations.Clear();
+            _progress.Clear();
 
             _providerServices.ProgressWindow.ClearMessages();
         }
@@ -405,15 +400,39 @@ namespace CoApp.VisualStudio.Dialog.Providers
             _providerServices.ProgressWindow.Close();
         }
 
+        private int TotalProgress(string operation)
+        {
+            int total = 0;
+            int count = 0;
+
+            foreach (var n in _progress.Where(n => n.Operation.Contains(operation)))
+            {
+                total += n.PercentComplete;
+                count++;
+            }
+
+            return count == 0 ? 0 : total / count;
+        }
+
         private void OnProgressAvailable(object sender, ProgressEventArgs e)
         {
-            _providerServices.ProgressWindow.ShowProgress(e.Operation, e.PercentComplete);
+            var progressItem = _progress.FirstOrDefault(n => n.Operation == e.Operation);
 
-            if (!_lastOperations.Contains(e.Operation))
+            if (progressItem == null)
             {
-                _lastOperations.Add(e.Operation);
+                _progress.Add(e);
                 Log(MessageLevel.Info, e.Operation);
             }
+            else
+            {
+                _progress.Remove(progressItem);
+                _progress.Add(e);
+            }
+
+            string operation = e.Operation.Split(' ')[0];
+
+            _providerServices.ProgressWindow.ShowProgress(operation + "...", TotalProgress(operation));
+
         }
 
         private void OnRunWorkerDoWorkCore(object sender, DoWorkEventArgs e)

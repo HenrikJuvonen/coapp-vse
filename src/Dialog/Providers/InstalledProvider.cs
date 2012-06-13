@@ -252,11 +252,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected override string GetProgressMessage(IPackage package)
-        {
-            return Resources.Dialog_UninstallProgress + package.ToString();
-        }
-
         protected override void FillRootNodes()
         {
             FillRootNodes(installed: true);

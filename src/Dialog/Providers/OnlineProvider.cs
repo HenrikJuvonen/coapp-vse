@@ -65,12 +65,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return Resources.Dialog_InstallProgress;
             }
         }
-
-        protected override string GetProgressMessage(IPackage package)
-        {
-            return Resources.Dialog_InstallProgress + package.ToString();
-        }
-
+        
         protected override bool ExecuteCore(PackageItem item)
         {
             ShowProgressWindow();
