@@ -75,7 +75,7 @@ namespace CoApp.VisualStudio.Tools
             {
                 // menu command for opening Manage CoApp packages dialog
                 CommandID managePackageDialogCommandID = new CommandID(GuidList.guidVSDialogCmdSet, PkgCmdIDList.cmdidAddPackageDialog);
-                OleMenuCommand managePackageDialogCommand = new OleMenuCommand(ShowManageLibraryPackageDialog, null, BeforeQueryStatusForAddPackageDialog, managePackageDialogCommandID);
+                OleMenuCommand managePackageDialogCommand = new OleMenuCommand(ShowManageLibraryPackageDialog, null, QueryStatusEnable, managePackageDialogCommandID);
                 mcs.AddCommand(managePackageDialogCommand);
 
                 // menu command for opening Package feed settings options page
@@ -90,7 +90,7 @@ namespace CoApp.VisualStudio.Tools
 
                 // menu command for Package Restore command
                 CommandID restorePackagesCommandID = new CommandID(GuidList.guidVSPackagesRestoreCmdSet, PkgCmdIDList.cmdidRestorePackages);
-                var restorePackagesCommand = new OleMenuCommand(EnablePackagesRestore, null, QueryStatusEnablePackagesRestore, restorePackagesCommandID);
+                var restorePackagesCommand = new OleMenuCommand(EnablePackagesRestore, null, QueryStatusEnable, restorePackagesCommandID);
                 mcs.AddCommand(restorePackagesCommand);
             }
         }
@@ -100,19 +100,14 @@ namespace CoApp.VisualStudio.Tools
             _packageRestoreManager.BeginRestore(fromActivation: true);
         }
 
-        private void QueryStatusEnablePackagesRestore(object sender, EventArgs args)
+        private void QueryStatusEnable(object sender, EventArgs args)
         {
             OleMenuCommand command = (OleMenuCommand)sender;
-            command.Visible = _solutionManager.IsSolutionOpen && _packageRestoreManager.CheckForMissingPackages();
+            command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
             command.Enabled = true;
         }
 
         private void ShowManageLibraryPackageDialog(object sender, EventArgs e)
-        {
-            ShowManageLibraryPackageDialog();
-        }
-
-        private static void ShowManageLibraryPackageDialog()
         {
             DialogWindow window = new PackageManagerWindow();
             try
@@ -124,24 +119,6 @@ namespace CoApp.VisualStudio.Tools
                 MessageHelper.ShowErrorMessage(exception, Resources.ErrorDialogBoxTitle);
                 ExceptionHelper.WriteToActivityLog(exception);
             }
-        }
-        
-        private void BeforeQueryStatusForAddPackageDialog(object sender, EventArgs args)
-        {
-            OleMenuCommand command = (OleMenuCommand)sender;
-            command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
-            command.Enabled = true;
-            if (command.Visible)
-            {
-                command.Text = Resources.ManagePackageLabel;
-            }
-        }
-
-        private void BeforeQueryStatusForAddPackageForSolutionDialog(object sender, EventArgs args)
-        {
-            OleMenuCommand command = (OleMenuCommand)sender;
-            command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
-            command.Enabled = true;
         }
 
         private bool IsIDEInDebuggingOrBuildingContext()

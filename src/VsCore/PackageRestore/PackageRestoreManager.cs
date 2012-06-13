@@ -48,10 +48,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 throw new InvalidOperationException("solution not available");
             }
-
-            if (!CheckForMissingPackages())
-                return;
-
+                        
             Exception exception = null;
 
             IVsThreadedWaitDialog2 waitDialog;
@@ -60,7 +57,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 waitDialog.StartWaitDialog(
                     VsResources.DialogTitle,
-                    VsResources.PackageRestoreWaitMessage,
+                    VsResources.PackageRestoreCheckingMessage,
                     String.Empty, 
                     varStatusBmpAnim: null, 
                     szStatusBarText: null,
@@ -68,14 +65,24 @@ namespace CoApp.VisualStudio.VsCore
                     fIsCancelable: false,
                     fShowMarqueeProgress: true);
 
+                if (!CheckForMissingPackages())
+                {
+                    throw new Exception(VsResources.PackageRestoreNoMissingPackages);
+                }
+
+                bool canceled;
+                waitDialog.UpdateProgress(VsResources.PackageRestoreInstallingMessage, string.Empty, null, 0, 0, true, out canceled);
+
                 RestoreMissingPackages();
 
                 // after we're done with restoring packages, do the check again
                 if (CheckForMissingPackages())
                 {
-                    string packages = string.Join("\n", GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+                    string packages = string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
 
-                    throw new Exception("Following packages were not restored:\n" + packages);
+                    throw new Exception(VsResources.PackageRestoreFollowingPackages +
+                                        Environment.NewLine +
+                                        packages);
                 }
             }
             catch (Exception ex)
@@ -93,13 +100,26 @@ namespace CoApp.VisualStudio.VsCore
             {
                 if (exception != null)
                 {
-                    // show error message
-                    MessageHelper.ShowErrorMessage(
-                        VsResources.PackageRestoreErrorMessage +
+                    string message = exception.Unwrap().Message;
+
+                    if (message == VsResources.PackageRestoreNoMissingPackages)
+                    {
+                        // show info message
+                        MessageHelper.ShowInfoMessage(
+                            exception.Unwrap().Message,
+                            null);
+                    }
+                    else
+                    {
+                        // show error message
+                        MessageHelper.ShowErrorMessage(
+                            VsResources.PackageRestoreErrorMessage +
                             Environment.NewLine +
                             Environment.NewLine +
                             exception.Unwrap().Message,
-                        null);
+                            null);
+                    }
+
                 }
                 else
                 {
@@ -128,11 +148,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            CoAppWrapper.ResetFilters();
-            CoAppWrapper.SetVersionFilter("Highest", false);
-            CoAppWrapper.SetVersionFilter("Stable", false);
-
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion);
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, false);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())

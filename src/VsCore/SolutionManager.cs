@@ -94,6 +94,8 @@ namespace CoApp.VisualStudio.VsCore
                 else
                 {
                     packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
+
+                    File.Delete(path);
                 }
 
                 project.Save(project.FullName);

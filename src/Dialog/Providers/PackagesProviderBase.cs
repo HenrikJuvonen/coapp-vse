@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using CoApp.Packaging.Common;
+using CoApp.Packaging.Client;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
@@ -184,6 +187,52 @@ namespace CoApp.VisualStudio.Dialog.Providers
             AddSearchNode();
         }
 
+        /// <summary>
+        /// Adds All-node, aggregate-nodes and feed-nodes.
+        /// </summary>
+        /// <param name="installed">If true, displays only installed packages.</param>
+        protected void FillRootNodes(bool installed)
+        {
+            string type = installed ? "installed" : null;
+
+            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, type));
+
+            IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
+
+            IEnumerable<string> hosts = new HashSet<string>(
+                feeds.Select(f =>
+                {
+                    Uri uri = new Uri(f.Location);
+                    return uri.Host;
+                }));
+
+            foreach (string host in hosts)
+            {
+                string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
+
+                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName);
+
+                foreach (Feed f in feeds)
+                {
+                    Uri uri = new Uri(f.Location);
+
+                    if (uri.Host == host)
+                    {
+                        string name = uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped);
+
+                        if (aggregateName == "Local")
+                        {
+                            name = Path.GetFileNameWithoutExtension(name);
+                        }
+
+                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, type));
+                    }
+                }
+
+                RootNode.Nodes.Add(treeNode);
+            }
+        }
+
         protected virtual void FillRootNodes()
         {
         }
@@ -332,7 +381,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
             worker.RunWorkerAsync(item);
-
         }
         
         private void ClearProgressMessages()

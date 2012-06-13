@@ -126,8 +126,8 @@
   <data name="PackageRestoreCompleted" xml:space="preserve">
     <value>Finished restoring packages.</value>
   </data>
-  <data name="PackageRestoreConfirmation" xml:space="preserve">
-    <value>Do you want to restore all the missing packages?</value>
+  <data name="PackageRestoreNoMissingPackages" xml:space="preserve">
+    <value>No missing packages found.</value>
   </data>
   <data name="PackageRestoreDownloadPackageFailed" xml:space="preserve">
     <value>Downloading package '{0}' failed.</value>
@@ -135,10 +135,13 @@
   <data name="PackageRestoreErrorMessage" xml:space="preserve">
     <value>An error occurred while trying to restore packages.</value>
   </data>
-  <data name="PackageRestoreErrorTryAgain" xml:space="preserve">
-    <value>An error occurred while trying to restore packages. Please try again.</value>
+  <data name="PackageRestoreFollowingPackages" xml:space="preserve">
+    <value>Following packages were not restored:</value>
   </data>
-  <data name="PackageRestoreWaitMessage" xml:space="preserve">
-    <value>Restoring packages...</value>
+  <data name="PackageRestoreCheckingMessage" xml:space="preserve">
+    <value>Checking for missing packages...</value>
+  </data>
+  <data name="PackageRestoreInstallingMessage" xml:space="preserve">
+    <value>Installing packages...</value>
   </data>
 </root>

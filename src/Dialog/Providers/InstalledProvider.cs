@@ -6,7 +6,6 @@ using System.Windows;
 using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Packaging.Common;
-using CoApp.Packaging.Client;
 using CoApp.VisualStudio.VsCore;
 using CoApp.VisualStudio.Dialog.PackageManagerUI;
 
@@ -164,7 +163,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
 
             return remove;
-            
         }
 
         protected bool? AskRemoveDependency(IPackage package, bool checkDependents)
@@ -261,42 +259,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "installed"));
-
-            IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
-
-            IEnumerable<string> hosts = new HashSet<string>(
-                feeds.Select(f =>
-                {
-                    Uri uri = new Uri(f.Location);
-                    return uri.Host;
-                }));
-
-            foreach (string host in hosts)
-            {
-                string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
-
-                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName);
-
-                foreach (Feed f in feeds)
-                {
-                    Uri uri = new Uri(f.Location);
-
-                    if (uri.Host == host)
-                    {
-                        string name = uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped);
-
-                        if (aggregateName == "Local")
-                        {
-                            name = Path.GetFileNameWithoutExtension(name);
-                        }
-
-                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, "installed"));
-                    }
-                }
-
-                RootNode.Nodes.Add(treeNode);
-            }
+            FillRootNodes(installed: true);
         }
     }
 }

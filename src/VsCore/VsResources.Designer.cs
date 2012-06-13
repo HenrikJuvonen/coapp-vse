@@ -79,20 +79,20 @@ namespace CoApp.VisualStudio.VsCore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Checking for missing packages....
+        /// </summary>
+        public static string PackageRestoreCheckingMessage {
+            get {
+                return ResourceManager.GetString("PackageRestoreCheckingMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finished restoring packages..
         /// </summary>
         public static string PackageRestoreCompleted {
             get {
                 return ResourceManager.GetString("PackageRestoreCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you want to restore all the missing packages?.
-        /// </summary>
-        public static string PackageRestoreConfirmation {
-            get {
-                return ResourceManager.GetString("PackageRestoreConfirmation", resourceCulture);
             }
         }
         
@@ -115,20 +115,29 @@ namespace CoApp.VisualStudio.VsCore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while trying to restore packages. Please try again..
+        ///   Looks up a localized string similar to Following packages were not restored:.
         /// </summary>
-        public static string PackageRestoreErrorTryAgain {
+        public static string PackageRestoreFollowingPackages {
             get {
-                return ResourceManager.GetString("PackageRestoreErrorTryAgain", resourceCulture);
+                return ResourceManager.GetString("PackageRestoreFollowingPackages", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restoring packages....
+        ///   Looks up a localized string similar to Installing packages....
         /// </summary>
-        public static string PackageRestoreWaitMessage {
+        public static string PackageRestoreInstallingMessage {
             get {
-                return ResourceManager.GetString("PackageRestoreWaitMessage", resourceCulture);
+                return ResourceManager.GetString("PackageRestoreInstallingMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No missing packages found..
+        /// </summary>
+        public static string PackageRestoreNoMissingPackages {
+            get {
+                return ResourceManager.GetString("PackageRestoreNoMissingPackages", resourceCulture);
             }
         }
     }

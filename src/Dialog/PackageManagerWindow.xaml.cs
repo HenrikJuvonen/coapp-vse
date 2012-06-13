@@ -18,25 +18,20 @@ namespace CoApp.VisualStudio.Dialog
 
         private readonly IOptionsPageActivator _optionsPageActivator;
 
-        public PackageManagerWindow() :
-            this(ServiceLocator.GetInstance<IOptionsPageActivator>(),
-                 ServiceLocator.GetInstance<ISolutionManager>())
-        {
-        }
-
-        public PackageManagerWindow(IOptionsPageActivator optionPageActivator, ISolutionManager solutionManager)
+        public PackageManagerWindow()
         {
             InitializeComponent();
 
-            _optionsPageActivator = optionPageActivator;
+            _optionsPageActivator = ServiceLocator.GetInstance<IOptionsPageActivator>();
 
             SetupFilters();
-            SetupProviders(solutionManager);
+            SetupProviders();
         }
 
-        private void SetupProviders(ISolutionManager solutionManager)
+        private void SetupProviders()
         {
             ProviderServices providerServices = new ProviderServices();
+            ISolutionManager solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
 
             SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
             InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
@@ -48,7 +43,7 @@ namespace CoApp.VisualStudio.Dialog
             explorer.Providers.Add(onlineProvider);
             explorer.Providers.Add(updatesProvider);
 
-            explorer.SelectedProvider = explorer.Providers[2];
+            explorer.SelectedProvider = explorer.Providers[0];
         }
 
         /// <summary>

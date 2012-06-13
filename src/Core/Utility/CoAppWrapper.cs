@@ -46,8 +46,6 @@
 
             packageManager.Elevate().Wait();
 
-            GetPackages();
-
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
                 UpdateProgress("Installing " + name, progress));
 
@@ -248,7 +246,7 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0)
+        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0, bool useFilters = true)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
@@ -258,6 +256,11 @@
                 pkgFilter = Package.Properties.Installed.Is(true);
             else if (type == "updatable")
                 pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null) & Package.Properties.Installed.Is(true);
+
+            if (!useFilters)
+            {
+                return QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+            }
 
             if (onlyHighestVersions)
                 collectionFilter = collectionFilter.Then(p => p.HighestPackages());
@@ -293,7 +296,7 @@
         /// </summary>
         public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
-            return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
+            return GetPackages("installed", null, 0, false).Where(pkg => pkg.Dependencies.Contains(package));
         }
 
         /// <summary>
@@ -332,7 +335,18 @@
 
             try
             {
-                Task task = tasks.Continue(() => packageManager.Install(package.CanonicalName, false, true));
+                Task task = tasks.Continue(() =>
+                {
+                    try
+                    {
+                        packageManager.Install(package.CanonicalName, false, true).Wait();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Unwrap().Message);
+                    }
+                }
+                );
                 ContinueTask(task);
             }
             catch (Exception e)
