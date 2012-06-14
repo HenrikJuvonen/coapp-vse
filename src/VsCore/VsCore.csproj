@@ -11,7 +11,6 @@
     <RootNamespace>CoApp.VisualStudio.VsCore</RootNamespace>
     <AssemblyName>CoApp.VisualStudio.VsCore</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

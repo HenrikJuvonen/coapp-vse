@@ -315,13 +315,13 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// </summary>
         private LoadPageResult ExecuteAsync(int pageNumber, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
+            //token.ThrowIfCancellationRequested();
 
             if (_query == null)
             {
                 IQueryable<IPackage> query = GetPackages().AsQueryable();
 
-                token.ThrowIfCancellationRequested();
+                //token.ThrowIfCancellationRequested();
 
                 // Execute the total count query
                 _totalCount = query.Count();
@@ -330,7 +330,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 int maximumPages = (_totalCount + PageSize - 1)/PageSize;
                 pageNumber = Math.Min(pageNumber, maximumPages);
 
-                token.ThrowIfCancellationRequested();
+                //token.ThrowIfCancellationRequested();
 
                 // Apply the ordering then sort by name
                 IQueryable<IPackage> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
@@ -345,7 +345,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 _totalCount = (pageNumber - 1) * PageSize + packages.Count();
             }
 
-            token.ThrowIfCancellationRequested();
+            //token.ThrowIfCancellationRequested();
 
             return new LoadPageResult(packages, pageNumber, _totalCount);
         }
