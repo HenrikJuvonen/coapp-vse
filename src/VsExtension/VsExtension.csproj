@@ -98,13 +98,19 @@
       <Project>{D46F169B-4BBF-4687-9899-9E3DB954591D}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dialog10\Dialog10.csproj">
+      <Project>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</Project>
+      <Name>Dialog10</Name>
+      <Aliases>dialog10</Aliases>
+    </ProjectReference>
     <ProjectReference Include="..\DialogServices\DialogServices.csproj">
       <Project>{23CBC679-580F-4AF9-8D81-E41AD9672174}</Project>
       <Name>DialogServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dialog\Dialog.csproj">
-      <Project>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</Project>
+      <Project>{1C5E9CB6-F6FE-4858-BB63-AA50832F0A4D}</Project>
       <Name>Dialog</Name>
+	  <Aliases>dialog</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\Options\Options.csproj">
       <Project>{53AB7187-CDF3-48B5-B90E-8919D3CB904D}</Project>

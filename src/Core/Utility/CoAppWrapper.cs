@@ -10,6 +10,7 @@
     using CoApp.Packaging.Client;
     using CoApp.Packaging.Common;
     using CoApp.Packaging.Common.Model;
+    using CoApp.Packaging.Common.Exceptions;
     using CoApp.Toolkit.Extensions;
     using CoApp.Toolkit.Linq;
     using CoApp.Toolkit.Tasks;
@@ -24,6 +25,7 @@
         private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
         private static bool onlyHighestVersions = true;
         private static bool onlyStableVersions = true;
+        private static bool onlyCompatibleFlavors = true;
         
         private static readonly List<Task> tasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
@@ -44,13 +46,13 @@
 
             ResetFilters();
 
-            packageManager.Elevate().Wait();
+            //packageManager.Elevate().Wait();
 
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
-                UpdateProgress("Installing " + name, progress));
+                ProgressProvider.Update("Installing", name, progress));
 
             CurrentTask.Events += new PackageRemoveProgress((name, progress) =>
-                UpdateProgress("Uninstalling " + name, progress));
+                ProgressProvider.Update("Uninstalling", name, progress));
             
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
@@ -58,7 +60,7 @@
                 {
                     activeDownloads.Add(remoteLocation);
                 }
-                UpdateProgress("Downloading " + remoteLocation.UrlDecode(), progress);
+                ProgressProvider.Update("Downloading", remoteLocation.UrlDecode(), progress);
             });
 
             CurrentTask.Events += new DownloadCompleted((remoteLocation, locallocation) =>
@@ -82,6 +84,7 @@
 
             onlyHighestVersions = true;
             onlyStableVersions = true;
+            onlyCompatibleFlavors = true;
         }
 
         /// <summary>
@@ -144,6 +147,22 @@
                     break;
                 case "Stable":
                     onlyStableVersions = enabled;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Used for filtering packages by flavor in PackageManagerWindow.
+        /// </summary>
+        /// <param name="enabled">
+        /// If true: packages of flavor are displayed.
+        /// </param>
+        public static void SetFlavorFilter(string versionName, bool enabled)
+        {
+            switch (versionName)
+            {
+                case "Compatible":
+                    onlyCompatibleFlavors = enabled;
                     break;
             }
         }
@@ -331,15 +350,14 @@
         public static void InstallPackage(IPackage package)
         {
             Console.Write("Installing packages...");
-
+            
             try
             {
                 Task task = tasks.Continue(() =>
                 {
-
                     var pkgs = new List<Package>() { (Package)package };
 
-                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(pkgs, false);
+                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(pkgs, false, true);
 
                     planTask.Continue(allPackages =>
                     {
@@ -347,7 +365,7 @@
                         {
                             try
                             {
-                                packageManager.Install(pkg.CanonicalName, false, true).Wait();
+                                packageManager.Install(pkg.CanonicalName, false, true, true).Wait();
                             }
                             catch (Exception e)
                             {
@@ -355,9 +373,6 @@
                             }
                         }
                     });
-
-                        
-                    
                 }
                 );
                 ContinueTask(task);
@@ -384,7 +399,38 @@
                     canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
                 }
                 Task task = tasks.Continue(() => packageManager.RemovePackages(canonicalNames, true));
-                ContinueTask(task);
+
+                task.ContinueOnFail(exception =>
+                {
+                    if (exception is OperationCanceledException)
+                    {
+                        // it's been dealt with.
+                        return;
+                    }
+                    var ae = exception as AggregateException;
+                    IEnumerable<FailedPackageRemoveException> fpres = (exception as FailedPackageRemoveException).SingleItemAsEnumerable();
+                    if (ae != null)
+                    {
+                        fpres = from each in ae.InnerExceptions let fpre = each as FailedPackageRemoveException where fpre != null select fpre;
+                    }
+
+                    if (!fpres.IsNullOrEmpty())
+                    {
+                        string message = "The following packages failed to remove:\n";
+                        foreach (var failedPackage in fpres)
+                        {
+                            message += string.Format("   {0}\n", failedPackage.CanonicalName);
+                            failedPackage.Cancel();
+                        }
+                        Console.Write(message);
+                        ProgressProvider.Update("Error", message);
+                    }
+                });
+
+                task.Continue(() =>
+                {
+                    Console.WriteLine("Done.");
+                }).Wait();
             }
             catch (Exception e)
             {
@@ -404,8 +450,9 @@
             {
                 packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
 
-                packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
-                                                     package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
+                if (onlyCompatibleFlavors)
+                    packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
+                                                         package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
             }
 
             if (onlyStableVersions)
@@ -416,19 +463,12 @@
             return packages;
         }
 
-        /// <summary>
-        /// Used for updating progress in ProgressDialog.
-        /// </summary>
-        private static void UpdateProgress(string message, int progress)
-        {
-            ProgressProvider.UpdateProgress(message, progress);
-        }
-
         private static void ContinueTask(Task task)
         {
             task.ContinueOnCanceled(() =>
             {
                 // the task was cancelled, and presumably dealt with.
+                ProgressProvider.Update("Error", "Operation Canceled.");
                 Console.WriteLine("Operation Canceled.");
             });
 
@@ -437,6 +477,7 @@
                 exception = exception.Unwrap();
                 if (!(exception is OperationCanceledException))
                 {
+                    ProgressProvider.Update("Error", exception.Message);
                     Console.WriteLine("Error (???): {0}\r\n\r\n{1}", exception.Message, exception.StackTrace);
                 }
                 // it's all been handled then.

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace CoApp.VisualStudio.Options
 {
+    [Guid("35DE739E-CE3D-45ED-A222-46755163AA93")]
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.AutoDual)]
     public class FeedOptionsPage : OptionsPageBase

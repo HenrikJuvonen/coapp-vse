@@ -124,7 +124,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return false;
             }
 
-            ShowProgressWindow();
+            ShowWaitDialog();
             CoAppWrapper.RemovePackage(item.PackageIdentity, (bool)removeDependencies);
 
             return true;

@@ -4,6 +4,7 @@
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using CoApp.VisualStudio.VsCore;
 
@@ -14,19 +15,9 @@
     {
         private bool _initialized;
 
-        private BindingSource _allFeeds;
-
         public FeedsOptionsControl()
         {
             InitializeComponent();
-        }
-
-        private void UpdateFeeds()
-        {
-            var feeds = CoAppWrapper.GetFeeds().Select(feed => feed.Location);
-
-            _allFeeds = new BindingSource(feeds, null);
-            FeedsListBox.DataSource = _allFeeds;
         }
         
         internal void InitializeOnActivated()
@@ -70,6 +61,46 @@
             _initialized = false;
 
             ClearFeed();
+        }
+
+        private void SetFeedsListBoxDataSource(BindingSource ds)
+        {
+            if (FeedsListBox.InvokeRequired)
+            {
+                FeedsListBox.Invoke((Action)(() => SetFeedsListBoxDataSource(ds)));
+            }
+            else
+            {
+                Enabled = true;
+                FeedsListBox.DataSource = ds;
+            }
+        }
+
+        private void SetFeedsListBoxMessage(string text)
+        {
+            if (FeedsListBox.InvokeRequired)
+            {
+                FeedsListBox.Invoke((Action)(() => SetFeedsListBoxMessage(text)));
+            }
+            else
+            {
+                Enabled = false;
+                FeedsListBox.DataSource = null;
+                FeedsListBox.Items.Clear();
+                FeedsListBox.Items.Add(text);
+            }
+        }
+
+        private void UpdateFeeds()
+        {
+            SetFeedsListBoxMessage("Loading feeds...");
+
+            Task.Factory.StartNew(() =>
+            {
+                var feeds = CoAppWrapper.GetFeeds().Select(feed => feed.Location);
+
+                SetFeedsListBoxDataSource(new BindingSource(feeds, null));
+            });
         }
 
         private void OnRemoveButtonClick(object sender, EventArgs e)

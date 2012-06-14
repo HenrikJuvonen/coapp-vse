@@ -72,10 +72,6 @@
     <Compile Include="PackageManagerUI\Converters\StringCollectionsToStringConverter.cs" />
     <Compile Include="PackageManagerUI\OperationCoordinator.cs" />
     <Compile Include="PackageManagerUI\PackageManagerWindowCommands.cs" />
-    <Compile Include="PackageManagerUI\ProgressDialog.xaml.cs">
-      <DependentUpon>ProgressDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManagerUI\ProgressWindowOpener.cs" />
     <Compile Include="PackageManagerUI\ProviderServices.cs" />
     <Compile Include="PackageManagerUI\UserNotifierServices.cs" />
     <Compile Include="QueryExtensions.cs" />
@@ -96,7 +92,6 @@
     <Compile Include="SolutionExplorer\SolutionExplorerViewModel.cs" />
     <Compile Include="SolutionExplorer\Nodes\SolutionNode.cs" />
     <Compile Include="SolutionExplorer\SolutionWalker.cs" />
-    <Compile Include="UIResources.cs" />
     <EmbeddedResource Include="Resources.resx">
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -105,10 +100,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PackageManagerUI\ProgressDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="SolutionExplorer\SolutionExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

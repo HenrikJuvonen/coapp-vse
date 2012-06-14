@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.ExtensionsExplorer;
@@ -13,12 +14,21 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         #region IVsExtensionsTreeNode Members
 
+#if VS10
         private readonly IList<IVsExtension> extensions = new ObservableCollection<IVsExtension>();
 
         public IList<IVsExtension> Extensions
         {
             get { return extensions; }
         }
+#else
+        private readonly IList extensions = new ObservableCollection<IVsExtension>();
+
+        public IList Extensions
+        {
+            get { return extensions; }
+        }
+#endif
 
         public bool IsSearchResultsNode
         {

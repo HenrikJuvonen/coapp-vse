@@ -5,20 +5,20 @@ namespace CoApp.VisualStudio.Dialog.Providers
 {
     public sealed class ProviderServices
     {
-        public ProgressWindowOpener ProgressWindow { get; private set; }
+        public WaitDialog WaitDialog { get; private set; }
         public UserNotifierServices UserNotifierServices { get; private set; }
 
         public ProviderServices() :
-            this(new ProgressWindowOpener(),
+            this(new WaitDialog(),
                  new UserNotifierServices()) 
         {
         }
 
         public ProviderServices(
-            ProgressWindowOpener progressWindow,
+            WaitDialog progressWindow,
             UserNotifierServices userNotifierServices)
         {
-            ProgressWindow = progressWindow;
+            WaitDialog = progressWindow;
             UserNotifierServices = userNotifierServices;
         }
     }

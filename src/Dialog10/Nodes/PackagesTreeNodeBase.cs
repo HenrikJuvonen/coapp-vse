@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
+using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {
@@ -24,7 +25,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private IEnumerable<IPackage> _query;
         private int _totalCount;
 
+#if VS10
         private IList<IVsExtension> _extensions;
+#else
+        private IList _extensions;
+#endif
 
         private IList<IVsExtensionsTreeNode> _nodes;
         private int _totalPages = 1, _currentPage = 1;
@@ -122,7 +127,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// <summary>
         /// List of templates at this node
         /// </summary>
+#if VS10
         public IList<IVsExtension> Extensions
+#else
+        public IList Extensions
+#endif
         {
             get
             {
@@ -465,15 +474,16 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             for (int i = 0; i < _extensions.Count; i++)
             {
-                if (_extensions[i].IsSelected)
+                PackageItem item = (PackageItem)_extensions[i];
+
+                if (item != null && item.IsSelected)
                 {
                     ShowProgressPane();
 
-                    PackageItem item = (PackageItem)_extensions[i];
-
                     _extensions[i] = Provider.CreateExtension(CoAppWrapper.GetPackage(item.PackageIdentity.CanonicalName));
-                    
-                    _extensions[i].IsSelected = true;
+
+                    item = (PackageItem)_extensions[i];
+                    item.IsSelected = true;
 
                     HideProgressPane();
                     

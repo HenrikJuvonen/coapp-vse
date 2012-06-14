@@ -70,6 +70,15 @@ namespace CoApp.VisualStudio.Options {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some packages were not cleared from the cache..
+        /// </summary>
+        public static string ShowWarning_ClearPackageCache {
+            get {
+                return ResourceManager.GetString("ShowWarning_ClearPackageCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The feed specified is invalid. Please provide a valid feed..
         /// </summary>
         public static string ShowWarning_InvalidSource {

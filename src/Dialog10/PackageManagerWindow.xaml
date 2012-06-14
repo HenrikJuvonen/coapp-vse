@@ -102,7 +102,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.DropShadowBackgroundKey}}" Padding="0,0,0,4" Grid.Row="1">
+        <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.NewProjectBackgroundKey}}" Padding="0,0,0,4" Grid.Row="1">
             <shared:VSExtensionsExplorerCtl
                 x:Name="explorer"
                 ActiveView="MediumIcons"

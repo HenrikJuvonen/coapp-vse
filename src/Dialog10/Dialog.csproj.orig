@@ -5,18 +5,20 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1C5E9CB6-F6FE-4858-BB63-AA50832F0A4D}</ProjectGuid>
+    <ProjectGuid>{085B394C-ECBC-4AD9-A2E9-E501E1AB46CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CoApp.VisualStudio.Dialog</RootNamespace>
     <AssemblyName>CoApp.VisualStudio.Dialog</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,6 +37,13 @@
     <Reference Include="CoApp.Toolkit">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.ExtensionManager.Implementation.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.ExtensionsExplorer, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Microsoft.VisualStudio.ExtensionsExplorer.dll</HintPath>
@@ -45,81 +54,46 @@
       <HintPath>..\..\lib\Microsoft.VisualStudio.ExtensionsExplorer.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.10.0">
       <Private>false</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.11.0">
       <HintPath>..\..\lib\Microsoft.VisualStudio.Shell.Interop.11.0.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.XML" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="EnvDTE">
-      <Guid>{80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2}</Guid>
-      <VersionMajor>8</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Dialog10\LoadPageResult.cs">
-      <Link>LoadPageResult.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\AggregateTreeNode.cs">
-      <Link>Nodes\AggregateTreeNode.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\PackagesSearchNode.cs">
-      <Link>Nodes\PackagesSearchNode.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\PackagesTreeNodeBase.cs">
-      <Link>Nodes\PackagesTreeNodeBase.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\RootTreeNode.cs">
-      <Link>Nodes\RootTreeNode.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\SimpleTreeNode.cs">
-      <Link>Nodes\SimpleTreeNode.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Nodes\SolutionTreeNode.cs">
-      <Link>Nodes\SolutionTreeNode.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\PackageItem.cs">
-      <Link>PackageItem.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\PackageManagerWindow.xaml.cs">
-      <Link>PackageManagerWindow.xaml.cs</Link>
+    <Compile Include="LoadPageResult.cs" />
+    <Compile Include="Nodes\AggregateTreeNode.cs" />
+    <Compile Include="Nodes\PackagesSearchNode.cs" />
+    <Compile Include="Nodes\PackagesTreeNodeBase.cs" />
+    <Compile Include="Nodes\RootTreeNode.cs" />
+    <Compile Include="Nodes\SimpleTreeNode.cs" />
+    <Compile Include="Nodes\SolutionTreeNode.cs" />
+    <Compile Include="PackageItem.cs" />
+    <Compile Include="PackageManagerWindow.xaml.cs">
       <DependentUpon>PackageManagerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\Dialog10\PackageSortDescriptor.cs">
-      <Link>PackageSortDescriptor.cs</Link>
-    </Compile>
+    <Compile Include="PackageSortDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\Dialog10\Providers\InstalledProvider.cs">
-      <Link>Providers\InstalledProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Providers\OnlineProvider.cs">
-      <Link>Providers\OnlineProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Providers\PackagesProviderBase.cs">
-      <Link>Providers\PackagesProviderBase.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Providers\SolutionProvider.cs">
-      <Link>Providers\SolutionProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\Dialog10\Providers\UpdatesProvider.cs">
-      <Link>Providers\UpdatesProvider.cs</Link>
-    </Compile>
+    <Compile Include="Providers\InstalledProvider.cs" />
+    <Compile Include="Providers\OnlineProvider.cs" />
+    <Compile Include="Providers\PackagesProviderBase.cs" />
+    <Compile Include="Providers\SolutionProvider.cs" />
+    <Compile Include="Providers\UpdatesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
@@ -136,23 +110,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\Dialog10\CommonStyles.xaml">
-      <Link>CommonStyles.xaml</Link>
+    <Page Include="CommonStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\Dialog10\ProviderTemplates.xaml">
-      <Link>ProviderTemplates.xaml</Link>
+    <Page Include="ProviderTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\Dialog10\PackageManagerWindow.xaml">
-      <Link>PackageManagerWindow.xaml</Link>
+    <Page Include="PackageManagerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\Dialog10\TemplateStyles.xaml">
-      <Link>TemplateStyles.xaml</Link>
+    <Page Include="TemplateStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -139,9 +139,9 @@
     <value>Following packages were not restored:</value>
   </data>
   <data name="PackageRestoreCheckingMessage" xml:space="preserve">
-    <value>Checking for missing packages...</value>
+    <value>Querying ...</value>
   </data>
   <data name="PackageRestoreInstallingMessage" xml:space="preserve">
-    <value>Installing packages...</value>
+    <value>Installing ...</value>
   </data>
 </root>

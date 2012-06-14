@@ -1,6 +1,10 @@
-﻿using System;
+﻿extern alias dialog;
+extern alias dialog10;
+
+using System;
 using System.ComponentModel.Design;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -10,6 +14,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 using CoApp.VisualStudio.Dialog;
 using CoApp.VisualStudio.Options;
 using CoApp.VisualStudio.VsCore;
+
+using PackageManagerDialog = dialog::CoApp.VisualStudio.Dialog.PackageManagerWindow;
+using VS10PackageManagerDialog = dialog10::CoApp.VisualStudio.Dialog.PackageManagerWindow;
 
 namespace CoApp.VisualStudio.Tools
 {
@@ -109,7 +116,10 @@ namespace CoApp.VisualStudio.Tools
 
         private void ShowManageLibraryPackageDialog(object sender, EventArgs e)
         {
-            DialogWindow window = new PackageManagerWindow();
+            DialogWindow window = VsVersionHelper.IsVisualStudio2010 ?
+                GetVS10PackageManagerWindow():
+                GetPackageManagerWindow();
+
             try
             {
                 window.ShowModal();
@@ -119,6 +129,18 @@ namespace CoApp.VisualStudio.Tools
                 MessageHelper.ShowErrorMessage(exception, Resources.ErrorDialogBoxTitle);
                 ExceptionHelper.WriteToActivityLog(exception);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static DialogWindow GetVS10PackageManagerWindow()
+        {
+            return new VS10PackageManagerDialog();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static DialogWindow GetPackageManagerWindow()
+        {
+            return new PackageManagerDialog();
         }
 
         private bool IsIDEInDebuggingOrBuildingContext()

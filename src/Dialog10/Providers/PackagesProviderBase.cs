@@ -23,9 +23,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private PackagesSearchNode _searchNode;
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
-
-        private List<ProgressEventArgs> _progress;
-        
+                
         public PackagesProviderBase(ResourceDictionary resources,
                                     ProviderServices providerServices)
         {
@@ -40,8 +38,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             _providerServices = providerServices;
             _resources = resources;
-
-            _progress = new List<ProgressEventArgs>();
         }
 
         public override IVsExtensionsTreeNode ExtensionsTree
@@ -82,20 +78,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        private void Log(MessageLevel level, string message, params object[] args)
+        protected virtual IVsExtensionsTreeNode CreateTreeNodeForPackages(string name, string location, string type)
         {
-            string formattedMessage = String.Format(CultureInfo.CurrentCulture, message, args);
-
-            // for the dialog we ignore debug messages
-            if (_providerServices.ProgressWindow.IsOpen && level != MessageLevel.Debug)
-            {
-                _providerServices.ProgressWindow.AddMessage(level, formattedMessage);
-            }
-        }
-
-        protected virtual PackagesTreeNodeBase CreateTreeNodeForPackages(string name, string location, string type)
-        {
-            return new SimpleTreeNode(RootNode, this, name, location, type);
+            return (IVsExtensionsTreeNode)new SimpleTreeNode(RootNode, this, name, location, type);
         }
 
         protected void SelectNode(PackagesTreeNodeBase node)
@@ -172,7 +157,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 RemoveSearchNode();
             }
 
-            return _searchNode;
+            return (IVsExtensionsTreeNode)_searchNode;
         }
 
         private void CreateExtensionsTree()
@@ -210,7 +195,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
 
-                AggregateTreeNode treeNode = new AggregateTreeNode(RootNode, this, aggregateName);
+                var treeNode = (IVsExtensionsTreeNode)new AggregateTreeNode(RootNode, this, aggregateName);
 
                 foreach (Feed f in feeds)
                 {
@@ -225,7 +210,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                             name = Path.GetFileNameWithoutExtension(name);
                         }
 
-                        treeNode.Nodes.Add(new SimpleTreeNode(treeNode, this, name, f.Location, type));
+                        treeNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(treeNode, this, name, f.Location, type));
                     }
                 }
 
@@ -363,10 +348,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // disable all operations while this operation is in progress
             OperationCoordinator.IsBusy = true;
 
-            CoAppWrapper.ProgressProvider.ProgressAvailable += OnProgressAvailable;
-
-            ClearProgressMessages();
-
+            CoAppWrapper.ProgressProvider.ProgressAvailable += _providerServices.WaitDialog.OnProgressAvailable;
+            
             var worker = new BackgroundWorker();
 
             if (type == "core")
@@ -377,62 +360,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
             worker.RunWorkerAsync(item);
         }
-        
-        private void ClearProgressMessages()
+
+        protected void ShowWaitDialog()
         {
-            _progress.Clear();
-
-            _providerServices.ProgressWindow.ClearMessages();
-        }
-
-        protected void ShowProgressWindow()
-        {
-            _providerServices.ProgressWindow.Show(ProgressWindowTitle, PackageManagerWindow.CurrentInstance);
-        }
-
-        protected void HideProgressWindow()
-        {
-            _providerServices.ProgressWindow.Hide();
-        }
-
-        protected void CloseProgressWindow()
-        {
-            _providerServices.ProgressWindow.Close();
-        }
-
-        private int TotalProgress(string operation)
-        {
-            int total = 0;
-            int count = 0;
-
-            foreach (var n in _progress.Where(n => n.Operation.Contains(operation)))
-            {
-                total += n.PercentComplete;
-                count++;
-            }
-
-            return count == 0 ? 0 : total / count;
-        }
-
-        private void OnProgressAvailable(object sender, ProgressEventArgs e)
-        {
-            var progressItem = _progress.FirstOrDefault(n => n.Operation == e.Operation);
-
-            if (progressItem == null)
-            {
-                _progress.Add(e);
-                Log(MessageLevel.Info, e.Operation);
-            }
-            else
-            {
-                _progress.Remove(progressItem);
-                _progress.Add(e);
-            }
-
-            string operation = e.Operation.Split(' ')[0];
-
-            _providerServices.ProgressWindow.ShowProgress(operation + "...", TotalProgress(operation));
-
+            _providerServices.WaitDialog.Show(ProgressWindowTitle, PackageManagerWindow.CurrentInstance);
         }
 
         private void OnRunWorkerDoWorkCore(object sender, DoWorkEventArgs e)
@@ -455,26 +386,17 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             OperationCoordinator.IsBusy = false;
 
-            CoAppWrapper.ProgressProvider.ProgressAvailable -= OnProgressAvailable;
+            CoAppWrapper.ProgressProvider.ProgressAvailable -= _providerServices.WaitDialog.OnProgressAvailable;
 
             if (e.Error == null)
             {
-                if (e.Cancelled)
-                {
-                    CloseProgressWindow();
-                }
-                else
+                if (!e.Cancelled)
                 {
                     OnExecuteCompleted((PackageItem)e.Result);
-                    _providerServices.ProgressWindow.SetCompleted(successful: true);
                 }
             }
-            else
-            {
-                // show error message in the progress window in case of error
-                Log(MessageLevel.Error, e.Error.Unwrap().Message);
-                _providerServices.ProgressWindow.SetCompleted(successful: false);
-            }
+
+            _providerServices.WaitDialog.Close();
 
             SelectedNode.Refresh(true);
         }

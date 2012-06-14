@@ -9,10 +9,10 @@ namespace CoApp.VisualStudio.VsCore
     public class OptionsPageActivator : IOptionsPageActivator
     {
         // GUID of the Package Sources page, defined in PackageSourcesOptionsPage.cs
-        const string _packageSourcesGUID = "2819C3B6-FC75-4CD5-8C77-877903DE864C";
+        const string _packageSourcesGUID = "35DE739E-CE3D-45ED-A222-46755163AA93";
 
         // GUID of the General page, defined in GeneralOptionsPage.cs
-        const string _generalGUID = "0F052CF7-BF62-4743-B190-87FA4D49421E";
+        const string _generalGUID = "EB451205-CEDF-4EC2-AE48-8A6310601356";
 
         private Action _closeCallback;
         private readonly IVsUIShell _vsUIShell;

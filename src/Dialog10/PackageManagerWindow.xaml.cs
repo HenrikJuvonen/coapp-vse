@@ -4,11 +4,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Microsoft.VisualStudio.PlatformUI;
-using EnvDTE;
-using CoApp.VisualStudio.VsCore;
 using CoApp.VisualStudio.Dialog.Providers;
+using CoApp.VisualStudio.VsCore;
+using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace CoApp.VisualStudio.Dialog
 {
@@ -21,6 +21,11 @@ namespace CoApp.VisualStudio.Dialog
         public PackageManagerWindow()
         {
             InitializeComponent();
+
+#if !VS10
+            // set unique search guid for VS11
+            explorer.SearchCategory = new Guid("{AEE3218E-8A86-49D3-B684-670F4D80E784}");
+#endif
 
             _optionsPageActivator = ServiceLocator.GetInstance<IOptionsPageActivator>();
 
@@ -264,6 +269,7 @@ namespace CoApp.VisualStudio.Dialog
 
                 CheckBox verHigh = new CheckBox(); verHigh.Content = "Version: Highest only";
                 CheckBox verStab = new CheckBox(); verStab.Content = "Version: Stable only";
+                CheckBox flavSup = new CheckBox(); flavSup.Content = "Flavor: Compatible only";
                 CheckBox archAny = new CheckBox(); archAny.Content = "Architecture: any";
                 CheckBox archX64 = new CheckBox(); archX64.Content = "Architecture: x64";
                 CheckBox archX86 = new CheckBox(); archX86.Content = "Architecture: x86";
@@ -275,6 +281,7 @@ namespace CoApp.VisualStudio.Dialog
                 fxCombo.Items.Add(label);
                 fxCombo.Items.Add(verHigh);
                 fxCombo.Items.Add(verStab);
+                fxCombo.Items.Add(flavSup);
                 fxCombo.Items.Add(archAny);
                 fxCombo.Items.Add(archX64);
                 fxCombo.Items.Add(archX86);
@@ -316,6 +323,9 @@ namespace CoApp.VisualStudio.Dialog
                     break;
                 case "Version: Stable only":
                     CoAppWrapper.SetVersionFilter("Stable", checkbox.IsChecked == true);
+                    break;
+                case "Flavor: Compatible only":
+                    CoAppWrapper.SetFlavorFilter("Compatible", checkbox.IsChecked == true);
                     break;
                 case "Architecture: any":
                     CoAppWrapper.SetArchitectureFilter("any", checkbox.IsChecked == true);

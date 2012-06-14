@@ -101,6 +101,7 @@
     <Compile Include="Helpers\UriHelper.cs" />
     <Compile Include="Helpers\VsVersionHelper.cs" />
     <Compile Include="VsConstants.cs" />
+    <Compile Include="WaitDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

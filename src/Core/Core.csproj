@@ -58,7 +58,7 @@
     <Compile Include="Utility\CoAppWrapper.cs" />
     <Compile Include="Packages\PackageReference.cs" />
     <Compile Include="Packages\PackageReferenceFile.cs" />
-    <Compile Include="Packages\ProgressEventArgs.cs" />
+    <Compile Include="Utility\ProgressEventArgs.cs" />
     <Compile Include="Utility\PathValidator.cs" />
     <Compile Include="Utility\ProgressProvider.cs" />
   </ItemGroup>

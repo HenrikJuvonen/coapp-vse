@@ -120,6 +120,9 @@
   <data name="ShowInfo_ClearPackageCache" xml:space="preserve">
     <value>All packages have been cleared from the cache.</value>
   </data>
+  <data name="ShowWarning_ClearPackageCache" xml:space="preserve">
+    <value>Some packages were not cleared from the cache.</value>
+  </data>
   <data name="ShowWarning_InvalidSource" xml:space="preserve">
     <value>The feed specified is invalid. Please provide a valid feed.</value>
   </data>

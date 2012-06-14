@@ -40,7 +40,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override bool ExecuteCore(PackageItem item)
         {
-            ShowProgressWindow();
+            ShowWaitDialog();
             CoAppWrapper.InstallPackage(item.PackageIdentity);
 
             return true;

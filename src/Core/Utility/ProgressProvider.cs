@@ -4,7 +4,7 @@
     using System.ComponentModel.Composition;
 
     /// <summary>
-    /// Used for updating progress.
+    /// Used for updating progress and showing messages.
     /// </summary>
     public class ProgressProvider
     {
@@ -14,9 +14,9 @@
 
         public event EventHandler<ProgressEventArgs> ProgressAvailable = delegate { };
 
-        public void UpdateProgress(string operation, int percentage)
+        public void Update(string operation, string message, int percentage = 0)
         {
-            ProgressAvailable(this, new ProgressEventArgs(operation, percentage));
+            ProgressAvailable(this, new ProgressEventArgs(operation, message, percentage));
         }
     }
 }

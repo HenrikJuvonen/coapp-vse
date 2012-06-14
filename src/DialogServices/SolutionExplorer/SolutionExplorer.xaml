@@ -16,7 +16,7 @@
     WindowStyle="SingleBorderWindow"
     WindowStartupLocation="CenterOwner"
     Title="{x:Static resources:Resources.Dialog_ProjectSelectorTitle}"
-    Background="{DynamicResource {x:Static local:UIResources.WindowBackgroundBrushKey}}">
+    Background="{DynamicResource {x:Static vsfx:VsBrushes.NewProjectBackgroundKey}}">
     
     <Window.Resources>        
         <Style TargetType="{x:Type Button}">

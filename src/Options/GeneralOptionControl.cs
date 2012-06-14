@@ -30,16 +30,24 @@ namespace CoApp.VisualStudio.Options
         {
             DirectoryInfo cache = new DirectoryInfo(@"C:\ProgramData\.cache\packages");
 
-            foreach (FileInfo file in cache.GetFiles())
+            try
             {
-                file.Delete();
-            }
-            foreach (DirectoryInfo dir in cache.GetDirectories())
-            {
-                dir.Delete(true);
-            }
+                foreach (FileInfo file in cache.GetFiles())
+                {
+                    file.Delete();
+                }
 
-            MessageHelper.ShowInfoMessage(Resources.ShowInfo_ClearPackageCache, Resources.ShowWarning_Title);
+                foreach (DirectoryInfo dir in cache.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+
+                MessageHelper.ShowInfoMessage(Resources.ShowInfo_ClearPackageCache, null);
+            }
+            catch (Exception ex)
+            {
+                MessageHelper.ShowErrorMessage(ex, null);
+            }
         }
 
         private void OnBrowsePackageCacheClick(object sender, EventArgs e)

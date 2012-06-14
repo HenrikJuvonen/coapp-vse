@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace CoApp.VisualStudio.Options
 {
-    [Guid("0F052CF7-BF62-4743-B190-87FA4D49421E")]
+    [Guid("EB451205-CEDF-4EC2-AE48-8A6310601356")]
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.AutoDual)]
     public class GeneralOptionPage : OptionsPageBase

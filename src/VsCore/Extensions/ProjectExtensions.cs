@@ -524,7 +524,7 @@ namespace CoApp.VisualStudio.VsCore
 
             foreach (Library lib in libraries)
             {
-                Reference reference = vsProject.References.Find(Path.GetFileNameWithoutExtension(lib.Name));
+                Reference reference = vsProject.References.Find(lib.Name.Substring(0, lib.Name.LastIndexOf(".dll")));
 
                 if (reference == null && lib.IsSelected)
                     vsProject.References.Add(path + lib.Name);
