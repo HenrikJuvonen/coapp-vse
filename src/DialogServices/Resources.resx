@@ -159,9 +159,6 @@
   <data name="Dialog_PackageDisclaimer" xml:space="preserve">
     <value>Each item above may have sub-dependencies subject to additional license agreements.</value>
   </data>
-  <data name="Dialog_PackageHasPSScript" xml:space="preserve">
-    <value>This package (or one of its dependencies) contains PowerShell scripts but the PowerShell 2.0 (or newer) runtime is not installed on this machine.</value>
-  </data>
   <data name="Dialog_PackageInstalledTooltip" xml:space="preserve">
     <value>This package is already installed.</value>
   </data>
@@ -193,7 +190,7 @@
     <value>Name</value>
   </data>
   <data name="Dialog_Title" xml:space="preserve">
-    <value>{0} - Manage CoApp.VisualStudio Packages</value>
+    <value>CoApp Package Manager</value>
   </data>
   <data name="Dialog_UninstallButton" xml:space="preserve">
     <value>_Uninstall</value>
@@ -210,24 +207,6 @@
   <data name="Dialog_VersionLabel" xml:space="preserve">
     <value>Version:</value>
   </data>
-  <data name="Dialog_VotesCount" xml:space="preserve">
-    <value>({0} Votes)</value>
-  </data>
-  <data name="License_Accept" xml:space="preserve">
-    <value>I _Accept</value>
-  </data>
-  <data name="License_Decline" xml:space="preserve">
-    <value>I _Decline</value>
-  </data>
-  <data name="License_HeaderText" xml:space="preserve">
-    <value>The following package(s) require a click-to-accept license:</value>
-  </data>
-  <data name="License_LicenseText" xml:space="preserve">
-    <value>By clicking "I Accept," you agree to the license terms for the package(s) listed above. If you do not agree to the license terms, click "I Decline."</value>
-  </data>
-  <data name="License_ViewLicense" xml:space="preserve">
-    <value>View License Terms</value>
-  </data>
   <data name="Dialog_OperationFailed" xml:space="preserve">
     <value>Operation failed.</value>
   </data>
@@ -237,17 +216,11 @@
   <data name="Dialog_RecentProviderNoItem" xml:space="preserve">
     <value>There are no recently installed packages.</value>
   </data>
-  <data name="License_DialogTitle" xml:space="preserve">
-    <value>License Acceptance</value>
-  </data>
   <data name="Dialog_NameLabel" xml:space="preserve">
     <value>Name:</value>
   </data>
   <data name="Dialog_RecentPackagesDefaultSort" xml:space="preserve">
     <value>Most Recent</value>
-  </data>
-  <data name="License_AuthorFormatString" xml:space="preserve">
-    <value>(Author: {0})</value>
   </data>
   <data name="Dialog_TagLabel" xml:space="preserve">
     <value>Tags:</value>
@@ -318,12 +291,6 @@
   <data name="Dialog_SolutionInstalledProviderNoItem" xml:space="preserve">
     <value>No packages are installed in the current solution.</value>
   </data>
-  <data name="Filter_IncludePrerelease" xml:space="preserve">
-    <value>Include Prerelease</value>
-  </data>
-  <data name="Filter_StablePackages" xml:space="preserve">
-    <value>Stable Only</value>
-  </data>
   <data name="Dialog_ArchitectureLabel" xml:space="preserve">
     <value>Architecture:</value>
   </data>
@@ -347,5 +314,8 @@
   </data>
   <data name="Dialog_RemoveFromSolutionMessage" xml:space="preserve">
     <value>Package '{0}' is added in the following projects. Do you want remove the package from them?</value>
+  </data>
+  <data name="Dialog_ReplacePackage" xml:space="preserve">
+    <value>Do you want to replace following package(s) with package '{0}'?</value>
   </data>
 </root>

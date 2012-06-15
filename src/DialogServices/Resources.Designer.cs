@@ -304,15 +304,6 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This package (or one of its dependencies) contains PowerShell scripts but the PowerShell 2.0 (or newer) runtime is not installed on this machine..
-        /// </summary>
-        public static string Dialog_PackageHasPSScript {
-            get {
-                return ResourceManager.GetString("Dialog_PackageHasPSScript", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This package is already installed..
         /// </summary>
         public static string Dialog_PackageInstalledTooltip {
@@ -426,6 +417,15 @@ namespace CoApp.VisualStudio.Dialog {
         public static string Dialog_RemoveFromSolutionMessage {
             get {
                 return ResourceManager.GetString("Dialog_RemoveFromSolutionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to replace following package(s) with package &apos;{0}&apos;?.
+        /// </summary>
+        public static string Dialog_ReplacePackage {
+            get {
+                return ResourceManager.GetString("Dialog_ReplacePackage", resourceCulture);
             }
         }
         
@@ -583,7 +583,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} - Manage CoApp.VisualStudio Packages.
+        ///   Looks up a localized string similar to CoApp Package Manager.
         /// </summary>
         public static string Dialog_Title {
             get {
@@ -646,101 +646,11 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ({0} Votes).
-        /// </summary>
-        public static string Dialog_VotesCount {
-            get {
-                return ResourceManager.GetString("Dialog_VotesCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error: {0}.
         /// </summary>
         public static string ErrorStringFormat {
             get {
                 return ResourceManager.GetString("ErrorStringFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include Prerelease.
-        /// </summary>
-        public static string Filter_IncludePrerelease {
-            get {
-                return ResourceManager.GetString("Filter_IncludePrerelease", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stable Only.
-        /// </summary>
-        public static string Filter_StablePackages {
-            get {
-                return ResourceManager.GetString("Filter_StablePackages", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I _Accept.
-        /// </summary>
-        public static string License_Accept {
-            get {
-                return ResourceManager.GetString("License_Accept", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Author: {0}).
-        /// </summary>
-        public static string License_AuthorFormatString {
-            get {
-                return ResourceManager.GetString("License_AuthorFormatString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I _Decline.
-        /// </summary>
-        public static string License_Decline {
-            get {
-                return ResourceManager.GetString("License_Decline", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to License Acceptance.
-        /// </summary>
-        public static string License_DialogTitle {
-            get {
-                return ResourceManager.GetString("License_DialogTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The following package(s) require a click-to-accept license:.
-        /// </summary>
-        public static string License_HeaderText {
-            get {
-                return ResourceManager.GetString("License_HeaderText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to By clicking &quot;I Accept,&quot; you agree to the license terms for the package(s) listed above. If you do not agree to the license terms, click &quot;I Decline.&quot;.
-        /// </summary>
-        public static string License_LicenseText {
-            get {
-                return ResourceManager.GetString("License_LicenseText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View License Terms.
-        /// </summary>
-        public static string License_ViewLicense {
-            get {
-                return ResourceManager.GetString("License_ViewLicense", resourceCulture);
             }
         }
         

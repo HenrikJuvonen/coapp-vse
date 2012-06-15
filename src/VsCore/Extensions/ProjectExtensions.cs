@@ -418,9 +418,12 @@ namespace CoApp.VisualStudio.VsCore
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
 
-            bool compatible = (packageReference.Type.Contains("vc") && project.IsVcProject()) ? 
-                project.IsCompatibleArchitecture(packageReference.Architecture) : false;
+            // VC-compatibility
+            bool compatible = ((packageReference.Type == "vc" ||
+                               (packageReference.Type == "vc,lib" ? project.IsCompatibleArchitecture(packageReference.Architecture) : false))
+                               && project.IsVcProject());
 
+            // NET-compatibility
             compatible = compatible || (packageReference.Type == "net" && project.IsNetProject());
 
             return compatible;
@@ -574,13 +577,18 @@ namespace CoApp.VisualStudio.VsCore
                 IEnumerable<string> current = linker.AdditionalDependencies.Split(' ');
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
-                                                             .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
+                                                             .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
                 
                 IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
-                                                           .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
+                                                           .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
 
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
+
+                string temp2 = string.Join(" ", removed);
+                string temp3 = string.Join(" ", added);
+                string temp4 = string.Join(" ", current);
+                string temp = string.Join(" ", result);
 
                 linker.AdditionalDependencies = string.Join(" ", result);
             }

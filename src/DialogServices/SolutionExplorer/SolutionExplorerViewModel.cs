@@ -8,7 +8,7 @@ namespace CoApp.VisualStudio.Dialog
 {
     public class SolutionExplorerViewModel
     {
-        private Lazy<SolutionNode> _solutionNode;
+        private SolutionNode _solutionNode;
 
         public SolutionExplorerViewModel(
             Solution solution,
@@ -19,15 +19,14 @@ namespace CoApp.VisualStudio.Dialog
                 throw new ArgumentNullException("solution");
             }
 
-            _solutionNode = new Lazy<SolutionNode>(
-                () => SolutionWalker.Walk(solution, packageReference));
+            _solutionNode = SolutionWalker.Walk(solution, packageReference);
         }
 
         public bool HasProjects
         {
             get
             {
-                return _solutionNode.Value.HasProjects;
+                return _solutionNode.HasProjects;
             }
         }
 
@@ -35,15 +34,15 @@ namespace CoApp.VisualStudio.Dialog
         {
             get
             {
-                yield return _solutionNode.Value;
+                yield return _solutionNode;
             }
         }
 
         public IEnumerable<Project> GetSelectedProjects()
         {
-            if (_solutionNode.IsValueCreated)
+            if (_solutionNode != null)
             {
-                return _solutionNode.Value.GetSelectedProjects();
+                return _solutionNode.GetSelectedProjects();
             }
             else
             {
@@ -53,9 +52,9 @@ namespace CoApp.VisualStudio.Dialog
 
         public IEnumerable<Library> GetLibraries()
         {
-            if (_solutionNode.IsValueCreated)
+            if (_solutionNode != null)
             {
-                return _solutionNode.Value.GetLibraries();
+                return _solutionNode.GetLibraries();
             }
             else
             {

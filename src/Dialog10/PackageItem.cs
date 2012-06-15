@@ -83,20 +83,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                if (Name.Contains("-common"))
-                {
-                    return "vc";
-                }
-                else if (PackageIdentity.Flavor.IsWildcardMatch("*vc*"))
-                {
-                    return "vc,lib";
-                }
-                else if (PackageIdentity.Flavor.IsWildcardMatch("*net*") || (PackageIdentity.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) && n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
-                {
-                    return "net";
-                }
-
-                return "";
+                return PackageIdentity.Type();
             }
         }
 
@@ -104,11 +91,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                string architecture =
-                    PackageIdentity.Architecture == "x64" ? " (x64)" :
-                    PackageIdentity.Architecture == "x86" ? " (x86)" : "";
-                
-                return @"c:\ProgramData\Program Files" + architecture + @"\Outercurve Foundation\" + PackageIdentity.CanonicalName.PackageName + @"\";
+                return PackageIdentity.Path();
             }
         }
         

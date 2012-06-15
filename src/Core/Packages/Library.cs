@@ -12,10 +12,10 @@
             ConfigurationName = configurationName;
             IsSelected = isSelected;
         }
-
+        
         public string Name { get; private set; }
         public string ProjectName { get; private set; }
         public string ConfigurationName { get; private set; }
-        public bool IsSelected { get; set; }
+        public bool IsSelected { get; private set; }
     }
 }

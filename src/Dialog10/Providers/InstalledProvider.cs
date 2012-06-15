@@ -64,7 +64,15 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             string type = item.Type;
 
-            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path);
+            bool? replacePackages = AskReplacePackages(item.PackageIdentity);
+
+            if (replacePackages == false || replacePackages == null)
+            {
+                // user presses No or Cancel
+                return false;
+            }
+
+            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path, null);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
@@ -78,6 +86,15 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             IEnumerable<Project> projects = (IEnumerable<Project>)selected[0];
             IEnumerable<Library> libraries = (IEnumerable<Library>)selected[1];
+
+            if (replacePackages == true)
+            {
+                var differentPackages = GetDifferentPackages(item.PackageIdentity);
+                foreach (var pkg in differentPackages)
+                {
+                    RemovePackagesFromSolution(pkg);
+                }
+            }
 
             _solutionManager.ManagePackage(packageReference, projects, libraries);
 
@@ -99,22 +116,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             if (removeFromSolution == true)
             {
                 // user presses Yes
-
-                PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, item.Type, item.Path);
-
-                var viewModel = new SolutionExplorerViewModel(
-                    ServiceLocator.GetInstance<DTE>().Solution,
-                    packageReference);
-
-                IEnumerable<Project> projects = viewModel.GetSelectedProjects();
-                IEnumerable<Library> libraries = viewModel.GetLibraries();
-
-                foreach (Library lib in libraries)
-                {
-                    lib.IsSelected = false;
-                }
-
-                _solutionManager.ManagePackage(packageReference, projects, libraries);
+                RemovePackagesFromSolution(item.PackageIdentity);
             }
             else if (removeFromSolution == null)
             {
@@ -128,10 +130,63 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return true;
         }
 
-        public bool? AskRemovePackagesFromSolution(IPackage package)
+        private IEnumerable<IPackage> GetDifferentPackages(IPackage package)
         {
-            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed");
-            List<Project> projects = new List<Project>();
+            IEnumerable<PackageReference> differentPackages = null;
+
+            foreach (Project p in _solutionManager.GetProjects())
+            {
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
+
+                differentPackages = packageReferenceFile.GetPackageReferences().Where(pkg => pkg.Name == package.Name &&
+                                                                                           pkg.Version != package.Version &&
+                                                                                           pkg.Architecture == package.Architecture);
+            }
+
+            return CoAppWrapper.GetPackages(differentPackages);
+        }
+        
+        private bool? AskReplacePackages(IPackage package)
+        {
+            var differentPackages = GetDifferentPackages(package);
+
+            if (differentPackages.Any())
+            {
+                String packageNames = String.Join(Environment.NewLine, differentPackages.Select(p => p.CanonicalName.PackageName));
+                String message = String.Format(Resources.Dialog_ReplacePackage, package.CanonicalName.PackageName)
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + packageNames;
+
+                return _userNotifierServices.ShowQueryMessage(message);
+            }
+
+            return true;
+        }
+
+        private void RemovePackagesFromSolution(IPackage package)
+        {
+            PackageReference packageReference = new PackageReference(package.Name, package.Version, package.Architecture, package.Type(), package.Path(), null);
+
+            var viewModel = new SolutionExplorerViewModel(
+                ServiceLocator.GetInstance<DTE>().Solution,
+                packageReference);
+
+            IEnumerable<Project> projects = viewModel.GetSelectedProjects();
+            IEnumerable<Library> libraries = viewModel.GetLibraries();
+
+            var resultLibraries = new List<Library>();
+            foreach (Library lib in libraries)
+            {
+                resultLibraries.Add(new Library(lib.Name, lib.ProjectName, lib.ConfigurationName, false));
+            }
+
+            _solutionManager.ManagePackage(packageReference, projects, resultLibraries);
+        }
+
+        private bool? AskRemovePackagesFromSolution(IPackage package)
+        {
+            var projects = new List<Project>();
 
             foreach (Project p in _solutionManager.GetProjects())
             {
@@ -153,9 +208,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 // show each project on one line
                 String projectNames = String.Join(Environment.NewLine, projects.Select(p => p.GetName()));
                 String message = String.Format(Resources.Dialog_RemoveFromSolutionMessage, package.CanonicalName.PackageName)
-                        + Environment.NewLine
-                        + Environment.NewLine
-                        + projectNames;
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + projectNames;
 
                 remove = _userNotifierServices.ShowQueryMessage(message);
             }
@@ -163,7 +218,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return remove;
         }
 
-        protected bool? AskRemoveDependency(IPackage package, bool checkDependents)
+        private bool? AskRemoveDependency(IPackage package, bool checkDependents)
         {
             if (checkDependents)
             {
@@ -191,9 +246,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 // show each dependency package on one line
                 String packageNames = String.Join(Environment.NewLine, uninstallPackageNames);
                 String message = String.Format(Resources.Dialog_RemoveDependencyMessage, package.CanonicalName.PackageName)
-                        + Environment.NewLine
-                        + Environment.NewLine
-                        + packageNames;
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + packageNames;
 
                 removeDependencies = _userNotifierServices.ShowQuestionWindow(message);
             }
@@ -202,7 +257,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return removeDependencies;
         }
 
-        public IEnumerable<Project> GetReferenceProjects(IPackage package)
+        private IEnumerable<Project> GetReferenceProjects(IPackage package)
         {
             var projects = _solutionManager.GetProjects();
 

@@ -57,11 +57,11 @@ namespace CoApp.VisualStudio.VsCore
 
             foreach (Project project in GetProjects())
             {
+                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
+
                 IEnumerable<Library> projectLibraries = from lib in libraries
                                                         where lib.ProjectName == project.Name
                                                         select lib;
-
-                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
 
                 if (type.Contains("vc") && project.IsVcProject())
                 {

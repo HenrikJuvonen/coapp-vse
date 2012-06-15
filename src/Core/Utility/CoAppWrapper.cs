@@ -262,6 +262,21 @@
             }
         }
 
+        public static IEnumerable<IPackage> GetPackages(IEnumerable<PackageReference> packageReferences)
+        {
+            var packages = GetPackages(useFilters: false);
+            var result = new List<IPackage>();
+
+            foreach (var pkg in packageReferences)
+            {
+                result.AddRange(packages.Where(n => n.Name == pkg.Name &&
+                                               n.Version.ToString() == pkg.Version &&
+                                               n.Architecture.ToString() == pkg.Architecture));
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>

@@ -8,19 +8,19 @@ namespace CoApp.VisualStudio
     /// </summary>
     public class PackageReference
     {
-        public PackageReference(string name, string version, string architecture, string type, string path) :
-            this(name, version, architecture, null)
-        {
-            Type = type;
-            Path = path;
-        }
-
-        public PackageReference(string name, string version, string architecture, IEnumerable<Library> libraries)
+        public PackageReference(string name, string version, string architecture, string type, string path, IEnumerable<Library> libraries)
         {
             Name = name;
             Version = version;
             Architecture = architecture;
+            Type = type;
+            Path = path;
             Libraries = libraries;
+        }
+
+        public string ToString()
+        {
+            return string.Format("{0}-{1}-{2}", Name, Version, Architecture);
         }
 
         public string Name { get; private set; }
