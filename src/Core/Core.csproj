@@ -51,7 +51,7 @@
     </Compile>
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Configuration\Settings.cs" />
-    <Compile Include="Extensions\PackageExtension.cs" />
+    <Compile Include="Extensions\PackageExtensions.cs" />
     <Compile Include="Packages\Library.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
