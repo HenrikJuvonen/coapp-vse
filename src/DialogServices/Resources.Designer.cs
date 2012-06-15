@@ -178,7 +178,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing.
+        ///   Looks up a localized string similar to Installing ....
         /// </summary>
         public static string Dialog_InstallProgress {
             get {
@@ -232,7 +232,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; could not be installed because it is not compatible with any project in the solution. The package doesn&apos;t target any framework..
+        ///   Looks up a localized string similar to &apos;{0}&apos; could not be installed because it is not compatible with any project in the solution..
         /// </summary>
         public static string Dialog_NoCompatibleProjectNoFrameworkNames {
             get {
@@ -601,7 +601,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uninstalling.
+        ///   Looks up a localized string similar to Uninstalling ....
         /// </summary>
         public static string Dialog_UninstallProgress {
             get {

@@ -225,6 +225,9 @@ namespace CoApp.VisualStudio.Dialog
             {
                 // notify the selected node that it is opened.
                 selectedNode.OnOpened();
+
+                ComboBox fxCombo = FindComboBox("cmb_Fx");
+                fxCombo.IsEnabled = !(explorer.SelectedProvider is SolutionProvider);
             }
         }
 

@@ -418,13 +418,25 @@ namespace CoApp.VisualStudio.VsCore
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
 
-            if ((packageReference.Type.Contains("vc") && project.IsVcProject()) ||
-                (packageReference.Type == "net" && project.IsNetProject()))
-            {
-                return true;
-            }
+            bool compatible = (packageReference.Type.Contains("vc") && project.IsVcProject()) ? 
+                project.IsCompatibleArchitecture(packageReference.Architecture) : false;
 
-            return false;
+            compatible = compatible || (packageReference.Type == "net" && project.IsNetProject());
+
+            return compatible;
+        }
+
+        public static bool IsCompatibleArchitecture(this Project project, string architecture)
+        {
+            string path = project.GetDirectory() + "\\coapp.packages.config";
+
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
+
+            var packageReferences = packageReferenceFile.GetPackageReferences();
+
+            // check for conflicting architectures (x86 and x64 shouldn't be mixed)
+            return !packageReferences.Where(n => n.Architecture != "any")
+                                     .Any(n => n.Architecture != architecture);
         }
         
         public static IEnumerable<string> GetProjectTypeGuids(this Project project)

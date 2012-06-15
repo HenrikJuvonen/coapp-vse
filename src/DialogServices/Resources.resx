@@ -139,7 +139,7 @@
     <value>No packages are installed.</value>
   </data>
   <data name="Dialog_InstallProgress" xml:space="preserve">
-    <value>Installing</value>
+    <value>Installing ...</value>
   </data>
   <data name="Dialog_MessageBoxTitle" xml:space="preserve">
     <value>Operation failed</value>
@@ -199,7 +199,7 @@
     <value>_Uninstall</value>
   </data>
   <data name="Dialog_UninstallProgress" xml:space="preserve">
-    <value>Uninstalling</value>
+    <value>Uninstalling ...</value>
   </data>
   <data name="Dialog_UpdateProvider" xml:space="preserve">
     <value>Updates</value>
@@ -313,7 +313,7 @@
     <value>Published Date</value>
   </data>
   <data name="Dialog_NoCompatibleProjectNoFrameworkNames" xml:space="preserve">
-    <value>'{0}' could not be installed because it is not compatible with any project in the solution. The package doesn't target any framework.</value>
+    <value>'{0}' could not be installed because it is not compatible with any project in the solution.</value>
   </data>
   <data name="Dialog_SolutionInstalledProviderNoItem" xml:space="preserve">
     <value>No packages are installed in the current solution.</value>
