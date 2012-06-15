@@ -46,7 +46,7 @@
 
             ResetFilters();
 
-            //packageManager.Elevate().Wait();
+            packageManager.Elevate().Wait();
 
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
                 ProgressProvider.Update("Installing", name, progress));
@@ -155,18 +155,18 @@
         /// Used for filtering packages by flavor in PackageManagerWindow.
         /// </summary>
         /// <param name="enabled">
-        /// If true: packages of flavor are displayed.
+        /// If true: packages of flavorName are displayed.
         /// </param>
-        public static void SetFlavorFilter(string versionName, bool enabled)
+        public static void SetFlavorFilter(string flavorName, bool enabled)
         {
-            switch (versionName)
+            switch (flavorName)
             {
                 case "Compatible":
                     onlyCompatibleFlavors = enabled;
                     break;
             }
         }
-
+        
         /// <summary>
         /// Used for setting package states in PackageManagerWindow.
         /// </summary>

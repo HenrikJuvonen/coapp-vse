@@ -57,9 +57,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteManage(PackageItem item)
         {
-            return item.Type == "net" ||
-                   item.Type == "vc" ||
-                   item.PackageIdentity.Flavor.IsWildcardMatch("*vc" + VsVersionHelper.VsMajorVersion + "*");
+            return item.Type != "";
         }
 
         protected override bool ExecuteManage(PackageItem item)
