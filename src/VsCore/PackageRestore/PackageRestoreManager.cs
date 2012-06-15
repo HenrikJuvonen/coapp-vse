@@ -65,39 +65,34 @@ namespace CoApp.VisualStudio.VsCore
         {
             CoAppWrapper.ProgressProvider.ProgressAvailable -= _waitDialog.OnProgressAvailable;
 
-            if (e.Error == null)
+            _waitDialog.Hide();
+
+            if (e.Cancelled)
             {
-                if (e.Cancelled)
+                _waitDialog.Hide();
+                if (_fromActivation)
                 {
-                    _waitDialog.Hide();
+                    MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
+                }
+            }
+            else
+            {
+                // after we're done with restoring packages, do the check again
+                if (CheckForMissingPackages())
+                {
+                    string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
+                                        string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+
                     if (_fromActivation)
                     {
-                        MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
+                        MessageHelper.ShowErrorMessage(message, null);
                     }
                 }
                 else
                 {
-                    _waitDialog.Show(VsResources.PackageRestoreCheckingMessage);
-
-                    // after we're done with restoring packages, do the check again
-                    if (CheckForMissingPackages())
+                    if (_fromActivation)
                     {
-                        string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
-                                         string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
-
-                        _waitDialog.Hide();
-                        if (_fromActivation)
-                        {
-                            MessageHelper.ShowErrorMessage(message, null);
-                        }
-                    }
-                    else
-                    {
-                        _waitDialog.Hide();
-                        if (_fromActivation)
-                        {
-                            MessageHelper.ShowInfoMessage(VsResources.PackageRestoreCompleted, null);
-                        }
+                        MessageHelper.ShowInfoMessage(VsResources.PackageRestoreCompleted, null);
                     }
                 }
             }
