@@ -100,7 +100,9 @@
     <Compile Include="Helpers\UriHelper.cs" />
     <Compile Include="Helpers\VsVersionHelper.cs" />
     <Compile Include="VsConstants.cs" />
-    <Compile Include="WaitDialog.cs" />
+    <Compile Include="WaitDialog.xaml.cs">
+      <DependentUpon>WaitDialog.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
@@ -114,6 +116,12 @@
       <LastGenOutput>VsResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="WaitDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,10 +15,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
         }
 
         public ProviderServices(
-            WaitDialog progressWindow,
+            WaitDialog waitDialog,
             UserNotifierServices userNotifierServices)
         {
-            WaitDialog = progressWindow;
+            WaitDialog = waitDialog;
             UserNotifierServices = userNotifierServices;
         }
     }

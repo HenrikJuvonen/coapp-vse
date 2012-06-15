@@ -28,6 +28,7 @@ namespace CoApp.VisualStudio.VsCore {
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal VsResources() {
         }
         
@@ -60,7 +61,7 @@ namespace CoApp.VisualStudio.VsCore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CoApp for Visual Studio.
+        ///   Looks up a localized string similar to CoApp Package Manager.
         /// </summary>
         public static string DialogTitle {
             get {

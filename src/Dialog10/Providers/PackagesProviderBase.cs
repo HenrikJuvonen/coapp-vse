@@ -396,7 +396,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 }
             }
 
-            _providerServices.WaitDialog.Close();
+            _providerServices.WaitDialog.Hide();
 
             SelectedNode.Refresh(true);
         }

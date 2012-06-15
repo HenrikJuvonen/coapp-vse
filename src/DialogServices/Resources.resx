@@ -139,7 +139,7 @@
     <value>No packages are installed.</value>
   </data>
   <data name="Dialog_InstallProgress" xml:space="preserve">
-    <value>Installing...</value>
+    <value>Installing</value>
   </data>
   <data name="Dialog_MessageBoxTitle" xml:space="preserve">
     <value>Operation failed</value>
@@ -199,7 +199,7 @@
     <value>_Uninstall</value>
   </data>
   <data name="Dialog_UninstallProgress" xml:space="preserve">
-    <value>Uninstalling...</value>
+    <value>Uninstalling</value>
   </data>
   <data name="Dialog_UpdateProvider" xml:space="preserve">
     <value>Updates</value>
@@ -329,9 +329,6 @@
   </data>
   <data name="Dialog_ManageButton" xml:space="preserve">
     <value>_Manage</value>
-  </data>
-  <data name="Dialog_ManageProgress" xml:space="preserve">
-    <value>Removing...</value>
   </data>
   <data name="Dialog_SolutionProvider" xml:space="preserve">
     <value>Solution</value>

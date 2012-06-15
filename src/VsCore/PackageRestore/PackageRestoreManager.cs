@@ -51,7 +51,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private void OnRunWorkerDoWorkCheck(object sender, DoWorkEventArgs e)
         {
-            _waitDialog.Show(VsResources.PackageRestoreCheckingMessage, indeterminate: true);
+            _waitDialog.Show(VsResources.PackageRestoreCheckingMessage);
 
             e.Cancel = !CheckForMissingPackages();
         }
@@ -60,8 +60,6 @@ namespace CoApp.VisualStudio.VsCore
         {
             if (!e.Cancel)
             {
-                _waitDialog.Show(VsResources.PackageRestoreInstallingMessage);
-
                 RestoreMissingPackages();
             }
         }
@@ -74,7 +72,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 if (e.Cancelled)
                 {
-                    _waitDialog.Close();
+                    _waitDialog.Hide();
                     if (_fromActivation)
                     {
                         MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
@@ -82,7 +80,7 @@ namespace CoApp.VisualStudio.VsCore
                 }
                 else
                 {
-                    _waitDialog.Show(VsResources.PackageRestoreCheckingMessage, indeterminate: true);
+                    _waitDialog.Show(VsResources.PackageRestoreCheckingMessage);
 
                     // after we're done with restoring packages, do the check again
                     if (CheckForMissingPackages())
@@ -90,7 +88,7 @@ namespace CoApp.VisualStudio.VsCore
                         string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
                                          string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
 
-                        _waitDialog.Close();
+                        _waitDialog.Hide();
                         if (_fromActivation)
                         {
                             MessageHelper.ShowErrorMessage(message, null);
@@ -98,7 +96,7 @@ namespace CoApp.VisualStudio.VsCore
                     }
                     else
                     {
-                        _waitDialog.Close();
+                        _waitDialog.Hide();
                         if (_fromActivation)
                         {
                             MessageHelper.ShowInfoMessage(VsResources.PackageRestoreCompleted, null);
