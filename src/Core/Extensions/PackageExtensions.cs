@@ -4,7 +4,7 @@ using CoApp.Packaging.Common.Model;
 
 namespace CoApp.VisualStudio
 {
-    public static class SolutionExtensions
+    public static class PackageExtensions
     {
         public static string Path(this IPackage package)
         {
