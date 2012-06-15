@@ -6,7 +6,6 @@
     xmlns:local="clr-namespace:CoApp.VisualStudio.Dialog"
     xmlns:resources="clr-namespace:CoApp.VisualStudio.Dialog"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
-    xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
     ResizeMode="CanResize"
     MinWidth="350"
     MinHeight="300"
@@ -16,7 +15,7 @@
     WindowStyle="SingleBorderWindow"
     WindowStartupLocation="CenterOwner"
     Title="{x:Static resources:Resources.Dialog_ProjectSelectorTitle}"
-    Background="{DynamicResource {x:Static vsfx:VsBrushes.NewProjectBackgroundKey}}">
+    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     
     <Window.Resources>        
         <Style TargetType="{x:Type Button}">

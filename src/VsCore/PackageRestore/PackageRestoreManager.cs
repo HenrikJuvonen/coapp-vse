@@ -49,21 +49,18 @@ namespace CoApp.VisualStudio.VsCore
             _waitDialog = new WaitDialog();
         }
 
-        private void OnRunWorkerDoWorkCheck(object sender, DoWorkEventArgs e)
+        private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             _waitDialog.Show(VsResources.PackageRestoreCheckingMessage);
 
             e.Cancel = !CheckForMissingPackages();
-        }
 
-        private void OnRunWorkerDoWorkRestore(object sender, DoWorkEventArgs e)
-        {
             if (!e.Cancel)
             {
                 RestoreMissingPackages();
             }
         }
-
+        
         private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             CoAppWrapper.ProgressProvider.ProgressAvailable -= _waitDialog.OnProgressAvailable;
@@ -118,10 +115,9 @@ namespace CoApp.VisualStudio.VsCore
             _fromActivation = true;
 
             var worker = new BackgroundWorker();
-            worker.DoWork += OnRunWorkerDoWorkCheck;
-            worker.DoWork += OnRunWorkerDoWorkRestore;
+            worker.DoWork += OnRunWorkerDoWork;
             worker.RunWorkerCompleted += OnRunWorkerCompleted;
-            worker.RunWorkerAsync();            
+            worker.RunWorkerAsync();
         }
 
         public bool CheckForMissingPackages()

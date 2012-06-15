@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:self="clr-namespace:CoApp.VisualStudio.VsCore"
+    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
     Width="470"
     Height="120"
     Title="{x:Static self:VsResources.DialogTitle}" 

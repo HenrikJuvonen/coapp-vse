@@ -268,8 +268,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         protected virtual IList<IVsSortDescriptor> CreateSortDescriptors()
         {
             return new List<IVsSortDescriptor> {
-                new PackageSortDescriptor(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", Resources.Dialog_SortOption_Name, Resources.Dialog_SortAscending), new[] { "Name" }, ListSortDirection.Ascending),
-                new PackageSortDescriptor(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", Resources.Dialog_SortOption_Name, Resources.Dialog_SortDescending), new[] { "Name" }, ListSortDirection.Descending)
+                new PackageSortDescriptor(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", Resources.Dialog_SortOption_Name, Resources.Dialog_SortAscending), "CanonicalName", ListSortDirection.Ascending),
+                new PackageSortDescriptor(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", Resources.Dialog_SortOption_Name, Resources.Dialog_SortDescending), "CanonicalName", ListSortDirection.Descending)
             };
         }
 
