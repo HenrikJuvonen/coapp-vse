@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,9 +12,14 @@ using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 using Microsoft.VisualStudio.VCProjectEngine;
 using VSLangProj;
+using MsBuildProject = Microsoft.Build.Evaluation.Project;
+using MsBuildProjectItem = Microsoft.Build.Evaluation.ProjectItem;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Construction;
+using System.Text.RegularExpressions;
 
 namespace CoApp.VisualStudio.VsCore
-{
+{    
     public static class ProjectExtensions
     {
         private const string WebConfig = "web.config";
@@ -431,6 +437,7 @@ namespace CoApp.VisualStudio.VsCore
 
         public static bool IsCompatibleArchitecture(this Project project, string architecture)
         {
+            /*
             string path = project.GetDirectory() + "\\coapp.packages.config";
 
             PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
@@ -439,7 +446,10 @@ namespace CoApp.VisualStudio.VsCore
 
             // check for conflicting architectures (x86 and x64 shouldn't be mixed)
             return !packageReferences.Where(n => n.Architecture != "any")
-                                     .Any(n => n.Architecture != architecture);
+                                     .Any(n => n.Architecture != architecture);*/
+
+            // TODO: Check platforms (win32, 64, x86, x64 etc)
+            return true;
         }
         
         public static IEnumerable<string> GetProjectTypeGuids(this Project project)
@@ -531,35 +541,164 @@ namespace CoApp.VisualStudio.VsCore
             return name;
         }
 
-        public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<Library> libraries)
+        public static MsBuildProject AsMSBuildProject(this Project project)
         {
-            string path = packageReference.Path + @"ReferenceAssemblies\";
-
-            VSProject vsProject = (VSProject)project.Object;
-
-            foreach (Library lib in libraries)
-            {
-                Reference reference = vsProject.References.Find(lib.Name.Substring(0, lib.Name.LastIndexOf(".dll")));
-
-                if (reference == null && lib.IsSelected)
-                    vsProject.References.Add(path + lib.Name);
-                else if (reference != null && !lib.IsSelected)
-                    reference.Remove();
-            }
+            return ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FullName).FirstOrDefault() ??
+                   ProjectCollection.GlobalProjectCollection.LoadProject(project.FullName);
         }
 
+        // Debug|Win32, Release|Win32, ...
+        public static IEnumerable<string> GetConfigurationPlatforms(this Project project)
+        {
+            MsBuildProject buildProject = project.AsMSBuildProject();
+
+            var result = new List<string>();
+
+            if (buildProject != null)
+            {
+                var xml = buildProject.Xml;
+                var itemDefinitionGroups = xml.ItemDefinitionGroups;
+
+                foreach (var itemDefinitionGroup in itemDefinitionGroups)
+                {
+                    string condition = itemDefinitionGroup.Condition;
+                    result.Add(condition.Substring(33, condition.LastIndexOf("'") - 33));
+                }
+            }
+
+            return result;
+        }
+
+        private static string GetDefinitionValue(this Project project, string configurationPlatform, string elementName)
+        {
+            MsBuildProject buildProject = project.AsMSBuildProject();
+
+            if (buildProject != null)
+            {
+                foreach (var itemDefinitionGroup in buildProject.Xml.ItemDefinitionGroups)
+                {
+                    if (itemDefinitionGroup.Condition.Contains(configurationPlatform))
+                    {
+                        foreach (ProjectItemDefinitionElement element in itemDefinitionGroup.Children)
+                        {
+                            switch (element.ItemType)
+                            {
+                                case "ClCompile":
+                                case "Link":
+                                    foreach (ProjectMetadataElement subElement in element.Children)
+                                    {
+                                        if (subElement.Name == elementName)
+                                        {
+                                            return subElement.Value;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static void SetDefinitionValue(this Project project, string configurationPlatform, string elementName, string elementValue)
+        {
+            MsBuildProject buildProject = project.AsMSBuildProject();
+
+            if (buildProject != null)
+            {
+                foreach (var itemDefinitionGroup in buildProject.Xml.ItemDefinitionGroups)
+                {
+                    if (itemDefinitionGroup.Condition.Contains(configurationPlatform))
+                    {
+                        foreach (ProjectItemDefinitionElement element in itemDefinitionGroup.Children)
+                        {
+                            switch (element.ItemType)
+                            {
+                                case "ClCompile":
+                                case "Link":
+                                    foreach (ProjectMetadataElement subElement in element.Children)
+                                    {
+                                        if (subElement.Name == elementName)
+                                        {
+                                            subElement.Value = elementValue;
+                                            return;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        private static IEnumerable<Tuple<MsBuildProjectItem, AssemblyName>> GetAssemblyReferences(this MsBuildProject project)
+        {
+            foreach (MsBuildProjectItem referenceProjectItem in project.GetItems("Reference"))
+            {
+                AssemblyName assemblyName = null;
+                try
+                {
+                    assemblyName = new AssemblyName(referenceProjectItem.EvaluatedInclude);
+                }
+                catch (Exception exception)
+                {
+                    ExceptionHelper.WriteToActivityLog(exception);
+                    // Swallow any exceptions we might get because of malformed assembly names
+                }
+
+                // We can't yield from within the try so we do it out here if everything was successful
+                if (assemblyName != null)
+                {
+                    yield return Tuple.Create(referenceProjectItem, assemblyName);
+                }
+            }
+        }
+        
+        public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<Library> libraries)
+        {
+            string path = string.Format(@"C:\ProgramData\ReferenceAssemblies\{0}\{1}{2}-{3}\",
+                packageReference.Architecture, packageReference.Name, packageReference.Flavor, packageReference.Version);
+
+            MsBuildProject buildProject = project.AsMSBuildProject();
+            VSProject vsProject = (VSProject)project.Object;
+
+            if (buildProject != null && vsProject != null)
+            {
+                foreach (Library lib in libraries)
+                {
+                    // Get the assembly name of the reference we are trying to add
+                    AssemblyName assemblyName = AssemblyName.GetAssemblyName(path + lib.Name);
+
+                    Reference reference = null;
+
+                    try { reference = vsProject.References.Find(assemblyName.Name); } catch { }
+
+                    if (reference == null && lib.IsSelected)
+                    {
+                        vsProject.References.Add(path + lib.Name);
+                        
+                        var references = buildProject.GetAssemblyReferences();
+                        var referenceItem = references.FirstOrDefault(n => n.Item2.Name == assemblyName.Name).Item1;
+
+                        referenceItem.SetMetadataValue("HintPath", path + lib.Name);
+                    }
+                    else if (reference != null && !lib.IsSelected)
+                        reference.Remove();
+                }
+            }
+        }
+        
         public static void ManageLinkerDependencies(this Project project, PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            string path = @"C:\ProgramData\lib\" + packageReference.Architecture + @"\";
+            string path = string.Format(@"C:\ProgramData\lib\{0}\", packageReference.Architecture);
 
-            VCProject vcProject = (VCProject)project.Object;
-            IVCCollection configs = vcProject.Configurations;
-
-            foreach (VCConfiguration config in configs)
+            foreach (var cp in project.GetConfigurationPlatforms())
             {
-                VCLinkerTool linker = config.Tools.Item("Linker Tool");
+                var value = project.GetDefinitionValue(cp, "AdditionalLibraryDirectories");
 
-                ISet<string> paths = new HashSet<string>(linker.AdditionalLibraryDirectories.Split(';'));
+                ISet<string> paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {
@@ -570,42 +709,34 @@ namespace CoApp.VisualStudio.VsCore
                     paths.Remove(path);
                 }
 
-                linker.AdditionalLibraryDirectories = string.Join(";", paths);
+                project.SetDefinitionValue(cp, "AdditionalLibraryDirectories", string.Join(";", paths));
 
-                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == config.ConfigurationName);
-                
-                IEnumerable<string> current = linker.AdditionalDependencies.Split(' ');
+                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == cp);
+
+                IEnumerable<string> current = project.GetDefinitionValue(cp, "AdditionalDependencies").Split(';');
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
                                                              .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
-                
+
                 IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
                                                            .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
 
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
 
-                string temp2 = string.Join(" ", removed);
-                string temp3 = string.Join(" ", added);
-                string temp4 = string.Join(" ", current);
-                string temp = string.Join(" ", result);
-
-                linker.AdditionalDependencies = string.Join(" ", result);
+                project.SetDefinitionValue(cp, "AdditionalDependencies", string.Join(";", result));
             }
         }
 
         public static void ManageIncludeDirectories(this Project project, PackageReference packageReference, IEnumerable<Project> projects)
         {
-            string path = @"C:\ProgramData\include\" + packageReference.Name.Split('-')[0] + "-" + packageReference.Version + @"\";
+            string path = string.Format(@"C:\ProgramData\include\{0}-{1}\", packageReference.Name.Split('-')[0], packageReference.Version);
 
-            VCProject vcProject = (VCProject)project.Object;
-            IVCCollection configs = vcProject.Configurations;
-
-            foreach (VCConfiguration config in configs)
+            foreach (var cp in project.GetConfigurationPlatforms())
             {
-                VCCLCompilerTool compiler = config.Tools.Item("VCCLCompilerTool");
+                var value = project.GetDefinitionValue(cp, "AdditionalIncludeDirectories");
 
-                ISet<string> paths = new HashSet<string>(compiler.AdditionalIncludeDirectories.Split(';'));
+                ISet<string> paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {
@@ -616,7 +747,7 @@ namespace CoApp.VisualStudio.VsCore
                     paths.Remove(path);
                 }
 
-                compiler.AdditionalIncludeDirectories = string.Join(";", paths);
+                project.SetDefinitionValue(cp, "AdditionalIncludeDirectories", string.Join(";", paths));
             }
         }
 

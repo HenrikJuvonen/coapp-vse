@@ -97,7 +97,7 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            Array configurations = (Array)project.ConfigurationManager.ConfigurationRowNames;
+            var configurations = project.GetConfigurationPlatforms();
 
             foreach (string config in configurations)
             {

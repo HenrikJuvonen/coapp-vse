@@ -87,13 +87,22 @@ namespace CoApp.VisualStudio.VsCore
 
                 if (projects.Contains(project))
                 {
-                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Version, packageReference.Architecture, resultLibraries);
+                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Flavor, packageReference.Version, packageReference.Architecture, resultLibraries);
 
                     project.ProjectItems.AddFromFile(path);
                 }
                 else
                 {
-                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Version, packageReference.Architecture);
+                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Flavor, packageReference.Version, packageReference.Architecture);
+
+                    if (!packageReferenceFile.GetPackageReferences().Any())
+                    {
+                        ProjectItem item;
+                        project.ProjectItems.TryGetFile("coapp.packages.config", out item);
+
+                        if (item != null)
+                            item.Remove();
+                    }
                 }
 
                 project.Save(project.FullName);

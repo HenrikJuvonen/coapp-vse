@@ -72,7 +72,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return false;
             }
 
-            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path, null);
+            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Flavor, item.PackageIdentity.Version, item.PackageIdentity.Architecture, type, item.Path, null);
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
@@ -166,7 +166,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Version, package.Architecture, package.Type(), package.Path(), null);
+            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.Type(), package.Path(), null);
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,

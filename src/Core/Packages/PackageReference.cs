@@ -8,9 +8,10 @@ namespace CoApp.VisualStudio
     /// </summary>
     public class PackageReference
     {
-        public PackageReference(string name, string version, string architecture, string type, string path, IEnumerable<Library> libraries)
+        public PackageReference(string name, string flavor, string version, string architecture, string type, string path, IEnumerable<Library> libraries)
         {
             Name = name;
+            Flavor = flavor;
             Version = version;
             Architecture = architecture;
             Type = type;
@@ -20,10 +21,11 @@ namespace CoApp.VisualStudio
 
         public string ToString()
         {
-            return string.Format("{0}-{1}-{2}", Name, Version, Architecture);
+            return string.Format("{0}{1}-{2}-{3}", Name, Flavor, Version, Architecture);
         }
 
         public string Name { get; private set; }
+        public string Flavor { get; private set; }
         public string Version { get; private set; }
         public string Architecture { get; private set; }
         public string Type { get; private set; }

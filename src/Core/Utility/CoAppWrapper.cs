@@ -347,7 +347,17 @@
             {
                 Console.Write("Querying packages...");
 
-                Task task = tasks.Continue(() => packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p));
+                Task task = tasks.Continue(() => 
+                {
+                    try
+                    {
+                        packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p);
+                    }
+                    catch (Exception e)
+                    {
+                        ProgressProvider.Update("Error", e.Unwrap().Message);
+                    }
+                });
 
                 ContinueTask(task);
             }

@@ -39,6 +39,7 @@ namespace CoApp.VisualStudio
                 List<Library> libraries = new List<Library>();
 
                 string name = e.Attribute("name").Value;
+                string flavor = e.Attribute("flavor").Value;
                 string version = e.Attribute("version").Value;
                 string architecture = e.Attribute("architecture").Value;
 
@@ -90,14 +91,14 @@ namespace CoApp.VisualStudio
                     }
                 }
 
-                yield return new PackageReference(name, version, architecture, null, null, libraries);
+                yield return new PackageReference(name, flavor, version, architecture, null, null, libraries);
             }
         }
 
         /// <summary>
         /// Deletes an entry from the file with matching id and version. Returns true if the file was deleted.
         /// </summary>
-        public bool DeleteEntry(string name, string version, string architecture)
+        public bool DeleteEntry(string name, string flavor, string version, string architecture)
         {
             XDocument document = GetDocument();
 
@@ -106,30 +107,19 @@ namespace CoApp.VisualStudio
                 return false;
             }
 
-            return DeleteEntry(document, name, version, architecture);
+            return DeleteEntry(document, name, flavor, version, architecture);
         }
 
-        public bool EntryExists(string name, string version, string architecture)
-        {
-            XDocument document = GetDocument();
-            if (document == null)
-            {
-                return false;
-            }
-
-            return FindEntry(document, name, version, architecture) != null;
-        }
-
-        public void AddEntry(string name, string version, string architecture, IEnumerable<Library> libraries)
+        public void AddEntry(string name, string flavor, string version, string architecture, IEnumerable<Library> libraries)
         {
             XDocument document = GetDocument(createIfNotExists: true);
 
-            AddEntry(document, name, version, architecture, libraries);
+            AddEntry(document, name, flavor, version, architecture, libraries);
         }
 
-        private void AddEntry(XDocument document, string name, string version, string architecture, IEnumerable<Library> libraries)
+        private void AddEntry(XDocument document, string name, string flavor, string version, string architecture, IEnumerable<Library> libraries)
         {
-            XElement element = FindEntry(document, name, version, architecture);
+            XElement element = FindEntry(document, name, flavor, version, architecture);
 
             if (element != null)
             {
@@ -138,6 +128,7 @@ namespace CoApp.VisualStudio
 
             var newElement = new XElement("package",
                                   new XAttribute("name", name),
+                                  new XAttribute("flavor", flavor),
                                   new XAttribute("version", version),
                                   new XAttribute("architecture", architecture));
 
@@ -182,7 +173,7 @@ namespace CoApp.VisualStudio
             SaveDocument(document);
         }
 
-        private static XElement FindEntry(XDocument document, string name, string version, string architecture)
+        private static XElement FindEntry(XDocument document, string name, string flavor, string version, string architecture)
         {
             if (String.IsNullOrEmpty(name))
             {
@@ -191,10 +182,12 @@ namespace CoApp.VisualStudio
 
             return (from e in document.Root.Elements("package")
                     let entryName = e.Attribute("name").Value
+                    let entryFlavor = e.Attribute("flavor").Value
                     let entryVersion = e.Attribute("version").Value
                     let entryArchitecture = e.Attribute("architecture").Value
-                    where entryName != null && entryVersion != null && entryArchitecture != null
-                    where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) && 
+                    where entryName != null && entryFlavor != null && entryVersion != null && entryArchitecture != null
+                    where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) &&
+                          (flavor == null || flavor.Equals(entryFlavor)) && 
                           (version == null || entryVersion.Equals(version)) &&
                           (architecture == null || entryArchitecture.Equals(architecture))
                     select e).FirstOrDefault();
@@ -205,6 +198,7 @@ namespace CoApp.VisualStudio
             // Sort the elements by package id and only take valid entries (one with both id and version)
             var packageElements = (from e in document.Root.Elements("package")
                                    let name = e.Attribute("name").Value
+                                   let flavor = e.Attribute("flavor").Value
                                    let version = e.Attribute("version").Value
                                    let architecture = e.Attribute("architecture").Value
                                    where !String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(version) && !String.IsNullOrEmpty(architecture)
@@ -220,9 +214,9 @@ namespace CoApp.VisualStudio
             document.Save(_path);
         }
 
-        private bool DeleteEntry(XDocument document, string name, string version, string architecture)
+        private bool DeleteEntry(XDocument document, string name, string flavor, string version, string architecture)
         {
-            XElement element = FindEntry(document, name, version, architecture);
+            XElement element = FindEntry(document, name, flavor, version, architecture);
 
             if (element != null)
             {
