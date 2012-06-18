@@ -146,6 +146,7 @@ namespace CoApp.VisualStudio.VsCore
                     try
                     {
                         resultPackages.Add(packages.First(pkg => pkg.Name == package.Name &&
+                                                                 pkg.Flavor == package.Flavor &&
                                                                  pkg.Version == package.Version &&
                                                                  pkg.Architecture == package.Architecture));
                     }
