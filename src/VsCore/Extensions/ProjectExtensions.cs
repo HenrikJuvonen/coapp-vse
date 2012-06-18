@@ -621,11 +621,19 @@ namespace CoApp.VisualStudio.VsCore
                                     {
                                         if (subElement.Name == elementName)
                                         {
+                                            // subelement found
                                             subElement.Value = elementValue;
                                             return;
                                         }
                                     }
                                     break;
+                            }
+
+                            // subelement not found, create new
+                            if ((element.ItemType == "ClCompile" && elementName == "AdditionalIncludeDirectories") || 
+                                (element.ItemType == "Link" && (elementName == "AdditionalLibraryDirectories" || elementName == "AdditionalDependencies")))
+                            {
+                                element.AddMetadata(elementName, elementValue);
                             }
                         }
                     }
@@ -673,7 +681,14 @@ namespace CoApp.VisualStudio.VsCore
 
                     Reference reference = null;
 
-                    try { reference = vsProject.References.Find(assemblyName.Name); } catch { }
+                    try 
+                    { 
+                        reference = vsProject.References.Find(assemblyName.Name);
+                    }
+                    catch
+                    {
+                        // Reference was likely not found and is null.
+                    }
 
                     if (reference == null && lib.IsSelected)
                     {
@@ -698,7 +713,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 var value = project.GetDefinitionValue(cp, "AdditionalLibraryDirectories");
 
-                ISet<string> paths = new HashSet<string>(value.Split(';'));
+                ISet<string> paths = new HashSet<string>(value != null ? value.Split(';') : new string[0] );
 
                 if (projects.Contains(project))
                 {
@@ -713,13 +728,15 @@ namespace CoApp.VisualStudio.VsCore
 
                 IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == cp);
 
-                IEnumerable<string> current = project.GetDefinitionValue(cp, "AdditionalDependencies").Split(';');
+                value = project.GetDefinitionValue(cp, "AdditionalDependencies");
+
+                IEnumerable<string> current = value != null ? value.Split(';') : Enumerable.Empty<string>();
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
-                                                             .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
+                                                             .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
 
                 IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
-                                                           .Select(n => n.Name.Substring(0, n.Name.LastIndexOf(".lib")) + "-" + packageReference.Version + ".lib");
+                                                           .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
 
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
@@ -736,7 +753,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 var value = project.GetDefinitionValue(cp, "AdditionalIncludeDirectories");
 
-                ISet<string> paths = new HashSet<string>(value.Split(';'));
+                ISet<string> paths = new HashSet<string>(value != null ? value.Split(';') : new string[0]);
 
                 if (projects.Contains(project))
                 {
