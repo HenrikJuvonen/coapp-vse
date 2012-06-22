@@ -113,7 +113,6 @@
       <IDSymbol name="bmpPowerConsole" value="1" />
       <IDSymbol name="bmpClearConsole" value="2" />
       <IDSymbol name="bmpFeedSettings" value="3" />
-      <IDSymbol name="bmpStopHost" value="4" />
       <IDSymbol name="bmpAddVSPackage" value="6" />
       <IDSymbol name="bmpPackageRestore" value="7" />
     </GuidSymbol>
