@@ -35,7 +35,7 @@ namespace CoApp.VisualStudio.Tools
     [Guid(GuidList.guidVSPkgString)]
     public sealed class VsPackage : Package
     {
-        public const string ProductVersion = "0.2.0.0";
+        public const string ProductVersion = "0.3.0.0";
 
         private uint _debuggingContextCookie, _solutionBuildingContextCookie;
         private DTE _dte;

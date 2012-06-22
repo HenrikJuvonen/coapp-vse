@@ -67,7 +67,7 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     if (type == "vc,lib")
                     {
-                        project.ManageLinkerDependencies(packageReference, projects, projectLibraries);
+                        project.ManageLinkerDefinitions(packageReference, projects, projectLibraries);
                         resultLibraries = projectLibraries.Where(n => n.IsSelected);
                     }
                     else if (type == "vc")

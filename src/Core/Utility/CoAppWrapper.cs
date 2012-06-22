@@ -46,8 +46,6 @@
 
             ResetFilters();
 
-            packageManager.Elevate().Wait();
-
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
                 ProgressProvider.Update("Installing", name, progress));
 
@@ -70,6 +68,8 @@
                     activeDownloads.Remove(remoteLocation);
                 }
             });
+
+            packageManager.Elevate().Wait();
         }
 
         public static void ResetFilters()
@@ -221,7 +221,7 @@
                 Console.Error.WriteLine(e.Unwrap().Message);
             }
 
-            return feeds;
+            return feeds ?? Enumerable.Empty<Feed>();
         }
 
         /// <summary>
@@ -341,32 +341,25 @@
                                                            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
-            IEnumerable<IPackage> pkgs = null;
+            IEnumerable<IPackage> packages = null;
+
+            Console.Write("Querying packages...");
 
             try
             {
-                Console.Write("Querying packages...");
-
-                Task task = tasks.Continue(() => 
+                Task task = tasks.Continue(() =>
                 {
-                    try
-                    {
-                        packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => pkgs = p);
-                    }
-                    catch (Exception e)
-                    {
-                        ProgressProvider.Update("Error", e.Unwrap().Message);
-                    }
+                    packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => packages = p);
                 });
 
                 ContinueTask(task);
             }
-            catch (OperationCanceledException)
+            catch
             {
-                return Enumerable.Empty<IPackage>();
+                CancellationTokenSource.Cancel();
             }
 
-            return pkgs;
+            return packages ?? Enumerable.Empty<IPackage>();
         }
 
         /// <summary>
@@ -380,31 +373,35 @@
             {
                 Task task = tasks.Continue(() =>
                 {
-                    var pkgs = new List<Package>() { (Package)package };
+                    var packages = new List<Package>() { (Package)package };
 
-                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(pkgs, false, true);
+                    var findConflictTask = packageManager.FilterConflictsForInstall(packages);
 
-                    planTask.Continue(allPackages =>
+                    findConflictTask.ContinueOnFail(exception =>
                     {
-                        foreach (var pkg in allPackages)
-                        {
-                            try
-                            {
-                                packageManager.Install(pkg.CanonicalName, false, true, true).Wait();
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.Unwrap().Message);
-                            }
-                        }
+                        ProgressProvider.Update("Error", string.Format("{0} == {1}", exception.Message, exception.StackTrace));
                     });
-                }
-                );
+
+                    findConflictTask.Continue(filteredPackages =>
+                    {
+                        var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(filteredPackages, false);
+
+                        planTask.Continue(allPackages =>
+                        {
+                            allPackages = allPackages.Distinct().ToArray();
+
+                            foreach (var p in allPackages)
+                            {
+                                packageManager.Install(p.CanonicalName, false).Wait();
+                            }
+                        });
+                    });
+                });
+
                 ContinueTask(task);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
             }
         }
@@ -423,43 +420,12 @@
                 {
                     canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
                 }
-                Task task = tasks.Continue(() => packageManager.RemovePackages(canonicalNames, true));
+                Task task = tasks.Continue(() => packageManager.RemovePackages(canonicalNames, true).Wait());
 
-                task.ContinueOnFail(exception =>
-                {
-                    if (exception is OperationCanceledException)
-                    {
-                        // it's been dealt with.
-                        return;
-                    }
-                    var ae = exception as AggregateException;
-                    IEnumerable<FailedPackageRemoveException> fpres = (exception as FailedPackageRemoveException).SingleItemAsEnumerable();
-                    if (ae != null)
-                    {
-                        fpres = from each in ae.InnerExceptions let fpre = each as FailedPackageRemoveException where fpre != null select fpre;
-                    }
-
-                    if (!fpres.IsNullOrEmpty())
-                    {
-                        string message = "The following packages failed to remove:\n";
-                        foreach (var failedPackage in fpres)
-                        {
-                            message += string.Format("   {0}\n", failedPackage.CanonicalName);
-                            failedPackage.Cancel();
-                        }
-                        Console.Write(message);
-                        ProgressProvider.Update("Error", message);
-                    }
-                });
-
-                task.Continue(() =>
-                {
-                    Console.WriteLine("Done.");
-                }).Wait();
+                ContinueTask(task);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
                 CancellationTokenSource.Cancel();
             }
         }

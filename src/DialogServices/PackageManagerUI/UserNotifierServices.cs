@@ -72,22 +72,25 @@
 
         public object[] ShowProjectSelectorWindow(
             string instructionText,
-            PackageReference packageReference)
+            PackageReference packageReference,
+            bool replacePackage)
         {
             if (!_uiDispatcher.CheckAccess())
             {
                 // Use Invoke() here to block the worker thread
                 object result = _uiDispatcher.Invoke(
-                    new Func<string, PackageReference, object[]>(ShowProjectSelectorWindow),
+                    new Func<string, PackageReference, bool, object[]>(ShowProjectSelectorWindow),
                     instructionText,
-                    packageReference);
+                    packageReference,
+                    replacePackage);
 
                 return (object[])result;
             }
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,
-                packageReference);
+                packageReference,
+                replacePackage);
 
             // only show the solution explorer window if there is at least one compatible project
             if (viewModel.HasProjects)

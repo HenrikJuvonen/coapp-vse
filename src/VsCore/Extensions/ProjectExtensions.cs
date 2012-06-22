@@ -416,6 +416,9 @@ namespace CoApp.VisualStudio.VsCore
             return hierarchy;
         }
         
+        /// <summary>
+        /// Checks if project is compatible with the package described in packageReference.
+        /// </summary>
         public static bool IsCompatible(this Project project, PackageReference packageReference)
         {
             if (packageReference == null)
@@ -435,21 +438,22 @@ namespace CoApp.VisualStudio.VsCore
             return compatible;
         }
 
+        /// <summary>
+        /// Checks if VC-project supports specified architecture.
+        /// </summary>
         public static bool IsCompatibleArchitecture(this Project project, string architecture)
         {
-            /*
-            string path = project.GetDirectory() + "\\coapp.packages.config";
+            var buildProject = project.AsMSBuildProject();
+            
+            foreach (string configuration in project.GetConfigurations())
+            {
+                // /MACHINE:{ARM|EBC|IA64|MIPS|MIPS16|MIPSFPU|MIPSFPU16|SH4|THUMB|X64|X86}
+                var machine = project.GetDefinitionValue(configuration, "TargetMachine");
 
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
-
-            var packageReferences = packageReferenceFile.GetPackageReferences();
-
-            // check for conflicting architectures (x86 and x64 shouldn't be mixed)
-            return !packageReferences.Where(n => n.Architecture != "any")
-                                     .Any(n => n.Architecture != architecture);*/
-
-            // TODO: Check platforms (win32, 64, x86, x64 etc)
-            return true;
+                if (machine.ToLowerInvariant().Contains(architecture))
+                    return true;
+            }
+            return false;
         }
         
         public static IEnumerable<string> GetProjectTypeGuids(this Project project)
@@ -547,8 +551,10 @@ namespace CoApp.VisualStudio.VsCore
                    ProjectCollection.GlobalProjectCollection.LoadProject(project.FullName);
         }
 
-        // Debug|Win32, Release|Win32, ...
-        public static IEnumerable<string> GetConfigurationPlatforms(this Project project)
+        /// <summary>
+        /// Get configurations of VC-project. E.g. Debug|Win32, Release|Win32, ...
+        /// </summary>
+        public static IEnumerable<string> GetConfigurations(this Project project)
         {
             MsBuildProject buildProject = project.AsMSBuildProject();
 
@@ -569,7 +575,10 @@ namespace CoApp.VisualStudio.VsCore
             return result;
         }
 
-        private static string GetDefinitionValue(this Project project, string configurationPlatform, string elementName)
+        /// <summary>
+        /// Get definition in VC-project.
+        /// </summary>
+        private static string GetDefinitionValue(this Project project, string configuration, string elementName)
         {
             MsBuildProject buildProject = project.AsMSBuildProject();
 
@@ -577,7 +586,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 foreach (var itemDefinitionGroup in buildProject.Xml.ItemDefinitionGroups)
                 {
-                    if (itemDefinitionGroup.Condition.Contains(configurationPlatform))
+                    if (itemDefinitionGroup.Condition.Contains(configuration))
                     {
                         foreach (ProjectItemDefinitionElement element in itemDefinitionGroup.Children)
                         {
@@ -598,10 +607,13 @@ namespace CoApp.VisualStudio.VsCore
                     }
                 }
             }
-            return null;
+            return string.Empty;
         }
 
-        private static void SetDefinitionValue(this Project project, string configurationPlatform, string elementName, string elementValue)
+        /// <summary>
+        /// Set definition in VC-project.
+        /// </summary>
+        private static void SetDefinitionValue(this Project project, string configuration, string elementName, string elementValue)
         {
             MsBuildProject buildProject = project.AsMSBuildProject();
 
@@ -609,7 +621,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 foreach (var itemDefinitionGroup in buildProject.Xml.ItemDefinitionGroups)
                 {
-                    if (itemDefinitionGroup.Condition.Contains(configurationPlatform))
+                    if (itemDefinitionGroup.Condition.Contains(configuration))
                     {
                         foreach (ProjectItemDefinitionElement element in itemDefinitionGroup.Children)
                         {
@@ -664,6 +676,9 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
         
+        /// <summary>
+        /// Add or remove references in .NET-project.
+        /// </summary>
         public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<Library> libraries)
         {
             string path = string.Format(@"C:\ProgramData\ReferenceAssemblies\{0}\{1}{2}-{3}\",
@@ -705,15 +720,22 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
         
-        public static void ManageLinkerDependencies(this Project project, PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
+        /// <summary>
+        /// Add or remove library directories and linker dependencies in VC-project.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="packageReference"></param>
+        /// <param name="projects"></param>
+        /// <param name="libraries"></param>
+        public static void ManageLinkerDefinitions(this Project project, PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
             string path = string.Format(@"C:\ProgramData\lib\{0}\", packageReference.Architecture);
 
-            foreach (var cp in project.GetConfigurationPlatforms())
+            foreach (var configuration in project.GetConfigurations())
             {
-                var value = project.GetDefinitionValue(cp, "AdditionalLibraryDirectories");
+                var value = project.GetDefinitionValue(configuration, "AdditionalLibraryDirectories");
 
-                ISet<string> paths = new HashSet<string>(value != null ? value.Split(';') : new string[0] );
+                ISet<string> paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {
@@ -724,13 +746,13 @@ namespace CoApp.VisualStudio.VsCore
                     paths.Remove(path);
                 }
 
-                project.SetDefinitionValue(cp, "AdditionalLibraryDirectories", string.Join(";", paths));
+                project.SetDefinitionValue(configuration, "AdditionalLibraryDirectories", string.Join(";", paths));
 
-                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == cp);
+                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == configuration);
 
-                value = project.GetDefinitionValue(cp, "AdditionalDependencies");
+                value = project.GetDefinitionValue(configuration, "AdditionalDependencies");
 
-                IEnumerable<string> current = value != null ? value.Split(';') : Enumerable.Empty<string>();
+                IEnumerable<string> current = value.Split(';');
 
                 IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
                                                              .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
@@ -741,19 +763,22 @@ namespace CoApp.VisualStudio.VsCore
                 IEnumerable<string> result = current.Except(removed)
                                                     .Union(added);
 
-                project.SetDefinitionValue(cp, "AdditionalDependencies", string.Join(";", result));
+                project.SetDefinitionValue(configuration, "AdditionalDependencies", string.Join(";", result));
             }
         }
 
+        /// <summary>
+        /// Add or remove include directories in VC-project.
+        /// </summary>
         public static void ManageIncludeDirectories(this Project project, PackageReference packageReference, IEnumerable<Project> projects)
         {
             string path = string.Format(@"C:\ProgramData\include\{0}-{1}\", packageReference.Name.Split('-')[0], packageReference.Version);
 
-            foreach (var cp in project.GetConfigurationPlatforms())
+            foreach (var configuration in project.GetConfigurations())
             {
-                var value = project.GetDefinitionValue(cp, "AdditionalIncludeDirectories");
+                var value = project.GetDefinitionValue(configuration, "AdditionalIncludeDirectories");
 
-                ISet<string> paths = new HashSet<string>(value != null ? value.Split(';') : new string[0]);
+                ISet<string> paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {
@@ -764,7 +789,7 @@ namespace CoApp.VisualStudio.VsCore
                     paths.Remove(path);
                 }
 
-                project.SetDefinitionValue(cp, "AdditionalIncludeDirectories", string.Join(";", paths));
+                project.SetDefinitionValue(configuration, "AdditionalIncludeDirectories", string.Join(";", paths));
             }
         }
 

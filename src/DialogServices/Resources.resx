@@ -162,12 +162,6 @@
   <data name="Dialog_PackageInstalledTooltip" xml:space="preserve">
     <value>This package is already installed.</value>
   </data>
-  <data name="Dialog_PackageUpdatedTooltip" xml:space="preserve">
-    <value>This package is already updated.</value>
-  </data>
-  <data name="Dialog_ReportAbuse" xml:space="preserve">
-    <value>Report Abuse</value>
-  </data>
   <data name="Dialog_RootNodeAll" xml:space="preserve">
     <value>All</value>
   </data>
@@ -210,17 +204,8 @@
   <data name="Dialog_OperationFailed" xml:space="preserve">
     <value>Operation failed.</value>
   </data>
-  <data name="Dialog_RecentProvider" xml:space="preserve">
-    <value>Recent packages</value>
-  </data>
-  <data name="Dialog_RecentProviderNoItem" xml:space="preserve">
-    <value>There are no recently installed packages.</value>
-  </data>
   <data name="Dialog_NameLabel" xml:space="preserve">
     <value>Name:</value>
-  </data>
-  <data name="Dialog_RecentPackagesDefaultSort" xml:space="preserve">
-    <value>Most Recent</value>
   </data>
   <data name="Dialog_TagLabel" xml:space="preserve">
     <value>Tags:</value>
@@ -229,7 +214,7 @@
     <value>Published:</value>
   </data>
   <data name="Dialog_OnlineSolutionInstruction" xml:space="preserve">
-    <value>Install the package in the following projects:</value>
+    <value>Add the package in the following projects:</value>
   </data>
   <data name="Dialog_ProjectSelectorTitle" xml:space="preserve">
     <value>Select Projects</value>
@@ -259,7 +244,7 @@
     <value>Error: {0}</value>
   </data>
   <data name="Dialog_ProjectListLabel" xml:space="preserve">
-    <value>Currently installed in projects:</value>
+    <value>Currently added in projects:</value>
   </data>
   <data name="Dialog_InstalledSolutionInstruction" xml:space="preserve">
     <value>Install the package into the selected projects. Clear a selection to uninstall the package from that project.</value>
@@ -275,9 +260,6 @@
   </data>
   <data name="Dialog_DescriptionLabel" xml:space="preserve">
     <value>Description:</value>
-  </data>
-  <data name="Dialog_ReleaseNotesLabel" xml:space="preserve">
-    <value>Release notes:</value>
   </data>
   <data name="Dialog_NoCompatibleProject" xml:space="preserve">
     <value>'{0}' could not be installed because it is not compatible with any project in the solution. The package targets the following frameworks: {1}</value>

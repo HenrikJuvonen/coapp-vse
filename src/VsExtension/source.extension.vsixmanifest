@@ -3,8 +3,8 @@
   <Identifier Id="3ED4B90D-45FE-4B0F-B921-3A91F3125CC8">
     <Name>CoApp for Visual Studio</Name>
     <Author>CoApp Project, Outercurve Foundation</Author>
-    <Version>0.2.0</Version>
-    <Description xml:space="preserve">Visual Studio plugin for CoApp package manager.</Description>
+    <Version>0.3.0</Version>
+    <Description xml:space="preserve">CoApp package manager</Description>
     <Locale>1033</Locale>
     <InstalledByMsi>false</InstalledByMsi>
     <SupportedProducts>
@@ -13,14 +13,15 @@
         <Edition>Premium</Edition>
         <Edition>Pro</Edition>
       </VisualStudio>
+      <VisualStudio Version="11.0">
+        <Edition>Ultimate</Edition>
+        <Edition>Premium</Edition>
+        <Edition>Pro</Edition>
+      </VisualStudio>
     </SupportedProducts>
     <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.0" />
   </Identifier>
-  <References>
-    <Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">
-      <Name>Visual Studio MPF</Name>
-    </Reference>
-  </References>
+  <References />
   <Content>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
     <MefComponent>|VsCore|</MefComponent>

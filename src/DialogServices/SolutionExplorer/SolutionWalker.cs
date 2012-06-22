@@ -13,7 +13,8 @@ namespace CoApp.VisualStudio.Dialog
     {
         public static SolutionNode Walk(
             Solution solution,
-            PackageReference packageReference)
+            PackageReference packageReference,
+            bool replacePackage)
         {
             if (solution == null)
             {
@@ -25,7 +26,7 @@ namespace CoApp.VisualStudio.Dialog
                 return null;
             }
 
-            var children = CreateProjectNode(solution.Projects.OfType<Project>(), packageReference).ToArray();
+            var children = CreateProjectNode(solution.Projects.OfType<Project>(), packageReference, replacePackage).ToArray();
             Array.Sort(children, ProjectNodeComparer.Default);
 
             return new SolutionNode(
@@ -36,11 +37,13 @@ namespace CoApp.VisualStudio.Dialog
 
         private static IEnumerable<ViewModelNodeBase> CreateProjectNode(
             IEnumerable<Project> projects,
-            PackageReference packageReference)
+            PackageReference packageReference,
+            bool replacePackage)
         {
             foreach (var project in projects)
             {
-                if (project.IsSupported() && project.IsCompatible(packageReference))
+                if (project.IsSupported() && project.IsCompatible(packageReference) &&
+                    (!replacePackage ? !project.IsOtherSimilarPackageAdded(packageReference) : true))
                 {
                     IList<ViewModelNodeBase> children;
 
@@ -79,7 +82,8 @@ namespace CoApp.VisualStudio.Dialog
                                 OfType<ProjectItem>().
                                 Where(p => p.SubProject != null).
                                 Select(p => p.SubProject),
-                            packageReference
+                            packageReference,
+                            replacePackage
                         ).ToArray();
 
                         if (children.Length > 0)
@@ -97,7 +101,7 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            var configurations = project.GetConfigurationPlatforms();
+            var configurations = project.GetConfigurations();
 
             foreach (string config in configurations)
             {
@@ -146,6 +150,21 @@ namespace CoApp.VisualStudio.Dialog
             }
         }
 
+        /// <summary>
+        /// Checks if there is already a package added with same name, but different flavor/version/architecture.
+        /// </summary>
+        /// <returns></returns>
+        private static bool IsOtherSimilarPackageAdded(this Project project, PackageReference packageReference)
+        {
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
+
+            IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+
+            return packageReferences.Any(n => n.Name == packageReference.Name && (n.Flavor != packageReference.Flavor ||
+                                                                                  n.Version != packageReference.Version ||
+                                                                                  n.Architecture != packageReference.Architecture));
+        }
+
         private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string filename)
         {
             PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
@@ -157,7 +176,7 @@ namespace CoApp.VisualStudio.Dialog
 
             foreach (PackageReference p in packageReferences)
             {
-                if (p.Name != packageReference.Name)
+                if (p.Name != packageReference.Name || p.Flavor != packageReference.Flavor)
                     continue;
 
                 projectHasPackage = true;

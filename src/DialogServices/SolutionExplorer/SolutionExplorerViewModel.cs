@@ -12,14 +12,15 @@ namespace CoApp.VisualStudio.Dialog
 
         public SolutionExplorerViewModel(
             Solution solution,
-            PackageReference packageReference)
+            PackageReference packageReference,
+            bool replacePackage = false)
         {
             if (solution == null)
             {
                 throw new ArgumentNullException("solution");
             }
 
-            _solutionNode = SolutionWalker.Walk(solution, packageReference);
+            _solutionNode = SolutionWalker.Walk(solution, packageReference, replacePackage);
         }
 
         public bool HasProjects

@@ -66,9 +66,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             bool? replacePackages = AskReplacePackages(item.PackageIdentity);
 
-            if (replacePackages == false || replacePackages == null)
+            if (replacePackages == null)
             {
-                // user presses No or Cancel
+                // user presses Cancel
                 return false;
             }
 
@@ -76,7 +76,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
-                packageReference);
+                packageReference,
+                replacePackages == true);
 
             if (selected == null)
             {

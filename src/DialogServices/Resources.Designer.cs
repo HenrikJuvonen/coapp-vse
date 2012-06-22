@@ -277,7 +277,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install the package in the following projects:.
+        ///   Looks up a localized string similar to Add the package in the following projects:.
         /// </summary>
         public static string Dialog_OnlineSolutionInstruction {
             get {
@@ -313,16 +313,7 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This package is already updated..
-        /// </summary>
-        public static string Dialog_PackageUpdatedTooltip {
-            get {
-                return ResourceManager.GetString("Dialog_PackageUpdatedTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Currently installed in projects:.
+        ///   Looks up a localized string similar to Currently added in projects:.
         /// </summary>
         public static string Dialog_ProjectListLabel {
             get {
@@ -367,42 +358,6 @@ namespace CoApp.VisualStudio.Dialog {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Most Recent.
-        /// </summary>
-        public static string Dialog_RecentPackagesDefaultSort {
-            get {
-                return ResourceManager.GetString("Dialog_RecentPackagesDefaultSort", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Recent packages.
-        /// </summary>
-        public static string Dialog_RecentProvider {
-            get {
-                return ResourceManager.GetString("Dialog_RecentProvider", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are no recently installed packages..
-        /// </summary>
-        public static string Dialog_RecentProviderNoItem {
-            get {
-                return ResourceManager.GetString("Dialog_RecentProviderNoItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Release notes:.
-        /// </summary>
-        public static string Dialog_ReleaseNotesLabel {
-            get {
-                return ResourceManager.GetString("Dialog_ReleaseNotesLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Package &apos;{0}&apos; depends on the following packages. Do you want to uninstall them too?.
         /// </summary>
         public static string Dialog_RemoveDependencyMessage {
@@ -426,15 +381,6 @@ namespace CoApp.VisualStudio.Dialog {
         public static string Dialog_ReplacePackage {
             get {
                 return ResourceManager.GetString("Dialog_ReplacePackage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Report Abuse.
-        /// </summary>
-        public static string Dialog_ReportAbuse {
-            get {
-                return ResourceManager.GetString("Dialog_ReportAbuse", resourceCulture);
             }
         }
         

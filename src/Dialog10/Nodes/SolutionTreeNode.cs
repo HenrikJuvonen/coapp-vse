@@ -54,6 +54,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                     {
                         resultPackages.Add(installedPackages.First(pkg => pkg.Name == package.Name &&
                                                                           pkg.Version == package.Version &&
+                                                                          pkg.Flavor == package.Flavor &&
                                                                           pkg.Architecture == package.Architecture));
                     }
                     catch (Exception e)
