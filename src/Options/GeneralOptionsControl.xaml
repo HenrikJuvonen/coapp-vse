@@ -17,7 +17,7 @@
         </GroupBox>
         <GroupBox Header="Automatic updates" Height="64">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="UpdateComboBox">
+                <ComboBox Name="UpdateComboBox" IsEnabled="False" MouseEnter="OnUpdateComboBoxMouseEnter">
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Automatic}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Notify}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Update_DoNothing}" />
@@ -26,7 +26,7 @@
         </GroupBox>
         <GroupBox Header="Automatic restore" Height="64">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="RestoreComboBox">
+                <ComboBox Name="RestoreComboBox" MouseEnter="OnRestoreComboBoxMouseEnter">
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_Automatic}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_Notify}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_DoNothing}" />

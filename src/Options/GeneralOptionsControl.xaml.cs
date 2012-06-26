@@ -67,6 +67,16 @@ namespace CoApp.VisualStudio.Options
             Process.Start(@"C:\ProgramData\.cache\packages");
         }
 
+        private void OnUpdateComboBoxMouseEnter(object sender, EventArgs e)
+        {
+            UpdateComboBox.Focus();
+        }
+
+        private void OnRestoreComboBoxMouseEnter(object sender, EventArgs e)
+        {
+            RestoreComboBox.Focus();
+        }
+
         private void LoadSettings()
         {
             string update = settings.GetValue("coapp", "update");
