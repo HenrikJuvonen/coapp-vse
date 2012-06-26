@@ -9,10 +9,6 @@ namespace CoApp.VisualStudio.Options
     [ComVisible(true)]
     public abstract class OptionsPageBase : DialogPage, IServiceProvider
     {
-        protected OptionsPageBase()
-        {
-        }
-
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);

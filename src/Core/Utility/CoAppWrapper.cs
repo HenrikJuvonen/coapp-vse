@@ -216,9 +216,8 @@
 
                 ContinueTask(task);
             }
-            catch (Exception e)
+            catch
             {
-                Console.Error.WriteLine(e.Unwrap().Message);
             }
 
             return feeds ?? Enumerable.Empty<Feed>();
@@ -237,9 +236,8 @@
 
                 ContinueTask(task);
             }
-            catch (Exception e)
+            catch
             {
-                Console.Error.WriteLine(e.Unwrap().Message);
             }
         }
 
@@ -256,9 +254,8 @@
 
                 ContinueTask(task);
             }
-            catch (Exception e)
+            catch
             {
-                Console.Error.WriteLine(e.Unwrap().Message);
             }
         }
 
@@ -343,20 +340,18 @@
         {
             IEnumerable<IPackage> packages = null;
 
-            Console.Write("Querying packages...");
-
             try
             {
                 Task task = tasks.Continue(() =>
                 {
-                    packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Continue(p => packages = p);
+                    if (!CancellationTokenSource.IsCancellationRequested)
+                        packages = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Result;
                 });
 
                 ContinueTask(task);
             }
             catch
             {
-                CancellationTokenSource.Cancel();
             }
 
             return packages ?? Enumerable.Empty<IPackage>();
@@ -367,42 +362,35 @@
         /// </summary>
         public static void InstallPackage(IPackage package)
         {
-            Console.Write("Installing packages...");
-            
+            InstallPackages(new[] { package });
+        }
+
+        /// <summary>
+        /// Used for installing packages in OnlineProvider.
+        /// </summary>
+        public static void InstallPackages(IEnumerable<IPackage> packages)
+        {
+            if (CancellationTokenSource.IsCancellationRequested)
+                return;
+
             try
             {
                 Task task = tasks.Continue(() =>
                 {
-                    var packages = new List<Package>() { (Package)package };
+                    if (CancellationTokenSource.IsCancellationRequested)
+                        return;
 
-                    var findConflictTask = packageManager.FilterConflictsForInstall(packages);
-
-                    findConflictTask.ContinueOnFail(exception =>
+                    foreach (var p in packages)
                     {
-                        ProgressProvider.Update("Error", string.Format("{0} == {1}", exception.Message, exception.StackTrace));
-                    });
-
-                    findConflictTask.Continue(filteredPackages =>
-                    {
-                        var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(filteredPackages, false);
-
-                        planTask.Continue(allPackages =>
-                        {
-                            allPackages = allPackages.Distinct().ToArray();
-
-                            foreach (var p in allPackages)
-                            {
-                                packageManager.Install(p.CanonicalName, false).Wait();
-                            }
-                        });
-                    });
+                        if (!CancellationTokenSource.IsCancellationRequested)
+                            packageManager.Install(p.CanonicalName, false);
+                    }
                 });
 
                 ContinueTask(task);
             }
             catch
             {
-                CancellationTokenSource.Cancel();
             }
         }
 
@@ -411,8 +399,6 @@
         /// </summary>
         public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
-            Console.Write("Removing packages...");
-
             try
             {
                 IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
@@ -420,13 +406,16 @@
                 {
                     canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
                 }
-                Task task = tasks.Continue(() => packageManager.RemovePackages(canonicalNames, true).Wait());
+                Task task = tasks.Continue(() =>
+                    {
+                        if (!CancellationTokenSource.IsCancellationRequested)
+                            packageManager.RemovePackages(canonicalNames, true);
+                    });
 
                 ContinueTask(task);
             }
             catch
             {
-                CancellationTokenSource.Cancel();
             }
         }
 
@@ -456,28 +445,7 @@
 
         private static void ContinueTask(Task task)
         {
-            task.ContinueOnCanceled(() =>
-            {
-                // the task was cancelled, and presumably dealt with.
-                ProgressProvider.Update("Error", "Operation Canceled.");
-                Console.WriteLine("Operation Canceled.");
-            });
-
-            task.ContinueOnFail((exception) =>
-            {
-                exception = exception.Unwrap();
-                if (!(exception is OperationCanceledException))
-                {
-                    ProgressProvider.Update("Error", exception.Message);
-                    Console.WriteLine("Error (???): {0}\r\n\r\n{1}", exception.Message, exception.StackTrace);
-                }
-                // it's all been handled then.
-            });
-
-            task.Continue(() =>
-            {
-                Console.WriteLine("Done.");
-            }).Wait();
+            task.Wait();
         }
     }
 }

@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Restore_Automatic" xml:space="preserve">
+    <value>Restore packages automatically</value>
+  </data>
+  <data name="Restore_DoNothing" xml:space="preserve">
+    <value>Never check or restore packages automatically</value>
+  </data>
+  <data name="Restore_Notify" xml:space="preserve">
+    <value>Check for missing packages but let me choose whether to restore them</value>
+  </data>
   <data name="ShowInfo_ClearPackageCache" xml:space="preserve">
     <value>All packages have been cleared from the cache.</value>
   </data>
@@ -129,7 +138,13 @@
   <data name="ShowWarning_SourceRequried" xml:space="preserve">
     <value>The feed specified cannot be empty. Please provide a valid feed.</value>
   </data>
-  <data name="ShowWarning_Title" xml:space="preserve">
-    <value>CoApp Package Manager Options</value>
+  <data name="Update_Automatic" xml:space="preserve">
+    <value>Install packages automatically</value>
+  </data>
+  <data name="Update_DoNothing" xml:space="preserve">
+    <value>Never check or install packages automatically</value>
+  </data>
+  <data name="Update_Notify" xml:space="preserve">
+    <value>Check for updates but let me choose whether to install them</value>
   </data>
 </root>

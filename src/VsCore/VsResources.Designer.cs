@@ -133,6 +133,15 @@ namespace CoApp.VisualStudio.VsCore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to install following missing packages?.
+        /// </summary>
+        public static string PackageRestoreMissingPackagesFound {
+            get {
+                return ResourceManager.GetString("PackageRestoreMissingPackagesFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No missing packages found..
         /// </summary>
         public static string PackageRestoreNoMissingPackages {

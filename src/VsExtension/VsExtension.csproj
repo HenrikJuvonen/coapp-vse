@@ -90,6 +90,7 @@
   <ItemGroup>
     <VSCTCompile Include="VsExtension.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +110,7 @@
     <ProjectReference Include="..\Dialog\Dialog.csproj">
       <Project>{1C5E9CB6-F6FE-4858-BB63-AA50832F0A4D}</Project>
       <Name>Dialog</Name>
-	  <Aliases>dialog</Aliases>
+      <Aliases>dialog</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\Options\Options.csproj">
       <Project>{53AB7187-CDF3-48B5-B90E-8919D3CB904D}</Project>

@@ -28,7 +28,7 @@ namespace CoApp.VisualStudio.Tools
     [ProvideMenuResource("Menus.ctmenu", 1)]
 
     [ProvideOptionPage(typeof(FeedOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
-    [ProvideOptionPage(typeof(GeneralOptionPage), "CoApp Package Manager", "General", 113, 115, true)]
+    [ProvideOptionPage(typeof(GeneralOptionsPage), "CoApp Package Manager", "General", 113, 115, true)]
     [ProvideBindingPath] // Definition dll needs to be on VS binding path
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     
@@ -168,7 +168,7 @@ namespace CoApp.VisualStudio.Tools
 
         private void ShowGeneralSettingsOptionPage(object sender, EventArgs args)
         {
-            ShowOptionPageSafe(typeof(GeneralOptionPage));
+            ShowOptionPageSafe(typeof(GeneralOptionsPage));
         }
 
         private void ShowOptionPageSafe(Type optionPageType)

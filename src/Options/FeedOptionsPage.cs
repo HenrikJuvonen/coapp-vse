@@ -12,18 +12,16 @@ namespace CoApp.VisualStudio.Options
     [ClassInterface(ClassInterfaceType.AutoDual)]
     public class FeedOptionsPage : OptionsPageBase
     {
-        private FeedsOptionsControl _optionsWindow;
+        protected FeedOptionsControl _control;
 
         protected override void OnActivate(CancelEventArgs e)
         {
             base.OnActivate(e);
-            FeedsControl.Font = VsShellUtilities.GetEnvironmentFont(this);
             FeedsControl.InitializeOnActivated();
         }
 
         protected override void OnApply(PageApplyEventArgs e)
         {
-            // Do not need to call base.OnApply() here.
             bool wasApplied = FeedsControl.ApplyChangedSettings();
             if (!wasApplied)
             {
@@ -37,17 +35,16 @@ namespace CoApp.VisualStudio.Options
             base.OnClosed(e);
         }
 
-        private FeedsOptionsControl FeedsControl
+        private FeedOptionsControl FeedsControl
         {
             get
             {
-                if (_optionsWindow == null)
+                if (_control == null)
                 {
-                    _optionsWindow = new FeedsOptionsControl();
-                    _optionsWindow.Location = new Point(0, 0);
+                    _control = new FeedOptionsControl();
                 }
 
-                return _optionsWindow;
+                return _control;
             }
         }
 
@@ -56,7 +53,7 @@ namespace CoApp.VisualStudio.Options
         {
             get
             {
-                return FeedsControl;
+                return new WinFormsControl(FeedsControl);
             }
         }
     }

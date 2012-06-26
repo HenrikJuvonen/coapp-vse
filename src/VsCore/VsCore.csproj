@@ -83,7 +83,6 @@
     <Compile Include="IOptionsPageActivator.cs" />
     <Compile Include="ISolutionManager.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="OptionsPageActivator.cs" />
     <Compile Include="ProjectCache.cs" />
     <Compile Include="ProjectEventArgs.cs" />

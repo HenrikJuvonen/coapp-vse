@@ -34,7 +34,7 @@ namespace CoApp.VisualStudio
 
         public string ConfigFilePath
         {
-            get { return Path.Combine(_path, "coapp.settings.config"); }
+            get { return Path.Combine(_path, "coapp.config"); }
         }
 
         public string GetValue(string section, string key)

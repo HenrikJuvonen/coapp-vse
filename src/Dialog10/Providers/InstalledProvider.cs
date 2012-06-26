@@ -153,7 +153,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             if (differentPackages.Any())
             {
-                String packageNames = String.Join(Environment.NewLine, differentPackages.Select(p => p.CanonicalName.PackageName));
+                String packageNames = String.Join(Environment.NewLine, differentPackages.Select(p => p.GetPackageNameWithoutPublicKeyToken()));
                 String message = String.Format(Resources.Dialog_ReplacePackage, package.CanonicalName.PackageName)
                     + Environment.NewLine
                     + Environment.NewLine
@@ -167,7 +167,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.Type(), package.Path(), null);
+            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetDevType(), package.GetPath(), null);
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,

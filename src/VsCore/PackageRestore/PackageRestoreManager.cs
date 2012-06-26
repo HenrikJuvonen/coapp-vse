@@ -18,10 +18,12 @@ namespace CoApp.VisualStudio.VsCore
     internal class PackageRestoreManager : IPackageRestoreManager
     {
         private readonly ISolutionManager _solutionManager;
-        private readonly IVsThreadedWaitDialogFactory _waitDialogFactory;
         private readonly DTE _dte;
 
         private readonly WaitDialog _waitDialog;
+
+        private readonly ISettings _settings;
+        private string _level;
 
         private bool _fromActivation;
 
@@ -29,24 +31,32 @@ namespace CoApp.VisualStudio.VsCore
         public PackageRestoreManager(
             ISolutionManager solutionManager) :
             this(ServiceLocator.GetInstance<DTE>(),
-                 solutionManager,
-                 ServiceLocator.GetGlobalService<SVsThreadedWaitDialogFactory, IVsThreadedWaitDialogFactory>())
+                 solutionManager)
         {
         }
 
         internal PackageRestoreManager(
             DTE dte,
-            ISolutionManager solutionManager,
-            IVsThreadedWaitDialogFactory waitDialogFactory)
+            ISolutionManager solutionManager)
         {
             Debug.Assert(solutionManager != null);
             _dte = dte;
             _solutionManager = solutionManager;
-            _waitDialogFactory = waitDialogFactory;
-            _solutionManager.ProjectAdded += OnProjectAdded;
             _solutionManager.SolutionOpened += OnSolutionOpened;
 
             _waitDialog = new WaitDialog();
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "coapp-vse");
+
+            // ensure that directories exist
+            Directory.CreateDirectory(path);
+
+            _settings = new Settings(path);
+        }
+
+        private void LoadSettings()
+        {
+            _level = _settings.GetValue("coapp", "restore");
         }
 
         private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
@@ -55,8 +65,27 @@ namespace CoApp.VisualStudio.VsCore
 
             e.Cancel = !CheckForMissingPackages();
 
-            if (!e.Cancel)
+            if (!e.Cancel && !_waitDialog.IsCanceled)
             {
+                if (_level == "notify" && !_fromActivation)
+                {
+                    string missingPackages = string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+
+                    bool? result = _waitDialog.ShowQueryDialog(
+                        VsResources.PackageRestoreMissingPackagesFound
+                        + Environment.NewLine
+                        + Environment.NewLine
+                        + missingPackages,
+                        false);
+
+                    if (result == false)
+                    {
+                        _waitDialog.IsCanceled = true;
+                        return;
+                    }
+                }
+
+                _waitDialog.Update(VsResources.PackageRestoreInstallingMessage);
                 RestoreMissingPackages();
             }
         }
@@ -67,9 +96,11 @@ namespace CoApp.VisualStudio.VsCore
 
             _waitDialog.Hide();
 
+            if (_waitDialog.IsCanceled)
+                return;
+
             if (e.Cancelled)
             {
-                _waitDialog.Hide();
                 if (_fromActivation)
                 {
                     MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
@@ -83,7 +114,7 @@ namespace CoApp.VisualStudio.VsCore
                     string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
                                         string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
 
-                    if (_fromActivation)
+                    if (_fromActivation || _level != "nothing")
                     {
                         MessageHelper.ShowErrorMessage(message, null);
                     }
@@ -106,8 +137,9 @@ namespace CoApp.VisualStudio.VsCore
             }
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += _waitDialog.OnProgressAvailable;
+            CoAppWrapper.CancellationTokenSource = new System.Threading.CancellationTokenSource();
 
-            _fromActivation = true;
+            _fromActivation = fromActivation;
 
             var worker = new BackgroundWorker();
             worker.DoWork += OnRunWorkerDoWork;
@@ -124,10 +156,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             var packages = GetMissingPackages();
 
-            foreach (var package in packages)
-            {
-                CoAppWrapper.InstallPackage(package);
-            }
+            CoAppWrapper.InstallPackages(packages);
         }
 
         private IEnumerable<IPackage> GetMissingPackages()
@@ -162,13 +191,12 @@ namespace CoApp.VisualStudio.VsCore
         
         private void OnSolutionOpened(object sender, EventArgs e)
         {
-            // Can be enabled in 0.4 through options.
-            //BeginRestore(fromActivation: false);
-        }
+            LoadSettings();
 
-        private void OnProjectAdded(object sender, ProjectEventArgs e)
-        {
-            CheckForMissingPackages();
+            if (_level != "nothing")
+            {
+                BeginRestore(fromActivation: false);
+            }
         }
     }
 }

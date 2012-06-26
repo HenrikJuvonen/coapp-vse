@@ -144,4 +144,7 @@
   <data name="PackageRestoreInstallingMessage" xml:space="preserve">
     <value>Installing ...</value>
   </data>
+  <data name="PackageRestoreMissingPackagesFound" xml:space="preserve">
+    <value>Do you want to install following missing packages?</value>
+  </data>
 </root>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Threading;
 using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -19,9 +20,8 @@ namespace CoApp.VisualStudio.VsCore
                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
             }
         }
 
@@ -37,9 +37,8 @@ namespace CoApp.VisualStudio.VsCore
                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
             }
         }
 
@@ -60,9 +59,8 @@ namespace CoApp.VisualStudio.VsCore
                     OLEMSGBUTTON.OLEMSGBUTTON_OK,
                     OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
             }
         }
 
@@ -86,14 +84,19 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     return (result == NativeMethods.IDYES);
                 }
-
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
             }
 
             return null;
         }
+    }
+
+    internal class NativeMethods
+    {
+        public const int IDCANCEL = 2;
+        public const int IDYES = 6;
+        public const int IDNO = 7;
     }
 }

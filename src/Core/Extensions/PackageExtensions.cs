@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Model;
 
@@ -6,16 +7,17 @@ namespace CoApp.VisualStudio
 {
     public static class PackageExtensions
     {
-        public static string Path(this IPackage package)
+        public static string GetPath(this IPackage package)
         {
             string architecture =
-                    package.Architecture == "x64" ? " (x64)" :
-                    package.Architecture == "x86" ? " (x86)" : "";
+                package.Architecture == "x64" ? " (x64)" :
+                package.Architecture == "x86" ? " (x86)" : "";
 
-            return @"c:\ProgramData\Program Files" + architecture + @"\Outercurve Foundation\" + package.CanonicalName.PackageName + @"\";
+            return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+                + string.Format(@"\Program Files{0}\Outercurve Foundation\{1}\", architecture, package.CanonicalName.PackageName);
         }
 
-        public static string Type(this IPackage package)
+        public static string GetDevType(this IPackage package)
         {
             if (package.Name.Contains("-common"))
             {
@@ -25,12 +27,19 @@ namespace CoApp.VisualStudio
             {
                 return "vc,lib";
             }
-            else if (package.Flavor.IsWildcardMatch("*net*") || (package.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) && n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
+            else if (package.Flavor.IsWildcardMatch("*net*")
+                || (package.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) &&
+                                           n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
             {
                 return "net";
             }
 
             return "";
+        }
+
+        public static string GetPackageNameWithoutPublicKeyToken(this IPackage package)
+        {
+            return package.CanonicalName.PackageName.Substring(0,package.CanonicalName.PackageName.LastIndexOf('-'));
         }
     }
 }

@@ -5,15 +5,28 @@
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:self="clr-namespace:CoApp.VisualStudio.VsCore"
     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+    MinWidth="470"
+    MinHeight="180"
     Width="470"
-    Height="120"
+    Height="240"
     Title="{x:Static self:VsResources.DialogTitle}" 
     ShowInTaskbar="False"
     WindowStyle="SingleBorderWindow"
     WindowStartupLocation="CenterOwner"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     Loaded="OnLoaded">
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="{x:Type DataGridCell}">
+                <Setter Property="Foreground" Value="Black" />
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="8" />
             <ColumnDefinition Width="*" />
@@ -21,14 +34,54 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="8" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="23" />
+            <RowDefinition Height="8" />
             <RowDefinition Height="15" />
             <RowDefinition Height="8" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="8" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="1" Grid.Row="1" >
-            <TextBlock Name="Operation" />
-            <TextBlock Name="Message" />
-        </StackPanel>
-        <ProgressBar Name="Progress" Grid.Column="1" Grid.Row="2" />
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="80" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Name="Operation" Grid.Column="0" Grid.Row="0" />
+            <Button Name="CancelButton" Content="_Cancel" Grid.Column="2" Grid.Row="0" Click="OnCanceled" />
+        </Grid>
+        <ProgressBar Name="Progress" Grid.Column="1" Grid.Row="3" IsIndeterminate="True" />
+        <DataGrid Name="DataGrid" Grid.Column="1" Grid.Row="5"
+                  HeadersVisibility="None"
+                  ItemsSource="{Binding Table}"
+                  AlternatingRowBackground="Gainsboro" AlternationCount="2"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  VerticalGridLinesBrush="{x:Null}"
+                  HorizontalGridLinesBrush="{x:Null}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Message" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Message}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Operation" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Operation}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="PercentComplete" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ProgressBar Value="{Binding PercentComplete}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </pfui:DialogWindow>

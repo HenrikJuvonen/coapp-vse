@@ -83,7 +83,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return PackageIdentity.Type();
+                return PackageIdentity.GetDevType();
             }
         }
 
@@ -91,7 +91,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return PackageIdentity.Path();
+                return PackageIdentity.GetPath();
             }
         }
         
