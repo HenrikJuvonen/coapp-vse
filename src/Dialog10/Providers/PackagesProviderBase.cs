@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Client;
-using CoApp.Toolkit.Extensions;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
@@ -182,40 +182,44 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, type));
 
-            IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
-
-            IEnumerable<string> hosts = new HashSet<string>(
-                feeds.Select(f =>
+            // Keep it responsive...
+            Task.Factory.StartNew(() =>
                 {
-                    Uri uri = new Uri(f.Location);
-                    return uri.Host;
-                }));
+                    IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
 
-            foreach (string host in hosts)
-            {
-                string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
-
-                var treeNode = (IVsExtensionsTreeNode)new AggregateTreeNode(RootNode, this, aggregateName);
-
-                foreach (Feed f in feeds)
-                {
-                    Uri uri = new Uri(f.Location);
-
-                    if (uri.Host == host)
-                    {
-                        string name = uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped);
-
-                        if (aggregateName == "Local")
+                    IEnumerable<string> hosts = new HashSet<string>(
+                        feeds.Select(f =>
                         {
-                            name = Path.GetFileNameWithoutExtension(name);
+                            Uri uri = new Uri(f.Location);
+                            return uri.Host;
+                        }));
+
+                    foreach (string host in hosts)
+                    {
+                        string aggregateName = string.IsNullOrEmpty(host) ? "Local" : host;
+
+                        var treeNode = (IVsExtensionsTreeNode)new AggregateTreeNode(RootNode, this, aggregateName);
+
+                        foreach (Feed f in feeds)
+                        {
+                            Uri uri = new Uri(f.Location);
+
+                            if (uri.Host == host)
+                            {
+                                string name = uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped);
+
+                                if (aggregateName == "Local")
+                                {
+                                    name = Path.GetFileNameWithoutExtension(name);
+                                }
+
+                                treeNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(treeNode, this, name, f.Location, type));
+                            }
                         }
 
-                        treeNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(treeNode, this, name, f.Location, type));
+                        Application.Current.Dispatcher.Invoke(new Action(() => RootNode.Nodes.Add(treeNode)));
                     }
-                }
-
-                RootNode.Nodes.Add(treeNode);
-            }
+                });
         }
 
         protected virtual void FillRootNodes()

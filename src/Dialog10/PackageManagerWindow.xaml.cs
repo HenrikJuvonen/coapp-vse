@@ -242,6 +242,8 @@ namespace CoApp.VisualStudio.Dialog
 
         private void OnDialogWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            CoAppWrapper.SaveFilterStates();
+
             // don't allow the dialog to be closed if an operation is pending
             if (OperationCoordinator.IsBusy)
             {
@@ -266,19 +268,19 @@ namespace CoApp.VisualStudio.Dialog
             ComboBox fxCombo = FindComboBox("cmb_Fx");
             if (fxCombo != null)
             {
-                CoAppWrapper.ResetFilters();
+                CoAppWrapper.ResetFilterStates();
 
                 Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
 
-                CheckBox verHigh = new CheckBox(); verHigh.Content = "Version: Highest only";
-                CheckBox verStab = new CheckBox(); verStab.Content = "Version: Stable only";
-                CheckBox flavSup = new CheckBox(); flavSup.Content = "Flavor: Compatible only";
-                CheckBox archAny = new CheckBox(); archAny.Content = "Architecture: any";
-                CheckBox archX64 = new CheckBox(); archX64.Content = "Architecture: x64";
-                CheckBox archX86 = new CheckBox(); archX86.Content = "Architecture: x86";
-                CheckBox roleApp = new CheckBox(); roleApp.Content = "Role: Application";
-                CheckBox roleAsy = new CheckBox(); roleAsy.Content = "Role: Assembly";
-                CheckBox roleDev = new CheckBox(); roleDev.Content = "Role: DeveloperLibrary";
+                CheckBox verHigh = new CheckBox(); verHigh.Name = "Highest";          verHigh.Content = "Version: Highest only";
+                CheckBox verStab = new CheckBox(); verStab.Name = "Stable";           verStab.Content = "Version: Stable only";
+                CheckBox flavSup = new CheckBox(); flavSup.Name = "Compatible";       flavSup.Content = "Flavor: Compatible only";
+                CheckBox archAny = new CheckBox(); archAny.Name = "any";              archAny.Content = "Architecture: any";
+                CheckBox archX64 = new CheckBox(); archX64.Name = "x64";              archX64.Content = "Architecture: x64";
+                CheckBox archX86 = new CheckBox(); archX86.Name = "x86";              archX86.Content = "Architecture: x86";
+                CheckBox roleApp = new CheckBox(); roleApp.Name = "Application";      roleApp.Content = "Role: Application";
+                CheckBox roleAsy = new CheckBox(); roleAsy.Name = "Assembly";         roleAsy.Content = "Role: Assembly";
+                CheckBox roleDev = new CheckBox(); roleDev.Name = "DeveloperLibrary"; roleDev.Content = "Role: DeveloperLibrary";
                 
                 fxCombo.Items.Clear();
                 fxCombo.Items.Add(label);
@@ -301,11 +303,12 @@ namespace CoApp.VisualStudio.Dialog
 
                     if (c != null)
                     {
-                        c.IsChecked = true;
+                        c.IsChecked = CoAppWrapper.GetFilterState(c.Name);
                         c.Checked += OnFilterChecked;
                         c.Unchecked += OnFilterChecked;
                     }
                 }
+
             }
         }
 
@@ -319,36 +322,7 @@ namespace CoApp.VisualStudio.Dialog
         {
             var checkbox = (CheckBox)sender;
 
-            switch ((string)checkbox.Content)
-            {
-                case "Version: Highest only":
-                    CoAppWrapper.SetVersionFilter("Highest", checkbox.IsChecked == true);
-                    break;
-                case "Version: Stable only":
-                    CoAppWrapper.SetVersionFilter("Stable", checkbox.IsChecked == true);
-                    break;
-                case "Flavor: Compatible only":
-                    CoAppWrapper.SetFlavorFilter("Compatible", checkbox.IsChecked == true);
-                    break;
-                case "Architecture: any":
-                    CoAppWrapper.SetArchitectureFilter("any", checkbox.IsChecked == true);
-                    break;
-                case "Architecture: x64":
-                    CoAppWrapper.SetArchitectureFilter("x64", checkbox.IsChecked == true);
-                    break;
-                case "Architecture: x86":
-                    CoAppWrapper.SetArchitectureFilter("x86", checkbox.IsChecked == true);
-                    break;
-                case "Role: Application":
-                    CoAppWrapper.SetRoleFilter("Application", checkbox.IsChecked == true);
-                    break;
-                case "Role: Assembly":
-                    CoAppWrapper.SetRoleFilter("Assembly", checkbox.IsChecked == true);
-                    break;
-                case "Role: DeveloperLibrary":
-                    CoAppWrapper.SetRoleFilter("DeveloperLibrary", checkbox.IsChecked == true);
-                    break;
-            }
+            CoAppWrapper.SetFilterState(checkbox.Name, checkbox.IsChecked == true);
 
             var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedTreeNode != null)

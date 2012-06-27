@@ -4,6 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:self="clr-namespace:CoApp.VisualStudio.Options">
     <StackPanel>
+        <GroupBox Header="Package manager" Height="80">
+            <Grid VerticalAlignment="Top" Margin="4,4,4,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18" />
+                    <RowDefinition Height="4" />
+                    <RowDefinition Height="26" />
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0" Name="RememberFiltersCheckBox" Content="Remember filters" />
+                <WrapPanel Grid.Row="2">
+                    <TextBox Height="24" Width="40" Name="ItemsOnPageTextBox" TextChanged="OnItemsOnPageChanged" />
+                    <Label Content="items shown on page" />
+                </WrapPanel>
+            </Grid>
+        </GroupBox>
         <GroupBox Header="Package cache" Height="64">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
                 <Grid.ColumnDefinitions>

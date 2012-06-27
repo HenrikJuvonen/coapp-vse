@@ -33,6 +33,8 @@
         
         private static readonly ProgressProvider progressProvider = new ProgressProvider();
 
+        private static readonly ISettings settings = new Settings();
+
         public static CancellationTokenSource CancellationTokenSource { get; set; }
 
         public static ProgressProvider ProgressProvider { get { return progressProvider; } }
@@ -44,7 +46,28 @@
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            ResetFilters();
+            ResetFilterStates();
+            SaveFilterStates();
+
+            if (settings.GetValue("coapp", "itemsOnPage") == null)
+            {
+                settings.SetValue("coapp", "itemsOnPage", "8");
+            }
+
+            if (settings.GetValue("coapp", "update") == null)
+            {
+                settings.SetValue("coapp", "update", "nothing");
+            }
+
+            if (settings.GetValue("coapp", "restore") == null)
+            {
+                settings.SetValue("coapp", "restore", "nothing");
+            }
+
+            if (settings.GetValue("coapp", "rememberFilters") == null)
+            {
+                settings.SetValue("coapp", "rememberFilters", "False");
+            }
 
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
                 ProgressProvider.Update("Installing", name, progress));
@@ -72,103 +95,114 @@
             packageManager.Elevate().Wait();
         }
 
-        public static void ResetFilters()
-        {
-            architectureFilters.Add(Architecture.Any);
-            architectureFilters.Add(Architecture.x64);
-            architectureFilters.Add(Architecture.x86);
-
-            roleFilters.Add(PackageRole.Application);
-            roleFilters.Add(PackageRole.Assembly);
-            roleFilters.Add(PackageRole.DeveloperLibrary);
-
-            onlyHighestVersions = true;
-            onlyStableVersions = true;
-            onlyCompatibleFlavors = true;
-        }
-
         /// <summary>
-        /// Used for filtering packages by architecture in PackageManagerWindow.
+        /// Reset filter states to defaults or if they are remembered, get states from settings-file.
         /// </summary>
-        /// <param name="enabled">
-        /// If true: packages of architectureName are displayed.
-        /// </param>
-        public static void SetArchitectureFilter(string architectureName, bool enabled)
+        public static void ResetFilterStates()
         {
-            Architecture architecture = Architecture.Parse(architectureName);
+            bool rememberFilters = settings.GetValue("coapp", "rememberFilters") == "True";
 
-            if (enabled)
-                architectureFilters.Add(architecture);
-            else
-                architectureFilters.Remove(architecture);
-        }
-
-        /// <summary>
-        /// Used for filtering packages by role in PackageManagerWindow.
-        /// </summary>
-        /// <param name="enabled">
-        /// If true: packages of roleName are displayed.
-        /// </param>
-        public static void SetRoleFilter(string roleName, bool enabled)
-        {
-            PackageRole role = PackageRole.Application;
-
-            switch(roleName)
+            if (rememberFilters)
             {
-                case "Application":
-                    role = PackageRole.Application;
-                    break;
-                case "Assembly":
-                    role = PackageRole.Assembly;
-                    break;
-                case "DeveloperLibrary":
-                    role = PackageRole.DeveloperLibrary;
-                    break;
+                var values = settings.GetNestedValues("coapp", "filters");
+
+                foreach (var item in values)
+                {
+                    SetFilterState(item.Key, item.Value == "True");
+                }
+            }
+            else
+            {
+                architectureFilters.Add(Architecture.Any);
+                architectureFilters.Add(Architecture.x64);
+                architectureFilters.Add(Architecture.x86);
+
+                roleFilters.Add(PackageRole.Application);
+                roleFilters.Add(PackageRole.Assembly);
+                roleFilters.Add(PackageRole.DeveloperLibrary);
+
+                onlyHighestVersions = true;
+                onlyStableVersions = true;
+                onlyCompatibleFlavors = true;
+            }
+        }
+
+        /// <summary>
+        /// Save filter states to settings-file.
+        /// </summary>
+        public static void SaveFilterStates()
+        {
+            var values = new List<KeyValuePair<string, string>>();
+
+            values.Add(new KeyValuePair<string, string>("Highest", GetFilterState("Highest").ToString()));
+            values.Add(new KeyValuePair<string, string>("Stable", GetFilterState("Stable").ToString()));
+            values.Add(new KeyValuePair<string, string>("Compatible", GetFilterState("Compatible").ToString()));
+            values.Add(new KeyValuePair<string, string>("any", GetFilterState("any").ToString()));
+            values.Add(new KeyValuePair<string, string>("x86", GetFilterState("x86").ToString()));
+            values.Add(new KeyValuePair<string, string>("x64", GetFilterState("x64").ToString()));
+            values.Add(new KeyValuePair<string, string>("Application", GetFilterState("Application").ToString()));
+            values.Add(new KeyValuePair<string, string>("Assembly", GetFilterState("Assembly").ToString()));
+            values.Add(new KeyValuePair<string, string>("DeveloperLibrary", GetFilterState("DeveloperLibrary").ToString()));
+
+            settings.SetNestedValues("coapp", "filters", values);
+        }
+
+        /// <summary>
+        /// Gets filter states.
+        /// </summary>
+        /// <param name="name">
+        /// Highest, Stable, Compatible, any, x64, x86, Application, Assembly, DeveloperLibrary
+        /// </param>
+        public static bool GetFilterState(string name)
+        {
+            switch (name)
+            {
+                case "Highest": return onlyHighestVersions;
+                case "Stable": return onlyStableVersions;
+                case "Compatible": return onlyCompatibleFlavors;
+                case "any": return architectureFilters.Contains(Architecture.Any);
+                case "x64": return architectureFilters.Contains(Architecture.x64);
+                case "x86": return architectureFilters.Contains(Architecture.x86);
+                case "Application": return roleFilters.Contains(PackageRole.Application);
+                case "Assembly": return roleFilters.Contains(PackageRole.Assembly);
+                case "DeveloperLibrary": return roleFilters.Contains(PackageRole.DeveloperLibrary);
             }
 
-            if (enabled)
-                roleFilters.Add(role);
-            else
-                roleFilters.Remove(role);
+            return false;
         }
 
         /// <summary>
-        /// Used for filtering packages by version in PackageManagerWindow.
+        /// Sets filter states.
         /// </summary>
-        /// <param name="enabled">
-        /// If true: packages of versionName are displayed.
+        /// <param name="name">
+        /// Highest, Stable, Compatible, any, x64, x86, Application, Assembly, DeveloperLibrary
         /// </param>
-        public static void SetVersionFilter(string versionName, bool enabled)
+        public static void SetFilterState(string name, bool state)
         {
-            switch (versionName)
+            switch (name)
             {
                 case "Highest":
-                    onlyHighestVersions = enabled;
-                    break;
                 case "Stable":
-                    onlyStableVersions = enabled;
+                    SetVersionFilterState(name, state);
+                    break;
+                case "Compatible":
+                    SetFlavorFilterState(name, state);
+                    break;
+                case "any":
+                case "x64":
+                case "x86":
+                    SetArchitectureFilterState(name, state);
+                    break;
+                case "Application":
+                case "Assembly":
+                case "DeveloperLibrary":
+                    SetRoleFilterState(name, state);
                     break;
             }
         }
 
         /// <summary>
-        /// Used for filtering packages by flavor in PackageManagerWindow.
-        /// </summary>
-        /// <param name="enabled">
-        /// If true: packages of flavorName are displayed.
-        /// </param>
-        public static void SetFlavorFilter(string flavorName, bool enabled)
-        {
-            switch (flavorName)
-            {
-                case "Compatible":
-                    onlyCompatibleFlavors = enabled;
-                    break;
-            }
-        }
-        
-        /// <summary>
-        /// Used for setting package states in PackageManagerWindow.
+        /// Sets package states. (wanted, updatable, upgradable, blocked, locked)
         /// </summary>
         public static void SetPackageState(IPackage package, string state)
         {
@@ -202,7 +236,7 @@
         }
 
         /// <summary>
-        /// Used for listing feeds in FeedsOptionsControl.
+        /// Used for listing feeds in FeedOptionsControl.
         /// </summary>
         public static IEnumerable<Feed> GetFeeds()
         {
@@ -212,9 +246,7 @@
 
             try
             {
-                Task task = tasks.Continue(() => packageManager.Feeds.Continue(fds => feeds = fds));
-
-                ContinueTask(task);
+                feeds = packageManager.Feeds.Result;
             }
             catch
             {
@@ -224,7 +256,7 @@
         }
 
         /// <summary>
-        /// Used for adding a feed in FeedsOptionsControl.
+        /// Used for adding a feed in FeedOptionsControl.
         /// </summary>
         public static void AddFeed(string feedLocation)
         {
@@ -242,7 +274,7 @@
         }
 
         /// <summary>
-        /// Used for removing a feed in FeedsOptionsControl.
+        /// Used for removing a feed in FeedOptionsControl.
         /// </summary>
         public static void RemoveFeed(string feedLocation)
         {
@@ -267,8 +299,8 @@
             foreach (var pkg in packageReferences)
             {
                 result.AddRange(packages.Where(n => n.Name == pkg.Name &&
-                                               n.Version.ToString() == pkg.Version &&
-                                               n.Architecture.ToString() == pkg.Architecture));
+                                                    n.Version.ToString() == pkg.Version &&
+                                                    n.Architecture.ToString() == pkg.Architecture));
             }
 
             return result;
@@ -339,15 +371,23 @@
                                                            string location)
         {
             IEnumerable<IPackage> packages = null;
-
+            
             try
             {
                 Task task = tasks.Continue(() =>
                 {
-                    if (!CancellationTokenSource.IsCancellationRequested)
-                        packages = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location).Result;
-                });
+                    var queryTask = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location);
 
+                    try
+                    {
+                        queryTask.Wait(CancellationTokenSource.Token);
+                    }
+                    catch
+                    {
+                    }
+
+                    packages = queryTask.Result;
+                });
                 ContinueTask(task);
             }
             catch
@@ -382,8 +422,7 @@
 
                     foreach (var p in packages)
                     {
-                        if (!CancellationTokenSource.IsCancellationRequested)
-                            packageManager.Install(p.CanonicalName, false);
+                        packageManager.Install(p.CanonicalName, false);
                     }
                 });
 
@@ -443,6 +482,87 @@
             return packages;
         }
 
+
+        /// <summary>
+        /// Sets architecture filter states. (names: any, x64, x86)
+        /// </summary>
+        /// <param name="state">
+        /// If true: packages of architectureName are displayed.
+        /// </param>
+        private static void SetArchitectureFilterState(string architectureName, bool state)
+        {
+            Architecture architecture = Architecture.Parse(architectureName);
+
+            if (state)
+                architectureFilters.Add(architecture);
+            else
+                architectureFilters.Remove(architecture);
+        }
+
+        /// <summary>
+        /// Sets role filter states. (names: Application, Assembly, DeveloperLibrary)
+        /// </summary>
+        /// <param name="state">
+        /// If true: packages of roleName are displayed.
+        /// </param>
+        private static void SetRoleFilterState(string roleName, bool state)
+        {
+            PackageRole role = PackageRole.Application;
+
+            switch (roleName)
+            {
+                case "Application":
+                    role = PackageRole.Application;
+                    break;
+                case "Assembly":
+                    role = PackageRole.Assembly;
+                    break;
+                case "DeveloperLibrary":
+                    role = PackageRole.DeveloperLibrary;
+                    break;
+            }
+
+            if (state)
+                roleFilters.Add(role);
+            else
+                roleFilters.Remove(role);
+        }
+
+        /// <summary>
+        /// Sets version filter states. (names: Highest, Stable)
+        /// </summary>
+        /// <param name="state">
+        /// If true: packages of versionName are displayed.
+        /// </param>
+        private static void SetVersionFilterState(string versionName, bool state)
+        {
+            switch (versionName)
+            {
+                case "Highest":
+                    onlyHighestVersions = state;
+                    break;
+                case "Stable":
+                    onlyStableVersions = state;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Sets flavor filter states. (names: Compatible)
+        /// </summary>
+        /// <param name="state">
+        /// If true: packages of flavorName are displayed.
+        /// </param>
+        private static void SetFlavorFilterState(string flavorName, bool state)
+        {
+            switch (flavorName)
+            {
+                case "Compatible":
+                    onlyCompatibleFlavors = state;
+                    break;
+            }
+        }
+        
         private static void ContinueTask(Task task)
         {
             task.Wait();

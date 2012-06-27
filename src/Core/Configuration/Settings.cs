@@ -13,12 +13,19 @@ namespace CoApp.VisualStudio
         private readonly XDocument _config;
         private readonly string _path;
 
+        public Settings(): this(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "coapp-vse"))
+        {
+        }
+
         public Settings(string path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException("path");
             }
+
+            // directories must exist
+            Directory.CreateDirectory(path);
 
             _path = path;
 

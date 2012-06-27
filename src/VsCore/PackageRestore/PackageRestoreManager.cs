@@ -46,12 +46,7 @@ namespace CoApp.VisualStudio.VsCore
 
             _waitDialog = new WaitDialog();
 
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "coapp-vse");
-
-            // ensure that directories exist
-            Directory.CreateDirectory(path);
-
-            _settings = new Settings(path);
+            _settings = new Settings();
         }
 
         private void LoadSettings()

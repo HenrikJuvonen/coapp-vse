@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Controls;
 using CoApp.VisualStudio.VsCore;
 
 namespace CoApp.VisualStudio.Options
@@ -14,16 +15,15 @@ namespace CoApp.VisualStudio.Options
     {
         private ISettings settings;
 
+        private string _lastItemsOnPage;
+
         public GeneralOptionsControl()
         {
             InitializeBase();
             InitializeComponent();
 
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "coapp-vse");
-
-            // ensure that directories exist
-            Directory.CreateDirectory(path);
-
+            
             settings = new Settings(path);
 
             LoadSettings();
@@ -36,6 +36,9 @@ namespace CoApp.VisualStudio.Options
         {
             SaveUpdateComboBoxValue();
             SaveRestoreComboBoxValue();
+
+            settings.SetValue("coapp", "rememberFilters", (RememberFiltersCheckBox.IsChecked == true).ToString());
+            settings.SetValue("coapp", "itemsOnPage", ItemsOnPageTextBox.Text);
         }
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
@@ -62,6 +65,34 @@ namespace CoApp.VisualStudio.Options
             }
         }
 
+        private void OnItemsOnPageChanged(object sender, EventArgs e)
+        {
+            string text = ItemsOnPageTextBox.Text;
+            int result = 0;
+
+            if (text.Length > 3)
+            {
+                text = text.Substring(0, 3);
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(text))
+                {
+                    result = int.Parse(text);
+                }
+
+                ItemsOnPageTextBox.Text = text;
+                ItemsOnPageTextBox.CaretIndex = text.Length;
+
+                _lastItemsOnPage = text;
+            }
+            catch
+            {
+                ItemsOnPageTextBox.Text = _lastItemsOnPage;
+            }
+        }
+
         private void OnBrowsePackageCacheClick(object sender, EventArgs e)
         {
             Process.Start(@"C:\ProgramData\.cache\packages");
@@ -81,6 +112,8 @@ namespace CoApp.VisualStudio.Options
         {
             string update = settings.GetValue("coapp", "update");
             string restore = settings.GetValue("coapp", "restore");
+            string rememberFilters = settings.GetValue("coapp", "rememberFilters");
+            string itemsOnPage = settings.GetValue("coapp", "itemsOnPage");
 
             switch (update)
             {
@@ -109,6 +142,12 @@ namespace CoApp.VisualStudio.Options
                     RestoreComboBox.SelectedIndex = 2;
                     break;
             }
+
+            bool rememberFiltersChecked;
+            bool.TryParse(rememberFilters, out rememberFiltersChecked);
+            RememberFiltersCheckBox.IsChecked = rememberFiltersChecked;
+
+            ItemsOnPageTextBox.Text = itemsOnPage ?? "8";
         }
 
         private void SaveUpdateComboBoxValue()
@@ -144,6 +183,5 @@ namespace CoApp.VisualStudio.Options
 
             settings.SetValue("coapp", "restore", value);
         }
-
     }
 }
