@@ -282,10 +282,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // avoid more than one loading occurring at the same time
             _loadingInProgress = true;
 
-            _currentCancellationSource = new CancellationTokenSource();
-
-            CoAppWrapper.CancellationTokenSource = _currentCancellationSource;
-
             TaskScheduler uiScheduler;
             try
             {
@@ -297,10 +293,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 uiScheduler = TaskScheduler.Default;
             }
 
-            Task.Factory.StartNew(
-                (state) => ExecuteAsync(pageNumber, _currentCancellationSource.Token),
-                _currentCancellationSource,
-                _currentCancellationSource.Token).ContinueWith(QueryExecutionCompleted, uiScheduler);
+            Task.Factory.StartNew(() => ExecuteAsync(pageNumber)).ContinueWith(QueryExecutionCompleted, uiScheduler);
         }
 
         private void EnsureExtensionCollection()
@@ -328,7 +321,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// <summary>
         /// This method executes on background thread.
         /// </summary>
-        private LoadPageResult ExecuteAsync(int pageNumber, CancellationToken token)
+        private LoadPageResult ExecuteAsync(int pageNumber)
         {
             if (_query == null)
             {

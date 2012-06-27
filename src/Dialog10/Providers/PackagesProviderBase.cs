@@ -353,7 +353,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             OperationCoordinator.IsBusy = true;
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += _providerServices.WaitDialog.OnProgressAvailable;
-            CoAppWrapper.CancellationTokenSource = new System.Threading.CancellationTokenSource();
             
             var worker = new BackgroundWorker();
 

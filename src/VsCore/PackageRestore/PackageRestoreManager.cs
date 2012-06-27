@@ -132,7 +132,6 @@ namespace CoApp.VisualStudio.VsCore
             }
 
             CoAppWrapper.ProgressProvider.ProgressAvailable += _waitDialog.OnProgressAvailable;
-            CoAppWrapper.CancellationTokenSource = new System.Threading.CancellationTokenSource();
 
             _fromActivation = fromActivation;
 

@@ -35,7 +35,7 @@
 
         private static readonly ISettings settings = new Settings();
 
-        public static CancellationTokenSource CancellationTokenSource { get; set; }
+        public static CancellationTokenSource CancellationTokenSource { get; private set; }
 
         public static ProgressProvider ProgressProvider { get { return progressProvider; } }
 
@@ -44,8 +44,6 @@
         /// </summary>
         public static void Initialize()
         {
-            CancellationTokenSource = new CancellationTokenSource();
-
             ResetFilterStates();
             SaveFilterStates();
 
@@ -240,7 +238,7 @@
         /// </summary>
         public static IEnumerable<Feed> GetFeeds()
         {
-            Console.WriteLine("Fetching feed list...");
+            CancellationTokenSource = new CancellationTokenSource();
 
             IEnumerable<Feed> feeds = null;
 
@@ -260,17 +258,11 @@
         /// </summary>
         public static void AddFeed(string feedLocation)
         {
-            Console.WriteLine("Adding feed: " + feedLocation);
+            CancellationTokenSource = new CancellationTokenSource();
 
-            try
-            {
-                Task task = tasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
+            Task task = tasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
 
-                ContinueTask(task);
-            }
-            catch
-            {
-            }
+            ContinueTask(task);
         }
 
         /// <summary>
@@ -278,17 +270,11 @@
         /// </summary>
         public static void RemoveFeed(string feedLocation)
         {
-            Console.WriteLine("Removing feed: " + feedLocation);
+            CancellationTokenSource = new CancellationTokenSource();
 
-            try
-            {
-                Task task = tasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
+            Task task = tasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
 
-                ContinueTask(task);
-            }
-            catch
-            {
-            }
+            ContinueTask(task);
         }
 
         public static IEnumerable<IPackage> GetPackages(IEnumerable<PackageReference> packageReferences)
@@ -370,29 +356,19 @@
                                                            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
+            CancellationTokenSource = new CancellationTokenSource();
+
             IEnumerable<IPackage> packages = null;
             
-            try
+            Task task = tasks.Continue(() =>
             {
-                Task task = tasks.Continue(() =>
-                {
-                    var queryTask = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location);
+                var queryTask = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location);
 
-                    try
-                    {
-                        queryTask.Wait(CancellationTokenSource.Token);
-                    }
-                    catch
-                    {
-                    }
+                ContinueTask(queryTask);
 
-                    packages = queryTask.Result;
-                });
-                ContinueTask(task);
-            }
-            catch
-            {
-            }
+                packages = queryTask.Result;
+            });
+            ContinueTask(task);
 
             return packages ?? Enumerable.Empty<IPackage>();
         }
@@ -410,27 +386,22 @@
         /// </summary>
         public static void InstallPackages(IEnumerable<IPackage> packages)
         {
-            if (CancellationTokenSource.IsCancellationRequested)
-                return;
+            CancellationTokenSource = new CancellationTokenSource();
 
-            try
+            Task task = tasks.Continue(() =>
             {
-                Task task = tasks.Continue(() =>
+                foreach (var p in packages)
                 {
-                    if (CancellationTokenSource.IsCancellationRequested)
-                        return;
-
-                    foreach (var p in packages)
+                    if (!CancellationTokenSource.IsCancellationRequested)
                     {
-                        packageManager.Install(p.CanonicalName, false);
-                    }
-                });
+                        var installTask = packageManager.Install(p.CanonicalName, false);
 
-                ContinueTask(task);
-            }
-            catch
-            {
-            }
+                        ContinueTask(installTask);
+                    }
+                }
+            });
+
+            ContinueTask(task);
         }
 
         /// <summary>
@@ -438,24 +409,26 @@
         /// </summary>
         public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
-            try
-            {
-                IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
-                if (removeDependencies)
-                {
-                    canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
-                }
-                Task task = tasks.Continue(() =>
-                    {
-                        if (!CancellationTokenSource.IsCancellationRequested)
-                            packageManager.RemovePackages(canonicalNames, true);
-                    });
+            CancellationTokenSource = new CancellationTokenSource();
 
-                ContinueTask(task);
-            }
-            catch
+            IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
+
+            if (removeDependencies)
             {
+                canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
             }
+
+            Task task = tasks.Continue(() =>
+                {
+                    if (!CancellationTokenSource.IsCancellationRequested)
+                    {
+                        var uninstallTask = packageManager.RemovePackages(canonicalNames, true);
+
+                        ContinueTask(uninstallTask);
+                    }
+                });
+
+            ContinueTask(task);
         }
 
         /// <summary>
@@ -565,7 +538,13 @@
         
         private static void ContinueTask(Task task)
         {
-            task.Wait();
+            try
+            {
+                task.Wait(CancellationTokenSource.Token);
+            }
+            catch
+            {
+            }
         }
     }
 }
