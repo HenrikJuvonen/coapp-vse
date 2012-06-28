@@ -39,6 +39,8 @@ namespace CoApp.VisualStudio.Options
 
             settings.SetValue("coapp", "rememberFilters", (RememberFiltersCheckBox.IsChecked == true).ToString());
             settings.SetValue("coapp", "itemsOnPage", ItemsOnPageTextBox.Text);
+
+            CoAppWrapper.SetTelemetry(TelemetryCheckBox.IsChecked == true);
         }
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
@@ -148,6 +150,8 @@ namespace CoApp.VisualStudio.Options
             RememberFiltersCheckBox.IsChecked = rememberFiltersChecked;
 
             ItemsOnPageTextBox.Text = itemsOnPage ?? "8";
+
+            TelemetryCheckBox.IsChecked = CoAppWrapper.GetTelemetry();
         }
 
         private void SaveUpdateComboBoxValue()

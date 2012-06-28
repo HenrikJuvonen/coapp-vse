@@ -89,9 +89,7 @@ namespace CoApp.VisualStudio.Options
 
             Task.Factory.StartNew(() =>
             {
-                var feeds = CoAppWrapper.GetFeeds().Select(feed => feed.Location);
-
-                SetFeedsListBoxItemsSource(feeds);
+                SetFeedsListBoxItemsSource(CoAppWrapper.GetFeedLocations());
             });
         }
 

@@ -33,9 +33,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private bool _isExpanded;
         private bool _isSelected;
         private bool _loadingInProgress;
-
-        private CancellationTokenSource _currentCancellationSource;
-        
+                
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<EventArgs> PageDataChanged;
 
@@ -311,11 +309,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             Debug.WriteLine("Cancelling pending extensions query.");
 
-            if (_currentCancellationSource != null)
-            {
-                _currentCancellationSource.Cancel();
-                _loadingInProgress = false;
-            }
+            _loadingInProgress = false;
         }
 
         /// <summary>
@@ -335,12 +329,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 pageNumber = Math.Min(pageNumber, maximumPages);
 
                 // Apply the ordering then sort by name
-                IQueryable<IPackage> orderedQuery = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
-
-                _query = orderedQuery.AsEnumerable();
+                _query = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
             }
 
-            IEnumerable<IPackage> packages = _query.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+            var filteredQuery = ApplyFiltering(_query);
+
+            var packages = filteredQuery.Skip((pageNumber - 1) * PageSize).Take(PageSize);
                         
             if (packages.Count() < PageSize)
             {
@@ -348,6 +342,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
             
             return new LoadPageResult(packages, pageNumber, _totalCount);
+        }
+
+        private IEnumerable<IPackage> ApplyFiltering(IEnumerable<IPackage> query)
+        {
+            return CoAppWrapper.FilterPackages(query, VsCore.VsVersionHelper.VsMajorVersion);
         }
 
         private IOrderedQueryable<IPackage> ApplyOrdering(IQueryable<IPackage> query)
@@ -389,18 +388,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // If a task throws, the exception must be handled or the Exception
             // property must be accessed or the exception will tear down the process when finalized
             Exception exception = task.Exception;
-
-            if (task.IsFaulted)
-            {
-                
-            }
-
-            var cancellationSource = (CancellationTokenSource)task.AsyncState;
-            if (cancellationSource != _currentCancellationSource)
-            {
-                return;
-            }
-
+            
             _loadingInProgress = false;
 
             // Only process the result if this node is still selected.

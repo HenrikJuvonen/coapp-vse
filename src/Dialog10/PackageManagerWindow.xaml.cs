@@ -324,10 +324,15 @@ namespace CoApp.VisualStudio.Dialog
 
             CoAppWrapper.SetFilterState(checkbox.Name, checkbox.IsChecked == true);
 
-            var selectedTreeNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
-            if (selectedTreeNode != null)
+            var selectedProvider = explorer.SelectedProvider;
+
+            if (selectedProvider != null)
             {
-                selectedTreeNode.Refresh(resetQueryBeforeRefresh: true);
+                foreach (PackagesTreeNodeBase node in selectedProvider.ExtensionsTree.Nodes)
+                {
+                    node.CurrentPage = 1;
+                    node.Refresh();
+                }
             }
         }
 

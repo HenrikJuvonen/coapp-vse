@@ -18,7 +18,7 @@
                 </WrapPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Package cache" Height="64">
+        <GroupBox Header="Package cache" Height="58">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="108" />
@@ -29,7 +29,16 @@
                 <Button Grid.Column="2" Content="Browse..." Click="OnBrowsePackageCacheClick" />
             </Grid>
         </GroupBox>
-        <GroupBox Header="Automatic updates" Height="64">
+        <GroupBox Header="Automatic restore" Height="58">
+            <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
+                <ComboBox Name="RestoreComboBox" MouseEnter="OnRestoreComboBoxMouseEnter">
+                    <ComboBoxItem Content="{x:Static self:Resources.Restore_Automatic}" />
+                    <ComboBoxItem Content="{x:Static self:Resources.Restore_Notify}" />
+                    <ComboBoxItem Content="{x:Static self:Resources.Restore_DoNothing}" />
+                </ComboBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Automatic updates" Height="58">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
                 <ComboBox Name="UpdateComboBox" IsEnabled="False" MouseEnter="OnUpdateComboBoxMouseEnter">
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Automatic}" />
@@ -38,13 +47,9 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Automatic restore" Height="64">
+        <GroupBox Header="Telemetry" Height="48">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="RestoreComboBox" MouseEnter="OnRestoreComboBoxMouseEnter">
-                    <ComboBoxItem Content="{x:Static self:Resources.Restore_Automatic}" />
-                    <ComboBoxItem Content="{x:Static self:Resources.Restore_Notify}" />
-                    <ComboBoxItem Content="{x:Static self:Resources.Restore_DoNothing}" />
-                </ComboBox>
+                <CheckBox Name="TelemetryCheckBox" Content="Enable anonymous feedback" />
             </Grid>
         </GroupBox>
     </StackPanel>

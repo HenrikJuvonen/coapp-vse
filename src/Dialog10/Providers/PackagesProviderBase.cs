@@ -185,12 +185,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // Keep it responsive...
             Task.Factory.StartNew(() =>
                 {
-                    IEnumerable<Feed> feeds = CoAppWrapper.GetFeeds();
+                    IEnumerable<string> feeds = CoAppWrapper.GetFeedLocations();
 
                     IEnumerable<string> hosts = new HashSet<string>(
                         feeds.Select(f =>
                         {
-                            Uri uri = new Uri(f.Location);
+                            Uri uri = new Uri(f);
                             return uri.Host;
                         }));
 
@@ -200,9 +200,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
                         var treeNode = (IVsExtensionsTreeNode)new AggregateTreeNode(RootNode, this, aggregateName);
 
-                        foreach (Feed f in feeds)
+                        foreach (string f in feeds)
                         {
-                            Uri uri = new Uri(f.Location);
+                            Uri uri = new Uri(f);
 
                             if (uri.Host == host)
                             {
@@ -213,7 +213,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                                     name = Path.GetFileNameWithoutExtension(name);
                                 }
 
-                                treeNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(treeNode, this, name, f.Location, type));
+                                treeNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(treeNode, this, name, f, type));
                             }
                         }
 

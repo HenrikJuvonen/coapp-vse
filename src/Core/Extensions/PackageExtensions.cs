@@ -9,12 +9,9 @@ namespace CoApp.VisualStudio
     {
         public static string GetPath(this IPackage package)
         {
-            string architecture =
-                package.Architecture == "x64" ? " (x64)" :
-                package.Architecture == "x86" ? " (x86)" : "";
+            var installedDirectory = PackageManagerSettings.CoAppInstalledDirectory.First(n => n.Key == package.Architecture).Value;
 
-            return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
-                + string.Format(@"\Program Files{0}\Outercurve Foundation\{1}\", architecture, package.CanonicalName.PackageName);
+            return string.Format(@"{0}\Outercurve Foundation\{1}\", installedDirectory, package.CanonicalName.PackageName);
         }
 
         public static string GetDevType(this IPackage package)

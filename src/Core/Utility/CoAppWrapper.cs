@@ -94,6 +94,22 @@
         }
 
         /// <summary>
+        /// Set telemetry enabled/disabled.
+        /// </summary>
+        public static void SetTelemetry(bool state)
+        {
+            packageManager.SetTelemetry(state);
+        }
+
+        /// <summary>
+        /// Get telemetry.
+        /// </summary>
+        public static bool GetTelemetry()
+        {
+            return packageManager.GetTelemetry().Result;
+        }
+
+        /// <summary>
         /// Reset filter states to defaults or if they are remembered, get states from settings-file.
         /// </summary>
         public static void ResetFilterStates()
@@ -236,21 +252,11 @@
         /// <summary>
         /// Used for listing feeds in FeedOptionsControl.
         /// </summary>
-        public static IEnumerable<Feed> GetFeeds()
+        public static IEnumerable<string> GetFeedLocations()
         {
-            CancellationTokenSource = new CancellationTokenSource();
+            IEnumerable<string> feeds = PackageManagerSettings.PerFeedSettings.Subkeys;
 
-            IEnumerable<Feed> feeds = null;
-
-            try
-            {
-                feeds = packageManager.Feeds.Result;
-            }
-            catch
-            {
-            }
-
-            return feeds ?? Enumerable.Empty<Feed>();
+            return feeds ?? Enumerable.Empty<string>();
         }
 
         /// <summary>
@@ -311,9 +317,6 @@
                 return QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
             }
 
-            if (onlyHighestVersions)
-                collectionFilter = collectionFilter.Then(p => p.HighestPackages());
-
             packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
 
             if (type == "updatable")
@@ -321,7 +324,7 @@
                 packages = packages.Select(package => package.AvailableNewestUpdate);
             }
 
-            return FilterPackages(packages, vsMajorVersion);
+            return packages; //FilterPackages(packages, vsMajorVersion);
         }
 
         /// <summary>
@@ -366,7 +369,13 @@
 
                 ContinueTask(queryTask);
 
-                packages = queryTask.Result;
+                try
+                {
+                    packages = queryTask.Result;
+                }
+                catch
+                {
+                }
             });
             ContinueTask(task);
 
@@ -434,7 +443,7 @@
         /// <summary>
         /// Used for filtering packages.
         /// </summary>
-        private static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, int vsMajorVersion)
+        public static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, int vsMajorVersion)
         {
             packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
 
@@ -446,6 +455,9 @@
                     packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
                                                          package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
             }
+
+            if (onlyHighestVersions)
+                packages = packages.Where(package => !package.NewerPackages.Any());
 
             if (onlyStableVersions)
                 packages = packages.Where(package => package.PackageDetails.Stability == 0);

@@ -18,12 +18,7 @@ namespace CoApp.VisualStudio
             Path = path;
             Libraries = libraries;
         }
-
-        public string ToString()
-        {
-            return string.Format("{0}{1}-{2}-{3}", Name, Flavor, Version, Architecture);
-        }
-
+        
         public string Name { get; private set; }
         public string Flavor { get; private set; }
         public string Version { get; private set; }
