@@ -344,8 +344,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return new LoadPageResult(packages, pageNumber, _totalCount);
         }
 
-        private IEnumerable<IPackage> ApplyFiltering(IEnumerable<IPackage> query)
-        {
+        protected virtual IEnumerable<IPackage> ApplyFiltering(IEnumerable<IPackage> query)
+        {            
             return CoAppWrapper.FilterPackages(query, VsCore.VsVersionHelper.VsMajorVersion);
         }
 

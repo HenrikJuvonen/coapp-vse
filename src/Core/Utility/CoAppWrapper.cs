@@ -457,7 +457,19 @@
             }
 
             if (onlyHighestVersions)
-                packages = packages.Where(package => !package.NewerPackages.Any());
+            {
+                var highestPackages = new List<IPackage>(packages);
+
+                foreach (var package in packages)
+                {
+                    if (highestPackages.Where(n => n.Name == package.Name && n.Flavor == package.Flavor).Any(n => n.Version > package.Version))
+                    {
+                        highestPackages.Remove(package);
+                    }
+                }
+
+                packages = highestPackages;
+            }
 
             if (onlyStableVersions)
                 packages = packages.Where(package => package.PackageDetails.Stability == 0);

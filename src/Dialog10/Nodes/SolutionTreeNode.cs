@@ -66,5 +66,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
             return resultPackages;
         }
+
+        protected override IEnumerable<IPackage> ApplyFiltering(IEnumerable<IPackage> query)
+        {
+            return query;
+        }
     }
 }
