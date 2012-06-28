@@ -3,13 +3,11 @@ CoApp for Visual Studio
 
 CoApp for Visual Studio is an extension for managing CoApp-packages within Visual Studio. It makes it possible to add/remove libraries to Visual Studio -projects (both native C++ and .NET) easily with a GUI without opening a web browser or a file archiver.
 
-The extension requires Visual Studio 2010 SP1 and the latest CoApp to work.
-
 ![Solution Explorer](https://github.com/henjuv/coapp-vse/blob/master/content/solutionexplorer.jpg?raw=true)
 
 ## Requirements
 
-- CoApp 1.2.0.412
+- CoApp 1.2.0.430
 - Visual Studio 2010 SP1
 - Visual Studio 2010 SP1 SDK
 

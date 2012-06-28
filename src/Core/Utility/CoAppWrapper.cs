@@ -256,7 +256,14 @@
         {
             IEnumerable<string> feeds = PackageManagerSettings.PerFeedSettings.Subkeys;
 
-            return feeds ?? Enumerable.Empty<string>();
+            var decodedFeeds = new List<string>();
+
+            foreach (var f in feeds)
+            {
+                decodedFeeds.Add(CoApp.Toolkit.Text.HttpUtility.UrlDecode(f));
+            }
+
+            return decodedFeeds ?? Enumerable.Empty<string>();
         }
 
         /// <summary>

@@ -100,14 +100,14 @@ namespace CoApp.VisualStudio.Options
             Process.Start(@"C:\ProgramData\.cache\packages");
         }
 
-        private void OnUpdateComboBoxMouseEnter(object sender, EventArgs e)
+        private void OnMouseEnter(object sender, EventArgs e)
         {
-            UpdateComboBox.Focus();
+            ((System.Windows.UIElement)sender).Focus();
         }
 
-        private void OnRestoreComboBoxMouseEnter(object sender, EventArgs e)
+        private void OnMouseLeave(object sender, EventArgs e)
         {
-            RestoreComboBox.Focus();
+            Dummy.Focus();
         }
 
         private void LoadSettings()

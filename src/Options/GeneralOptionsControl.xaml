@@ -31,7 +31,7 @@
         </GroupBox>
         <GroupBox Header="Automatic restore" Height="58">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="RestoreComboBox" MouseEnter="OnRestoreComboBoxMouseEnter">
+                <ComboBox Name="RestoreComboBox" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_Automatic}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_Notify}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Restore_DoNothing}" />
@@ -40,7 +40,7 @@
         </GroupBox>
         <GroupBox Header="Automatic updates" Height="58">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="UpdateComboBox" IsEnabled="False" MouseEnter="OnUpdateComboBoxMouseEnter">
+                <ComboBox Name="UpdateComboBox" IsEnabled="False" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Automatic}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Notify}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Update_DoNothing}" />
@@ -52,5 +52,6 @@
                 <CheckBox Name="TelemetryCheckBox" Content="Enable anonymous feedback" />
             </Grid>
         </GroupBox>
+        <CheckBox Name="Dummy" Width="0" Height="0" IsTabStop="False"/>
     </StackPanel>
 </self:WpfControl>
