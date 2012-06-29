@@ -414,6 +414,8 @@
                 foreach (var p in packages)
                 {
                     packageList.Add((Package)p);
+
+                    ProgressProvider.Update("Waiting", p.CanonicalName);
                 }
 
                 if (!CancellationTokenSource.IsCancellationRequested)
@@ -461,6 +463,8 @@
                 {
                     if (!CancellationTokenSource.IsCancellationRequested)
                     {
+                        ProgressProvider.Update("Waiting", package.CanonicalName);
+
                         var uninstallTask = packageManager.RemovePackages(canonicalNames, true);
 
                         ContinueTask(uninstallTask);
