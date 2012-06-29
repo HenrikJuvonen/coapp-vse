@@ -77,7 +77,10 @@
                 <DataGridTemplateColumn Header="PercentComplete" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ProgressBar Value="{Binding PercentComplete}" />
+                            <DataTemplate.Resources>
+                                <self:ProgressToBooleanConverter x:Key="ProgressToBooleanConverter" />
+                            </DataTemplate.Resources>
+                            <ProgressBar Value="{Binding PercentComplete}" IsIndeterminate="{Binding PercentComplete, Converter={StaticResource ProgressToBooleanConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

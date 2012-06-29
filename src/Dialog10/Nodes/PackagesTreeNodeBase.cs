@@ -319,6 +319,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             if (_query == null)
             {
+                CoAppWrapper.SetNewCancellationTokenSource();
+
                 IQueryable<IPackage> query = GetPackages().AsQueryable();
 
                 // Execute the total count query

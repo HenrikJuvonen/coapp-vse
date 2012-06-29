@@ -40,6 +40,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override bool ExecuteCore(PackageItem item)
         {
+            CoAppWrapper.SetNewCancellationTokenSource();
+
             ShowWaitDialog();
             CoAppWrapper.InstallPackage(item.PackageIdentity);
 

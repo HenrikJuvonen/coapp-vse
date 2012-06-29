@@ -93,6 +93,11 @@
             packageManager.Elevate().Wait();
         }
 
+        public static void SetNewCancellationTokenSource()
+        {
+            CancellationTokenSource = new CancellationTokenSource();
+        }
+
         /// <summary>
         /// Set telemetry enabled/disabled.
         /// </summary>
@@ -271,11 +276,12 @@
         /// </summary>
         public static void AddFeed(string feedLocation)
         {
-            CancellationTokenSource = new CancellationTokenSource();
+            if (!feedLocation.IsWebUri())
+            {
+                feedLocation = feedLocation.CanonicalizePathWithWildcards();
+            }
 
-            Task task = tasks.Continue(() => packageManager.AddSystemFeed(feedLocation));
-
-            ContinueTask(task);
+            PackageManagerSettings.PerFeedSettings[feedLocation.UrlEncodeJustBackslashes(), "state"].SetEnumValue(FeedState.Active);
         }
 
         /// <summary>
@@ -285,7 +291,7 @@
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            Task task = tasks.Continue(() => packageManager.RemoveSystemFeed(feedLocation));
+            Task task = packageManager.RemoveSystemFeed(feedLocation);
 
             ContinueTask(task);
         }
@@ -366,8 +372,6 @@
                                                            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
-            CancellationTokenSource = new CancellationTokenSource();
-
             IEnumerable<IPackage> packages = null;
             
             Task task = tasks.Continue(() =>
@@ -402,11 +406,32 @@
         /// </summary>
         public static void InstallPackages(IEnumerable<IPackage> packages)
         {
-            CancellationTokenSource = new CancellationTokenSource();
-
             Task task = tasks.Continue(() =>
             {
+                IEnumerable<Package> plan = Enumerable.Empty<Package>();
+
+                var packageList = new List<Package>();
                 foreach (var p in packages)
+                {
+                    packageList.Add((Package)p);
+                }
+
+                if (!CancellationTokenSource.IsCancellationRequested)
+                {
+                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(packageList, false, true);
+
+                    ContinueTask(planTask);
+
+                    try
+                    {
+                        plan = planTask.Result;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                foreach (var p in plan)
                 {
                     if (!CancellationTokenSource.IsCancellationRequested)
                     {
@@ -417,7 +442,7 @@
                 }
             });
 
-            ContinueTask(task);
+            ContinueTask(task, allowCancellation: false);
         }
 
         /// <summary>
@@ -425,8 +450,6 @@
         /// </summary>
         public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
-            CancellationTokenSource = new CancellationTokenSource();
-
             IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
 
             if (removeDependencies)
@@ -444,7 +467,7 @@
                     }
                 });
 
-            ContinueTask(task);
+            ContinueTask(task, allowCancellation: false);
         }
 
         /// <summary>
@@ -567,11 +590,18 @@
             }
         }
         
-        private static void ContinueTask(Task task)
+        private static void ContinueTask(Task task, bool allowCancellation = true)
         {
             try
             {
-                task.Wait(CancellationTokenSource.Token);
+                if (allowCancellation)
+                {
+                    task.Wait(CancellationTokenSource.Token);
+                }
+                else
+                {
+                    task.Wait();
+                }
             }
             catch
             {

@@ -131,6 +131,8 @@ namespace CoApp.VisualStudio.VsCore
                 throw new InvalidOperationException("solution not available");
             }
 
+            CoAppWrapper.SetNewCancellationTokenSource();
+
             CoAppWrapper.ProgressProvider.ProgressAvailable += _waitDialog.OnProgressAvailable;
 
             _fromActivation = fromActivation;

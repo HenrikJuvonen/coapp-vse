@@ -157,6 +157,11 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     operation = "Complete";
                 }
+                else
+                {
+                    operation = "Waiting ...";
+                    percentComplete = 0;
+                }
             }
             
             var canonicalName = CanonicalName.Parse(message);
@@ -179,7 +184,7 @@ namespace CoApp.VisualStudio.VsCore
                 table.Add(e);
             }
 
-            if (DataGrid.Items.Count > 0)
+            if (DataGrid.Items.Count > 1)
             {
                 var border = VisualTreeHelper.GetChild(DataGrid, 0) as Decorator;
                 if (border != null)
@@ -195,7 +200,7 @@ namespace CoApp.VisualStudio.VsCore
             CoAppWrapper.CancellationTokenSource.Cancel();
             CancelButton.IsEnabled = false;
             IsCanceled = true;
-            Operation.Text = "Canceling ...";
+            Operation.Text = "Waiting for current tasks to complete ...";
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -212,6 +217,18 @@ namespace CoApp.VisualStudio.VsCore
         public WaitDialogViewModel(ref ObservableCollection<ProgressEvent> table)
         {
             Table = CollectionViewSource.GetDefaultView(table);
+        }
+    }
+
+    internal class ProgressToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return (int)value == 0;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
