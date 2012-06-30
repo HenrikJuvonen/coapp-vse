@@ -120,16 +120,21 @@ namespace CoApp.VisualStudio.Dialog
             PackageReference packageReference,
             string config)
         {
-            string[] files = Directory.GetFiles(packageReference.Path + "lib", "*.lib");
+            string path = packageReference.Path + "lib";
 
-            foreach (string file in files)
+            if (Directory.Exists(path))
             {
-                string filename = Path.GetFileName(file);
+                string[] files = Directory.GetFiles(path, "*.lib");
 
-                yield return new LibraryNode(project, filename)
+                foreach (string file in files)
                 {
-                    IsSelected = DetermineCheckState(packageReference, project, config, filename)
-                };
+                    string filename = Path.GetFileName(file);
+
+                    yield return new LibraryNode(project, filename)
+                    {
+                        IsSelected = DetermineCheckState(packageReference, project, config, filename)
+                    };
+                }
             }
         }
 
@@ -137,16 +142,21 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            string[] files = Directory.GetFiles(packageReference.Path + "ReferenceAssemblies", "*.dll");
+            string path = packageReference.Path + "ReferenceAssemblies";
 
-            foreach (string file in files)
+            if (Directory.Exists(path))
             {
-                string filename = Path.GetFileName(file);
+                string[] files = Directory.GetFiles(path, "*.dll");
 
-                yield return new LibraryNode(project, filename)
+                foreach (string file in files)
                 {
-                    IsSelected = DetermineCheckState(packageReference, project, null, filename)
-                };
+                    string filename = Path.GetFileName(file);
+
+                    yield return new LibraryNode(project, filename)
+                    {
+                        IsSelected = DetermineCheckState(packageReference, project, null, filename)
+                    };
+                }
             }
         }
 
