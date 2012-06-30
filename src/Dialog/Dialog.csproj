@@ -105,6 +105,9 @@
       <Link>PackageSortDescriptor.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="..\CommonAssemblyInfo.cs">
+		<Link>Properties\CommonAssemblyInfo.cs</Link>
+	</Compile>
     <Compile Include="..\Dialog10\Providers\InstalledProvider.cs">
       <Link>Providers\InstalledProvider.cs</Link>
     </Compile>

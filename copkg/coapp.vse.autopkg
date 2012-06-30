@@ -3,13 +3,11 @@
 
 package {
     name: "CoApp.Vse";
-	version: "0.2.0.0";
-	architecture: "any";
     display-name: "CoApp for Visual Studio";
 }
 
 provides {
-    feature: "coapp.vse" = "0.2.0.0";
+    feature: "coapp.vse" = "0.4";
 }
 
 metadata {
@@ -17,7 +15,7 @@ metadata {
 	description: "";
 	icon: @"images\logo3.png";
 	
-    author-version : "0.2.0.0";
+    author-version : "0.4";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
     stability : "-100";
 }
@@ -26,7 +24,7 @@ compatability-policy {
     minimum: "0.0.0.0";
     maximum: "${OneLessThanCurrent}";
     versions : {
-        "0.2.0.0",
+        "0.4",
     };
 }
 
@@ -60,13 +58,13 @@ files[other] {
 
 application {
     include : {
-        dlls
+        all
     };
 }
 
 package-composition {
     symlinks : {
-        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\CoApp Project, Outercurve Foundation\CoApp for Visual Studio\0.2.0\${each.Name}" = @"${packagedir}\${each.Name}";
+        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\CoApp Project, Outercurve Foundation\CoApp for Visual Studio\0.4\${each.Name}" = @"${packagedir}\${each.Name}";
 
     };
 }

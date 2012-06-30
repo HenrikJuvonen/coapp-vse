@@ -69,6 +69,9 @@
     </Compile>
     <Compile Include="PackageSortDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="..\CommonAssemblyInfo.cs">
+		<Link>Properties\CommonAssemblyInfo.cs</Link>
+	</Compile>
     <Compile Include="Providers\InstalledProvider.cs" />
     <Compile Include="Providers\OnlineProvider.cs" />
     <Compile Include="Providers\PackagesProviderBase.cs" />

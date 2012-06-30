@@ -1,6 +1,5 @@
 #product-info {
     product-name: "CoApp for Visual Studio";
-    version: "0.2.0";
     original-source-location: "git@github.com:henjuv/coapp-vse.git";
     original-source-website: "https://github.com/henjuv/coapp-vse";
     license: "Apache2.0";
@@ -61,6 +60,7 @@ anycpu {
     };
 
     build-command: @"
+		cscript //e:jscript copkg\increment-build-version.js
         msbuild /p:Configuration=${cfg} coapp-vse.sln /verbosity:q /nologo || goto failed
     ";
 }

@@ -1,9 +1,8 @@
 package {
-    location: "";
-    feed: "";
+	location: "C:\${OutputFilename}";
+    feed: "C:\feed.atom.xml";
     publisher: "CoApp Project";
 }
-
 
 metadata {
     licenses : {

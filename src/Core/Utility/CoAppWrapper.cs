@@ -10,7 +10,6 @@
     using CoApp.Packaging.Client;
     using CoApp.Packaging.Common;
     using CoApp.Packaging.Common.Model;
-    using CoApp.Packaging.Common.Exceptions;
     using CoApp.Toolkit.Exceptions;
     using CoApp.Toolkit.Extensions;
     using CoApp.Toolkit.Linq;
