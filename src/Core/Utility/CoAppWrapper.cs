@@ -40,6 +40,8 @@
 
         public static ProgressProvider ProgressProvider { get { return progressProvider; } }
 
+        public static string ErrorMessage { get; private set; }
+
         /// <summary>
         /// Initializes the CoAppWrapper.
         /// </summary>
@@ -373,6 +375,8 @@
                                                            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
+            ErrorMessage = null;
+
             IEnumerable<IPackage> packages = null;
             
             Task task = tasks.Continue(() =>
@@ -407,6 +411,8 @@
         /// </summary>
         public static void InstallPackages(IEnumerable<IPackage> packages)
         {
+            ErrorMessage = null;
+
             Task task = tasks.Continue(() =>
             {
                 IEnumerable<Package> plan = Enumerable.Empty<Package>();
@@ -453,6 +459,8 @@
         /// </summary>
         public static void RemovePackage(IPackage package, bool removeDependencies = false)
         {
+            ErrorMessage = null;
+
             IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
 
             if (removeDependencies)
@@ -604,7 +612,8 @@
                         if (exception is CoAppException ||
                             exception is OperationCompletedBeforeResultException)
                         {
-                            ProgressProvider.Update("Error", exception.Unwrap().Message);
+                            ErrorMessage = exception.Unwrap().Message;
+                            ProgressProvider.Update("Error", ErrorMessage);
                         }
                     });
 

@@ -8,7 +8,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using CoApp.Packaging.Common;
-using CoApp.Packaging.Client;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
 
@@ -401,12 +400,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             _providerServices.WaitDialog.Hide();
 
-            SelectedNode.Refresh(true);
-
-            // Give time for error messages
-            Thread.Sleep(100);
+            Thread.Sleep(10);
 
             CoAppWrapper.ProgressProvider.ProgressAvailable -= _providerServices.WaitDialog.OnProgressAvailable;
+
+            SelectedNode.Refresh(true);
         }
     }
 }

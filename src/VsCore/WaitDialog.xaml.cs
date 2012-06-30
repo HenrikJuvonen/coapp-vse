@@ -31,7 +31,7 @@ namespace CoApp.VisualStudio.VsCore
         private bool IsOpen;
 
         public bool IsCancelled { get; set; }
-
+        
         public WaitDialog()
         {
             InitializeComponent();
@@ -118,13 +118,16 @@ namespace CoApp.VisualStudio.VsCore
                 return;
             }
 
-            MessageBox.Show(
-                Owner ?? this,
-                message,
-                VsResources.DialogTitle,
-                MessageBoxButton.OK,
-                image,
-                MessageBoxResult.None);
+            if (Owner != null)
+            {
+                MessageBox.Show(
+                    Owner,
+                    message,
+                    VsResources.DialogTitle,
+                    MessageBoxButton.OK,
+                    image,
+                    MessageBoxResult.None);
+            }
         }
 
         public bool? ShowQueryDialog(string message, bool showCancelButton)
