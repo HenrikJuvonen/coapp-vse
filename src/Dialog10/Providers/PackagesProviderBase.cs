@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -390,8 +391,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             OperationCoordinator.IsBusy = false;
 
-            CoAppWrapper.ProgressProvider.ProgressAvailable -= _providerServices.WaitDialog.OnProgressAvailable;
-
             if (e.Error == null)
             {
                 if (!e.Cancelled)
@@ -403,6 +402,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
             _providerServices.WaitDialog.Hide();
 
             SelectedNode.Refresh(true);
+
+            // Give time for error messages
+            Thread.Sleep(100);
+
+            CoAppWrapper.ProgressProvider.ProgressAvailable -= _providerServices.WaitDialog.OnProgressAvailable;
         }
     }
 }

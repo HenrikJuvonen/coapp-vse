@@ -11,6 +11,7 @@
     using CoApp.Packaging.Common;
     using CoApp.Packaging.Common.Model;
     using CoApp.Packaging.Common.Exceptions;
+    using CoApp.Toolkit.Exceptions;
     using CoApp.Toolkit.Extensions;
     using CoApp.Toolkit.Linq;
     using CoApp.Toolkit.Tasks;
@@ -598,6 +599,15 @@
         {
             try
             {
+                task.ContinueOnFail(exception =>
+                    {
+                        if (exception is CoAppException ||
+                            exception is OperationCompletedBeforeResultException)
+                        {
+                            ProgressProvider.Update("Error", exception.Unwrap().Message);
+                        }
+                    });
+
                 if (allowCancellation)
                 {
                     task.Wait(CancellationTokenSource.Token);

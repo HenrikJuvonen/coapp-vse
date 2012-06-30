@@ -30,7 +30,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private bool IsOpen;
 
-        public bool IsCanceled { get; set; }
+        public bool IsCancelled { get; set; }
 
         public WaitDialog()
         {
@@ -45,18 +45,16 @@ namespace CoApp.VisualStudio.VsCore
         {
             if (e.Operation == "Error")
             {
-                Hide();
-                MessageHelper.ShowErrorMessage(e.Message, null);
-                return;
+                ShowMessageDialog(MessageBoxImage.Error, e.Message);
             }
             else if (e.Operation == "Info")
             {
-                Hide();
-                MessageHelper.ShowInfoMessage(e.Message, null);
-                return;
+                ShowMessageDialog(MessageBoxImage.Information, e.Message);
             }
-
-            Update(e.Operation + " ...", e.Message, e.PercentComplete);
+            else
+            {
+                Update(e.Operation + " ...", e.Message, e.PercentComplete);
+            }
         }
 
         public void Show(string operation, Window owner = null)
@@ -108,8 +106,25 @@ namespace CoApp.VisualStudio.VsCore
         {
             Operation.Text = null;
             CancelButton.IsEnabled = true;
-            IsCanceled = false;
+            IsCancelled = false;
             table.Clear();
+        }
+
+        public void ShowMessageDialog(MessageBoxImage image, string message)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action<MessageBoxImage, string>(ShowMessageDialog), image, message);
+                return;
+            }
+
+            MessageBox.Show(
+                Owner ?? this,
+                message,
+                VsResources.DialogTitle,
+                MessageBoxButton.OK,
+                image,
+                MessageBoxResult.None);
         }
 
         public bool? ShowQueryDialog(string message, bool showCancelButton)
@@ -199,7 +214,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             CoAppWrapper.CancellationTokenSource.Cancel();
             CancelButton.IsEnabled = false;
-            IsCanceled = true;
+            IsCancelled = true;
             Operation.Text = "Waiting for current tasks to complete ...";
         }
 

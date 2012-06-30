@@ -38,10 +38,10 @@ namespace CoApp.VisualStudio
             {
                 List<Library> libraries = new List<Library>();
 
-                string name = e.Attribute("name").Value;
-                string flavor = e.Attribute("flavor").Value;
-                string version = e.Attribute("version").Value;
-                string architecture = e.Attribute("architecture").Value;
+                string name = e.GetOptionalAttributeValue("name");
+                string flavor = e.GetOptionalAttributeValue("flavor");
+                string version = e.GetOptionalAttributeValue("version");
+                string architecture = e.GetOptionalAttributeValue("architecture");
 
                 if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(version) || String.IsNullOrEmpty(architecture))
                 {
@@ -53,7 +53,7 @@ namespace CoApp.VisualStudio
                 {
                     foreach (var ce in e.Elements("configuration"))
                     {
-                        string config = ce.Attribute("name").Value;
+                        string config = ce.GetOptionalAttributeValue("name");
 
                         if (String.IsNullOrEmpty(config))
                         {
@@ -63,7 +63,7 @@ namespace CoApp.VisualStudio
 
                         foreach (var le in ce.Elements("lib"))
                         {
-                            string lib = le.Attribute("name").Value;
+                            string lib = le.GetOptionalAttributeValue("name");
 
                             if (String.IsNullOrEmpty(lib))
                             {
@@ -79,7 +79,7 @@ namespace CoApp.VisualStudio
                 {
                     foreach (var le in e.Elements("lib"))
                     {
-                        string lib = le.Attribute("name").Value;
+                        string lib = le.GetOptionalAttributeValue("name");
 
                         if (String.IsNullOrEmpty(lib))
                         {
@@ -181,10 +181,10 @@ namespace CoApp.VisualStudio
             }
 
             return (from e in document.Root.Elements("package")
-                    let entryName = e.Attribute("name").Value
-                    let entryFlavor = e.Attribute("flavor").Value
-                    let entryVersion = e.Attribute("version").Value
-                    let entryArchitecture = e.Attribute("architecture").Value
+                    let entryName = e.GetOptionalAttributeValue("name")
+                    let entryFlavor = e.GetOptionalAttributeValue("flavor")
+                    let entryVersion = e.GetOptionalAttributeValue("version")
+                    let entryArchitecture = e.GetOptionalAttributeValue("architecture")
                     where entryName != null && entryFlavor != null && entryVersion != null && entryArchitecture != null
                     where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) &&
                           (flavor == null || flavor.Equals(entryFlavor)) && 
@@ -197,10 +197,10 @@ namespace CoApp.VisualStudio
         {
             // Sort the elements by package id and only take valid entries (one with both id and version)
             var packageElements = (from e in document.Root.Elements("package")
-                                   let name = e.Attribute("name").Value
-                                   let flavor = e.Attribute("flavor").Value
-                                   let version = e.Attribute("version").Value
-                                   let architecture = e.Attribute("architecture").Value
+                                   let name = e.GetOptionalAttributeValue("name")
+                                   let flavor = e.GetOptionalAttributeValue("flavor")
+                                   let version = e.GetOptionalAttributeValue("version")
+                                   let architecture = e.GetOptionalAttributeValue("architecture")
                                    where !String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(version) && !String.IsNullOrEmpty(architecture)
                                    orderby name
                                    select e).ToList();

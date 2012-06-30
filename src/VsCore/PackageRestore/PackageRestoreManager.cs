@@ -60,7 +60,7 @@ namespace CoApp.VisualStudio.VsCore
 
             e.Cancel = !CheckForMissingPackages();
 
-            if (!e.Cancel && !_waitDialog.IsCanceled)
+            if (!e.Cancel && !_waitDialog.IsCancelled)
             {
                 if (_level == "notify" && !_fromActivation)
                 {
@@ -75,7 +75,7 @@ namespace CoApp.VisualStudio.VsCore
 
                     if (result == false)
                     {
-                        _waitDialog.IsCanceled = true;
+                        _waitDialog.IsCancelled = true;
                         return;
                     }
                 }
@@ -87,41 +87,44 @@ namespace CoApp.VisualStudio.VsCore
         
         private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            CoAppWrapper.ProgressProvider.ProgressAvailable -= _waitDialog.OnProgressAvailable;
-
-            _waitDialog.Hide();
-
-            if (_waitDialog.IsCanceled)
-                return;
-
-            if (e.Cancelled)
+            if (!_waitDialog.IsCancelled)
             {
-                if (_fromActivation)
+                if (e.Cancelled)
                 {
-                    MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
-                }
-            }
-            else
-            {
-                // after we're done with restoring packages, do the check again
-                if (CheckForMissingPackages())
-                {
-                    string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
-                                        string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
-
-                    if (_fromActivation || _level != "nothing")
+                    if (_fromActivation)
                     {
-                        MessageHelper.ShowErrorMessage(message, null);
+                        _waitDialog.ShowMessageDialog(System.Windows.MessageBoxImage.Information, VsResources.PackageRestoreNoMissingPackages);
                     }
                 }
                 else
                 {
-                    if (_fromActivation)
+                    // after we're done with restoring packages, do the check again
+                    if (CheckForMissingPackages())
                     {
-                        MessageHelper.ShowInfoMessage(VsResources.PackageRestoreCompleted, null);
+                        string message = VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
+                                            string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+
+                        if (_fromActivation || _level != "nothing")
+                        {
+                            _waitDialog.ShowMessageDialog(System.Windows.MessageBoxImage.Error, message);
+                        }
+                    }
+                    else
+                    {
+                        if (_fromActivation)
+                        {
+                            _waitDialog.ShowMessageDialog(System.Windows.MessageBoxImage.Information, VsResources.PackageRestoreCompleted);
+                        }
                     }
                 }
             }
+
+            // Give time for error messages
+            System.Threading.Thread.Sleep(100);
+
+            _waitDialog.Hide();
+
+            CoAppWrapper.ProgressProvider.ProgressAvailable -= _waitDialog.OnProgressAvailable;
         }
 
         public void BeginRestore(bool fromActivation)

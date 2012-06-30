@@ -109,7 +109,7 @@
 
   <Symbols>
     <GuidSymbol name="guidPowerConsolePkg" value="{5F058D4C-1DA8-4FA4-8FF7-CB039283F751}" />
-    <GuidSymbol name="guidToolbarImages" value="{C96A41A9-81D8-4F67-A344-E4BED01FBAEC}" >
+    <GuidSymbol name="guidToolbarImages" value="{8A83C033-B2BF-4434-8701-4578EAFC5996}" >
       <IDSymbol name="bmpPowerConsole" value="1" />
       <IDSymbol name="bmpClearConsole" value="2" />
       <IDSymbol name="bmpFeedSettings" value="3" />
