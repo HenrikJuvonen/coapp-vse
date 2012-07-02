@@ -167,7 +167,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetDevType(), package.GetPath(), null);
+            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, null, package.Architecture, package.GetDevType(), package.GetPath(), null);
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,

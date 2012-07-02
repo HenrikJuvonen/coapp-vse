@@ -42,7 +42,7 @@ sign {
     uses: release;
     
     build-command: @"
-        simplesigner --nologo  --sign --strong-name ""${bin_path}CoApp.VisualStudio.Core.dll"" ""${bin_path}CoApp.VisualStudio.Dialog.dll"" ""${bin_path}CoApp.VisualStudio.DialogServices.dll"" ""${bin_path}CoApp.VisualStudio.Options.dll"" ""${bin_path}CoApp.VisualStudio.VsCore.dll"" ""${bin_path}CoApp.VisualStudio.Tools.dll""
+        rem simplesigner --nologo  --sign --strong-name ""${bin_path}CoApp.VisualStudio.Core.dll"" ""${bin_path}CoApp.VisualStudio.Dialog.dll"" ""${bin_path}CoApp.VisualStudio.DialogServices.dll"" ""${bin_path}CoApp.VisualStudio.Options.dll"" ""${bin_path}CoApp.VisualStudio.VsCore.dll"" ""${bin_path}CoApp.VisualStudio.Tools.dll""
     ";
 }
 

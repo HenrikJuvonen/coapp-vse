@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
+using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Model;
 
@@ -7,11 +9,28 @@ namespace CoApp.VisualStudio
 {
     public static class PackageExtensions
     {
+        private static PackageModel GetPackageModel(this IPackage package)
+        {
+            PackageManager pkm = new PackageManager();
+            PackageModel model = new PackageModel();
+
+            try
+            {
+                var atomItem = pkm.GetAtomItem(package.CanonicalName).Result;
+                model = atomItem.Model;
+            }
+            catch
+            {
+            }
+
+            return model;
+        }
+
         public static string GetPath(this IPackage package)
         {
             var installedDirectory = PackageManagerSettings.CoAppInstalledDirectory.First(n => n.Key == package.Architecture).Value;
 
-            return string.Format(@"{0}\Outercurve Foundation\{1}\", installedDirectory, package.CanonicalName.PackageName);
+            return string.Format(@"{0}\{1}\{2}\", installedDirectory, package.GetPackageModel().Vendor, package.CanonicalName.PackageName);
         }
 
         public static string GetDevType(this IPackage package)
@@ -36,7 +55,7 @@ namespace CoApp.VisualStudio
 
         public static string GetPackageNameWithoutPublicKeyToken(this IPackage package)
         {
-            return package.CanonicalName.PackageName.Substring(0,package.CanonicalName.PackageName.LastIndexOf('-'));
+            return package.GetPackageModel().CosmeticName;
         }
     }
 }

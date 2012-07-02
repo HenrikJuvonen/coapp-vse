@@ -185,7 +185,7 @@ namespace CoApp.VisualStudio
                     let entryFlavor = e.GetOptionalAttributeValue("flavor")
                     let entryVersion = e.GetOptionalAttributeValue("version")
                     let entryArchitecture = e.GetOptionalAttributeValue("architecture")
-                    where entryName != null && entryFlavor != null && entryVersion != null && entryArchitecture != null
+                    where entryName != null && entryFlavor != null && entryArchitecture != null
                     where name.Equals(entryName, StringComparison.OrdinalIgnoreCase) &&
                           (flavor == null || flavor.Equals(entryFlavor)) && 
                           (version == null || entryVersion.Equals(version)) &&

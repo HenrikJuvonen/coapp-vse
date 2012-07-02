@@ -65,6 +65,19 @@ application {
 package-composition {
     symlinks : {
         all => @"%VS100COMNTOOLS%\..\IDE\Extensions\CoApp Project, Outercurve Foundation\CoApp for Visual Studio\0.4\${each.Name}" = @"${packagedir}\${each.Name}";
+    };
+}
 
+signing {
+    attributes : {
+        company="Outercurve Foundation",
+        description="${Package.PackageDetails.SummaryDescription}",
+        product-name="coapp.vse",
+        product-version="${package-version}",
+        file-version="${package-version}",
+    };
+    
+    replace-signature: true; 
+    include: {
     };
 }

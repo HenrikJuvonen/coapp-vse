@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -55,9 +56,9 @@
     <Compile Include="Packages\Library.cs" />
     <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="..\CommonAssemblyInfo.cs">
-		<Link>Properties\CommonAssemblyInfo.cs</Link>
-	</Compile>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Utility\CoAppWrapper.cs" />
     <Compile Include="Packages\PackageReference.cs" />
     <Compile Include="Packages\PackageReferenceFile.cs" />
