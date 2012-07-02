@@ -140,8 +140,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 differentPackages = packageReferenceFile.GetPackageReferences().Where(pkg => pkg.Name == package.Name &&
-                                                                                           pkg.Version != package.Version &&
-                                                                                           pkg.Architecture == package.Architecture);
+                                                                                             pkg.Flavor != package.Flavor &&
+                                                                                             pkg.Version != package.Version &&
+                                                                                             pkg.Architecture == package.Architecture);
             }
 
             return CoAppWrapper.GetPackages(differentPackages);
@@ -194,6 +195,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 if (packageReferenceFile.GetPackageReferences().Any(pkg => pkg.Name == package.Name &&
+                                                                           pkg.Flavor == package.Flavor &&
                                                                            pkg.Version == package.Version &&
                                                                            pkg.Architecture == package.Architecture))
                 {
