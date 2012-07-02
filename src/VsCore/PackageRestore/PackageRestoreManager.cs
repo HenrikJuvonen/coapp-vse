@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using EnvDTE;
 using CoApp.Packaging.Common;
+using CoApp.Toolkit.Configuration;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -18,8 +19,14 @@ namespace CoApp.VisualStudio.VsCore
 
         private readonly WaitDialog _waitDialog;
 
-        private readonly ISettings _settings;
-        private string _level;
+        private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
+        
+        /// <summary>
+        /// 0 = automatic restore
+        /// 1 = notify
+        /// 2 = nothing
+        /// </summary>
+        private int _level;
 
         private bool _fromActivation;
 
@@ -41,13 +48,11 @@ namespace CoApp.VisualStudio.VsCore
             _solutionManager.SolutionOpened += OnSolutionOpened;
 
             _waitDialog = new WaitDialog();
-
-            _settings = new Settings();
         }
 
         private void LoadSettings()
         {
-            _level = _settings.GetValue("coapp", "restore");
+            _level = _settings["#restore"].IntValue;
         }
 
         private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
@@ -58,7 +63,7 @@ namespace CoApp.VisualStudio.VsCore
 
             if (!e.Cancel && !_waitDialog.IsCancelled)
             {
-                if (_level == "notify" && !_fromActivation)
+                if (_level == 1 && !_fromActivation)
                 {
                     string missingPackages = string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
 
@@ -107,7 +112,7 @@ namespace CoApp.VisualStudio.VsCore
                             VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
                             string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
 
-                        if (_fromActivation || _level != "nothing")
+                        if (_fromActivation || _level != 2)
                         {
                             MessageHelper.ShowErrorMessage(message, null);
                         }
@@ -188,7 +193,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             LoadSettings();
 
-            if (_level != "nothing")
+            if (_level != 2)
             {
                 BeginRestore(fromActivation: false);
             }

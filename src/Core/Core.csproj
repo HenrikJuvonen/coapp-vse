@@ -49,8 +49,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Configuration\ISettings.cs" />
-    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Extensions\PackageExtensions.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />
     <Compile Include="Packages\Library.cs" />

@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Controls;
 using CoApp.VisualStudio.VsCore;
+using CoApp.Toolkit.Configuration;
 
 namespace CoApp.VisualStudio.Options
 {
@@ -13,7 +14,7 @@ namespace CoApp.VisualStudio.Options
     /// </summary>
     public partial class GeneralOptionsControl : WpfControl
     {
-        private ISettings settings;
+        private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
 
         private string _lastItemsOnPage;
 
@@ -21,10 +22,6 @@ namespace CoApp.VisualStudio.Options
         {
             InitializeBase();
             InitializeComponent();
-
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "coapp-vse");
-            
-            settings = new Settings(path);
 
             LoadSettings();
         }
@@ -34,11 +31,11 @@ namespace CoApp.VisualStudio.Options
         /// </summary>
         internal void ApplyChangedSettings()
         {
-            SaveUpdateComboBoxValue();
-            SaveRestoreComboBoxValue();
+            _settings["#update"].IntValue = UpdateComboBox.SelectedIndex;
+            _settings["#restore"].IntValue = RestoreComboBox.SelectedIndex;
 
-            settings.SetValue("coapp", "rememberFilters", (RememberFiltersCheckBox.IsChecked == true).ToString());
-            settings.SetValue("coapp", "itemsOnPage", ItemsOnPageTextBox.Text);
+            _settings["#rememberFilters"].BoolValue = (RememberFiltersCheckBox.IsChecked == true);
+            _settings["#itemsOnPage"].IntValue = string.IsNullOrEmpty(ItemsOnPageTextBox.Text) ? 8 : int.Parse(ItemsOnPageTextBox.Text);
 
             CoAppWrapper.SetTelemetry(TelemetryCheckBox.IsChecked == true);
         }
@@ -112,80 +109,19 @@ namespace CoApp.VisualStudio.Options
 
         private void LoadSettings()
         {
-            string update = settings.GetValue("coapp", "update");
-            string restore = settings.GetValue("coapp", "restore");
-            string rememberFilters = settings.GetValue("coapp", "rememberFilters");
-            string itemsOnPage = settings.GetValue("coapp", "itemsOnPage");
+            int update = _settings["#update"].IntValue;
+            int restore = _settings["#restore"].IntValue;
+            bool rememberFilters = _settings["#rememberFilters"].BoolValue;
+            int itemsOnPage = _settings["#itemsOnPage"].IntValue;
 
-            switch (update)
-            {
-                case "automatic":
-                    UpdateComboBox.SelectedIndex = 0;
-                    break;
-                case "notify":
-                    UpdateComboBox.SelectedIndex = 1;
-                    break;
-                case "nothing":
-                default:
-                    UpdateComboBox.SelectedIndex = 2;
-                    break;
-            }
+            UpdateComboBox.SelectedIndex = update >= 0 && update <= 2 ? update : 0;
+            RestoreComboBox.SelectedIndex = restore >= 0 && restore <= 2 ? restore : 0;
 
-            switch (restore)
-            {
-                case "automatic":
-                    RestoreComboBox.SelectedIndex = 0;
-                    break;
-                case "notify":
-                    RestoreComboBox.SelectedIndex = 1;
-                    break;
-                case "nothing":
-                default:
-                    RestoreComboBox.SelectedIndex = 2;
-                    break;
-            }
+            RememberFiltersCheckBox.IsChecked = rememberFilters;
 
-            bool rememberFiltersChecked;
-            bool.TryParse(rememberFilters, out rememberFiltersChecked);
-            RememberFiltersCheckBox.IsChecked = rememberFiltersChecked;
-
-            ItemsOnPageTextBox.Text = itemsOnPage ?? "8";
+            ItemsOnPageTextBox.Text = itemsOnPage < 5 || itemsOnPage > 1000 ? "8" : itemsOnPage.ToString();
 
             TelemetryCheckBox.IsChecked = CoAppWrapper.GetTelemetry();
-        }
-
-        private void SaveUpdateComboBoxValue()
-        {
-            string value = "nothing";
-
-            switch (UpdateComboBox.SelectedIndex)
-            {
-                case 0:
-                    value = "automatic";
-                    break;
-                case 1:
-                    value = "notify";
-                    break;
-            }
-
-            settings.SetValue("coapp", "update", value);
-        }
-
-        private void SaveRestoreComboBoxValue()
-        {
-            string value = "nothing";
-
-            switch (RestoreComboBox.SelectedIndex)
-            {
-                case 0:
-                    value = "automatic";
-                    break;
-                case 1:
-                    value = "notify";
-                    break;
-            }
-
-            settings.SetValue("coapp", "restore", value);
         }
     }
 }

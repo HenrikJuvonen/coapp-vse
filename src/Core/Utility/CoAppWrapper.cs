@@ -15,6 +15,7 @@
     using CoApp.Toolkit.Linq;
     using CoApp.Toolkit.Tasks;
     using CoApp.Toolkit.Win32;
+    using CoApp.Toolkit.Configuration;
 
     /// <summary>
     /// Interface between the GUI and CoApp.
@@ -33,7 +34,7 @@
         
         private static readonly ProgressProvider progressProvider = new ProgressProvider();
 
-        private static readonly ISettings settings = new Settings();
+        private static readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
 
         public static CancellationTokenSource CancellationTokenSource { get; private set; }
 
@@ -49,24 +50,24 @@
             ResetFilterStates();
             SaveFilterStates();
 
-            if (settings.GetValue("coapp", "itemsOnPage") == null)
+            if (_settings["#itemsOnPage"].Value == null)
             {
-                settings.SetValue("coapp", "itemsOnPage", "8");
+                _settings["#itemsOnPage"].IntValue = 8;
             }
 
-            if (settings.GetValue("coapp", "update") == null)
+            if (_settings["#update"].Value == null)
             {
-                settings.SetValue("coapp", "update", "nothing");
+                _settings["#update"].IntValue = 2;
             }
 
-            if (settings.GetValue("coapp", "restore") == null)
+            if (_settings["#restore"].Value == null)
             {
-                settings.SetValue("coapp", "restore", "nothing");
+                _settings["#restore"].IntValue = 2;
             }
 
-            if (settings.GetValue("coapp", "rememberFilters") == null)
+            if (_settings["#rememberFilters"].Value == null)
             {
-                settings.SetValue("coapp", "rememberFilters", "False");
+                _settings["#rememberFilters"].BoolValue = false;
             }
 
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
@@ -121,15 +122,15 @@
         /// </summary>
         public static void ResetFilterStates()
         {
-            bool rememberFilters = settings.GetValue("coapp", "rememberFilters") == "True";
+            bool rememberFilters = _settings["#rememberFilters"].BoolValue;
 
             if (rememberFilters)
             {
-                var values = settings.GetNestedValues("coapp", "filters");
+                var valueNames = _settings["filters"].ValueNames;
 
-                foreach (var item in values)
+                foreach (var name in valueNames)
                 {
-                    SetFilterState(item.Key, item.Value == "True");
+                    SetFilterState(name, _settings["filters", name].BoolValue);
                 }
             }
             else
@@ -153,19 +154,15 @@
         /// </summary>
         public static void SaveFilterStates()
         {
-            var values = new List<KeyValuePair<string, string>>();
-
-            values.Add(new KeyValuePair<string, string>("Highest", GetFilterState("Highest").ToString()));
-            values.Add(new KeyValuePair<string, string>("Stable", GetFilterState("Stable").ToString()));
-            values.Add(new KeyValuePair<string, string>("Compatible", GetFilterState("Compatible").ToString()));
-            values.Add(new KeyValuePair<string, string>("any", GetFilterState("any").ToString()));
-            values.Add(new KeyValuePair<string, string>("x86", GetFilterState("x86").ToString()));
-            values.Add(new KeyValuePair<string, string>("x64", GetFilterState("x64").ToString()));
-            values.Add(new KeyValuePair<string, string>("Application", GetFilterState("Application").ToString()));
-            values.Add(new KeyValuePair<string, string>("Assembly", GetFilterState("Assembly").ToString()));
-            values.Add(new KeyValuePair<string, string>("DeveloperLibrary", GetFilterState("DeveloperLibrary").ToString()));
-
-            settings.SetNestedValues("coapp", "filters", values);
+            _settings["filters", "Highest"].BoolValue = GetFilterState("Highest");
+            _settings["filters", "Stable"].BoolValue = GetFilterState("Stable");
+            _settings["filters", "Compatible"].BoolValue = GetFilterState("Compatible");
+            _settings["filters", "any"].BoolValue = GetFilterState("any");
+            _settings["filters", "x86"].BoolValue = GetFilterState("x86");
+            _settings["filters", "x64"].BoolValue = GetFilterState("x64");
+            _settings["filters", "Application"].BoolValue = GetFilterState("Application");
+            _settings["filters", "Assembly"].BoolValue = GetFilterState("Assembly");
+            _settings["filters", "DeveloperLibrary"].BoolValue = GetFilterState("DeveloperLibrary");
         }
 
         /// <summary>

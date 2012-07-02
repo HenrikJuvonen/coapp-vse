@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
+using CoApp.Toolkit.Configuration;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 
 namespace CoApp.VisualStudio.Dialog.Providers
@@ -44,11 +45,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
             Parent = parent;
             Provider = provider;
 
-            var settings = new Settings();
+            var settings = RegistryView.CoAppUser["coapp_vse"];
 
             try
             {
-                PageSize = int.Parse(settings.GetValue("coapp", "itemsOnPage"));
+                PageSize = settings["#itemsOnPage"].IntValue;
 
                 if (PageSize < 5)
                 {
