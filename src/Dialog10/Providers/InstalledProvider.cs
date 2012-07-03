@@ -140,8 +140,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 differentPackages = packageReferenceFile.GetPackageReferences().Where(pkg => pkg.Name == package.Name &&
-                                                                                             pkg.Flavor != package.Flavor &&
-                                                                                             pkg.Version != package.Version &&
+                                                                                             (pkg.Flavor != package.Flavor ||
+                                                                                              pkg.Version != package.Version) &&
                                                                                              pkg.Architecture == package.Architecture);
             }
 
@@ -168,7 +168,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, null, package.Architecture, package.GetDevType(), package.GetPath(), null);
+            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetDevType(), package.GetPath(), null);
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,

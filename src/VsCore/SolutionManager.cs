@@ -93,7 +93,7 @@ namespace CoApp.VisualStudio.VsCore
                 }
                 else
                 {
-                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Flavor, packageReference.Version, packageReference.Architecture);
+                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Flavor, null, packageReference.Architecture);
 
                     if (!packageReferenceFile.GetPackageReferences().Any())
                     {

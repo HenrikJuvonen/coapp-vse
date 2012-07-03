@@ -335,8 +335,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 _query = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
             }
 
-            var filteredQuery = ApplyFiltering(_query);
-
+            var filteredQuery = ApplyFiltering(_query.Distinct());
+            
             var packages = filteredQuery.Skip((pageNumber - 1) * PageSize).Take(PageSize);
                         
             if (packages.Count() < PageSize)

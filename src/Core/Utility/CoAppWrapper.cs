@@ -336,7 +336,7 @@
                 packages = packages.Select(package => package.AvailableNewestUpdate);
             }
 
-            return packages; //FilterPackages(packages, vsMajorVersion);
+            return packages;
         }
 
         /// <summary>

@@ -720,14 +720,14 @@ namespace CoApp.VisualStudio.VsCore
             {
                 foreach (Library lib in libraries)
                 {
-                    // Get the assembly name of the reference we are trying to add
-                    AssemblyName assemblyName = AssemblyName.GetAssemblyName(path + lib.Name);
+                    var assemblyName = Path.GetFileNameWithoutExtension(lib.Name);
+                    var assemblyPath = path + lib.Name;
 
                     Reference reference = null;
 
                     try 
-                    { 
-                        reference = vsProject.References.Find(assemblyName.Name);
+                    {
+                        reference = vsProject.References.Find(assemblyPath);
                     }
                     catch
                     {
@@ -736,10 +736,10 @@ namespace CoApp.VisualStudio.VsCore
 
                     if (reference == null && lib.IsSelected)
                     {
-                        vsProject.References.Add(path + lib.Name);
+                        vsProject.References.Add(assemblyPath);
                         
                         var references = buildProject.GetAssemblyReferences();
-                        var referenceItem = references.FirstOrDefault(n => n.Item2.Name == assemblyName.Name).Item1;
+                        var referenceItem = references.FirstOrDefault(n => n.Item2.Name == assemblyName).Item1;
 
                         referenceItem.SetMetadataValue("HintPath", path + lib.Name);
                     }
