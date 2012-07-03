@@ -101,7 +101,7 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            var configurations = project.GetConfigurations();
+            var configurations = project.GetCompatibleConfigurations(packageReference.Architecture);
 
             foreach (string config in configurations)
             {

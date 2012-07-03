@@ -443,17 +443,9 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         public static bool IsCompatibleArchitecture(this Project project, string architecture)
         {
-            var buildProject = project.AsMSBuildProject();
-            
-            foreach (string configuration in project.GetConfigurations())
-            {
-                // /MACHINE:{ARM|EBC|IA64|MIPS|MIPS16|MIPSFPU|MIPSFPU16|SH4|THUMB|X64|X86}
-                var machine = project.GetDefinitionValue(configuration, "TargetMachine");
+            var configurations = project.GetCompatibleConfigurations(architecture);
 
-                if (machine.ToLowerInvariant().Contains(architecture))
-                    return true;
-            }
-            return false;
+            return configurations.Any();
         }
         
         public static IEnumerable<string> GetProjectTypeGuids(this Project project)
@@ -549,6 +541,43 @@ namespace CoApp.VisualStudio.VsCore
         {
             return ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FullName).FirstOrDefault() ??
                    ProjectCollection.GlobalProjectCollection.LoadProject(project.FullName);
+        }
+
+        /// <summary>
+        /// Get compatible configurations of VC-project. E.g. Debug|Win32, Release|Win32, ... depending on architecture
+        /// </summary>
+        public static IEnumerable<string> GetCompatibleConfigurations(this Project project, string architecture)
+        {
+            MsBuildProject buildProject = project.AsMSBuildProject();
+
+            var result = new List<string>();
+
+            if (buildProject != null)
+            {
+                var xml = buildProject.Xml;
+                var itemDefinitionGroups = xml.ItemDefinitionGroups;
+
+                foreach (var itemDefinitionGroup in itemDefinitionGroups)
+                {
+                    string condition = itemDefinitionGroup.Condition;
+                    string configuration = condition.Substring(33, condition.LastIndexOf("'") - 33);
+
+                    // 1. Platform string
+                    string platform = configuration.Split('|')[1].ToLowerInvariant();
+
+                    // 2. TargetMachine definition
+                    var machine = project.GetDefinitionValue(configuration, "TargetMachine");
+
+                    if (((platform == "win32" || platform == "x86") && architecture == "x86") ||
+                        ((platform == "win64" || platform == "x64") && architecture == "x64") ||
+                        machine.ToLowerInvariant().Contains(architecture))
+                    {
+                        result.Add(configuration);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
