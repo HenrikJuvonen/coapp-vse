@@ -43,7 +43,7 @@ namespace CoApp.VisualStudio
             {
                 return "vc,lib";
             }
-            else if (package.Flavor.IsWildcardMatch("*net*")
+            else if (package.Flavor.IsWildcardMatch("*net*") || package.Flavor.IsWildcardMatch("*silverlight*")
                 || (package.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) &&
                                            n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
             {

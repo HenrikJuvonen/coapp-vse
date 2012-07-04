@@ -38,7 +38,8 @@ namespace CoApp.VisualStudio
                 {
                     return "vc,lib";
                 }
-                else if (Flavor.Contains("net") || Libraries.Any(n => n.Name.Contains(".dll")))
+                else if (Flavor.Contains("net") || Flavor.Contains("silverlight") ||
+                    (Libraries != null && Libraries.Any(n => n.Name.Contains(".dll"))))
                 {
                     return "net";
                 }

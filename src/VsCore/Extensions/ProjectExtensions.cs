@@ -418,32 +418,14 @@ namespace CoApp.VisualStudio.VsCore
 
         public static string GetTargetFramework(this Project project)
         {
-            if (project.IsVcProject())
-            {
-                VCProject vcProject = project.Object;
-
-                if (vcProject != null)
-                {
-                    return vcProject.TargetFrameworkMoniker;
-                }
-            }
-            else if (project.IsJavaScriptProject())
+            if (project.IsJavaScriptProject())
             {
                 return ".NETCore, Version=v4.5";
             }
 
-            int targetFramework = project.GetPropertyValue<int>("TargetFramework");
-            
-            switch(targetFramework)
-            {
-                case 0x20000: return ".NETFramework,Version=v2.0";
-                case 0x30000: return ".NETFramework,Version=v3.0";
-                case 0x30005: return ".NETFramework,Version=v3.5";
-                case 0x40000: return ".NETFramework,Version=v4.0";
-                case 0x40005: return ".NETFramework,Version=v4.5";
-            }
+            MsBuildProject buildProject = project.AsMSBuildProject();
 
-            return string.Empty;
+            return buildProject.GetPropertyValue("TargetFrameworkMoniker") ?? string.Empty;
         }
 
         /// <summary>
@@ -467,10 +449,10 @@ namespace CoApp.VisualStudio.VsCore
             compatible = compatible || (packageReference.Type == "net" && project.IsNetProject() && 
                 (
                 (packageReference.Flavor == "" ? true : false) ||
-                (packageReference.Flavor == "[net20]" ? targetFramework == ".NETFramework,Version=v2.0" : false) ||
-                (packageReference.Flavor == "[net35]" ? targetFramework == ".NETFramework,Version=v3.5" : false) ||
-                (packageReference.Flavor == "[net40]" ? targetFramework == ".NETFramework,Version=v4.0" : false) ||
-                (packageReference.Flavor == "[net45]" ? targetFramework == ".NETFramework,Version=v4.5" : false) ||
+                (packageReference.Flavor == "[net20]" ? targetFramework.Contains(".NETFramework,Version=v2.0") : false) ||
+                (packageReference.Flavor == "[net35]" ? targetFramework.Contains(".NETFramework,Version=v3.5") : false) ||
+                (packageReference.Flavor == "[net40]" ? targetFramework.Contains(".NETFramework,Version=v4.0") : false) ||
+                (packageReference.Flavor == "[net45]" ? targetFramework.Contains(".NETFramework,Version=v4.5") : false) ||
                 (packageReference.Flavor == "[silverlight]" ? targetFramework.Contains("Silverlight") : false)
                 ));
             

@@ -145,7 +145,7 @@
 
                 onlyHighestVersions = true;
                 onlyStableVersions = true;
-                onlyCompatibleFlavors = true;
+                onlyCompatibleFlavors = false;
             }
         }
 
