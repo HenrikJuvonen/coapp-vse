@@ -9,6 +9,8 @@ namespace CoApp.VisualStudio
     /// </summary>
     public class PackageReference
     {
+        private string _type;
+
         public PackageReference(string name, string flavor, string version, string architecture, string path, IEnumerable<Library> libraries)
         {
             Name = name;
@@ -30,21 +32,36 @@ namespace CoApp.VisualStudio
         {
             get
             {
-                if (Name.Contains("-common"))
+                if (_type == null)
                 {
-                    return "vc";
-                }
-                else if (Flavor.Contains("vc"))
-                {
-                    return "vc,lib";
-                }
-                else if (Flavor.Contains("net") || Flavor.Contains("silverlight") ||
-                    (Libraries != null && Libraries.Any(n => n.Name.Contains(".dll"))))
-                {
-                    return "net";
+                    if (Name.Contains("-common"))
+                    {
+                        _type = "vc";
+                    }
+                    else if (Flavor.Contains("vc"))
+                    {
+                        _type = "vc,lib";
+                    }
+                    else if (Flavor.Contains("net") || Flavor.Contains("silverlight"))
+                    {
+                        _type = "net";
+                    }
+                    else
+                    {
+                        var package = CoAppWrapper.GetPackages(new[] { this }).FirstOrDefault();
+
+                        if (package != null)
+                        {
+                            _type = package.GetDevType();
+                        }
+                        else
+                        {
+                            _type = string.Empty;
+                        }
+                    }
                 }
 
-                return "";
+                return _type; 
             }
         }
     }

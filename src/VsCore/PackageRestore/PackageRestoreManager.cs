@@ -82,7 +82,20 @@ namespace CoApp.VisualStudio.VsCore
                 {
                     if (_fromActivation)
                     {
-                        MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
+                        var unrecoverable = GetUnrecoverablePackages();
+
+                        if (unrecoverable.Any())
+                        {
+                            string message = 
+                                VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
+                                string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName).Union(GetUnrecoverablePackages()));
+
+                            MessageHelper.ShowErrorMessage(message, null);
+                        }
+                        else
+                        {
+                            MessageHelper.ShowInfoMessage(VsResources.PackageRestoreNoMissingPackages, null);
+                        }
                     }
                 }
                 else
@@ -92,7 +105,7 @@ namespace CoApp.VisualStudio.VsCore
                     {
                         string message = errorMessage + (errorMessage != null ? Environment.NewLine + Environment.NewLine : null) +
                             VsResources.PackageRestoreFollowingPackages + Environment.NewLine +
-                            string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName));
+                            string.Join(Environment.NewLine, GetMissingPackages().Select(n => n.CanonicalName.PackageName).Union(GetUnrecoverablePackages()));
 
                         if (_fromActivation || _level != 2)
                         {
@@ -171,24 +184,46 @@ namespace CoApp.VisualStudio.VsCore
             {
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
 
-                IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
-
-                foreach (PackageReference packageReference in packageReferences)
+                foreach (PackageReference packageReference in packageReferenceFile.GetPackageReferences())
                 {
-                    try
+                    var pkg = packages.FirstOrDefault(package => package.Name == packageReference.Name &&
+                                                                 package.Flavor == packageReference.Flavor &&
+                                                                 package.Version == packageReference.Version &&
+                                                                 package.Architecture == packageReference.Architecture);
+
+                    if (pkg != null)
                     {
-                        resultPackages.Add(packages.First(package => package.Name == packageReference.Name &&
-                                                                     package.Flavor == packageReference.Flavor &&
-                                                                     package.Version == packageReference.Version &&
-                                                                     package.Architecture == packageReference.Architecture));
-                    }
-                    catch
-                    {
+                        resultPackages.Add(pkg);
                     }
                 }
 
             }
             return resultPackages.Where(n => !n.IsInstalled);
+        }
+
+        private IEnumerable<string> GetUnrecoverablePackages()
+        {
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, false);
+            ISet<string> unrecoverable = new HashSet<string>();
+
+            foreach (Project p in _solutionManager.GetProjects())
+            {
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+
+                foreach (PackageReference packageReference in packageReferenceFile.GetPackageReferences())
+                {
+                    if (!packages.Any(package => package.Name == packageReference.Name &&
+                                                 package.Flavor == packageReference.Flavor &&
+                                                 package.Version == packageReference.Version &&
+                                                 package.Architecture == packageReference.Architecture))
+                    {
+                        unrecoverable.Add(string.Format("{0}{1}-{2}-{3}", packageReference.Name, packageReference.Flavor, packageReference.Version, packageReference.Architecture));
+                    }
+                }
+
+            }
+
+            return unrecoverable;
         }
         
         private void OnSolutionOpened(object sender, EventArgs e)
