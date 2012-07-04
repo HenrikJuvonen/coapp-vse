@@ -202,7 +202,7 @@ namespace CoApp.VisualStudio.VsCore
                 table.Add(e);
             }
 
-            if (DataGrid.Items.Count > 1)
+            if (DataGrid.HasItems)
             {
                 var border = VisualTreeHelper.GetChild(DataGrid, 0) as Decorator;
                 if (border != null)

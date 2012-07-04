@@ -91,7 +91,7 @@ namespace CoApp.VisualStudio
                     }
                 }
 
-                yield return new PackageReference(name, flavor, version, architecture, null, null, libraries);
+                yield return new PackageReference(name, flavor, version, architecture, null, libraries);
             }
         }
 

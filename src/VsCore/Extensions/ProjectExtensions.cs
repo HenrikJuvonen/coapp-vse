@@ -415,7 +415,37 @@ namespace CoApp.VisualStudio.VsCore
 
             return hierarchy;
         }
-        
+
+        public static string GetTargetFramework(this Project project)
+        {
+            if (project.IsVcProject())
+            {
+                VCProject vcProject = project.Object;
+
+                if (vcProject != null)
+                {
+                    return vcProject.TargetFrameworkMoniker;
+                }
+            }
+            else if (project.IsJavaScriptProject())
+            {
+                return ".NETCore, Version=v4.5";
+            }
+
+            int targetFramework = project.GetPropertyValue<int>("TargetFramework");
+            
+            switch(targetFramework)
+            {
+                case 0x20000: return ".NETFramework,Version=v2.0";
+                case 0x30000: return ".NETFramework,Version=v3.0";
+                case 0x30005: return ".NETFramework,Version=v3.5";
+                case 0x40000: return ".NETFramework,Version=v4.0";
+                case 0x40005: return ".NETFramework,Version=v4.5";
+            }
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// Checks if project is compatible with the package described in packageReference.
         /// </summary>
@@ -426,6 +456,7 @@ namespace CoApp.VisualStudio.VsCore
                 return true;
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
+            var targetFramework = project.GetTargetFramework();
 
             // VC-compatibility
             bool compatible = ((packageReference.Type == "vc" ||
@@ -433,11 +464,19 @@ namespace CoApp.VisualStudio.VsCore
                                && project.IsVcProject());
 
             // NET-compatibility
-            compatible = compatible || (packageReference.Type == "net" && project.IsNetProject());
-
+            compatible = compatible || (packageReference.Type == "net" && project.IsNetProject() && 
+                (
+                (packageReference.Flavor == "" ? true : false) ||
+                (packageReference.Flavor == "[net20]" ? targetFramework == ".NETFramework,Version=v2.0" : false) ||
+                (packageReference.Flavor == "[net35]" ? targetFramework == ".NETFramework,Version=v3.5" : false) ||
+                (packageReference.Flavor == "[net40]" ? targetFramework == ".NETFramework,Version=v4.0" : false) ||
+                (packageReference.Flavor == "[net45]" ? targetFramework == ".NETFramework,Version=v4.5" : false) ||
+                (packageReference.Flavor == "[silverlight]" ? targetFramework.Contains("Silverlight") : false)
+                ));
+            
             return compatible;
         }
-
+        
         /// <summary>
         /// Checks if VC-project supports specified architecture.
         /// </summary>
@@ -725,15 +764,23 @@ namespace CoApp.VisualStudio.VsCore
 
                     Reference reference = null;
 
-                    try 
+                    // Remove old references
+                    do
                     {
-                        reference = vsProject.References.Find(assemblyPath);
-                    }
-                    catch
-                    {
-                        // Reference was likely not found and is null.
-                    }
+                        try
+                        {
+                            reference = vsProject.References.Find(assemblyName);
+                        }
+                        catch { }
 
+                        if (reference != null)
+                        {
+                            reference.Remove();
+                        }
+                    }
+                    while (reference != null);
+
+                    // Add new reference
                     if (reference == null && lib.IsSelected)
                     {
                         vsProject.References.Add(assemblyPath);
@@ -741,10 +788,8 @@ namespace CoApp.VisualStudio.VsCore
                         var references = buildProject.GetAssemblyReferences();
                         var referenceItem = references.FirstOrDefault(n => n.Item2.Name == assemblyName).Item1;
 
-                        referenceItem.SetMetadataValue("HintPath", path + lib.Name);
+                        referenceItem.SetMetadataValue("HintPath", assemblyPath);
                     }
-                    else if (reference != null && !lib.IsSelected)
-                        reference.Remove();
                 }
             }
         }

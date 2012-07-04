@@ -55,7 +55,7 @@ namespace CoApp.VisualStudio
 
         public static string GetPackageNameWithoutPublicKeyToken(this IPackage package)
         {
-            return package.GetPackageModel().CosmeticName;
+            return string.Format("{0}{1}-{2}-{3}", package.Name, package.Flavor, package.Version, package.Architecture);
         }
     }
 }

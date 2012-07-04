@@ -300,11 +300,12 @@
             var packages = GetPackages(useFilters: false);
             var result = new List<IPackage>();
 
-            foreach (var pkg in packageReferences)
+            foreach (var packageReference in packageReferences)
             {
-                result.AddRange(packages.Where(n => n.Name == pkg.Name &&
-                                                    n.Version.ToString() == pkg.Version &&
-                                                    n.Architecture.ToString() == pkg.Architecture));
+                result.AddRange(packages.Where(n => n.Name == packageReference.Name &&
+                                                    n.Flavor == packageReference.Flavor &&
+                                                    n.Version == packageReference.Version &&
+                                                    n.Architecture == packageReference.Architecture));
             }
 
             return result;

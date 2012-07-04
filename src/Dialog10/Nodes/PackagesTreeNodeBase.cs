@@ -322,28 +322,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 CoAppWrapper.SetNewCancellationTokenSource();
 
-                IQueryable<IPackage> query = GetPackages().AsQueryable();
-
-                // Execute the total count query
-                _totalCount = query.Count();
-
-                // make sure we don't query a page that is greater than the maximum page number.
-                int maximumPages = (_totalCount + PageSize - 1)/PageSize;
-                pageNumber = Math.Min(pageNumber, maximumPages);
+                IQueryable<IPackage> query = GetPackages().Distinct().AsQueryable();
 
                 // Apply the ordering then sort by name
                 _query = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
             }
 
-            var filteredQuery = ApplyFiltering(_query.Distinct());
+            var filteredQuery = ApplyFiltering(_query);
+
+            _totalCount = filteredQuery.Count();
             
             var packages = filteredQuery.Skip((pageNumber - 1) * PageSize).Take(PageSize);
-                        
-            if (packages.Count() < PageSize)
-            {
-                _totalCount = (pageNumber - 1) * PageSize + packages.Count();
-            }
-            
+
             return new LoadPageResult(packages, pageNumber, _totalCount);
         }
 

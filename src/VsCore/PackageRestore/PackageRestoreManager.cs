@@ -15,10 +15,7 @@ namespace CoApp.VisualStudio.VsCore
     internal class PackageRestoreManager : IPackageRestoreManager
     {
         private readonly ISolutionManager _solutionManager;
-        private readonly DTE _dte;
-
         private readonly WaitDialog _waitDialog;
-
         private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
         
         /// <summary>
@@ -31,28 +28,13 @@ namespace CoApp.VisualStudio.VsCore
         private bool _fromActivation;
 
         [ImportingConstructor]
-        public PackageRestoreManager(
-            ISolutionManager solutionManager) :
-            this(ServiceLocator.GetInstance<DTE>(),
-                 solutionManager)
-        {
-        }
-
-        internal PackageRestoreManager(
-            DTE dte,
-            ISolutionManager solutionManager)
+        public PackageRestoreManager(ISolutionManager solutionManager)
         {
             Debug.Assert(solutionManager != null);
-            _dte = dte;
             _solutionManager = solutionManager;
             _solutionManager.SolutionOpened += OnSolutionOpened;
 
             _waitDialog = new WaitDialog();
-        }
-
-        private void LoadSettings()
-        {
-            _level = _settings["#restore"].IntValue;
         }
 
         private void OnRunWorkerDoWork(object sender, DoWorkEventArgs e)
@@ -157,6 +139,27 @@ namespace CoApp.VisualStudio.VsCore
             var packages = GetMissingPackages();
 
             CoAppWrapper.InstallPackages(packages);
+
+            foreach (Project p in _solutionManager.GetProjects())
+            {
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+
+                IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+
+                foreach (PackageReference packageReference in packageReferences)
+                {
+                    var removedLibraries = new List<Library>();
+                    var addedLibraries = new List<Library>();
+                    foreach (Library lib in packageReference.Libraries)
+                    {
+                        removedLibraries.Add(new Library(lib.Name, p.GetName(), lib.ConfigurationName, false));
+                        addedLibraries.Add(new Library(lib.Name, p.GetName(), lib.ConfigurationName, lib.IsSelected));
+                    }
+
+                    _solutionManager.ManagePackage(packageReference, new[] { p }, removedLibraries);
+                    _solutionManager.ManagePackage(packageReference, new[] { p }, addedLibraries);
+                }
+            }
         }
 
         private IEnumerable<IPackage> GetMissingPackages()
@@ -170,18 +173,17 @@ namespace CoApp.VisualStudio.VsCore
 
                 IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 
-                foreach (PackageReference package in packageReferences)
+                foreach (PackageReference packageReference in packageReferences)
                 {
                     try
                     {
-                        resultPackages.Add(packages.First(pkg => pkg.Name == package.Name &&
-                                                                 pkg.Flavor == package.Flavor &&
-                                                                 pkg.Version == package.Version &&
-                                                                 pkg.Architecture == package.Architecture));
+                        resultPackages.Add(packages.First(package => package.Name == packageReference.Name &&
+                                                                     package.Flavor == packageReference.Flavor &&
+                                                                     package.Version == packageReference.Version &&
+                                                                     package.Architecture == packageReference.Architecture));
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        Console.WriteLine(e.Message);
                     }
                 }
 
@@ -191,7 +193,7 @@ namespace CoApp.VisualStudio.VsCore
         
         private void OnSolutionOpened(object sender, EventArgs e)
         {
-            LoadSettings();
+            _level = _settings["#restore"].IntValue;
 
             if (_level != 2)
             {
