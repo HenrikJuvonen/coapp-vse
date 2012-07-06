@@ -47,14 +47,14 @@ namespace CoApp.VisualStudio.Dialog
                 {
                     IList<ViewModelNodeBase> children;
 
-                    if (packageReference.Type == "vc,lib")
+                    if (packageReference.Type == DeveloperPackageType.VcLibrary)
                     {
                         children = CreateConfigurationNode(
                             project,
                             packageReference
                         ).ToList();
                     }
-                    else if (packageReference.Type == "net")
+                    else if (packageReference.Type == DeveloperPackageType.Net)
                     {
                         children = CreateAssemblyNode(
                             project,
@@ -120,7 +120,7 @@ namespace CoApp.VisualStudio.Dialog
             PackageReference packageReference,
             string config)
         {
-            string path = packageReference.Path + "lib";
+            string path = packageReference.PackageDirectory + "lib";
 
             if (Directory.Exists(path))
             {
@@ -142,7 +142,7 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            string path = packageReference.Path + "ReferenceAssemblies";
+            string path = packageReference.PackageDirectory + "ReferenceAssemblies";
 
             if (Directory.Exists(path))
             {
@@ -166,7 +166,7 @@ namespace CoApp.VisualStudio.Dialog
         /// <returns></returns>
         private static bool IsOtherSimilarPackageAdded(this Project project, PackageReference packageReference)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
             IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 
@@ -177,7 +177,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string filename)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
+            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
             
             bool hasLibraries = false;
             bool projectHasPackage = false;

@@ -61,7 +61,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IEnumerable<IPackage> GetPackages()
         {
-            return from p in _baseNode.GetPackages()
+            return from p in _baseNode.Query
                    where p.CanonicalName.PackageName.ToLower().Contains(_searchText.ToLower())
                    select p;
         }

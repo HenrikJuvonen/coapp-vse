@@ -39,27 +39,25 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IEnumerable<IPackage> GetPackages()
         {
-            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed", null, VsVersionHelper.VsMajorVersion, false);
+            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed", useFilters: false);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 
-                foreach (PackageReference package in packageReferences)
+                foreach (PackageReference packageReference in packageReferences)
                 {
-                    try
+                    var package = installedPackages.FirstOrDefault(pkg => pkg.Name == packageReference.Name &&
+                                                                          pkg.Flavor == packageReference.Flavor &&
+                                                                          pkg.Version == packageReference.Version &&
+                                                                          pkg.Architecture == packageReference.Architecture);
+
+                    if (package != null)
                     {
-                        resultPackages.Add(installedPackages.First(pkg => pkg.Name == package.Name &&
-                                                                          pkg.Version == package.Version &&
-                                                                          pkg.Flavor == package.Flavor &&
-                                                                          pkg.Architecture == package.Architecture));
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
+                        resultPackages.Add(package);
                     }
                 }
 

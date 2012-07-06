@@ -10,30 +10,19 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
-using Microsoft.VisualStudio.VCProjectEngine;
 using VSLangProj;
 using MsBuildProject = Microsoft.Build.Evaluation.Project;
 using MsBuildProjectItem = Microsoft.Build.Evaluation.ProjectItem;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Construction;
-using System.Text.RegularExpressions;
 
 namespace CoApp.VisualStudio.VsCore
 {    
     public static class ProjectExtensions
     {
-        private const string WebConfig = "web.config";
-        private const string AppConfig = "app.config";
-        private const string BinFolder = "Bin";
-
-        private static readonly Dictionary<string, string> _knownNestedFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
-            { "web.debug.config", "web.config" },
-            { "web.release.config", "web.config" }
-        };
-
         private static readonly HashSet<string> _supportedProjectTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                                                                          VsConstants.WebSiteProjectTypeGuid, 
-                                                                          VsConstants.CsharpProjectTypeGuid, 
+                                                                          VsConstants.WebSiteProjectTypeGuid,
+                                                                          VsConstants.CsharpProjectTypeGuid,
                                                                           VsConstants.VbProjectTypeGuid,
                                                                           VsConstants.JsProjectTypeGuid,
                                                                           VsConstants.FsharpProjectTypeGuid,
@@ -49,11 +38,6 @@ namespace CoApp.VisualStudio.VsCore
 
         private static readonly IEnumerable<string> _fileKinds = new[] { VsConstants.VsProjectItemKindPhysicalFile, VsConstants.VsProjectItemKindSolutionItem };
         private static readonly IEnumerable<string> _folderKinds = new[] { VsConstants.VsProjectItemKindPhysicalFolder };
-
-        // List of project types that cannot have references added to them
-        private static readonly string[] _unsupportedProjectTypesForAddingReferences = new[] { VsConstants.WixProjectTypeGuid };
-        // List of project types that cannot have binding redirects added
-        private static readonly string[] _unsupportedProjectTypesForBindingRedirects = new[] { VsConstants.WixProjectTypeGuid, VsConstants.JsProjectTypeGuid, VsConstants.NemerleProjectTypeGuid };
 
         private static readonly char[] PathSeparatorChars = new[] { Path.DirectorySeparatorChar };
         
@@ -184,11 +168,7 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         private static bool TryGetFileNestedFile(ProjectItems projectItems, string name, out ProjectItem projectItem)
         {
-            string parentFileName;
-            if (!_knownNestedFiles.TryGetValue(name, out parentFileName))
-            {
-                parentFileName = Path.GetFileNameWithoutExtension(name);
-            }
+            string parentFileName = Path.GetFileNameWithoutExtension(name);
 
             // If it's not one of the known nested files then we're going to look up prefixes backwards
             // i.e. if we're looking for foo.aspx.cs then we look for foo.aspx then foo.aspx.cs as a nested file
@@ -248,11 +228,6 @@ namespace CoApp.VisualStudio.VsCore
 
         public static string GetDirectory(this Project project)
         {
-            Property path = null;// project.Properties.Item("Path");
-
-            if (path != null)
-                return Path.GetDirectoryName(path.Value);
-
             return Path.GetDirectoryName(project.FullName);
         }
 
@@ -396,7 +371,7 @@ namespace CoApp.VisualStudio.VsCore
         public static string GetOutputPath(this Project project)
         {
             // For Websites the output path is the bin folder
-            string outputPath = project.IsWebSite() ? BinFolder : project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
+            string outputPath = project.IsWebSite() ? "Bin" : project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
             return Path.Combine(project.GetDirectory(), outputPath);
         }
 
@@ -428,6 +403,11 @@ namespace CoApp.VisualStudio.VsCore
             return buildProject.GetPropertyValue("TargetFrameworkMoniker") ?? string.Empty;
         }
 
+        public static int GetTargetFrameworkVersion(this Project project)
+        {
+            return project.GetPropertyValue<int>("TargetFrameworkVersion");
+        }
+
         /// <summary>
         /// Checks if project is compatible with the package described in packageReference.
         /// </summary>
@@ -439,21 +419,23 @@ namespace CoApp.VisualStudio.VsCore
             }
             var projectTypeGuids = project.GetProjectTypeGuids();
             var targetFramework = project.GetTargetFramework();
+            var targetFrameworkVersion = project.GetTargetFrameworkVersion();
+            bool targetsNetFramework = targetFramework.Contains(".NETFramework") || targetFramework.Contains("Silverlight");
 
             // VC-compatibility
-            bool compatible = ((packageReference.Type == "vc" ||
-                               (packageReference.Type == "vc,lib" ? project.IsCompatibleArchitecture(packageReference.Architecture) : false))
+            bool compatible = ((packageReference.Type == DeveloperPackageType.VcInclude ||
+                               (packageReference.Type == DeveloperPackageType.VcLibrary ? project.IsCompatibleArchitecture(packageReference.Architecture) : false))
                                && project.IsVcProject());
 
             // NET-compatibility
-            compatible = compatible || (packageReference.Type == "net" && project.IsNetProject() && 
+            compatible = compatible || (packageReference.Type == DeveloperPackageType.Net && project.IsNetProject() && 
                 (
-                (packageReference.Flavor == "" ? true : false) ||
-                (packageReference.Flavor == "[net20]" ? targetFramework.Contains(".NETFramework,Version=v2.0") : false) ||
-                (packageReference.Flavor == "[net35]" ? targetFramework.Contains(".NETFramework,Version=v3.5") : false) ||
-                (packageReference.Flavor == "[net40]" ? targetFramework.Contains(".NETFramework,Version=v4.0") : false) ||
-                (packageReference.Flavor == "[net45]" ? targetFramework.Contains(".NETFramework,Version=v4.5") : false) ||
-                (packageReference.Flavor == "[silverlight]" ? targetFramework.Contains("Silverlight") : false)
+                (packageReference.Flavor == "" ? targetsNetFramework : false) ||
+                (packageReference.Flavor == "[net20]" ? targetsNetFramework && targetFrameworkVersion >= 0x20000 : false) ||
+                (packageReference.Flavor == "[net35]" ? targetsNetFramework && targetFrameworkVersion >= 0x30005 : false) ||
+                (packageReference.Flavor == "[net40]" ? targetsNetFramework && targetFrameworkVersion >= 0x40000 : false) ||
+                (packageReference.Flavor == "[net45]" ? targetsNetFramework && targetFrameworkVersion >= 0x40005 : false) ||
+                (packageReference.Flavor == "[silverlight]" ? targetsNetFramework : false)
                 ));
             
             return compatible;

@@ -42,6 +42,7 @@ namespace CoApp.VisualStudio
                 string flavor = e.GetOptionalAttributeValue("flavor");
                 string version = e.GetOptionalAttributeValue("version");
                 string architecture = e.GetOptionalAttributeValue("architecture");
+                string devtype = e.GetOptionalAttributeValue("devtype");
 
                 if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(version) || String.IsNullOrEmpty(architecture))
                 {
@@ -87,11 +88,12 @@ namespace CoApp.VisualStudio
                             continue;
                         }
 
-                        libraries.Add(new Library(lib, "", null,true));
+                        libraries.Add(new Library(lib, "", null, true));
                     }
                 }
 
-                yield return new PackageReference(name, flavor, version, architecture, null, libraries);
+                yield return new PackageReference(name, flavor, version, architecture, null,
+                    libraries, (DeveloperPackageType)Enum.Parse(typeof(DeveloperPackageType), devtype ?? "None"));
             }
         }
 
@@ -110,14 +112,14 @@ namespace CoApp.VisualStudio
             return DeleteEntry(document, name, flavor, version, architecture);
         }
 
-        public void AddEntry(string name, string flavor, string version, string architecture, IEnumerable<Library> libraries)
+        public void AddEntry(string name, string flavor, string version, string architecture, IEnumerable<Library> libraries, DeveloperPackageType devtype)
         {
             XDocument document = GetDocument(createIfNotExists: true);
 
-            AddEntry(document, name, flavor, version, architecture, libraries);
+            AddEntry(document, name, flavor, version, architecture, libraries, devtype);
         }
 
-        private void AddEntry(XDocument document, string name, string flavor, string version, string architecture, IEnumerable<Library> libraries)
+        private void AddEntry(XDocument document, string name, string flavor, string version, string architecture, IEnumerable<Library> libraries, DeveloperPackageType devtype)
         {
             XElement element = FindEntry(document, name, flavor, version, architecture);
 
@@ -130,7 +132,8 @@ namespace CoApp.VisualStudio
                                   new XAttribute("name", name),
                                   new XAttribute("flavor", flavor),
                                   new XAttribute("version", version),
-                                  new XAttribute("architecture", architecture));
+                                  new XAttribute("architecture", architecture),
+                                  new XAttribute("devtype", devtype));
 
             IEnumerable<string> configs = libraries.Select(n => n.ConfigurationName)
                                                    .Where(n => !string.IsNullOrEmpty(n))
@@ -195,7 +198,7 @@ namespace CoApp.VisualStudio
 
         private void SaveDocument(XDocument document)
         {
-            // Sort the elements by package id and only take valid entries (one with both id and version)
+            // Sort the elements by package id and only take valid entries
             var packageElements = (from e in document.Root.Elements("package")
                                    let name = e.GetOptionalAttributeValue("name")
                                    let flavor = e.GetOptionalAttributeValue("flavor")

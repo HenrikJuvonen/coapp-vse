@@ -177,7 +177,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, false);
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(useFilters: false);
             ISet<IPackage> resultPackages = new HashSet<IPackage>();
 
             foreach (Project p in _solutionManager.GetProjects())
@@ -203,7 +203,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<string> GetUnrecoverablePackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, VsVersionHelper.VsMajorVersion, false);
+            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, false);
             ISet<string> unrecoverable = new HashSet<string>();
 
             foreach (Project p in _solutionManager.GetProjects())

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Model;
+using CoApp.Toolkit.Extensions;
 
 namespace CoApp.VisualStudio
 {
@@ -26,31 +27,32 @@ namespace CoApp.VisualStudio
             return model;
         }
 
-        public static string GetPath(this IPackage package)
+        public static string GetPackageDirectory(this IPackage package)
         {
-            var installedDirectory = PackageManagerSettings.CoAppInstalledDirectory.First(n => n.Key == package.Architecture).Value;
-
-            return string.Format(@"{0}\{1}\{2}\", installedDirectory, package.GetPackageModel().Vendor, package.CanonicalName.PackageName);
+            return string.Format(@"{0}\{1}\{2}\", 
+                PackageManagerSettings.CoAppInstalledDirectory[package.Architecture],
+                package.GetPackageModel().Vendor.MakeSafeFileName(),
+                package.CanonicalName.PackageName);
         }
 
-        public static string GetDevType(this IPackage package)
+        public static DeveloperPackageType GetDeveloperPackageType(this IPackage package)
         {
             if (package.Name.Contains("-common"))
             {
-                return "vc";
+                return DeveloperPackageType.VcInclude;
             }
             else if (package.Flavor.IsWildcardMatch("*vc*"))
             {
-                return "vc,lib";
+                return DeveloperPackageType.VcLibrary;
             }
             else if (package.Flavor.IsWildcardMatch("*net*") || package.Flavor.IsWildcardMatch("*silverlight*")
                 || (package.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) &&
                                            n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
             {
-                return "net";
+                return DeveloperPackageType.Net;
             }
 
-            return "";
+            return DeveloperPackageType.None;
         }
 
         public static string GetPackageNameWithoutPublicKeyToken(this IPackage package)

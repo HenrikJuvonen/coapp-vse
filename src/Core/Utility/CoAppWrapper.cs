@@ -28,7 +28,6 @@
         private static bool onlyStableVersions = true;
         private static bool onlyCompatibleFlavors = true;
         
-        private static readonly List<Task> tasks = new List<Task>();
         private static readonly List<string> activeDownloads = new List<string>();
         private static readonly PackageManager packageManager = new PackageManager();
         
@@ -224,7 +223,7 @@
         /// </summary>
         public static void SetPackageState(IPackage package, string state)
         {
-            Task task = tasks.Continue(() =>
+            Task task = Task.Factory.StartNew(() =>
             {
                 switch (state)
                 {
@@ -314,23 +313,22 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, int vsMajorVersion = 0, bool useFilters = true)
+        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, bool useFilters = true)
         {
             IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
-            XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter = null;
 
             if (type == "installed")
-                pkgFilter = Package.Properties.Installed.Is(true);
+                pkgFilter = Package.Filters.InstalledPackages;
             else if (type == "updatable")
-                pkgFilter = !Package.Properties.AvailableNewestUpdate.Is(null) & Package.Properties.Installed.Is(true);
+                pkgFilter = Package.Filters.PackagesWithUpdateAvailable & Package.Filters.InstalledPackages;
 
             if (!useFilters)
             {
-                return QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+                return QueryPackages(new string[] { "*" }, pkgFilter, location);
             }
 
-            packages = QueryPackages(new string[] { "*" }, pkgFilter, collectionFilter, location);
+            packages = QueryPackages(new string[] { "*" }, pkgFilter, location);
 
             if (type == "updatable")
             {
@@ -345,7 +343,7 @@
         /// </summary>
         public static IEnumerable<IPackage> GetPackages(string[] parameters)
         {
-            return QueryPackages(parameters, null, null, null);
+            return QueryPackages(parameters, null, null);
         }
 
         /// <summary>
@@ -353,7 +351,7 @@
         /// </summary>
         public static IPackage GetPackage(CanonicalName canonicalName)
         {
-            return QueryPackages(new string[] { canonicalName.PackageName }, null, null, null).FirstOrDefault();
+            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
         }
 
         /// <summary>
@@ -361,7 +359,7 @@
         /// </summary>
         public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
-            return GetPackages("installed", null, 0, false).Where(pkg => pkg.Dependencies.Contains(package));
+            return GetPackages("installed", null, false).Where(pkg => pkg.Dependencies.Contains(package));
         }
 
         /// <summary>
@@ -369,16 +367,15 @@
         /// </summary>
         private static IEnumerable<IPackage> QueryPackages(string[] queries,
                                                            Filter<IPackage> pkgFilter,
-                                                           XList<Expression<Func<IEnumerable<IPackage>, IEnumerable<IPackage>>>> collectionFilter,
                                                            string location)
         {
             ErrorMessage = null;
 
             IEnumerable<IPackage> packages = null;
             
-            Task task = tasks.Continue(() =>
+            Task task = Task.Factory.StartNew(() =>
             {
-                var queryTask = packageManager.QueryPackages(queries, pkgFilter, collectionFilter, location);
+                var queryTask = packageManager.QueryPackages(queries, pkgFilter, null, location);
 
                 ContinueTask(queryTask);
 
@@ -410,7 +407,7 @@
         {
             ErrorMessage = null;
 
-            Task task = tasks.Continue(() =>
+            Task task = Task.Factory.StartNew(() =>
             {
                 IEnumerable<Package> plan = Enumerable.Empty<Package>();
 
@@ -465,7 +462,7 @@
                 canonicalNames = canonicalNames.Concat(package.Dependencies.Where(p => !(p.Name == "coapp" && p.IsActive)).Select(p => p.CanonicalName));
             }
 
-            Task task = tasks.Continue(() =>
+            Task task = Task.Factory.StartNew(() =>
                 {
                     if (!CancellationTokenSource.IsCancellationRequested)
                     {

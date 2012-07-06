@@ -18,7 +18,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 {
     internal abstract class PackagesTreeNodeBase : IVsExtensionsTreeNode, IVsPageDataSource, IVsSortDataSource, IVsProgressPaneConsumer, INotifyPropertyChanged, IVsMessagePaneConsumer
     {
-        // We cache the query until it changes (due to sort order or search)
+        // We cache the query until it changes (due to search)
         private IEnumerable<IPackage> _query;
         private int _totalCount;
 
@@ -135,6 +135,14 @@ namespace CoApp.VisualStudio.Dialog.Providers
                     _isExpanded = value;
                     OnNotifyPropertyChanged("IsExpanded");
                 }
+            }
+        }
+
+        public IEnumerable<IPackage> Query
+        {
+            get
+            {
+                return _query;
             }
         }
 
@@ -266,7 +274,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
                     String.Format(CultureInfo.CurrentCulture, CommonResources.Argument_Must_Be_GreaterThanOrEqualTo, 1));
             }
 
-            Debug.WriteLine("Dialog loading page: " + pageNumber);
             if (_loadingInProgress)
             {
                 return;
@@ -322,13 +329,12 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 CoAppWrapper.SetNewCancellationTokenSource();
 
-                IQueryable<IPackage> query = GetPackages().Distinct().AsQueryable();
-
-                // Apply the ordering then sort by name
-                _query = ApplyOrdering(query).ThenBy(p => p.CanonicalName.PackageName);
+                _query = GetPackages().Distinct();
             }
 
-            var filteredQuery = ApplyFiltering(_query);
+            var orderedQuery = ApplyOrdering(_query);
+
+            var filteredQuery = ApplyFiltering(orderedQuery);
 
             _totalCount = filteredQuery.Count();
             
@@ -342,10 +348,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return CoAppWrapper.FilterPackages(query, VsCore.VsVersionHelper.VsMajorVersion);
         }
 
-        private IOrderedQueryable<IPackage> ApplyOrdering(IQueryable<IPackage> query)
+        private IEnumerable<IPackage> ApplyOrdering(IEnumerable<IPackage> query)
         {
-            // Order by the current descriptor
-            return query.SortBy<IPackage>(Provider.CurrentSort.SortProperties, Provider.CurrentSort.Direction, typeof(IPackage));
+            return Provider.CurrentSort.Direction == ListSortDirection.Descending ? query.OrderByDescending(n => n.CanonicalName) :
+                                                                                    query.OrderBy(n => n.CanonicalName);
         }
 
         public IList<IVsSortDescriptor> GetSortDescriptors()
@@ -365,9 +371,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             if (Provider.CurrentSort != null)
             {
-                // If we changed the sort order then invalidate the cache.
-                ResetQuery();
-
                 // Reload the first page since the sort order changed
                 LoadPage(1);
                 return true;

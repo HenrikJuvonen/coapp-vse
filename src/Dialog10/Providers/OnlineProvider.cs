@@ -28,15 +28,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public override bool RefreshOnNodeSelection
-        {
-            get
-            {
-                // only refresh if the current node doesn't have any extensions
-                return (SelectedNode == null || SelectedNode.Extensions.Count == 0);
-            }
-        }
-
         public override bool CanExecuteCore(PackageItem item)
         {
             return !item.PackageIdentity.IsInstalled;

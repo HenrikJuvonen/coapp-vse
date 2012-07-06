@@ -131,7 +131,7 @@ namespace CoApp.VisualStudio.Options
                 return TryAddFeedResults.InvalidFeed;
             }
 
-            if (!(PathValidator.IsValidSource(feed)))
+            if (!IsValidFeed(feed))
             {
                 MessageHelper.ShowWarningMessage(CoApp.VisualStudio.Options.Resources.ShowWarning_InvalidSource, null);
                 SelectAndFocus(FeedLocation);
@@ -147,6 +147,23 @@ namespace CoApp.VisualStudio.Options
             ClearFeedLocation();
 
             return TryAddFeedResults.FeedAdded;
+        }
+
+        private static bool IsValidFeed(string feedLocation)
+        {
+            try
+            {
+                Uri result;
+                if (Uri.TryCreate(feedLocation, UriKind.Absolute, out result))
+                {
+                    return System.IO.File.Exists(result.AbsolutePath) || result.IsWellFormedOriginalString();
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
         }
 
         private static void SelectAndFocus(TextBox textBox)

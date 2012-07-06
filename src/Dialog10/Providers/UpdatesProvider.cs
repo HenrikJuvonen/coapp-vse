@@ -30,7 +30,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override void FillRootNodes()
         {
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, "updatable"));
+            RootNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(RootNode, this, "All", null, "updatable"));
         }
 
         public override bool CanExecuteCore(PackageItem item)

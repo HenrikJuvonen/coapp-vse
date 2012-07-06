@@ -77,12 +77,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return _detailViewDataTemplate;
             }
         }
-
-        protected virtual IVsExtensionsTreeNode CreateTreeNodeForPackages(string name, string location, string type)
-        {
-            return (IVsExtensionsTreeNode)new SimpleTreeNode(RootNode, this, name, location, type);
-        }
-
+        
         protected void SelectNode(PackagesTreeNodeBase node)
         {
             node.IsSelected = true;
@@ -180,7 +175,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             string type = installed ? "installed" : null;
 
-            RootNode.Nodes.Add(CreateTreeNodeForPackages("All", null, type));
+            RootNode.Nodes.Add((IVsExtensionsTreeNode)new SimpleTreeNode(RootNode, this, "All", null, type));
 
             // Keep it responsive...
             Task.Factory.StartNew(() =>
@@ -230,7 +225,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                return false;
+                return true;
             }
         }
 

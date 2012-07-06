@@ -51,8 +51,8 @@
     </Compile>
     <Compile Include="Extensions\PackageExtensions.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />
+    <Compile Include="Packages\DeveloperPackageType.cs" />
     <Compile Include="Packages\Library.cs" />
-    <Compile Include="Logging\MessageLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
@@ -61,7 +61,6 @@
     <Compile Include="Packages\PackageReference.cs" />
     <Compile Include="Packages\PackageReferenceFile.cs" />
     <Compile Include="Utility\ProgressEventArgs.cs" />
-    <Compile Include="Utility\PathValidator.cs" />
     <Compile Include="Utility\ProgressProvider.cs" />
   </ItemGroup>
   <ItemGroup>

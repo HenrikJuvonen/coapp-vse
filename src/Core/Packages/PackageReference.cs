@@ -9,60 +9,24 @@ namespace CoApp.VisualStudio
     /// </summary>
     public class PackageReference
     {
-        private string _type;
-
-        public PackageReference(string name, string flavor, string version, string architecture, string path, IEnumerable<Library> libraries)
+        public PackageReference(string name, string flavor, string version, string architecture, string packageDirectory,
+            IEnumerable<Library> libraries, DeveloperPackageType type)
         {
             Name = name;
             Flavor = flavor;
             Version = version;
             Architecture = architecture;
-            Path = path;
+            PackageDirectory = packageDirectory;
             Libraries = libraries;
+            Type = type;
         }
         
         public string Name { get; private set; }
         public string Flavor { get; private set; }
         public string Version { get; private set; }
         public string Architecture { get; private set; }
-        public string Path { get; private set; }
+        public string PackageDirectory { get; private set; }
         public IEnumerable<Library> Libraries { get; private set; }
-
-        public string Type
-        {
-            get
-            {
-                if (_type == null)
-                {
-                    if (Name.Contains("-common"))
-                    {
-                        _type = "vc";
-                    }
-                    else if (Flavor.Contains("vc"))
-                    {
-                        _type = "vc,lib";
-                    }
-                    else if (Flavor.Contains("net") || Flavor.Contains("silverlight"))
-                    {
-                        _type = "net";
-                    }
-                    else
-                    {
-                        var package = CoAppWrapper.GetPackages(new[] { this }).FirstOrDefault();
-
-                        if (package != null)
-                        {
-                            _type = package.GetDevType();
-                        }
-                        else
-                        {
-                            _type = string.Empty;
-                        }
-                    }
-                }
-
-                return _type; 
-            }
-        }
+        public DeveloperPackageType Type { get; private set; }
     }
 }

@@ -53,47 +53,50 @@ namespace CoApp.VisualStudio.VsCore
         
         public void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            string type = packageReference.Type;
-
             foreach (Project project in GetProjects())
             {
                 IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
 
-                IEnumerable<Library> projectLibraries = from lib in libraries
-                                                        where lib.ProjectName == project.Name
-                                                        select lib;
+                IEnumerable<Library> projectLibraries = libraries.Where(n => n.ProjectName == project.GetName());
 
-                if (type.Contains("vc") && project.IsVcProject())
+                switch (packageReference.Type)
                 {
-                    if (type == "vc,lib")
-                    {
+                    case DeveloperPackageType.VcInclude:
+                        project.ManageIncludeDirectories(packageReference, projects);
+                        break;
+                    case DeveloperPackageType.VcLibrary:
                         project.ManageLinkerDefinitions(packageReference, projects, projectLibraries);
                         resultLibraries = projectLibraries.Where(n => n.IsSelected);
-                    }
-                    else if (type == "vc")
-                    {
-                        project.ManageIncludeDirectories(packageReference, projects);
-                    }
-                }
-                else if (type == "net" && project.IsNetProject())
-                {
-                    project.ManageReferences(packageReference, projectLibraries);
-                    resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                        break;
+                    case DeveloperPackageType.Net:
+                        project.ManageReferences(packageReference, projectLibraries);
+                        resultLibraries = projectLibraries.Where(n => n.IsSelected);
+                        break;
                 }
 
-                string path = project.GetDirectory() + "\\coapp.packages.config";
+                string path = project.GetDirectory() + "/coapp.packages.config";
   
                 PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
 
                 if (projects.Contains(project))
                 {
-                    packageReferenceFile.AddEntry(packageReference.Name, packageReference.Flavor, packageReference.Version, packageReference.Architecture, resultLibraries);
+                    packageReferenceFile.AddEntry(
+                        packageReference.Name,
+                        packageReference.Flavor,
+                        packageReference.Version,
+                        packageReference.Architecture,
+                        resultLibraries,
+                        packageReference.Type);
 
                     project.ProjectItems.AddFromFile(path);
                 }
                 else
                 {
-                    packageReferenceFile.DeleteEntry(packageReference.Name, packageReference.Flavor, null, packageReference.Architecture);
+                    packageReferenceFile.DeleteEntry(
+                        packageReference.Name,
+                        packageReference.Flavor,
+                        null, // any version
+                        packageReference.Architecture);
 
                     if (!packageReferenceFile.GetPackageReferences().Any())
                     {

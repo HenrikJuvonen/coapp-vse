@@ -57,8 +57,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             get
             {
-                string flavor = string.IsNullOrEmpty(PackageIdentity.Flavor) ? "" : PackageIdentity.Flavor.ToString();
-                return flavor + "-" + PackageIdentity.Version + "-" + PackageIdentity.Architecture;
+                return string.Format("{0}-{1}-{2}", PackageIdentity.Flavor, PackageIdentity.Version, PackageIdentity.Architecture);
             }
         }
 
@@ -75,23 +74,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             get
             {
                 return _provider is OnlineProvider;
-            }
-        }
-
-        // Returns "vc" or "vc,lib" or "net"
-        public string Type
-        {
-            get
-            {
-                return PackageIdentity.GetDevType();
-            }
-        }
-
-        public string Path
-        {
-            get
-            {
-                return PackageIdentity.GetPath();
             }
         }
         
@@ -143,7 +125,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             get
             {
                 return PackageIdentity.Dependencies.Select(dependency => 
-                    string.Format("{0}-{1}-{2}", dependency.Name, dependency.Version, dependency.Architecture));
+                    string.Format("{0}{1}-{2}-{3}", dependency.Name, dependency.Flavor, dependency.Version, dependency.Architecture));
             }
         }
 

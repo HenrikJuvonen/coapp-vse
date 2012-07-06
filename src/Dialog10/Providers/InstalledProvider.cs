@@ -41,15 +41,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        public override bool RefreshOnNodeSelection
-        {
-            get
-            {
-                // only refresh if the current node doesn't have any extensions
-                return (SelectedNode == null || SelectedNode.Extensions.Count == 0);
-            }
-        }
-
         public override bool CanExecuteCore(PackageItem item)
         {
             return !(item.Name == "coapp" && item.PackageIdentity.IsActive);
@@ -57,7 +48,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override bool CanExecuteManage(PackageItem item)
         {
-            return item.Type != "";
+            return item.PackageIdentity.GetDeveloperPackageType() != DeveloperPackageType.None;
         }
 
         protected override bool ExecuteManage(PackageItem item)
@@ -70,7 +61,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return false;
             }
 
-            PackageReference packageReference = new PackageReference(item.Name, item.PackageIdentity.Flavor, item.PackageIdentity.Version, item.PackageIdentity.Architecture, item.Path, null);
+            var package = item.PackageIdentity;
+            var packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetPackageDirectory(), null, package.GetDeveloperPackageType());
 
             var selected = _userNotifierServices.ShowProjectSelectorWindow(
                 Resources.Dialog_OnlineSolutionInstruction,
@@ -166,7 +158,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetPath(), null);
+            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetPackageDirectory(), null, package.GetDeveloperPackageType());
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,
@@ -266,7 +258,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             foreach (Project project in projects)
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(project.FullName) + "/coapp.packages.config");
+                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
                 PackageReference packageReference = packageReferenceFile.GetPackageReferences()
                     .FirstOrDefault(pkg => pkg.Name == package.Name &&

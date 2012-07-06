@@ -38,7 +38,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         
         public override IEnumerable<IPackage> GetPackages()
         {
-            return CoAppWrapper.GetPackages(_type, _location, VsVersionHelper.VsMajorVersion);
+            return CoAppWrapper.GetPackages(_type, _location);
         }
     }
 }
