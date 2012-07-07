@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using EnvDTE;
-using EnvDTE80;
 
 namespace CoApp.VisualStudio.VsCore
 {
@@ -44,7 +42,7 @@ namespace CoApp.VisualStudio.VsCore
                     continue;
                 }
 
-                ProjectItems projectItems = null;
+                ProjectItems projectItems;
                 try
                 {
                     // bug 1138: Oracle Database Project doesn't implement the ProjectItems property
@@ -71,7 +69,6 @@ namespace CoApp.VisualStudio.VsCore
                         {
                             // Some project system don't implement the SubProject property,
                             // just ignore those
-                            continue;
                         }
                     }
                 }

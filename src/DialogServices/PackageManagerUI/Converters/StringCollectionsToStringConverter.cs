@@ -11,19 +11,18 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
             if (targetType == typeof(string))
             {
                 string stringValue = value as string;
+
                 if (stringValue != null)
                 {
                     return stringValue;
                 }
-                else if (value == null)
+
+                if (value == null)
                 {
                     return String.Empty;
                 }
-                else
-                {
-                    IEnumerable<string> parts = (IEnumerable<string>)value;
-                    return String.Join(", ", parts);
-                }
+
+                return String.Join(", ", (IEnumerable<string>)value);
             }
 
             return value;

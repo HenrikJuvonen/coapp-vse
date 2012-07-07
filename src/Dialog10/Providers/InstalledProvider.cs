@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -13,8 +12,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 {
     class InstalledProvider : PackagesProviderBase
     {
-        protected readonly UserNotifierServices _userNotifierServices;
-        protected readonly ISolutionManager _solutionManager;
+        private readonly UserNotifierServices _userNotifierServices;
+        private readonly ISolutionManager _solutionManager;
 
         public InstalledProvider(ResourceDictionary resources,
                                 ProviderServices providerServices,
@@ -94,14 +93,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override bool ExecuteCore(PackageItem item)
         {
-            bool? removeDependencies = AskRemoveDependency(item.PackageIdentity, checkDependents: true);
-
-            if (removeDependencies == null)
-            {
-                // user presses Cancel
-                return false;
-            }
-
             bool? removeFromSolution = AskRemovePackagesFromSolution(item.PackageIdentity);
 
             if (removeFromSolution == true)
@@ -116,18 +107,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
 
             ShowWaitDialog();
-            CoAppWrapper.RemovePackage(item.PackageIdentity, (bool)removeDependencies);
+            CoAppWrapper.RemovePackage(item.PackageIdentity);
 
             return true;
         }
 
         private IEnumerable<IPackage> GetDifferentPackages(IPackage package)
         {
-            IEnumerable<PackageReference> differentPackages = null;
+            var differentPackages = Enumerable.Empty<PackageReference>();
 
-            foreach (Project p in _solutionManager.GetProjects())
+            foreach (var p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
+                var packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
 
                 differentPackages = packageReferenceFile.GetPackageReferences().Where(pkg => pkg.Name == package.Name &&
                                                                                              pkg.Flavor == package.Flavor &&
@@ -209,45 +200,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
 
             return remove;
-        }
-
-        private bool? AskRemoveDependency(IPackage package, bool checkDependents)
-        {
-            if (checkDependents)
-            {
-                // check if there is any other package depends on this package.
-                // if there is, throw to cancel the uninstallation
-
-                var dependents = CoAppWrapper.GetDependents(package);
-
-                if (dependents.Any())
-                {
-                    _userNotifierServices.ShowErrorMessage("Uninstall depending packages first:\n" +
-                        String.Join("\n", dependents.Select(pkg => pkg.CanonicalName.PackageName)));
-
-                    return null;
-                }
-            }
-
-            //var uninstallPackageNames = package.Dependencies.Where(name => name != "coapp");
-
-            bool? removeDependencies = false;
-
-            /*
-            if (uninstallPackageNames.Count() > 0)
-            {
-                // show each dependency package on one line
-                String packageNames = String.Join(Environment.NewLine, uninstallPackageNames);
-                String message = String.Format(Resources.Dialog_RemoveDependencyMessage, package.CanonicalName.PackageName)
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + packageNames;
-
-                removeDependencies = _userNotifierServices.ShowQuestionWindow(message);
-            }
-            */
-
-            return removeDependencies;
         }
 
         private IEnumerable<Project> GetReferenceProjects(IPackage package)

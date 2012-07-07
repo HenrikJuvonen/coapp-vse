@@ -117,7 +117,8 @@ namespace CoApp.VisualStudio.VsCore
                     {
                         continue;
                     }
-                    else if (nestedProject.IsSupported())
+
+                    if (nestedProject.IsSupported())
                     {
                         yield return nestedProject;
                     }
@@ -158,7 +159,7 @@ namespace CoApp.VisualStudio.VsCore
                 return TryGetFileNestedFile(projectItems, name, out projectItem);
             }
 
-            return projectItem != null;
+            return true;
         }
 
         /// <summary>
@@ -266,12 +267,14 @@ namespace CoApp.VisualStudio.VsCore
             ProjectItem subFolder;
 
             ProjectItems projectItems = parentItem.ProjectItems;
+
             if (projectItems.TryGetFolder(folderName, out subFolder))
             {
                 // Get the sub folder
                 return subFolder;
             }
-            else if (createIfNotExists)
+
+            if (createIfNotExists)
             {
                 // The JS Metro project system has a bug whereby calling AddFolder() to an existing folder that
                 // does not belong to the project will throw. To work around that, we have to manually include 
@@ -311,7 +314,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private static bool IncludeExistingFolderToProject(Project project, string folderRelativePath)
         {
-            IVsUIHierarchy projectHierarchy = (IVsUIHierarchy)project.ToVsHierarchy();
+            var projectHierarchy = (IVsUIHierarchy)project.ToVsHierarchy();
 
             uint itemId;
             int hr = projectHierarchy.ParseCanonicalName(folderRelativePath, out itemId);
@@ -380,7 +383,7 @@ namespace CoApp.VisualStudio.VsCore
             IVsHierarchy hierarchy;
 
             // Get the vs solution
-            IVsSolution solution = ServiceLocator.GetInstance<IVsSolution>();
+            var solution = ServiceLocator.GetInstance<IVsSolution>();
             int hr = solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
 
             if (hr != VsConstants.S_OK)
@@ -398,7 +401,7 @@ namespace CoApp.VisualStudio.VsCore
                 return ".NETCore, Version=v4.5";
             }
 
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
 
             return buildProject.GetPropertyValue("TargetFrameworkMoniker") ?? string.Empty;
         }
@@ -417,25 +420,26 @@ namespace CoApp.VisualStudio.VsCore
             {
                 return true;
             }
-            var projectTypeGuids = project.GetProjectTypeGuids();
+
             var targetFramework = project.GetTargetFramework();
             var targetFrameworkVersion = project.GetTargetFrameworkVersion();
+
             bool targetsNetFramework = targetFramework.Contains(".NETFramework") || targetFramework.Contains("Silverlight");
 
             // VC-compatibility
             bool compatible = ((packageReference.Type == DeveloperPackageType.VcInclude ||
-                               (packageReference.Type == DeveloperPackageType.VcLibrary ? project.IsCompatibleArchitecture(packageReference.Architecture) : false))
+                               (packageReference.Type == DeveloperPackageType.VcLibrary && project.IsCompatibleArchitecture(packageReference.Architecture)))
                                && project.IsVcProject());
 
             // NET-compatibility
             compatible = compatible || (packageReference.Type == DeveloperPackageType.Net && project.IsNetProject() && 
                 (
-                (packageReference.Flavor == "" ? targetsNetFramework : false) ||
-                (packageReference.Flavor == "[net20]" ? targetsNetFramework && targetFrameworkVersion >= 0x20000 : false) ||
-                (packageReference.Flavor == "[net35]" ? targetsNetFramework && targetFrameworkVersion >= 0x30005 : false) ||
-                (packageReference.Flavor == "[net40]" ? targetsNetFramework && targetFrameworkVersion >= 0x40000 : false) ||
-                (packageReference.Flavor == "[net45]" ? targetsNetFramework && targetFrameworkVersion >= 0x40005 : false) ||
-                (packageReference.Flavor == "[silverlight]" ? targetsNetFramework : false)
+                (packageReference.Flavor == "" && targetsNetFramework) ||
+                (packageReference.Flavor == "[net20]" && (targetsNetFramework && targetFrameworkVersion >= 0x20000)) ||
+                (packageReference.Flavor == "[net35]" && (targetsNetFramework && targetFrameworkVersion >= 0x30005)) ||
+                (packageReference.Flavor == "[net40]" && (targetsNetFramework && targetFrameworkVersion >= 0x40000)) ||
+                (packageReference.Flavor == "[net45]" && (targetsNetFramework && targetFrameworkVersion >= 0x40005)) ||
+                (packageReference.Flavor == "[silverlight]" && targetsNetFramework)
                 ));
             
             return compatible;
@@ -457,6 +461,7 @@ namespace CoApp.VisualStudio.VsCore
 
             var hierarchy = project.ToVsHierarchy();
             var aggregatableProject = hierarchy as IVsAggregatableProject;
+
             if (aggregatableProject != null)
             {
                 string projectTypeGuids;
@@ -469,14 +474,13 @@ namespace CoApp.VisualStudio.VsCore
 
                 return projectTypeGuids.Split(';');
             }
-            else if (!String.IsNullOrEmpty(project.Kind))
+
+            if (!String.IsNullOrEmpty(project.Kind))
             {
                 return new[] { project.Kind };
             }
-            else
-            {
-                return new string[0];
-            }
+
+            return new string[0];
         }
                 
         /// <summary>
@@ -492,22 +496,20 @@ namespace CoApp.VisualStudio.VsCore
                 // website projects always have unique name
                 return project.Name;
             }
-            else
+
+            var nameParts = new Stack<string>();
+
+            Project cursor = project;
+            nameParts.Push(cursor.GetName());
+
+            // walk up till the solution root
+            while (cursor.ParentProjectItem != null && cursor.ParentProjectItem.ContainingProject != null)
             {
-                Stack<string> nameParts = new Stack<string>();
-
-                Project cursor = project;
+                cursor = cursor.ParentProjectItem.ContainingProject;
                 nameParts.Push(cursor.GetName());
-
-                // walk up till the solution root
-                while (cursor.ParentProjectItem != null && cursor.ParentProjectItem.ContainingProject != null)
-                {
-                    cursor = cursor.ParentProjectItem.ContainingProject;
-                    nameParts.Push(cursor.GetName());
-                }
-
-                return String.Join("\\", nameParts);
             }
+
+            return String.Join("\\", nameParts);
         }
 
         public static bool IsParentProjectExplicitlyUnsupported(this Project project)
@@ -540,7 +542,7 @@ namespace CoApp.VisualStudio.VsCore
             return name;
         }
 
-        public static MsBuildProject AsMSBuildProject(this Project project)
+        public static MsBuildProject AsMsBuildProject(this Project project)
         {
             return ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FullName).FirstOrDefault() ??
                    ProjectCollection.GlobalProjectCollection.LoadProject(project.FullName);
@@ -551,7 +553,7 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         public static IEnumerable<string> GetCompatibleConfigurations(this Project project, string architecture)
         {
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
 
             var result = new List<string>();
 
@@ -563,7 +565,7 @@ namespace CoApp.VisualStudio.VsCore
                 foreach (var itemDefinitionGroup in itemDefinitionGroups)
                 {
                     string condition = itemDefinitionGroup.Condition;
-                    string configuration = condition.Substring(33, condition.LastIndexOf("'") - 33);
+                    string configuration = condition.Substring(33, condition.LastIndexOf("'", StringComparison.InvariantCulture) - 33);
 
                     // 1. Platform string
                     string platform = configuration.Split('|')[1].ToLowerInvariant();
@@ -588,7 +590,7 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         public static IEnumerable<string> GetConfigurations(this Project project)
         {
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
 
             var result = new List<string>();
 
@@ -600,7 +602,7 @@ namespace CoApp.VisualStudio.VsCore
                 foreach (var itemDefinitionGroup in itemDefinitionGroups)
                 {
                     string condition = itemDefinitionGroup.Condition;
-                    result.Add(condition.Substring(33, condition.LastIndexOf("'") - 33));
+                    result.Add(condition.Substring(33, condition.LastIndexOf("'", StringComparison.InvariantCulture) - 33));
                 }
             }
 
@@ -612,7 +614,7 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         private static string GetDefinitionValue(this Project project, string configuration, string elementName)
         {
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
 
             if (buildProject != null)
             {
@@ -647,7 +649,7 @@ namespace CoApp.VisualStudio.VsCore
         /// </summary>
         private static void SetDefinitionValue(this Project project, string configuration, string elementName, string elementValue)
         {
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
 
             if (buildProject != null)
             {
@@ -716,7 +718,7 @@ namespace CoApp.VisualStudio.VsCore
             string path = string.Format(@"C:\ProgramData\ReferenceAssemblies\{0}\{1}{2}-{3}\",
                 packageReference.Architecture, packageReference.Name, packageReference.Flavor, packageReference.Version);
 
-            MsBuildProject buildProject = project.AsMSBuildProject();
+            MsBuildProject buildProject = project.AsMsBuildProject();
             VSProject vsProject = (VSProject)project.Object;
 
             if (buildProject != null && vsProject != null)
@@ -745,7 +747,7 @@ namespace CoApp.VisualStudio.VsCore
                     while (reference != null);
 
                     // Add new reference
-                    if (reference == null && lib.IsSelected)
+                    if (lib.IsSelected)
                     {
                         vsProject.References.Add(assemblyPath);
                         
@@ -773,7 +775,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 var value = project.GetDefinitionValue(configuration, "AdditionalLibraryDirectories");
 
-                ISet<string> paths = new HashSet<string>(value.Split(';'));
+                var paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {
@@ -786,20 +788,20 @@ namespace CoApp.VisualStudio.VsCore
 
                 project.SetDefinitionValue(configuration, "AdditionalLibraryDirectories", string.Join(";", paths));
 
-                IEnumerable<Library> configLibraries = libraries.Where(lib => lib.ConfigurationName == configuration);
+                var configLibraries = libraries.Where(lib => lib.ConfigurationName == configuration);
 
                 value = project.GetDefinitionValue(configuration, "AdditionalDependencies");
 
-                IEnumerable<string> current = value.Split(';');
+                var current = value.Split(';');
 
-                IEnumerable<string> removed = configLibraries.Where(n => !n.IsSelected)
-                                                             .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
+                var removed = configLibraries.Where(n => !n.IsSelected)
+                                             .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
 
-                IEnumerable<string> added = configLibraries.Where(n => n.IsSelected)
-                                                           .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
+                var added = configLibraries.Where(n => n.IsSelected)
+                                           .Select(n => Path.GetFileNameWithoutExtension(n.Name) + "-" + packageReference.Version + ".lib");
 
-                IEnumerable<string> result = current.Except(removed)
-                                                    .Union(added);
+                var result = current.Except(removed)
+                                    .Union(added);
 
                 project.SetDefinitionValue(configuration, "AdditionalDependencies", string.Join(";", result));
             }
@@ -816,7 +818,7 @@ namespace CoApp.VisualStudio.VsCore
             {
                 var value = project.GetDefinitionValue(configuration, "AdditionalIncludeDirectories");
 
-                ISet<string> paths = new HashSet<string>(value.Split(';'));
+                var paths = new HashSet<string>(value.Split(';'));
 
                 if (projects.Contains(project))
                 {

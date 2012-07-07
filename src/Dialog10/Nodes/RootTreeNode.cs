@@ -10,23 +10,23 @@ namespace CoApp.VisualStudio.Dialog.Providers
     /// </summary>
     public class RootPackagesTreeNode : IVsExtensionsTreeNode
     {
-        private readonly IList<IVsExtensionsTreeNode> nodes = new ObservableCollection<IVsExtensionsTreeNode>();
+        private readonly IList<IVsExtensionsTreeNode> _nodes = new ObservableCollection<IVsExtensionsTreeNode>();
 
         #region IVsExtensionsTreeNode Members
 
 #if VS10
-        private readonly IList<IVsExtension> extensions = new ObservableCollection<IVsExtension>();
+        private readonly IList<IVsExtension> _extensions = new ObservableCollection<IVsExtension>();
 
         public IList<IVsExtension> Extensions
         {
-            get { return extensions; }
+            get { return _extensions; }
         }
 #else
-        private readonly IList extensions = new ObservableCollection<IVsExtension>();
+        private readonly IList _extensions = new ObservableCollection<IVsExtension>();
 
         public IList Extensions
         {
-            get { return extensions; }
+            get { return _extensions; }
         }
 #endif
 
@@ -55,7 +55,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public IList<IVsExtensionsTreeNode> Nodes
         {
-            get { return nodes; }
+            get { return _nodes; }
         }
 
         public IVsExtensionsTreeNode Parent
@@ -68,8 +68,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public RootPackagesTreeNode(IVsExtensionsTreeNode parent, string name)
         {
-            this.Parent = parent;
-            this.Name = name;
+            Parent = parent;
+            Name = name;
         }
     }
 }

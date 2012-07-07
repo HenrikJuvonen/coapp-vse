@@ -8,11 +8,11 @@ namespace CoApp.VisualStudio.VsCore
     [Export(typeof(IOptionsPageActivator))]
     public class OptionsPageActivator : IOptionsPageActivator
     {
-        // GUID of the Package Sources page, defined in PackageSourcesOptionsPage.cs
-        const string _packageSourcesGUID = "35DE739E-CE3D-45ED-A222-46755163AA93";
+        // GUID of the Package Feeds page, defined in FeedOptionsPage.cs
+        private const string _packageSourcesGUID = "35DE739E-CE3D-45ED-A222-46755163AA93";
 
         // GUID of the General page, defined in GeneralOptionsPage.cs
-        const string _generalGUID = "EB451205-CEDF-4EC2-AE48-8A6310601356";
+        private const string _generalGUID = "EB451205-CEDF-4EC2-AE48-8A6310601356";
 
         private Action _closeCallback;
         private readonly IVsUIShell _vsUIShell;

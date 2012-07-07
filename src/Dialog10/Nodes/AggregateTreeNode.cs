@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.ExtensionsExplorer;
 using CoApp.Packaging.Common;
-using CoApp.VisualStudio.VsCore;
 
 namespace CoApp.VisualStudio.Dialog.Providers
 {

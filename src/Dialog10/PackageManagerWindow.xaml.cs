@@ -6,13 +6,11 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using CoApp.VisualStudio.Dialog.Providers;
 using CoApp.VisualStudio.VsCore;
-using EnvDTE;
 using Microsoft.VisualStudio.ExtensionsExplorer.UI;
-using Microsoft.VisualStudio.PlatformUI;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    public partial class PackageManagerWindow : DialogWindow
+    public partial class PackageManagerWindow
     {
         internal static PackageManagerWindow CurrentInstance;
 
@@ -35,13 +33,13 @@ namespace CoApp.VisualStudio.Dialog
 
         private void SetupProviders()
         {
-            ProviderServices providerServices = new ProviderServices();
-            ISolutionManager solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
+            var providerServices = new ProviderServices();
+            var solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
 
-            SolutionProvider solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
-            InstalledProvider installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
-            OnlineProvider onlineProvider = new OnlineProvider(Resources, providerServices);
-            UpdatesProvider updatesProvider = new UpdatesProvider(Resources, providerServices);
+            var solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
+            var installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
+            var onlineProvider = new OnlineProvider(Resources, providerServices);
+            var updatesProvider = new UpdatesProvider(Resources, providerServices);
 
             explorer.Providers.Add(solutionProvider);
             explorer.Providers.Add(installedProvider);
@@ -63,7 +61,7 @@ namespace CoApp.VisualStudio.Dialog
             }
             catch (TargetInvocationException exception)
             {
-                MessageHelper.ShowErrorMessage(exception, CoApp.VisualStudio.Dialog.Resources.Dialog_MessageBoxTitle);
+                MessageHelper.ShowErrorMessage(exception, Dialog.Resources.Dialog_MessageBoxTitle);
                 ExceptionHelper.WriteToActivityLog(exception);
             }
         }
@@ -118,46 +116,6 @@ namespace CoApp.VisualStudio.Dialog
             RefreshSelectedNode();
         }
 
-        private void ExecutePackageOperationSetBlocked(object sender, ExecutedRoutedEventArgs e)
-        {
-            ExecutePackageOperation(e, (selectedItem, provider) =>
-                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "blocked"));
-
-            RefreshSelectedNode();
-        }
-
-        private void ExecutePackageOperationSetLocked(object sender, ExecutedRoutedEventArgs e)
-        {
-            ExecutePackageOperation(e, (selectedItem, provider) =>
-                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "locked"));
-
-            RefreshSelectedNode();
-        }
-
-        private void ExecutePackageOperationSetUpdatable(object sender, ExecutedRoutedEventArgs e)
-        {
-            ExecutePackageOperation(e, (selectedItem, provider) =>
-                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "updatable"));
-
-            RefreshSelectedNode();
-        }
-
-        private void ExecutePackageOperationSetUpgradable(object sender, ExecutedRoutedEventArgs e)
-        {
-            ExecutePackageOperation(e, (selectedItem, provider) =>
-                CoAppWrapper.SetPackageState(selectedItem.PackageIdentity, "upgradable"));
-
-            RefreshSelectedNode();
-        }
-
-        private void ExecutePackageOperationSetActive(object sender, ExecutedRoutedEventArgs e)
-        {
-        }
-
-        private void ExecutePackageOperationSetRequired(object sender, ExecutedRoutedEventArgs e)
-        {
-        }
-
         private void ExecutePackageOperation(RoutedEventArgs e, Action<PackageItem, PackagesProviderBase> action)
         {
             if (OperationCoordinator.IsBusy)
@@ -165,19 +123,19 @@ namespace CoApp.VisualStudio.Dialog
                 return;
             }
 
-            VSExtensionsExplorerCtl control = e.Source as VSExtensionsExplorerCtl;
+            var control = e.Source as VSExtensionsExplorerCtl;
             if (control == null)
             {
                 return;
             }
 
-            PackageItem selectedItem = control.SelectedExtension as PackageItem;
+            var selectedItem = control.SelectedExtension as PackageItem;
             if (selectedItem == null)
             {
                 return;
             }
 
-            PackagesProviderBase provider = control.SelectedProvider as PackagesProviderBase;
+            var provider = control.SelectedProvider as PackagesProviderBase;
             if (provider != null)
             {
                 action(selectedItem, provider);
@@ -198,14 +156,12 @@ namespace CoApp.VisualStudio.Dialog
         private void ExecuteShowOptionsPage(object sender, ExecutedRoutedEventArgs e)
         {
             Close();
-            _optionsPageActivator.ActivatePage(
-                "General",
-                () => OnActivated());
+            _optionsPageActivator.ActivatePage("General", OnActivated);
         }
 
         private void ExecuteOpenLicenseLink(object sender, ExecutedRoutedEventArgs e)
         {
-            Hyperlink hyperlink = e.OriginalSource as Hyperlink;
+            var hyperlink = e.OriginalSource as Hyperlink;
             if (hyperlink != null && hyperlink.NavigateUri != null)
             {
                 UriHelper.OpenExternalLink(hyperlink.NavigateUri);
@@ -220,7 +176,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private void OnCategorySelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            var selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedNode != null)
             {
                 // notify the selected node that it is opened.
@@ -233,7 +189,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private void RefreshSelectedNode()
         {
-            PackagesTreeNodeBase selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
+            var selectedNode = explorer.SelectedExtensionTreeNode as PackagesTreeNodeBase;
             if (selectedNode != null)
             {
                 selectedNode.RefreshSelectedPackage();
@@ -265,50 +221,43 @@ namespace CoApp.VisualStudio.Dialog
 
         private void SetupFilters()
         {
-            ComboBox fxCombo = FindComboBox("cmb_Fx");
-            if (fxCombo != null)
+            var fxCombo = FindComboBox("cmb_Fx");
+
+            if (fxCombo == null)
+                return;
+
+            CoAppWrapper.ResetFilterStates();
+
+            if (!fxCombo.HasItems)
             {
-                CoAppWrapper.ResetFilterStates();
-
-                Label label = new Label(); label.Content = "Filters"; label.Visibility = Visibility.Collapsed;
-
-                CheckBox verHigh = new CheckBox(); verHigh.Name = "Highest";          verHigh.Content = "Version: Highest only";
-                CheckBox verStab = new CheckBox(); verStab.Name = "Stable";           verStab.Content = "Version: Stable only";
-                CheckBox flavSup = new CheckBox(); flavSup.Name = "Compatible";       flavSup.Content = "Flavor: Compatible only";
-                CheckBox archAny = new CheckBox(); archAny.Name = "any";              archAny.Content = "Architecture: any";
-                CheckBox archX64 = new CheckBox(); archX64.Name = "x64";              archX64.Content = "Architecture: x64";
-                CheckBox archX86 = new CheckBox(); archX86.Name = "x86";              archX86.Content = "Architecture: x86";
-                CheckBox roleApp = new CheckBox(); roleApp.Name = "Application";      roleApp.Content = "Role: Application";
-                CheckBox roleAsy = new CheckBox(); roleAsy.Name = "Assembly";         roleAsy.Content = "Role: Assembly";
-                CheckBox roleDev = new CheckBox(); roleDev.Name = "DeveloperLibrary"; roleDev.Content = "Role: DeveloperLibrary";
-                
-                fxCombo.Items.Clear();
-                fxCombo.Items.Add(label);
-                fxCombo.Items.Add(verHigh);
-                fxCombo.Items.Add(verStab);
-                fxCombo.Items.Add(flavSup);
-                fxCombo.Items.Add(archAny);
-                fxCombo.Items.Add(archX64);
-                fxCombo.Items.Add(archX86);
-                fxCombo.Items.Add(roleApp);
-                fxCombo.Items.Add(roleAsy);
-                fxCombo.Items.Add(roleDev);
+                fxCombo.Items.Add(new Label { Content = "Filters", Visibility = Visibility.Collapsed });
+                fxCombo.Items.Add(new CheckBox { Name = "Highest", Content = "Version: Highest only" });
+                fxCombo.Items.Add(new CheckBox { Name = "Stable", Content = "Version: Stable only" });
+                fxCombo.Items.Add(new CheckBox { Name = "Compatible", Content = "Flavor: Compatible only" });
+                fxCombo.Items.Add(new CheckBox { Name = "any", Content = "Architecture: any" });
+                fxCombo.Items.Add(new CheckBox { Name = "x64", Content = "Architecture: x64" });
+                fxCombo.Items.Add(new CheckBox { Name = "x86", Content = "Architecture: x86" });
+                fxCombo.Items.Add(new CheckBox { Name = "Application", Content = "Role: Application" });
+                fxCombo.Items.Add(new CheckBox { Name = "Assembly", Content = "Role: Assembly" });
+                fxCombo.Items.Add(new CheckBox { Name = "DeveloperLibrary", Content = "Role: DeveloperLibrary" });
 
                 fxCombo.SelectedIndex = 0;
                 fxCombo.SelectionChanged += OnFxComboSelectionChanged;
+            }
 
-                foreach (object obj in fxCombo.Items)
+            foreach (var obj in fxCombo.Items)
+            {
+                var checkbox = obj is CheckBox ? (CheckBox)obj : null;
+
+                if (checkbox != null)
                 {
-                    CheckBox c = obj is CheckBox ? (CheckBox)obj : null;
+                    FilterType filterType;
+                    Enum.TryParse(checkbox.Name, true, out filterType);
 
-                    if (c != null)
-                    {
-                        c.IsChecked = CoAppWrapper.GetFilterState(c.Name);
-                        c.Checked += OnFilterChecked;
-                        c.Unchecked += OnFilterChecked;
-                    }
+                    checkbox.IsChecked = CoAppWrapper.GetFilterState(filterType);
+                    checkbox.Checked += OnFilterChecked;
+                    checkbox.Unchecked += OnFilterChecked;
                 }
-
             }
         }
 
@@ -322,7 +271,10 @@ namespace CoApp.VisualStudio.Dialog
         {
             var checkbox = (CheckBox)sender;
 
-            CoAppWrapper.SetFilterState(checkbox.Name, checkbox.IsChecked == true);
+            FilterType filterType;
+            Enum.TryParse(checkbox.Name, true, out filterType);
+
+            CoAppWrapper.SetFilterState(filterType, checkbox.IsChecked == true);
 
             var selectedProvider = explorer.SelectedProvider;
 
@@ -338,7 +290,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private ComboBox FindComboBox(string name)
         {
-            Grid grid = LogicalTreeHelper.FindLogicalNode(explorer, "resGrid") as Grid;
+            var grid = LogicalTreeHelper.FindLogicalNode(explorer, "resGrid") as Grid;
             if (grid != null)
             {
                 return FindChildElementByNameOrType(grid, name, typeof(SortCombo)) as ComboBox;
@@ -349,22 +301,19 @@ namespace CoApp.VisualStudio.Dialog
 
         private static UIElement FindChildElementByNameOrType(Grid parent, string childName, Type childType)
         {
-            UIElement element = parent.FindName(childName) as UIElement;
+            var element = parent.FindName(childName) as UIElement;
             if (element != null)
             {
                 return element;
             }
-            else
+            foreach (UIElement child in parent.Children)
             {
-                foreach (UIElement child in parent.Children)
+                if (childType.IsInstanceOfType(child))
                 {
-                    if (childType.IsInstanceOfType(child))
-                    {
-                        return child;
-                    }
+                    return child;
                 }
-                return null;
             }
+            return null;
         }
     }
 }

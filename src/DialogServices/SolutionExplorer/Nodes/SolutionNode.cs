@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
 using EnvDTE;
-using CoApp.VisualStudio.VsCore;
 
 namespace CoApp.VisualStudio.Dialog
 {

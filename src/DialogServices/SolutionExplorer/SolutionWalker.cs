@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using EnvDTE;
 using CoApp.VisualStudio.VsCore;
-using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog
 {
@@ -43,7 +42,7 @@ namespace CoApp.VisualStudio.Dialog
             foreach (var project in projects)
             {
                 if (project.IsSupported() && project.IsCompatible(packageReference) &&
-                    (!replacePackage ? !project.IsOtherSimilarPackageAdded(packageReference) : true))
+                    (replacePackage || !project.IsOtherSimilarPackageAdded(packageReference)))
                 {
                     IList<ViewModelNodeBase> children;
 
@@ -66,7 +65,7 @@ namespace CoApp.VisualStudio.Dialog
                         children = new List<ViewModelNodeBase>();
                     }
 
-                    bool allChildrenSelected = children.Any() ? children.All(n => n.IsSelected == true) : false;
+                    bool allChildrenSelected = children.Any() && children.All(n => n.IsSelected == true);
                     
                     yield return new ProjectNode(project, children)
                     {
@@ -166,7 +165,7 @@ namespace CoApp.VisualStudio.Dialog
         /// <returns></returns>
         private static bool IsOtherSimilarPackageAdded(this Project project, PackageReference packageReference)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
+            var packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
             IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
 
@@ -177,7 +176,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private static bool? DetermineCheckState(PackageReference packageReference, Project project, string config, string filename)
         {
-            PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
+            var packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
             
             bool hasLibraries = false;
             bool projectHasPackage = false;

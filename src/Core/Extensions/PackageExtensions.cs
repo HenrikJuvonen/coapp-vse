@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Linq;
 using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Model;
@@ -12,8 +10,8 @@ namespace CoApp.VisualStudio
     {
         private static PackageModel GetPackageModel(this IPackage package)
         {
-            PackageManager pkm = new PackageManager();
-            PackageModel model = new PackageModel();
+            var pkm = new PackageManager();
+            var model = new PackageModel();
 
             try
             {
@@ -41,11 +39,11 @@ namespace CoApp.VisualStudio
             {
                 return DeveloperPackageType.VcInclude;
             }
-            else if (package.Flavor.IsWildcardMatch("*vc*"))
+            if (package.Flavor.IsWildcardMatch("*vc*"))
             {
                 return DeveloperPackageType.VcLibrary;
             }
-            else if (package.Flavor.IsWildcardMatch("*net*") || package.Flavor.IsWildcardMatch("*silverlight*")
+            if (package.Flavor.IsWildcardMatch("*net*") || package.Flavor.IsWildcardMatch("*silverlight*")
                 || (package.Roles.Any(n => n.PackageRole.HasFlag(PackageRole.Assembly) &&
                                            n.PackageRole.HasFlag(PackageRole.DeveloperLibrary))))
             {

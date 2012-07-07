@@ -92,8 +92,11 @@ namespace CoApp.VisualStudio
                     }
                 }
 
+                DeveloperPackageType developerPackageType;
+                Enum.TryParse(devtype, true, out developerPackageType);
+
                 yield return new PackageReference(name, flavor, version, architecture, null,
-                    libraries, (DeveloperPackageType)Enum.Parse(typeof(DeveloperPackageType), devtype ?? "None"));
+                    libraries, developerPackageType);
             }
         }
 
@@ -135,9 +138,9 @@ namespace CoApp.VisualStudio
                                   new XAttribute("architecture", architecture),
                                   new XAttribute("devtype", devtype));
 
-            IEnumerable<string> configs = libraries.Select(n => n.ConfigurationName)
-                                                   .Where(n => !string.IsNullOrEmpty(n))
-                                                   .Distinct();
+            var configs = libraries.Select(n => n.ConfigurationName)
+                                   .Where(n => !string.IsNullOrEmpty(n))
+                                   .Distinct();
 
             if (configs.Any())
             {

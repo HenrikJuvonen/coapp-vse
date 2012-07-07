@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace CoApp.VisualStudio.VsCore
+﻿namespace CoApp.VisualStudio.VsCore
 {
     public interface IPackageRestoreManager
     {

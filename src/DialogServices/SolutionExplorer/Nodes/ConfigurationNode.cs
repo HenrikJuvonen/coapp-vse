@@ -25,14 +25,13 @@ namespace CoApp.VisualStudio.Dialog
                     }
                     return _expandedIcon;
                 }
-                else
+
+                if (_collapsedIcon == null)
                 {
-                    if (_collapsedIcon == null)
-                    {
-                        _collapsedIcon = ProjectUtilities.GetImage(Project);
-                    }
-                    return _collapsedIcon;
+                    _collapsedIcon = ProjectUtilities.GetImage(Project);
                 }
+
+                return _collapsedIcon;
             }
         }
     }

@@ -1,9 +1,7 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.VisualStudio.Shell;
 
 namespace CoApp.VisualStudio.Options
 {
@@ -12,7 +10,7 @@ namespace CoApp.VisualStudio.Options
     [ClassInterface(ClassInterfaceType.AutoDual)]
     public class FeedOptionsPage : OptionsPageBase
     {
-        protected FeedOptionsControl _control;
+        private FeedOptionsControl _control;
 
         protected override void OnActivate(CancelEventArgs e)
         {

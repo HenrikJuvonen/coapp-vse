@@ -4,20 +4,18 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Threading;
 using System.ComponentModel;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Microsoft.VisualStudio.PlatformUI;
 using CoApp.Packaging.Common;
 
 namespace CoApp.VisualStudio.VsCore
 {
     /// <summary>
-    /// Interaction logic for WaitDialog3.xaml
+    /// Interaction logic for WaitDialog.xaml
     /// </summary>
-    public partial class WaitDialog : DialogWindow
+    public partial class WaitDialog
     {
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
@@ -26,19 +24,17 @@ namespace CoApp.VisualStudio.VsCore
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        ObservableCollection<ProgressEvent> table;
+        private readonly ObservableCollection<ProgressEvent> _table = new ObservableCollection<ProgressEvent>();
 
-        private bool IsOpen;
+        private bool _isOpen;
 
         public bool IsCancelled { get; set; }
         
         public WaitDialog()
         {
             InitializeComponent();
-            
-            table = new ObservableCollection<ProgressEvent>();
 
-            DataContext = new WaitDialogViewModel(ref table);
+            DataContext = new WaitDialogViewModel(ref _table);
         }
 
         public void OnProgressAvailable(object sender, ProgressEventArgs e)
@@ -70,10 +66,10 @@ namespace CoApp.VisualStudio.VsCore
 
             Operation.Text = operation;
 
-            if (!IsOpen)
+            if (!_isOpen)
             {
                 Owner = owner;
-                IsOpen = true;
+                _isOpen = true;
                 ShowModal();
             }
         }
@@ -87,7 +83,7 @@ namespace CoApp.VisualStudio.VsCore
                 return;
             }
 
-            IsOpen = false;
+            _isOpen = false;
             base.Hide();
         }
 
@@ -107,7 +103,7 @@ namespace CoApp.VisualStudio.VsCore
             Operation.Text = null;
             CancelButton.IsEnabled = true;
             IsCancelled = false;
-            table.Clear();
+            _table.Clear();
         }
 
         public void ShowMessageDialog(MessageBoxImage image, string message)
@@ -149,10 +145,8 @@ namespace CoApp.VisualStudio.VsCore
             {
                 return null;
             }
-            else
-            {
-                return (result == MessageBoxResult.Yes);
-            }
+
+            return (result == MessageBoxResult.Yes);
         }
         
         private void Update(string operation, string message, int percentComplete)
@@ -186,7 +180,7 @@ namespace CoApp.VisualStudio.VsCore
             message = string.Format("{0}{1}-{2}-{3}", canonicalName.Name, canonicalName.Flavor,
                                                       canonicalName.Version, canonicalName.Architecture);
 
-            var tableItem = table.FirstOrDefault(n => n.Message == message);
+            var tableItem = _table.FirstOrDefault(n => n.Message == message);
 
             if (tableItem != null)
             {
@@ -195,11 +189,13 @@ namespace CoApp.VisualStudio.VsCore
             }
             else
             {
-                var e = new ProgressEvent();
-                e.Message = message;
-                e.Operation = operation;
-                e.PercentComplete = percentComplete;
-                table.Add(e);
+                var e = new ProgressEvent
+                {
+                    Message = message,
+                    Operation = operation,
+                    PercentComplete = percentComplete
+                };
+                _table.Add(e);
             }
 
             if (DataGrid.HasItems)

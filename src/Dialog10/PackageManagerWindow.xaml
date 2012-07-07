@@ -4,15 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:shared="clr-namespace:Microsoft.VisualStudio.ExtensionsExplorer.UI;assembly=Microsoft.VisualStudio.ExtensionsExplorer.UI"
     xmlns:resources="clr-namespace:CoApp.VisualStudio.Dialog;assembly=CoApp.VisualStudio.DialogServices"
-    xmlns:dialogServices="clr-namespace:CoApp.VisualStudio.Dialog;assembly=CoApp.VisualStudio.DialogServices"
     xmlns:dialogCommands="clr-namespace:CoApp.VisualStudio.Dialog.PackageManagerUI;assembly=CoApp.VisualStudio.DialogServices"
-    xmlns:local="clr-namespace:CoApp.VisualStudio.Dialog"
     xmlns:pfui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.10.0"
     xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
     Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}"
     WindowStartupLocation="CenterOwner"
-    HasHelpButton="True" 
-    HasMaximizeButton="False"
+    HasMaximizeButton="True"
     HasMinimizeButton="False"
     ResizeMode="CanResize"
     ShowInTaskbar="False"
@@ -22,7 +19,6 @@
     MinWidth="800" 
     MinHeight="450"
     Title="{x:Static resources:Resources.Dialog_Title}"
-    IsEnabled="True"
     Closing="OnDialogWindowClosing"
     Loaded="OnDialogWindowLoaded"
     Closed="OnDialogWindowClosed">
@@ -69,30 +65,6 @@
         <CommandBinding 
             Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetWanted}"
             Executed="ExecutePackageOperationSetWanted" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetBlocked}"
-            Executed="ExecutePackageOperationSetBlocked" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetLocked}"
-            Executed="ExecutePackageOperationSetLocked" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetRequired}"
-            Executed="ExecutePackageOperationSetRequired" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetUpdatable}"
-            Executed="ExecutePackageOperationSetUpdatable" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetUpgradable}"
-            Executed="ExecutePackageOperationSetUpgradable" />
-
-        <CommandBinding 
-            Command="{x:Static dialogCommands:PackageManagerWindowCommands.PackageOperationSetActive}"
-            Executed="ExecutePackageOperationSetActive" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
@@ -101,12 +73,11 @@
 
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.NewProjectBackgroundKey}}" Padding="0,0,0,4" Grid.Row="1">
+        <Border Background="{DynamicResource {x:Static vsfx:VsBrushes.NewProjectBackgroundKey}}" Padding="0,0,0,4" Grid.Row="0">
             <shared:VSExtensionsExplorerCtl
                 x:Name="explorer"
                 ActiveView="MediumIcons"
@@ -119,15 +90,8 @@
                 Grid.IsSharedSizeScope="True" IsFxComboVisible="True" CategorySelectionChanged="OnCategorySelectionChanged" />
         </Border>
 
-        <Grid Grid.Row="2" MinHeight="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-
-            <Button 
-                    Grid.Column="0"
-                    HorizontalAlignment="Left"
+        <Grid Grid.Row="1" MinHeight="50">
+            <Button HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Margin="12"
                     MinWidth="75" 
@@ -136,9 +100,7 @@
                     Command="{x:Static dialogCommands:PackageManagerWindowCommands.ShowOptionsPage}" 
                     Content="{x:Static resources:Resources.Dialog_Settings}" />
 
-            <Button 
-                    Grid.Column="1"
-                    HorizontalAlignment="Right"
+            <Button HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Margin="12"
                     MinWidth="75" 

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using CoApp.Packaging.Common;
 using CoApp.Toolkit.Extensions;
@@ -34,22 +32,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private bool _isExpanded;
         private bool _isSelected;
         private bool _loadingInProgress;
-                
+
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<EventArgs> PageDataChanged;
 
         protected PackagesTreeNodeBase(IVsExtensionsTreeNode parent, PackagesProviderBase provider)
         {
-            Debug.Assert(provider != null);
-
             Parent = parent;
             Provider = provider;
-
-            var settings = RegistryView.CoAppUser["coapp_vse"];
-
+            
             try
             {
-                PageSize = settings["#itemsOnPage"].IntValue;
+                PageSize = CoAppWrapper.Settings["#itemsOnPage"].IntValue;
 
                 if (PageSize < 5)
                 {
@@ -66,10 +60,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected PackagesProviderBase Provider
+        private PackagesProviderBase Provider
         {
-            get;
-            private set;
+            get; set;
         }
 
         private IVsProgressPane ProgressPane
@@ -196,7 +189,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 return _totalPages;
             }
-            internal set
+            private set
             {
                 _totalPages = value;
                 NotifyPropertyChanged();
@@ -221,7 +214,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// </summary>
         internal event EventHandler PackageLoadCompleted = delegate { };
 
-        internal int PageSize
+        private int PageSize
         {
             get;
             set;
@@ -247,7 +240,6 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// <summary>
         /// Get all packages belonging to this node.
         /// </summary>
-        /// <returns></returns>
         public abstract IEnumerable<IPackage> GetPackages();
                 
         /// <summary>
@@ -264,20 +256,10 @@ namespace CoApp.VisualStudio.Dialog.Providers
         /// <summary>
         /// Loads the packages in the specified page.
         /// </summary>
-        /// <param name="pageNumber"></param>
         public void LoadPage(int pageNumber)
         {
-            if (pageNumber < 1)
-            {
-                throw new ArgumentOutOfRangeException(
-                    "pageNumber",
-                    String.Format(CultureInfo.CurrentCulture, CommonResources.Argument_Must_Be_GreaterThanOrEqualTo, 1));
-            }
-
             if (_loadingInProgress)
-            {
                 return;
-            }
 
             EnsureExtensionCollection();
 
@@ -288,16 +270,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             // avoid more than one loading occurring at the same time
             _loadingInProgress = true;
 
-            TaskScheduler uiScheduler;
-            try
-            {
-                uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            }
-            catch (InvalidOperationException)
-            {
-                // FromCurrentSynchronizationContext() fails when running from unit test
-                uiScheduler = TaskScheduler.Default;
-            }
+            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
             Task.Factory.StartNew(() => ExecuteAsync(pageNumber)).ContinueWith(QueryExecutionCompleted, uiScheduler);
         }
@@ -309,17 +282,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 _extensions = new ObservableCollection<IVsExtension>();
             }
         }
-
-        /// <summary>
-        /// Called when user clicks on the Cancel button in the progress pane.
-        /// </summary>
-        private void CancelCurrentExtensionQuery()
-        {
-            Debug.WriteLine("Cancelling pending extensions query.");
-
-            _loadingInProgress = false;
-        }
-
+        
         /// <summary>
         /// This method executes on background thread.
         /// </summary>
@@ -329,7 +292,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             {
                 CoAppWrapper.SetNewCancellationTokenSource();
 
-                _query = GetPackages().Distinct();
+                _query = GetPackages();
             }
 
             var orderedQuery = ApplyOrdering(_query);
@@ -402,9 +365,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 }
                 else
                 {
-                    LoadPageResult result = task.Result;
+                    var result = task.Result;
 
-                    UpdateNewPackages(result.Packages.ToList());
+                    UpdateNewPackages(result.Packages);
                     
                     int totalPages = (result.TotalCount + PageSize - 1) / PageSize;
                     TotalPages = Math.Max(1, totalPages);
@@ -417,36 +380,15 @@ namespace CoApp.VisualStudio.Dialog.Providers
             PackageLoadCompleted(this, EventArgs.Empty);
         }
 
-        private void UpdateNewPackages(IList<IPackage> packages)
+        private void UpdateNewPackages(IEnumerable<IPackage> packages)
         {
-            int newPackagesIndex = 0;
-            int oldPackagesIndex = 0;
-            while (oldPackagesIndex < _extensions.Count)
+            _extensions.Clear();
+
+            foreach (var package in packages)
             {
-                if (newPackagesIndex >= packages.Count)
-                {
-                    _extensions.RemoveAt(oldPackagesIndex);
-                }
-                else
-                {
-                    PackageItem currentOldItem = (PackageItem)_extensions[oldPackagesIndex];
-                    if (packages[newPackagesIndex].CanonicalName == currentOldItem.PackageIdentity.CanonicalName)
-                    {
-                        newPackagesIndex++;
-                        oldPackagesIndex++;
-                    }
-                    else
-                    {
-                        _extensions.RemoveAt(oldPackagesIndex);
-                    }
-                }
+                _extensions.Add(Provider.CreateExtension(package));
             }
 
-            while (newPackagesIndex < packages.Count)
-            {
-                _extensions.Add(Provider.CreateExtension(packages[newPackagesIndex++]));
-            }
-           
             if (_extensions.Count > 0)
             {
                 // select the first package by default
@@ -458,7 +400,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             for (int i = 0; i < _extensions.Count; i++)
             {
-                PackageItem item = (PackageItem)_extensions[i];
+                var item = (PackageItem)_extensions[i];
 
                 if (item != null && item.IsSelected)
                 {
@@ -476,7 +418,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected void OnNotifyPropertyChanged(string propertyName)
+        private void OnNotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
             {
@@ -494,20 +436,17 @@ namespace CoApp.VisualStudio.Dialog.Providers
             MessagePane = messagePane;
         }
 
-        protected bool ShowProgressPane()
+        private bool ShowProgressPane()
         {
             if (ProgressPane != null)
             {
                 _progressPaneActive = true;
-                return ProgressPane.Show(new CancelProgressCallback(CancelCurrentExtensionQuery), true);
+                return ProgressPane.Show(null, false);
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        protected void HideProgressPane()
+        private void HideProgressPane()
         {
             if (_progressPaneActive && ProgressPane != null)
             {
@@ -516,17 +455,14 @@ namespace CoApp.VisualStudio.Dialog.Providers
             }
         }
 
-        protected bool ShowMessagePane(string message)
+        private bool ShowMessagePane(string message)
         {
             if (MessagePane != null)
             {
                 MessagePane.SetMessageThreadSafe(message);
                 return MessagePane.Show();
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -536,8 +472,9 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             if (!Provider.SuppressNextRefresh)
             {
+                _loadingInProgress = false;
                 Provider.SelectedNode = this;
-                if (Provider.RefreshOnNodeSelection && !this.IsSearchResultsNode)
+                if (!IsSearchResultsNode)
                 {
                     Refresh();
                 }

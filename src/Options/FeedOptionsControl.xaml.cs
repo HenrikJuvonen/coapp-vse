@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using CoApp.VisualStudio.VsCore;
 
 namespace CoApp.VisualStudio.Options
@@ -11,7 +10,7 @@ namespace CoApp.VisualStudio.Options
     /// <summary>
     /// Interaction logic for FeedsOptionsControl.xaml
     /// </summary>
-    public partial class FeedOptionsControl : WpfControl
+    public partial class FeedOptionsControl
     {
         public FeedOptionsControl()
         {
@@ -87,10 +86,7 @@ namespace CoApp.VisualStudio.Options
         {
             SetFeedsListBoxMessage("Loading feeds...");
 
-            Task.Factory.StartNew(() =>
-            {
-                SetFeedsListBoxItemsSource(CoAppWrapper.GetFeedLocations());
-            });
+            Task.Factory.StartNew(() => SetFeedsListBoxItemsSource(CoAppWrapper.GetFeedLocations()));
         }
 
         private void OnRemoveButtonClick(object sender, EventArgs e)

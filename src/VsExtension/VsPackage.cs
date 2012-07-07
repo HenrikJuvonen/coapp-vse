@@ -6,12 +6,10 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using CoApp.VisualStudio.Dialog;
 using CoApp.VisualStudio.Options;
 using CoApp.VisualStudio.VsCore;
 
@@ -24,7 +22,7 @@ namespace CoApp.VisualStudio.Tools
     /// This is the class that implements the package exposed by this assembly.
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", VsPackage.ProductVersion, IconResourceID = 400)]
+    [InstalledProductRegistration("#110", "#112", "0.4", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
 
     [ProvideOptionPage(typeof(FeedOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
@@ -35,17 +33,10 @@ namespace CoApp.VisualStudio.Tools
     [Guid(GuidList.guidVSPkgString)]
     public sealed class VsPackage : Package
     {
-        public const string ProductVersion = "0.3.0.0";
-
         private uint _debuggingContextCookie, _solutionBuildingContextCookie;
-        private DTE _dte;
         private IVsMonitorSelection _vsMonitorSelection;
         private ISolutionManager _solutionManager;
         private IPackageRestoreManager _packageRestoreManager;
-
-        public VsPackage()
-        {
-        }
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -67,7 +58,6 @@ namespace CoApp.VisualStudio.Tools
             Guid solutionBuildingContextGuid = VSConstants.UICONTEXT_SolutionBuilding;
             _vsMonitorSelection.GetCmdUIContextCookie(ref solutionBuildingContextGuid, out _solutionBuildingContextCookie);
 
-            _dte = ServiceLocator.GetInstance<DTE>();
             _packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
             _solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
 
@@ -77,26 +67,26 @@ namespace CoApp.VisualStudio.Tools
 
         private void AddMenuCommandHandlers()
         {
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
                 // menu command for opening Manage CoApp packages dialog
-                CommandID managePackageDialogCommandID = new CommandID(GuidList.guidVSDialogCmdSet, PkgCmdIDList.cmdidAddPackageDialog);
-                OleMenuCommand managePackageDialogCommand = new OleMenuCommand(ShowManageLibraryPackageDialog, null, QueryStatusEnable, managePackageDialogCommandID);
+                var managePackageDialogCommandID = new CommandID(GuidList.guidVSDialogCmdSet, PkgCmdIDList.cmdidAddPackageDialog);
+                var managePackageDialogCommand = new OleMenuCommand(ShowManageLibraryPackageDialog, null, QueryStatusEnable, managePackageDialogCommandID);
                 mcs.AddCommand(managePackageDialogCommand);
 
                 // menu command for opening Package feed settings options page
-                CommandID settingsCommandID = new CommandID(GuidList.guidVSConsoleCmdSet, PkgCmdIDList.cmdidSourceSettings);
-                OleMenuCommand settingsMenuCommand = new OleMenuCommand(ShowPackageSourcesOptionPage, settingsCommandID);
+                var settingsCommandID = new CommandID(GuidList.guidVSConsoleCmdSet, PkgCmdIDList.cmdidSourceSettings);
+                var settingsMenuCommand = new OleMenuCommand(ShowPackageSourcesOptionPage, settingsCommandID);
                 mcs.AddCommand(settingsMenuCommand);
 
                 // menu command for opening General options page
-                CommandID generalSettingsCommandID = new CommandID(GuidList.guidVSToolsGroupCmdSet, PkgCmdIDList.cmdIdGeneralSettings);
-                OleMenuCommand generalSettingsCommand = new OleMenuCommand(ShowGeneralSettingsOptionPage, generalSettingsCommandID);
+                var generalSettingsCommandID = new CommandID(GuidList.guidVSToolsGroupCmdSet, PkgCmdIDList.cmdIdGeneralSettings);
+                var generalSettingsCommand = new OleMenuCommand(ShowGeneralSettingsOptionPage, generalSettingsCommandID);
                 mcs.AddCommand(generalSettingsCommand);
 
                 // menu command for Package Restore command
-                CommandID restorePackagesCommandID = new CommandID(GuidList.guidVSPackagesRestoreCmdSet, PkgCmdIDList.cmdidRestorePackages);
+                var restorePackagesCommandID = new CommandID(GuidList.guidVSPackagesRestoreCmdSet, PkgCmdIDList.cmdidRestorePackages);
                 var restorePackagesCommand = new OleMenuCommand(EnablePackagesRestore, null, QueryStatusEnable, restorePackagesCommandID);
                 mcs.AddCommand(restorePackagesCommand);
             }
@@ -109,14 +99,14 @@ namespace CoApp.VisualStudio.Tools
 
         private void QueryStatusEnable(object sender, EventArgs args)
         {
-            OleMenuCommand command = (OleMenuCommand)sender;
+            var command = (OleMenuCommand)sender;
             command.Visible = _solutionManager.IsSolutionOpen && !IsIDEInDebuggingOrBuildingContext();
             command.Enabled = true;
         }
 
         private void ShowManageLibraryPackageDialog(object sender, EventArgs e)
         {
-            DialogWindow window = VsVersionHelper.IsVisualStudio2010 ?
+            var window = VsVersionHelper.IsVisualStudio2010 ?
                 GetVS10PackageManagerWindow():
                 GetPackageManagerWindow();
 

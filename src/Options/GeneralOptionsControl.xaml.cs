@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-using System.Windows.Controls;
 using CoApp.VisualStudio.VsCore;
 using CoApp.Toolkit.Configuration;
 
@@ -12,7 +11,7 @@ namespace CoApp.VisualStudio.Options
     /// <summary>
     /// Interaction logic for GeneralOptionsControl.xaml
     /// </summary>
-    public partial class GeneralOptionsControl : WpfControl
+    public partial class GeneralOptionsControl
     {
         private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
 
@@ -42,16 +41,16 @@ namespace CoApp.VisualStudio.Options
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
         {
-            DirectoryInfo cache = new DirectoryInfo(@"C:\ProgramData\.cache\packages");
+            var cache = new DirectoryInfo(@"C:\ProgramData\.cache\packages");
 
             try
             {
-                foreach (FileInfo file in cache.GetFiles())
+                foreach (var file in cache.GetFiles())
                 {
                     file.Delete();
                 }
 
-                foreach (DirectoryInfo dir in cache.GetDirectories())
+                foreach (var dir in cache.GetDirectories())
                 {
                     dir.Delete(true);
                 }
@@ -67,7 +66,6 @@ namespace CoApp.VisualStudio.Options
         private void OnItemsOnPageChanged(object sender, EventArgs e)
         {
             string text = ItemsOnPageTextBox.Text;
-            int result = 0;
 
             if (text.Length > 3)
             {
@@ -78,7 +76,7 @@ namespace CoApp.VisualStudio.Options
             {
                 if (!string.IsNullOrEmpty(text))
                 {
-                    result = int.Parse(text);
+                    int result = int.Parse(text);
                 }
 
                 ItemsOnPageTextBox.Text = text;

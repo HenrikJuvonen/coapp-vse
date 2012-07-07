@@ -24,8 +24,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
         private PackagesTreeNodeBase _lastSelectedNode;
         private IList<IVsSortDescriptor> _sortDescriptors;
                 
-        public PackagesProviderBase(ResourceDictionary resources,
-                                    ProviderServices providerServices)
+        protected PackagesProviderBase(ResourceDictionary resources,
+                                       ProviderServices providerServices)
         {
             if (resources == null)
             {
@@ -217,17 +217,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 });
         }
 
-        protected virtual void FillRootNodes()
-        {
-        }
-
-        public virtual bool RefreshOnNodeSelection
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected abstract void FillRootNodes();
 
         public PackagesTreeNodeBase SelectedNode
         {

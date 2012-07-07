@@ -30,8 +30,8 @@ namespace Core.Test
         public static void CoAppWrapperInitialize(TestContext testContext)
         {
             CoAppWrapper.Initialize();
-            CoAppWrapper.SetFilterState("Highest", false);
-            CoAppWrapper.SetFilterState("Stable", false);
+            CoAppWrapper.SetFilterState(FilterType.Highest, false);
+            CoAppWrapper.SetFilterState(FilterType.Stable, false);
         }
 
         #region Additional test attributes

@@ -153,17 +153,18 @@ namespace CoApp.VisualStudio.VsCore
 
             CoAppWrapper.InstallPackages(packages);
 
-            foreach (Project p in _solutionManager.GetProjects())
+            foreach (var p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
 
-                IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+                var packageReferences = packageReferenceFile.GetPackageReferences();
 
-                foreach (PackageReference packageReference in packageReferences)
+                foreach (var packageReference in packageReferences)
                 {
                     var removedLibraries = new List<Library>();
                     var addedLibraries = new List<Library>();
-                    foreach (Library lib in packageReference.Libraries)
+
+                    foreach (var lib in packageReference.Libraries)
                     {
                         removedLibraries.Add(new Library(lib.Name, p.GetName(), lib.ConfigurationName, false));
                         addedLibraries.Add(new Library(lib.Name, p.GetName(), lib.ConfigurationName, lib.IsSelected));
@@ -177,14 +178,14 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(useFilters: false);
-            ISet<IPackage> resultPackages = new HashSet<IPackage>();
+            var packages = CoAppWrapper.GetPackages(useFilters: false);
+            var resultPackages = new HashSet<IPackage>();
 
-            foreach (Project p in _solutionManager.GetProjects())
+            foreach (var p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
 
-                foreach (PackageReference packageReference in packageReferenceFile.GetPackageReferences())
+                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
                 {
                     var pkg = packages.FirstOrDefault(package => package.Name == packageReference.Name &&
                                                                  package.Flavor == packageReference.Flavor &&
@@ -203,14 +204,14 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<string> GetUnrecoverablePackages()
         {
-            IEnumerable<IPackage> packages = CoAppWrapper.GetPackages(null, null, false);
-            ISet<string> unrecoverable = new HashSet<string>();
+            var packages = CoAppWrapper.GetPackages(null, null, false);
+            var unrecoverable = new HashSet<string>();
 
-            foreach (Project p in _solutionManager.GetProjects())
+            foreach (var p in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
 
-                foreach (PackageReference packageReference in packageReferenceFile.GetPackageReferences())
+                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
                 {
                     if (!packages.Any(package => package.Name == packageReference.Name &&
                                                  package.Flavor == packageReference.Flavor &&

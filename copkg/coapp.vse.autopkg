@@ -1,4 +1,3 @@
-// autopackage file for coapp.devtools
 @import "outercurve.inc";
 
 package {
@@ -11,13 +10,13 @@ provides {
 }
 
 metadata {
-    summary: "Visual Studio Extension";
-	description: "";
-	icon: @"images\logo3.png";
-	
+    summary: "Visual Studio Extension for managing CoApp-packages";
+    description: "CoApp for Visual Studio is an extension for managing CoApp-packages inside Visual Studio.";
+    icon: @"images\logo3.png";
+    
     author-version : "0.4";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
-    stability : "-100";
+    stability : "-50";
 }
 
 compatability-policy {
@@ -30,8 +29,8 @@ compatability-policy {
 
 files[all] {
     include: {
-		dlls,
-		other
+        dlls,
+        defs,
     };
 };
 
@@ -41,43 +40,26 @@ files[dlls] {
     include: {
         "*.dll",
     };
-    
-    trim-path: minimal;
 };
 
-files[other] {
+files[defs] {
     root: "..\src\VsExtension\bin\Release";
     
     include: {
-		"CoApp.VisualStudio.Tools.pkgdef",
-		"extension.vsixmanifest",
+        "CoApp.VisualStudio.Tools.pkgdef",
+        "extension.vsixmanifest",
     };
-    
-    trim-path: minimal;
 };
 
-application {
+faux-pax {
     include : {
-        all
+        all,
     };
-}
+};
 
 package-composition {
-    symlinks : {
-        all => @"%VS100COMNTOOLS%\..\IDE\Extensions\CoApp Project, Outercurve Foundation\CoApp for Visual Studio\0.4\${each.Name}" = @"${packagedir}\${each.Name}";
-    };
-}
-
-signing {
-    attributes : {
-        company="Outercurve Foundation",
-        description="${Package.PackageDetails.SummaryDescription}",
-        product-name="coapp.vse",
-        product-version="${package-version}",
-        file-version="${package-version}",
-    };
-    
-    replace-signature: true; 
-    include: {
-    };
-}
+	symlinks : {
+		all => @"C:\ProgramData\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
+		all => @"C:\ProgramData\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
+	};
+};

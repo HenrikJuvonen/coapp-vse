@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnvDTE;
-using CoApp.Packaging.Client;
 
 namespace CoApp.VisualStudio.Dialog
 {
@@ -45,10 +44,8 @@ namespace CoApp.VisualStudio.Dialog
             {
                 return _solutionNode.GetSelectedProjects();
             }
-            else
-            {
-                return Enumerable.Empty<Project>();
-            }
+
+            return Enumerable.Empty<Project>();
         }
 
         public IEnumerable<Library> GetLibraries()
@@ -57,10 +54,8 @@ namespace CoApp.VisualStudio.Dialog
             {
                 return _solutionNode.GetLibraries();
             }
-            else
-            {
-                return Enumerable.Empty<Library>();
-            }
+
+            return Enumerable.Empty<Library>();
         }
     }
 }

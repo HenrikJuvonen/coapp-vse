@@ -4,12 +4,15 @@ using CoApp.VisualStudio.VsCore;
 namespace CoApp.VisualStudio.Dialog.Providers
 {
     class SolutionProvider : InstalledProvider
-    {  
+    {
+        private readonly ISolutionManager _solutionManager;
+
         public SolutionProvider(ResourceDictionary resources,
                                 ProviderServices providerServices,
                                 ISolutionManager solutionManager)
             : base(resources, providerServices, solutionManager)
         {
+            _solutionManager = solutionManager;
         }
 
         public override string Name
@@ -38,8 +41,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 
         protected override void FillRootNodes()
         {
-            PackagesTreeNodeBase node = new SolutionTreeNode(this, "All", RootNode, _solutionManager);
-            RootNode.Nodes.Add(node);
+            RootNode.Nodes.Add(new SolutionTreeNode(this, "All", RootNode, _solutionManager));
         }
     }
 }

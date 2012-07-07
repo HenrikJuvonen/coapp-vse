@@ -3,41 +3,36 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using CoApp.Toolkit.Collections;
-    using CoApp.Packaging.Client;
-    using CoApp.Packaging.Common;
-    using CoApp.Packaging.Common.Model;
-    using CoApp.Toolkit.Exceptions;
-    using CoApp.Toolkit.Extensions;
-    using CoApp.Toolkit.Linq;
-    using CoApp.Toolkit.Tasks;
-    using CoApp.Toolkit.Win32;
-    using CoApp.Toolkit.Configuration;
+    using Packaging.Client;
+    using Packaging.Common;
+    using Packaging.Common.Model;
+    using Toolkit.Configuration;
+    using Toolkit.Exceptions;
+    using Toolkit.Extensions;
+    using Toolkit.Linq;
+    using Toolkit.Tasks;
+    using Toolkit.Win32;
 
     /// <summary>
     /// Interface between the GUI and CoApp.
     /// </summary>
     public static class CoAppWrapper
     {
-        private static ISet<Architecture> architectureFilters = new HashSet<Architecture>();
-        private static ISet<PackageRole> roleFilters = new HashSet<PackageRole>();
-        private static bool onlyHighestVersions = true;
-        private static bool onlyStableVersions = true;
-        private static bool onlyCompatibleFlavors = true;
-        
-        private static readonly List<string> activeDownloads = new List<string>();
-        private static readonly PackageManager packageManager = new PackageManager();
-        
-        private static readonly ProgressProvider progressProvider = new ProgressProvider();
+        private static readonly ISet<Architecture> ArchitectureFilters = new HashSet<Architecture>();
+        private static readonly ISet<PackageRole> RoleFilters = new HashSet<PackageRole>();
+        private static bool _onlyHighestVersions = true;
+        private static bool _onlyStableVersions = true;
+        private static bool _onlyCompatibleFlavors = true;
 
-        private static readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
+        private static readonly List<string> ActiveDownloads = new List<string>();
+        private static readonly PackageManager PackageManager = new PackageManager();
+
+        public static readonly RegistryView Settings = RegistryView.CoAppUser["coapp_vse"];
+        public static readonly ProgressProvider ProgressProvider = new ProgressProvider();
 
         public static CancellationTokenSource CancellationTokenSource { get; private set; }
-
-        public static ProgressProvider ProgressProvider { get { return progressProvider; } }
 
         public static string ErrorMessage { get; private set; }
 
@@ -49,25 +44,17 @@
             ResetFilterStates();
             SaveFilterStates();
 
-            if (_settings["#itemsOnPage"].Value == null)
-            {
-                _settings["#itemsOnPage"].IntValue = 8;
-            }
+            if (Settings["#itemsOnPage"].Value == null)
+                Settings["#itemsOnPage"].IntValue = 8;
 
-            if (_settings["#update"].Value == null)
-            {
-                _settings["#update"].IntValue = 2;
-            }
+            if (Settings["#update"].Value == null)
+                Settings["#update"].IntValue = 2;
 
-            if (_settings["#restore"].Value == null)
-            {
-                _settings["#restore"].IntValue = 2;
-            }
+            if (Settings["#restore"].Value == null)
+                Settings["#restore"].IntValue = 2;
 
-            if (_settings["#rememberFilters"].Value == null)
-            {
-                _settings["#rememberFilters"].BoolValue = false;
-            }
+            if (Settings["#rememberFilters"].Value == null)
+                Settings["#rememberFilters"].BoolValue = false;
 
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
                 ProgressProvider.Update("Installing", name, progress));
@@ -77,22 +64,22 @@
             
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
             {
-                if (!activeDownloads.Contains(remoteLocation))
+                if (!ActiveDownloads.Contains(remoteLocation))
                 {
-                    activeDownloads.Add(remoteLocation);
+                    ActiveDownloads.Add(remoteLocation);
                 }
                 ProgressProvider.Update("Downloading", remoteLocation.UrlDecode(), progress);
             });
 
             CurrentTask.Events += new DownloadCompleted((remoteLocation, locallocation) =>
             {
-                if (activeDownloads.Contains(remoteLocation))
+                if (ActiveDownloads.Contains(remoteLocation))
                 {
-                    activeDownloads.Remove(remoteLocation);
+                    ActiveDownloads.Remove(remoteLocation);
                 }
             });
 
-            packageManager.Elevate().Wait();
+            PackageManager.Elevate().Wait();
         }
 
         public static void SetNewCancellationTokenSource()
@@ -105,7 +92,7 @@
         /// </summary>
         public static void SetTelemetry(bool state)
         {
-            packageManager.SetTelemetry(state);
+            PackageManager.SetTelemetry(state);
         }
 
         /// <summary>
@@ -113,7 +100,7 @@
         /// </summary>
         public static bool GetTelemetry()
         {
-            return packageManager.GetTelemetry().Result;
+            return PackageManager.GetTelemetry().Result;
         }
 
         /// <summary>
@@ -121,30 +108,33 @@
         /// </summary>
         public static void ResetFilterStates()
         {
-            bool rememberFilters = _settings["#rememberFilters"].BoolValue;
+            bool rememberFilters = Settings["#rememberFilters"].BoolValue;
 
             if (rememberFilters)
             {
-                var valueNames = _settings["filters"].ValueNames;
+                var valueNames = Settings["filters"].ValueNames;
 
                 foreach (var name in valueNames)
                 {
-                    SetFilterState(name, _settings["filters", name].BoolValue);
+                    FilterType filterType;
+                    Enum.TryParse(name, true, out filterType);
+
+                    SetFilterState(filterType, Settings["filters", name].BoolValue);
                 }
             }
             else
             {
-                architectureFilters.Add(Architecture.Any);
-                architectureFilters.Add(Architecture.x64);
-                architectureFilters.Add(Architecture.x86);
+                ArchitectureFilters.Add(Architecture.Any);
+                ArchitectureFilters.Add(Architecture.x64);
+                ArchitectureFilters.Add(Architecture.x86);
 
-                roleFilters.Add(PackageRole.Application);
-                roleFilters.Add(PackageRole.Assembly);
-                roleFilters.Add(PackageRole.DeveloperLibrary);
+                RoleFilters.Add(PackageRole.Application);
+                RoleFilters.Add(PackageRole.Assembly);
+                RoleFilters.Add(PackageRole.DeveloperLibrary);
 
-                onlyHighestVersions = true;
-                onlyStableVersions = true;
-                onlyCompatibleFlavors = false;
+                _onlyHighestVersions = true;
+                _onlyStableVersions = true;
+                _onlyCompatibleFlavors = false;
             }
         }
 
@@ -153,36 +143,28 @@
         /// </summary>
         public static void SaveFilterStates()
         {
-            _settings["filters", "Highest"].BoolValue = GetFilterState("Highest");
-            _settings["filters", "Stable"].BoolValue = GetFilterState("Stable");
-            _settings["filters", "Compatible"].BoolValue = GetFilterState("Compatible");
-            _settings["filters", "any"].BoolValue = GetFilterState("any");
-            _settings["filters", "x86"].BoolValue = GetFilterState("x86");
-            _settings["filters", "x64"].BoolValue = GetFilterState("x64");
-            _settings["filters", "Application"].BoolValue = GetFilterState("Application");
-            _settings["filters", "Assembly"].BoolValue = GetFilterState("Assembly");
-            _settings["filters", "DeveloperLibrary"].BoolValue = GetFilterState("DeveloperLibrary");
+            foreach (var filterType in Enum.GetNames(typeof(FilterType)))
+            {
+                Settings["filters", filterType].BoolValue = GetFilterState((FilterType)Enum.Parse(typeof(FilterType), filterType));
+            }
         }
 
         /// <summary>
         /// Gets filter states.
         /// </summary>
-        /// <param name="name">
-        /// Highest, Stable, Compatible, any, x64, x86, Application, Assembly, DeveloperLibrary
-        /// </param>
-        public static bool GetFilterState(string name)
+        public static bool GetFilterState(FilterType type)
         {
-            switch (name)
+            switch (type)
             {
-                case "Highest": return onlyHighestVersions;
-                case "Stable": return onlyStableVersions;
-                case "Compatible": return onlyCompatibleFlavors;
-                case "any": return architectureFilters.Contains(Architecture.Any);
-                case "x64": return architectureFilters.Contains(Architecture.x64);
-                case "x86": return architectureFilters.Contains(Architecture.x86);
-                case "Application": return roleFilters.Contains(PackageRole.Application);
-                case "Assembly": return roleFilters.Contains(PackageRole.Assembly);
-                case "DeveloperLibrary": return roleFilters.Contains(PackageRole.DeveloperLibrary);
+                case FilterType.Highest: return _onlyHighestVersions;
+                case FilterType.Stable: return _onlyStableVersions;
+                case FilterType.Compatible: return _onlyCompatibleFlavors;
+                case FilterType.Any: return ArchitectureFilters.Contains(Architecture.Any);
+                case FilterType.X64: return ArchitectureFilters.Contains(Architecture.x64);
+                case FilterType.X86: return ArchitectureFilters.Contains(Architecture.x86);
+                case FilterType.Application: return RoleFilters.Contains(PackageRole.Application);
+                case FilterType.Assembly: return RoleFilters.Contains(PackageRole.Assembly);
+                case FilterType.DeveloperLibrary: return RoleFilters.Contains(PackageRole.DeveloperLibrary);
             }
 
             return false;
@@ -191,29 +173,26 @@
         /// <summary>
         /// Sets filter states.
         /// </summary>
-        /// <param name="name">
-        /// Highest, Stable, Compatible, any, x64, x86, Application, Assembly, DeveloperLibrary
-        /// </param>
-        public static void SetFilterState(string name, bool state)
+        public static void SetFilterState(FilterType type, bool state)
         {
-            switch (name)
+            switch (type)
             {
-                case "Highest":
-                case "Stable":
-                    SetVersionFilterState(name, state);
+                case FilterType.Highest:
+                case FilterType.Stable:
+                    SetVersionFilterState(type, state);
                     break;
-                case "Compatible":
-                    SetFlavorFilterState(name, state);
+                case FilterType.Compatible:
+                    SetFlavorFilterState(type, state);
                     break;
-                case "any":
-                case "x64":
-                case "x86":
-                    SetArchitectureFilterState(name, state);
+                case FilterType.Any:
+                case FilterType.X64:
+                case FilterType.X86:
+                    SetArchitectureFilterState(type, state);
                     break;
-                case "Application":
-                case "Assembly":
-                case "DeveloperLibrary":
-                    SetRoleFilterState(name, state);
+                case FilterType.Application:
+                case FilterType.Assembly:
+                case FilterType.DeveloperLibrary:
+                    SetRoleFilterState(type, state);
                     break;
             }
         }
@@ -229,21 +208,21 @@
                 {
                     case "wanted":
                         if (package.IsWanted)
-                            packageManager.SetPackageWanted(package.CanonicalName, false);
+                            PackageManager.SetPackageWanted(package.CanonicalName, false);
                         else
-                            packageManager.SetPackageWanted(package.CanonicalName, true);
+                            PackageManager.SetPackageWanted(package.CanonicalName, true);
                         break;
                     case "updatable":
-                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
+                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
                         break;
                     case "upgradable":
-                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
+                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
                         break;
                     case "blocked":
-                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
+                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
                         break;
                     case "locked":
-                        packageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
+                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
                         break;
                 }
                 
@@ -257,16 +236,9 @@
         /// </summary>
         public static IEnumerable<string> GetFeedLocations()
         {
-            IEnumerable<string> feeds = PackageManagerSettings.PerFeedSettings.Subkeys;
+            var feeds = PackageManagerSettings.PerFeedSettings.Subkeys;
 
-            var decodedFeeds = new List<string>();
-
-            foreach (var f in feeds)
-            {
-                decodedFeeds.Add(CoApp.Toolkit.Text.HttpUtility.UrlDecode(f));
-            }
-
-            return decodedFeeds ?? Enumerable.Empty<string>();
+            return feeds.Select(Toolkit.Text.HttpUtility.UrlDecode);
         }
 
         /// <summary>
@@ -289,7 +261,7 @@
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            Task task = packageManager.RemoveSystemFeed(feedLocation);
+            Task task = PackageManager.RemoveSystemFeed(feedLocation);
 
             ContinueTask(task);
         }
@@ -315,7 +287,6 @@
         /// </summary>
         public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, bool useFilters = true)
         {
-            IEnumerable<IPackage> packages = null;
             Filter<IPackage> pkgFilter = null;
 
             if (type == "installed")
@@ -325,14 +296,14 @@
 
             if (!useFilters)
             {
-                return QueryPackages(new string[] { "*" }, pkgFilter, location);
+                return QueryPackages(new[] { "*" }, pkgFilter, location);
             }
 
-            packages = QueryPackages(new string[] { "*" }, pkgFilter, location);
+            var packages = QueryPackages(new[] { "*" }, pkgFilter, location);
 
             if (type == "updatable")
             {
-                packages = packages.Select(package => package.AvailableNewestUpdate);
+                packages = packages.Select(package => package.AvailableNewestUpdate).Distinct();
             }
 
             return packages;
@@ -351,7 +322,7 @@
         /// </summary>
         public static IPackage GetPackage(CanonicalName canonicalName)
         {
-            return QueryPackages(new string[] { canonicalName.PackageName }, null, null).FirstOrDefault();
+            return QueryPackages(new[] { canonicalName.PackageName }, null, null).FirstOrDefault();
         }
 
         /// <summary>
@@ -365,7 +336,7 @@
         /// <summary>
         /// Used for querying packages.
         /// </summary>
-        private static IEnumerable<IPackage> QueryPackages(string[] queries,
+        private static IEnumerable<IPackage> QueryPackages(IEnumerable<string> queries,
                                                            Filter<IPackage> pkgFilter,
                                                            string location)
         {
@@ -375,7 +346,7 @@
             
             Task task = Task.Factory.StartNew(() =>
             {
-                var queryTask = packageManager.QueryPackages(queries, pkgFilter, null, location);
+                var queryTask = PackageManager.QueryPackages(queries, pkgFilter, null, location);
 
                 ContinueTask(queryTask);
 
@@ -421,7 +392,7 @@
 
                 if (!CancellationTokenSource.IsCancellationRequested)
                 {
-                    var planTask = packageManager.IdentifyPackageAndDependenciesToInstall(packageList, false, true);
+                    var planTask = PackageManager.IdentifyPackageAndDependenciesToInstall(packageList, false, true);
 
                     ContinueTask(planTask);
 
@@ -438,7 +409,7 @@
                 {
                     if (!CancellationTokenSource.IsCancellationRequested)
                     {
-                        var installTask = packageManager.Install(p.CanonicalName, false);
+                        var installTask = PackageManager.Install(p.CanonicalName, false);
 
                         ContinueTask(installTask);
                     }
@@ -455,7 +426,7 @@
         {
             ErrorMessage = null;
 
-            IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName>() { package.CanonicalName };
+            IEnumerable<CanonicalName> canonicalNames = new List<CanonicalName> { package.CanonicalName };
 
             if (removeDependencies)
             {
@@ -468,7 +439,7 @@
                     {
                         ProgressProvider.Update("Waiting", package.CanonicalName);
 
-                        var uninstallTask = packageManager.RemovePackages(canonicalNames, true);
+                        var uninstallTask = PackageManager.RemovePackages(canonicalNames, true);
 
                         ContinueTask(uninstallTask);
                     }
@@ -482,18 +453,17 @@
         /// </summary>
         public static IEnumerable<IPackage> FilterPackages(IEnumerable<IPackage> packages, int vsMajorVersion)
         {
-            packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
+            packages = packages.Where(package => package.Roles.Any(n => RoleFilters.Contains(n.PackageRole)));
 
-            if (roleFilters.Contains(PackageRole.DeveloperLibrary))
+            if (RoleFilters.Contains(PackageRole.DeveloperLibrary))
             {
-                packages = packages.Where(package => package.Roles.Any(n => roleFilters.Contains(n.PackageRole)));
+                packages = packages.Where(package => package.Roles.Any(n => RoleFilters.Contains(n.PackageRole)));
 
-                if (onlyCompatibleFlavors)
-                    packages = packages.Where(package => package.Flavor.IsWildcardMatch("*vc*") ?
-                                                         package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*") : true);
+                if (_onlyCompatibleFlavors)
+                    packages = packages.Where(package => !package.Flavor.IsWildcardMatch("*vc*") || package.Flavor.IsWildcardMatch("*vc" + vsMajorVersion + "*"));
             }
 
-            if (onlyHighestVersions)
+            if (_onlyHighestVersions)
             {
                 var highestPackages = new List<IPackage>(packages);
 
@@ -508,91 +478,79 @@
                 packages = highestPackages;
             }
 
-            if (onlyStableVersions)
+            if (_onlyStableVersions)
                 packages = packages.Where(package => package.PackageDetails.Stability == 0);
 
-            packages = packages.Where(package => architectureFilters.Contains(package.Architecture));
+            packages = packages.Where(package => ArchitectureFilters.Contains(package.Architecture));
 
             return packages;
         }
 
 
         /// <summary>
-        /// Sets architecture filter states. (names: any, x64, x86)
+        /// Sets architecture filter states. (type: Any, X64, X86)
         /// </summary>
-        /// <param name="state">
-        /// If true: packages of architectureName are displayed.
-        /// </param>
-        private static void SetArchitectureFilterState(string architectureName, bool state)
+        private static void SetArchitectureFilterState(FilterType type, bool state)
         {
-            Architecture architecture = Architecture.Parse(architectureName);
+            var architecture = Architecture.Parse(Enum.GetName(typeof(FilterType), type));
 
             if (state)
-                architectureFilters.Add(architecture);
+                ArchitectureFilters.Add(architecture);
             else
-                architectureFilters.Remove(architecture);
+                ArchitectureFilters.Remove(architecture);
         }
 
         /// <summary>
-        /// Sets role filter states. (names: Application, Assembly, DeveloperLibrary)
+        /// Sets role filter states. (type: Application, Assembly, DeveloperLibrary)
         /// </summary>
-        /// <param name="state">
-        /// If true: packages of roleName are displayed.
-        /// </param>
-        private static void SetRoleFilterState(string roleName, bool state)
+        private static void SetRoleFilterState(FilterType type, bool state)
         {
             PackageRole role = PackageRole.Application;
 
-            switch (roleName)
+            switch (type)
             {
-                case "Application":
+                case FilterType.Application:
                     role = PackageRole.Application;
                     break;
-                case "Assembly":
+                case FilterType.Assembly:
                     role = PackageRole.Assembly;
                     break;
-                case "DeveloperLibrary":
+                case FilterType.DeveloperLibrary:
                     role = PackageRole.DeveloperLibrary;
                     break;
             }
 
             if (state)
-                roleFilters.Add(role);
+                RoleFilters.Add(role);
             else
-                roleFilters.Remove(role);
+                RoleFilters.Remove(role);
         }
 
         /// <summary>
-        /// Sets version filter states. (names: Highest, Stable)
+        /// Sets version filter states. (type: Highest, Stable)
         /// </summary>
-        /// <param name="state">
-        /// If true: packages of versionName are displayed.
-        /// </param>
-        private static void SetVersionFilterState(string versionName, bool state)
+        private static void SetVersionFilterState(FilterType type, bool state)
         {
-            switch (versionName)
+            switch (type)
             {
-                case "Highest":
-                    onlyHighestVersions = state;
+                case FilterType.Highest:
+                    _onlyHighestVersions = state;
                     break;
-                case "Stable":
-                    onlyStableVersions = state;
+                case FilterType.Stable:
+                    _onlyStableVersions = state;
                     break;
             }
         }
 
         /// <summary>
-        /// Sets flavor filter states. (names: Compatible)
+        /// Sets flavor filter states. (type: Compatible)
         /// </summary>
-        /// <param name="state">
-        /// If true: packages of flavorName are displayed.
-        /// </param>
-        private static void SetFlavorFilterState(string flavorName, bool state)
+        private static void SetFlavorFilterState(FilterType type, bool state)
         {
-            switch (flavorName)
+            switch (type)
             {
-                case "Compatible":
-                    onlyCompatibleFlavors = state;
+                case FilterType.Compatible:
+                    _onlyCompatibleFlavors = state;
                     break;
             }
         }
@@ -603,8 +561,7 @@
             {
                 task.ContinueOnFail(exception =>
                     {
-                        if (exception is CoAppException ||
-                            exception is OperationCompletedBeforeResultException)
+                        if (exception is CoAppException)
                         {
                             ErrorMessage = exception.Unwrap().Message;
                             ProgressProvider.Update("Error", ErrorMessage);

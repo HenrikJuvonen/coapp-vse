@@ -10,3 +10,4 @@ obj
 bin
 ipch
 TestResults
+_ReSharper*

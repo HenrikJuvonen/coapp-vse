@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
 
 namespace CoApp.VisualStudio.Options
 {

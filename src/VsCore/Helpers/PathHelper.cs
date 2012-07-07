@@ -44,15 +44,13 @@ namespace CoApp.VisualStudio.VsCore
                     root,
                     folder.Substring(folder.Length - remainingWidth));
             }
-            else
-            {
-                // no, show like VS solution explorer (drive+ellipsis+end)
-                return String.Format(
-                    CultureInfo.InvariantCulture,
-                    "{0}...{1}",
-                    root,
-                    folder);
-            }
+
+            // no, show like VS solution explorer (drive+ellipsis+end)
+            return String.Format(
+                CultureInfo.InvariantCulture,
+                "{0}...{1}",
+                root,
+                folder);
         }
     }
 }

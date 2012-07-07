@@ -10,19 +10,18 @@ namespace CoApp.VisualStudio.Options
     /// </summary>
     public class WinFormsControl : System.Windows.Forms.UserControl
     {
-        private ElementHost host;
+        private readonly ElementHost _host = new System.Windows.Forms.Integration.ElementHost();
 
         public WinFormsControl(UIElement control)
         {
-            host = new System.Windows.Forms.Integration.ElementHost();
             SuspendLayout();
 
-            host.Dock = System.Windows.Forms.DockStyle.Fill;
-            host.Location = new System.Drawing.Point(0, 0);
-            host.TabIndex = 0;
-            host.Child = control;
+            _host.Dock = System.Windows.Forms.DockStyle.Fill;
+            _host.Location = new System.Drawing.Point(0, 0);
+            _host.TabIndex = 0;
+            _host.Child = control;
 
-            Controls.Add(host);
+            Controls.Add(_host);
             ResumeLayout(false);
         }
     }
@@ -33,8 +32,6 @@ namespace CoApp.VisualStudio.Options
     public class WpfControl : System.Windows.Controls.UserControl
     {
         private const UInt32 DLGC_WANTARROWS = 0x0001;
-        private const UInt32 DLGC_WANTTAB = 0x0002;
-        private const UInt32 DLGC_WANTALLKEYS = 0x0004;
         private const UInt32 DLGC_HASSETSEL = 0x0008;
         private const UInt32 DLGC_WANTCHARS = 0x0080;
         private const UInt32 WM_GETDLGCODE = 0x0087;
@@ -43,7 +40,7 @@ namespace CoApp.VisualStudio.Options
         {
             Loaded += delegate
             {
-                HwndSource s = HwndSource.FromVisual(this) as HwndSource;
+                var s = HwndSource.FromVisual(this) as HwndSource;
                 if (s != null)
                     s.AddHook(new HwndSourceHook(ChildHwndSourceHook));
             };

@@ -14,7 +14,7 @@ namespace CoApp.VisualStudio.Dialog
 {
     internal static class ProjectUtilities
     {
-        private static Lazy<ImageSource> _solutionImage = new Lazy<ImageSource>(GetSolutionImage);
+        private static readonly Lazy<ImageSource> _solutionImage = new Lazy<ImageSource>(GetSolutionImage);
 
         public static ImageSource SolutionImage 
         {
@@ -69,22 +69,22 @@ namespace CoApp.VisualStudio.Dialog
         {
             if (var is short)
                 return (uint)(short)var;
-            else if (var is int)
+            if (var is int)
                 return (uint)(int)var;
-            else if (var is long)
+            if (var is long)
                 return (uint)(long)var;
-            else if (var is ushort)
+            if (var is ushort)
                 return (ushort)var;
-            else if (var is uint)
+            if (var is uint)
                 return (uint)var;
-            else if (var is ulong)
+            if (var is ulong)
                 return (uint)(ulong)var;
-            else if (var is IntPtr)
+            if (var is IntPtr)
                 return (uint)((IntPtr)var).ToInt32();
-            else if (var is Enum)
+            if (var is Enum)
                 return Convert.ToUInt32(var, CultureInfo.InvariantCulture);
-            else
-                return default(uint);
+            
+            return default(uint);
         }
 
         static IntPtr UnboxAsIntPtr(object potentialIntPtr)
@@ -296,12 +296,7 @@ namespace CoApp.VisualStudio.Dialog
 
             public IVsHierarchy Hierarchy { get; private set; }
             public uint ItemID { get; private set; }
-
-            public override int GetHashCode()
-            {
-                return base.GetHashCode();
-            }
-
+            
             public static bool MaybeMapToNested(HierarchyItemPair outerInfo, out HierarchyItemPair nestedInfo)
             {
                 Guid IID_IVsHierarchy = typeof(IVsHierarchy).GUID;

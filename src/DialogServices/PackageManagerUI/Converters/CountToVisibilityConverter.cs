@@ -10,7 +10,7 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
 
         public bool Inverted { get; set; }
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             double count = System.Convert.ToDouble(value, CultureInfo.InvariantCulture);
 
@@ -37,7 +37,7 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
             return returnValue;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

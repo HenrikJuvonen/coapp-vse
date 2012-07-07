@@ -4,10 +4,8 @@
     using System.Globalization;
     using System.Windows.Threading;
     using EnvDTE;
-    using CoApp.VisualStudio.VsCore;
-    using CoApp.Packaging.Client;
-    using CoApp.Toolkit.Win32;
-    using CoApp.VisualStudio.Dialog;
+    using VsCore;
+    using Dialog;
 
     public class UserNotifierServices
     {
@@ -35,7 +33,7 @@
         {
             if (!_uiDispatcher.CheckAccess())
             {
-                object result = _uiDispatcher.Invoke(
+                _uiDispatcher.Invoke(
                     new Action<string>(ShowInfoMessage),
                     message);
                 return;
@@ -48,7 +46,7 @@
         {
             if (!_uiDispatcher.CheckAccess())
             {
-                object result = _uiDispatcher.Invoke(
+                _uiDispatcher.Invoke(
                     new Action<string>(ShowErrorMessage),
                     message);
                 return;
@@ -61,7 +59,7 @@
         {
             if (!_uiDispatcher.CheckAccess())
             {
-                object result = _uiDispatcher.Invoke(
+                _uiDispatcher.Invoke(
                     new Action<string>(ShowWarningMessage),
                     message);
                 return;
@@ -95,7 +93,7 @@
             // only show the solution explorer window if there is at least one compatible project
             if (viewModel.HasProjects)
             {
-                var window = new SolutionExplorer()
+                var window = new SolutionExplorer
                 {
                     DataContext = viewModel
                 };
@@ -106,23 +104,20 @@
                 {
                     return new object[] { viewModel.GetSelectedProjects(), viewModel.GetLibraries() };
                 }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                string errorMessage = 
-                    String.Format(
-                        CultureInfo.CurrentCulture,
-                        Resources.Dialog_NoCompatibleProjectNoFrameworkNames,
-                        packageReference.Name);
 
-                // if there is no project compatible with the selected package, show an error message and return
-                MessageHelper.ShowWarningMessage(errorMessage, title: null);
                 return null;
             }
+
+            string errorMessage = 
+                String.Format(
+                    CultureInfo.CurrentCulture,
+                    Resources.Dialog_NoCompatibleProjectNoFrameworkNames,
+                    packageReference.Name);
+
+            // if there is no project compatible with the selected package, show an error message and return
+            MessageHelper.ShowWarningMessage(errorMessage, title: null);
+
+            return null;
         }
     }
 }

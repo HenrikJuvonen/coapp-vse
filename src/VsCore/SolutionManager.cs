@@ -53,11 +53,11 @@ namespace CoApp.VisualStudio.VsCore
         
         public void ManagePackage(PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<Library> libraries)
         {
-            foreach (Project project in GetProjects())
+            foreach (var project in GetProjects())
             {
-                IEnumerable<Library> resultLibraries = Enumerable.Empty<Library>();
+                var resultLibraries = Enumerable.Empty<Library>();
 
-                IEnumerable<Library> projectLibraries = libraries.Where(n => n.ProjectName == project.GetName());
+                var projectLibraries = libraries.Where(n => n.ProjectName == project.GetName());
 
                 switch (packageReference.Type)
                 {
@@ -76,7 +76,7 @@ namespace CoApp.VisualStudio.VsCore
 
                 string path = project.GetDirectory() + "/coapp.packages.config";
   
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(path);
+                var packageReferenceFile = new PackageReferenceFile(path);
 
                 if (projects.Contains(project))
                 {
@@ -88,7 +88,11 @@ namespace CoApp.VisualStudio.VsCore
                         resultLibraries,
                         packageReference.Type);
 
-                    project.ProjectItems.AddFromFile(path);
+                    ProjectItem item;
+                    project.ProjectItems.TryGetFile("coapp.packages.config", out item);
+
+                    if (item == null)
+                        project.ProjectItems.AddFromFile(path);
                 }
                 else
                 {
@@ -202,10 +206,8 @@ namespace CoApp.VisualStudio.VsCore
                 EnsureProjectCache();
                 return _projectCache.GetProjects();
             }
-            else
-            {
-                return Enumerable.Empty<Project>();
-            }
+
+            return Enumerable.Empty<Project>();
         }
 
         public string GetProjectSafeName(Project project)
@@ -245,7 +247,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             // Use .Properties.Item("Path") instead of .FullName because .FullName might not be
             // available if the solution is just being created
-            string solutionFilePath = null;
+            string solutionFilePath;
 
             Property property = _dte.Solution.Properties.Item("Path");
             if (property == null)

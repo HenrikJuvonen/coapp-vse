@@ -13,7 +13,7 @@ namespace CoApp.VisualStudio.Dialog
         private bool _isExpanded = true;
         protected readonly Project _project;
 
-        public FolderNode(Project project, string name, ICollection<ViewModelNodeBase> children) 
+        protected FolderNode(Project project, string name, ICollection<ViewModelNodeBase> children) 
             : base(name)
         {
 

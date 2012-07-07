@@ -3,14 +3,14 @@ using Microsoft.VisualStudio.PlatformUI;
 
 namespace CoApp.VisualStudio.Dialog
 {
-    public partial class SolutionExplorer : DialogWindow
+    public partial class SolutionExplorer
     {
         public SolutionExplorer()
         {
             InitializeComponent();
         }
 
-        private void OnOKButtonClicked(object sender, RoutedEventArgs e)
+        private void OnOkButtonClicked(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
         }
