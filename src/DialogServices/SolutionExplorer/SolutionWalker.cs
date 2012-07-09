@@ -26,7 +26,6 @@ namespace CoApp.VisualStudio.Dialog
             }
 
             var children = CreateProjectNode(solution.Projects.OfType<Project>(), packageReference, replacePackage).ToArray();
-            Array.Sort(children, ProjectNodeComparer.Default);
 
             return new SolutionNode(
                 null,
@@ -44,25 +43,22 @@ namespace CoApp.VisualStudio.Dialog
                 if (project.IsSupported() && project.IsCompatible(packageReference) &&
                     (replacePackage || !project.IsOtherSimilarPackageAdded(packageReference)))
                 {
-                    IList<ViewModelNodeBase> children;
+                    var children = new List<ViewModelNodeBase>();
 
-                    if (packageReference.Type == DeveloperPackageType.VcLibrary)
+                    switch (packageReference.Type)
                     {
-                        children = CreateConfigurationNode(
-                            project,
-                            packageReference
-                        ).ToList();
-                    }
-                    else if (packageReference.Type == DeveloperPackageType.Net)
-                    {
-                        children = CreateAssemblyNode(
-                            project,
-                            packageReference
-                        ).ToList();
-                    }
-                    else
-                    {
-                        children = new List<ViewModelNodeBase>();
+                        case DeveloperPackageType.VcLibrary:
+                            children = CreateConfigurationNode(
+                                project,
+                                packageReference
+                                ).ToList();
+                            break;
+                        case DeveloperPackageType.Net:
+                            children = CreateAssemblyNode(
+                                project,
+                                packageReference
+                                ).ToList();
+                            break;
                     }
 
                     bool allChildrenSelected = children.Any() && children.All(n => n.IsSelected == true);
@@ -87,7 +83,6 @@ namespace CoApp.VisualStudio.Dialog
 
                         if (children.Length > 0)
                         {
-                            Array.Sort(children, ProjectNodeComparer.Default);
                             // only create a folder node if it has at least one child
                             yield return new SolutionNode(project, project.Name, children);
                         }
@@ -102,7 +97,7 @@ namespace CoApp.VisualStudio.Dialog
         {
             var configurations = project.GetCompatibleConfigurations(packageReference.Architecture);
 
-            foreach (string config in configurations)
+            foreach (var config in configurations)
             {
                 var children = CreateLibraryNode(
                                 project,
@@ -119,16 +114,14 @@ namespace CoApp.VisualStudio.Dialog
             PackageReference packageReference,
             string config)
         {
-            string path = packageReference.PackageDirectory + "lib";
+            var path = packageReference.PackageDirectory + "lib";
 
             if (Directory.Exists(path))
             {
-                string[] files = Directory.GetFiles(path, "*.lib");
+                var files = Directory.GetFiles(path, "*.lib");
 
-                foreach (string file in files)
+                foreach (var filename in files.Select(Path.GetFileName))
                 {
-                    string filename = Path.GetFileName(file);
-
                     yield return new LibraryNode(project, filename)
                     {
                         IsSelected = DetermineCheckState(packageReference, project, config, filename)
@@ -141,16 +134,14 @@ namespace CoApp.VisualStudio.Dialog
             Project project,
             PackageReference packageReference)
         {
-            string path = packageReference.PackageDirectory + "ReferenceAssemblies";
+            var path = packageReference.PackageDirectory + "ReferenceAssemblies";
 
             if (Directory.Exists(path))
             {
-                string[] files = Directory.GetFiles(path, "*.dll");
+                var files = Directory.GetFiles(path, "*.dll");
 
-                foreach (string file in files)
+                foreach (var filename in files.Select(Path.GetFileName))
                 {
-                    string filename = Path.GetFileName(file);
-
                     yield return new LibraryNode(project, filename)
                     {
                         IsSelected = DetermineCheckState(packageReference, project, null, filename)
@@ -167,7 +158,7 @@ namespace CoApp.VisualStudio.Dialog
         {
             var packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
-            IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+            var packageReferences = packageReferenceFile.GetPackageReferences();
 
             return packageReferences.Any(n => n.Name == packageReference.Name && (n.Flavor != packageReference.Flavor ||
                                                                                   n.Version != packageReference.Version ||
@@ -181,78 +172,28 @@ namespace CoApp.VisualStudio.Dialog
             bool hasLibraries = false;
             bool projectHasPackage = false;
 
-            foreach (PackageReference p in packageReferenceFile.GetPackageReferences())
+            foreach (var p in packageReferenceFile.GetPackageReferences().Where(p => p.Equals(packageReference)))
             {
-                if (p.Name != packageReference.Name || p.Flavor != packageReference.Flavor)
-                    continue;
-
                 projectHasPackage = true;
 
                 if (p.Libraries != null && p.Libraries.Any())
                     hasLibraries = true;
+                else
+                    continue;
 
-                foreach (Library l in p.Libraries)
-                {
-                    if (config == null ? l.Name == filename : l.ConfigurationName == config && l.Name == filename)
-                    {
-                        return true;
-                    }
-                }
+                if (p.Libraries.Any(l => config == null ? l.Name == filename : l.ConfigurationName == config && l.Name == filename))
+                    return true;
             }
 
             if (config == null && filename == null && projectHasPackage)
             {
                 if (hasLibraries)
-                {
                     return null;
-                }
-                else
-                {
-                    return true;
-                }
+
+                return true;
             }
 
             return false;
-        }
-
-        private class ProjectNodeComparer : IComparer<ViewModelNodeBase>
-        {
-            public static readonly ProjectNodeComparer Default = new ProjectNodeComparer();
-
-            private ProjectNodeComparer()
-            {
-            }
-
-            public int Compare(ViewModelNodeBase first, ViewModelNodeBase second)
-            {
-                if (first == null && second == null)
-                {
-                    return 0;
-                }
-                else if (first == null)
-                {
-                    return -1;
-                }
-                else if (second == null)
-                {
-                    return 1;
-                }
-
-                // solution folder goes before projects
-                if (first is SolutionNode && second is ProjectNode)
-                {
-                    return -1;
-                }
-                else if (first is ProjectNode && second is SolutionNode)
-                {
-                    return 1;
-                }
-                else
-                {
-                    // if the two nodes are of the same kinds, compare by their names
-                    return StringComparer.CurrentCultureIgnoreCase.Compare(first.Name, second.Name);
-                }
-            }
         }
     }
 }

@@ -52,7 +52,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override bool ExecuteManage(PackageItem item)
         {
-            bool? replacePackages = AskReplacePackages(item.PackageIdentity);
+            var replacePackages = AskReplacePackages(item.PackageIdentity);
 
             if (replacePackages == null)
             {
@@ -74,8 +74,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 return false;
             }
 
-            IEnumerable<Project> projects = (IEnumerable<Project>)selected[0];
-            IEnumerable<Library> libraries = (IEnumerable<Library>)selected[1];
+            var projects = (IEnumerable<Project>)selected[0];
+            var libraries = (IEnumerable<Library>)selected[1];
 
             if (replacePackages == true)
             {
@@ -93,17 +93,15 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         protected override bool ExecuteCore(PackageItem item)
         {
-            bool? removeFromSolution = AskRemovePackagesFromSolution(item.PackageIdentity);
+            var removeFromSolution = AskRemovePackagesFromSolution(item.PackageIdentity);
 
-            if (removeFromSolution == true)
+            switch (removeFromSolution)
             {
-                // user presses Yes
-                RemovePackagesFromSolution(item.PackageIdentity);
-            }
-            else if (removeFromSolution == null)
-            {
-                // user presses Cancel
-                return false;
+                case true:
+                    RemovePackagesFromSolution(item.PackageIdentity);
+                    break;
+                case null:
+                    return false;
             }
 
             ShowWaitDialog();
@@ -135,8 +133,8 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
             if (differentPackages.Any())
             {
-                String packageNames = String.Join(Environment.NewLine, differentPackages.Select(p => p.GetPackageNameWithoutPublicKeyToken()));
-                String message = String.Format(Resources.Dialog_ReplacePackage, package.CanonicalName.PackageName)
+                var packageNames = String.Join(Environment.NewLine, differentPackages.Select(p => p.GetPackageNameWithoutPublicKeyToken()));
+                var message = String.Format(Resources.Dialog_ReplacePackage, package.CanonicalName.PackageName)
                     + Environment.NewLine
                     + Environment.NewLine
                     + packageNames;
@@ -149,49 +147,34 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         private void RemovePackagesFromSolution(IPackage package)
         {
-            PackageReference packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetPackageDirectory(), null, package.GetDeveloperPackageType());
+            var packageReference = new PackageReference(package.Name, package.Flavor, package.Version, package.Architecture, package.GetPackageDirectory(), null, package.GetDeveloperPackageType());
 
             var viewModel = new SolutionExplorerViewModel(
                 ServiceLocator.GetInstance<DTE>().Solution,
                 packageReference);
 
-            IEnumerable<Project> projects = viewModel.GetSelectedProjects();
-            IEnumerable<Library> libraries = viewModel.GetLibraries();
+            var projects = viewModel.GetSelectedProjects();
+            var libraries = viewModel.GetLibraries();
 
-            var resultLibraries = new List<Library>();
-            foreach (Library lib in libraries)
-            {
-                resultLibraries.Add(new Library(lib.Name, lib.ProjectName, lib.ConfigurationName, false));
-            }
+            var resultLibraries = libraries.Select(lib => new Library(lib.Name, lib.ProjectName, lib.ConfigurationName, false));
 
             _solutionManager.ManagePackage(packageReference, projects, resultLibraries);
         }
 
         private bool? AskRemovePackagesFromSolution(IPackage package)
         {
-            var projects = new List<Project>();
-
-            foreach (Project p in _solutionManager.GetProjects())
-            {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
-
-                if (packageReferenceFile.GetPackageReferences().Any(pkg => pkg.Name == package.Name &&
-                                                                           pkg.Flavor == package.Flavor &&
-                                                                           pkg.Version == package.Version &&
-                                                                           pkg.Architecture == package.Architecture))
-                {
-                    projects.Add(p);
-                }
-
-            }
+            var projects = from p in _solutionManager.GetProjects()
+                           let packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config")
+                           where packageReferenceFile.GetPackageReferences().Any(pkg => pkg.Equals(package))
+                           select p;
 
             bool? remove = false;
 
             if (projects.Any())
             {
                 // show each project on one line
-                String projectNames = String.Join(Environment.NewLine, projects.Select(p => p.GetName()));
-                String message = String.Format(Resources.Dialog_RemoveFromSolutionMessage, package.CanonicalName.PackageName)
+                var projectNames = String.Join(Environment.NewLine, projects.Select(p => p.GetName()));
+                var message = String.Format(Resources.Dialog_RemoveFromSolutionMessage, package.CanonicalName.PackageName)
                     + Environment.NewLine
                     + Environment.NewLine
                     + projectNames;
@@ -206,24 +189,11 @@ namespace CoApp.VisualStudio.Dialog.Providers
         {
             var projects = _solutionManager.GetProjects();
 
-            List<Project> result = new List<Project>();
-
-            foreach (Project project in projects)
-            {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
-
-                PackageReference packageReference = packageReferenceFile.GetPackageReferences()
-                    .FirstOrDefault(pkg => pkg.Name == package.Name &&
-                                    pkg.Version == package.Version.ToString() &&
-                                    pkg.Architecture == package.Architecture.ToString());
-
-                if (packageReference != null)
-                {
-                    result.Add(project);
-                }
-            }
-
-            return result;
+            return from project in projects
+                   let packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config")
+                   let packageReference = packageReferenceFile.GetPackageReferences().FirstOrDefault(pkg => pkg.Equals(package))
+                   where packageReference != null
+                   select project;
         }
 
         public override IVsExtension CreateExtension(IPackage package)

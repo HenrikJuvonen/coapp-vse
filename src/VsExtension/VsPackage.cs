@@ -21,10 +21,7 @@ namespace CoApp.VisualStudio.Tools
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     /// </summary>
-    [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "0.4", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-
     [ProvideOptionPage(typeof(FeedOptionsPage), "CoApp Package Manager", "Package Feeds", 113, 114, true)]
     [ProvideOptionPage(typeof(GeneralOptionsPage), "CoApp Package Manager", "General", 113, 115, true)]
     [ProvideBindingPath] // Definition dll needs to be on VS binding path

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
@@ -79,7 +80,7 @@ namespace CoApp.VisualStudio.VsCore
             string folderPath = Path.GetDirectoryName(path);
             string itemName = Path.GetFileName(path);
 
-            ProjectItems container = GetProjectItems(project, folderPath);
+            var container = GetProjectItems(project, folderPath) ?? project.ProjectItems;
 
             ProjectItem projectItem;
             // If we couldn't get the folder, or the child item doesn't exist, return null
@@ -130,18 +131,6 @@ namespace CoApp.VisualStudio.VsCore
             }
         }
 
-        public static bool DeleteProjectItem(this Project project, string path)
-        {
-            ProjectItem projectItem = GetProjectItem(project, path);
-            if (projectItem == null)
-            {
-                return false;
-            }
-
-            projectItem.Delete();
-            return true;
-        }
-
         public static bool TryGetFolder(this ProjectItems projectItems, string name, out ProjectItem projectItem)
         {
             projectItem = GetProjectItem(projectItems, name, _folderKinds);
@@ -173,7 +162,7 @@ namespace CoApp.VisualStudio.VsCore
 
             // If it's not one of the known nested files then we're going to look up prefixes backwards
             // i.e. if we're looking for foo.aspx.cs then we look for foo.aspx then foo.aspx.cs as a nested file
-            ProjectItem parentProjectItem = GetProjectItem(projectItems, parentFileName, _fileKinds);
+            var parentProjectItem = GetProjectItem(projectItems, parentFileName, _fileKinds);
 
             if (parentProjectItem != null)
             {
@@ -214,7 +203,7 @@ namespace CoApp.VisualStudio.VsCore
         {
             try
             {
-                ProjectItem projectItem = projectItems.Item(name);
+                var projectItem = projectItems.Item(name);
                 if (projectItem != null && allowedItemKinds.Contains(projectItem.Kind, StringComparer.OrdinalIgnoreCase))
                 {
                     return projectItem;
@@ -384,7 +373,7 @@ namespace CoApp.VisualStudio.VsCore
 
             // Get the vs solution
             var solution = ServiceLocator.GetInstance<IVsSolution>();
-            int hr = solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+            var hr = solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
 
             if (hr != VsConstants.S_OK)
             {
@@ -396,19 +385,20 @@ namespace CoApp.VisualStudio.VsCore
 
         public static string GetTargetFramework(this Project project)
         {
-            if (project.IsJavaScriptProject())
-            {
-                return ".NETCore, Version=v4.5";
-            }
-
-            MsBuildProject buildProject = project.AsMsBuildProject();
-
-            return buildProject.GetPropertyValue("TargetFrameworkMoniker") ?? string.Empty;
+            return project.AsMsBuildProject().GetPropertyValue("TargetFrameworkMoniker") ?? string.Empty;
         }
 
-        public static int GetTargetFrameworkVersion(this Project project)
+        public static double GetTargetFrameworkVersion(this Project project, string targetFramework = null)
         {
-            return project.GetPropertyValue<int>("TargetFrameworkVersion");
+            targetFramework = targetFramework ?? project.GetTargetFramework();
+
+            var split = targetFramework.Split(',');
+            var versionStr = split.Count() > 1 ? split[1].Trim().Substring(split[1].IndexOf('=') + 2) : string.Empty;
+            
+            double version;
+            double.TryParse(versionStr, NumberStyles.Any, CultureInfo.InvariantCulture, out version);
+
+            return version;
         }
 
         /// <summary>
@@ -422,12 +412,12 @@ namespace CoApp.VisualStudio.VsCore
             }
 
             var targetFramework = project.GetTargetFramework();
-            var targetFrameworkVersion = project.GetTargetFrameworkVersion();
+            var targetFrameworkVersion = project.GetTargetFrameworkVersion(targetFramework);
 
-            bool targetsNetFramework = targetFramework.Contains(".NETFramework") || targetFramework.Contains("Silverlight");
+            var targetsNetFramework = targetFramework.Contains(".NETFramework") || targetFramework.Contains("Silverlight");
 
             // VC-compatibility
-            bool compatible = ((packageReference.Type == DeveloperPackageType.VcInclude ||
+            var compatible = ((packageReference.Type == DeveloperPackageType.VcInclude ||
                                (packageReference.Type == DeveloperPackageType.VcLibrary && project.IsCompatibleArchitecture(packageReference.Architecture)))
                                && project.IsVcProject());
 
@@ -435,10 +425,10 @@ namespace CoApp.VisualStudio.VsCore
             compatible = compatible || (packageReference.Type == DeveloperPackageType.Net && project.IsNetProject() && 
                 (
                 (packageReference.Flavor == "" && targetsNetFramework) ||
-                (packageReference.Flavor == "[net20]" && (targetsNetFramework && targetFrameworkVersion >= 0x20000)) ||
-                (packageReference.Flavor == "[net35]" && (targetsNetFramework && targetFrameworkVersion >= 0x30005)) ||
-                (packageReference.Flavor == "[net40]" && (targetsNetFramework && targetFrameworkVersion >= 0x40000)) ||
-                (packageReference.Flavor == "[net45]" && (targetsNetFramework && targetFrameworkVersion >= 0x40005)) ||
+                (packageReference.Flavor == "[net20]" && (targetsNetFramework && targetFrameworkVersion >= 2.0)) ||
+                (packageReference.Flavor == "[net35]" && (targetsNetFramework && targetFrameworkVersion >= 3.5)) ||
+                (packageReference.Flavor == "[net40]" && (targetsNetFramework && targetFrameworkVersion >= 4.0)) ||
+                (packageReference.Flavor == "[net45]" && (targetsNetFramework && targetFrameworkVersion >= 4.5)) ||
                 (packageReference.Flavor == "[silverlight]" && targetsNetFramework)
                 ));
             

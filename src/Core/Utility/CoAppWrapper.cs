@@ -207,22 +207,7 @@
                 switch (state)
                 {
                     case "wanted":
-                        if (package.IsWanted)
-                            PackageManager.SetPackageWanted(package.CanonicalName, false);
-                        else
-                            PackageManager.SetPackageWanted(package.CanonicalName, true);
-                        break;
-                    case "updatable":
-                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Updatable.ToString());
-                        break;
-                    case "upgradable":
-                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Upgradable.ToString());
-                        break;
-                    case "blocked":
-                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.Blocked.ToString());
-                        break;
-                    case "locked":
-                        PackageManager.SetGeneralPackageInformation(50, package.CanonicalName, "state", PackageState.DoNotChange.ToString());
+                        PackageManager.SetPackageWanted(package.CanonicalName, package.IsWanted);
                         break;
                 }
                 
@@ -273,10 +258,7 @@
 
             foreach (var packageReference in packageReferences)
             {
-                result.AddRange(packages.Where(n => n.Name == packageReference.Name &&
-                                                    n.Flavor == packageReference.Flavor &&
-                                                    n.Version == packageReference.Version &&
-                                                    n.Architecture == packageReference.Architecture));
+                result.AddRange(packages.Where(n => packageReference.Equals(n)));
             }
 
             return result;

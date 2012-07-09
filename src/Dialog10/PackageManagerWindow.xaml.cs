@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -302,18 +303,7 @@ namespace CoApp.VisualStudio.Dialog
         private static UIElement FindChildElementByNameOrType(Grid parent, string childName, Type childType)
         {
             var element = parent.FindName(childName) as UIElement;
-            if (element != null)
-            {
-                return element;
-            }
-            foreach (UIElement child in parent.Children)
-            {
-                if (childType.IsInstanceOfType(child))
-                {
-                    return child;
-                }
-            }
-            return null;
+            return element ?? parent.Children.Cast<UIElement>().FirstOrDefault(childType.IsInstanceOfType);
         }
     }
 }

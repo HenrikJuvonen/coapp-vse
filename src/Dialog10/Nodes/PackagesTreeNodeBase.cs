@@ -323,7 +323,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
             return Provider.SortDescriptors;
         }
 
-        protected internal void ResetQuery()
+        internal void ResetQuery()
         {
             _query = null;
         }
@@ -372,7 +372,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                     int totalPages = (result.TotalCount + PageSize - 1) / PageSize;
                     TotalPages = Math.Max(1, totalPages);
                     CurrentPage = Math.Max(1, result.PageNumber);
-
+                    
                     HideProgressPane();
                 }
             }
@@ -476,7 +476,7 @@ namespace CoApp.VisualStudio.Dialog.Providers
                 Provider.SelectedNode = this;
                 if (!IsSearchResultsNode)
                 {
-                    Refresh();
+                    Refresh(true);
                 }
             }
         }

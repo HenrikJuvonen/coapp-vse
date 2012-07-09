@@ -74,9 +74,7 @@ namespace CoApp.VisualStudio.VsCore
                         break;
                 }
 
-                string path = project.GetDirectory() + "/coapp.packages.config";
-  
-                var packageReferenceFile = new PackageReferenceFile(path);
+                var packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
                 if (projects.Contains(project))
                 {
@@ -87,12 +85,6 @@ namespace CoApp.VisualStudio.VsCore
                         packageReference.Architecture,
                         resultLibraries,
                         packageReference.Type);
-
-                    ProjectItem item;
-                    project.ProjectItems.TryGetFile("coapp.packages.config", out item);
-
-                    if (item == null)
-                        project.ProjectItems.AddFromFile(path);
                 }
                 else
                 {
@@ -101,15 +93,6 @@ namespace CoApp.VisualStudio.VsCore
                         packageReference.Flavor,
                         null, // any version
                         packageReference.Architecture);
-
-                    if (!packageReferenceFile.GetPackageReferences().Any())
-                    {
-                        ProjectItem item;
-                        project.ProjectItems.TryGetFile("coapp.packages.config", out item);
-
-                        if (item != null)
-                            item.Remove();
-                    }
                 }
 
                 project.Save(project.FullName);

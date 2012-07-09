@@ -38,21 +38,18 @@ namespace CoApp.VisualStudio.Dialog.Providers
 
         public override IEnumerable<IPackage> GetPackages()
         {
-            IEnumerable<IPackage> installedPackages = CoAppWrapper.GetPackages("installed", useFilters: false);
-            ISet<IPackage> resultPackages = new HashSet<IPackage>();
+            var installedPackages = CoAppWrapper.GetPackages("installed", useFilters: false);
+            var resultPackages = new HashSet<IPackage>();
 
-            foreach (Project p in _solutionManager.GetProjects())
+            foreach (var project in _solutionManager.GetProjects())
             {
-                PackageReferenceFile packageReferenceFile = new PackageReferenceFile(p.GetDirectory() + "/coapp.packages.config");
+                var packageReferenceFile = new PackageReferenceFile(project.GetDirectory() + "/coapp.packages.config");
 
-                IEnumerable<PackageReference> packageReferences = packageReferenceFile.GetPackageReferences();
+                var packageReferences = packageReferenceFile.GetPackageReferences();
 
-                foreach (PackageReference packageReference in packageReferences)
+                foreach (var packageReference in packageReferences)
                 {
-                    var package = installedPackages.FirstOrDefault(pkg => pkg.Name == packageReference.Name &&
-                                                                          pkg.Flavor == packageReference.Flavor &&
-                                                                          pkg.Version == packageReference.Version &&
-                                                                          pkg.Architecture == packageReference.Architecture);
+                    var package = installedPackages.FirstOrDefault(pkg => packageReference.Equals(pkg));
 
                     if (package != null)
                     {

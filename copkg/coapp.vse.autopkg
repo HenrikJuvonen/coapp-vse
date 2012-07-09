@@ -55,11 +55,15 @@ faux-pax {
     include : {
         all,
     };
+    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
+    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
+    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
+    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
 };
 
 package-composition {
-	symlinks : {
-		all => @"C:\ProgramData\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
-		all => @"C:\ProgramData\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
-	};
+    symlinks : {
+        all => @"${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
+        all => @"${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
+    };
 };
