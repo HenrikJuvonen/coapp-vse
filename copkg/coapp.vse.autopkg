@@ -55,11 +55,17 @@ faux-pax {
     include : {
         all,
     };
-    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
-    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
-    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
-    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup /ResetSkipPkgs" }
 };
+
+faux-pax[VS10] {
+    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup" }
+    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe",parameters="/Setup" }
+}
+
+faux-pax[VS11] {
+    install : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup" }
+    remove : { command="${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe",parameters="/Setup" }
+}
 
 package-composition {
     symlinks : {

@@ -172,7 +172,9 @@ namespace CoApp.VisualStudio.Dialog
             bool hasLibraries = false;
             bool projectHasPackage = false;
 
-            foreach (var p in packageReferenceFile.GetPackageReferences().Where(p => p.Equals(packageReference)))
+            foreach (var p in packageReferenceFile.GetPackageReferences().Where(p => p.Name == packageReference.Name &&
+                                                                                     p.Flavor == packageReference.Flavor &&
+                                                                                     p.Architecture == packageReference.Architecture))
             {
                 projectHasPackage = true;
 
