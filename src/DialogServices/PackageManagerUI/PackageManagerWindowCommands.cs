@@ -12,11 +12,7 @@ namespace CoApp.VisualStudio.Dialog.PackageManagerUI
         public readonly static RoutedCommand OpenExternalLink = new RoutedCommand();
 
         public readonly static RoutedCommand PackageOperationSetWanted = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetBlocked = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetLocked = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetRequired = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetUpdatable = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetUpgradable = new RoutedCommand();
-        public readonly static RoutedCommand PackageOperationSetActive = new RoutedCommand();
+
+        public readonly static RoutedCommand LaunchUpdater = new RoutedCommand();
     }
 }

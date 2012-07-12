@@ -36,6 +36,8 @@
 
         public static string ErrorMessage { get; private set; }
 
+        public static event EventHandler<EventArgs> UpdatesAvailable = delegate { };
+
         /// <summary>
         /// Initializes the CoAppWrapper.
         /// </summary>
@@ -48,7 +50,7 @@
                 Settings["#itemsOnPage"].IntValue = 8;
 
             if (Settings["#update"].Value == null)
-                Settings["#update"].IntValue = 2;
+                Settings["#update"].IntValue = 1;
 
             if (Settings["#restore"].Value == null)
                 Settings["#restore"].IntValue = 2;
@@ -253,7 +255,7 @@
 
         public static IEnumerable<IPackage> GetPackages(IEnumerable<PackageReference> packageReferences)
         {
-            var packages = GetPackages(useFilters: false);
+            var packages = GetPackages();
             var result = new List<IPackage>();
 
             foreach (var packageReference in packageReferences)
@@ -267,7 +269,7 @@
         /// <summary>
         /// Used for getting packages in SimpleTreeNode.
         /// </summary>
-        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null, bool useFilters = true)
+        public static IEnumerable<IPackage> GetPackages(string type = null, string location = null)
         {
             Filter<IPackage> pkgFilter = null;
 
@@ -276,16 +278,12 @@
             else if (type == "updatable")
                 pkgFilter = Package.Filters.PackagesWithUpdateAvailable & Package.Filters.InstalledPackages;
 
-            if (!useFilters)
-            {
-                return QueryPackages(new[] { "*" }, pkgFilter, location);
-            }
-
             var packages = QueryPackages(new[] { "*" }, pkgFilter, location);
 
             if (type == "updatable")
             {
                 packages = packages.Select(package => package.AvailableNewestUpdate).Distinct();
+                UpdatesAvailable(null, EventArgs.Empty);
             }
 
             return packages;
@@ -312,7 +310,7 @@
         /// </summary>
         public static IEnumerable<IPackage> GetDependents(IPackage package)
         {
-            return GetPackages("installed", null, false).Where(pkg => pkg.Dependencies.Contains(package));
+            return GetPackages("installed").Where(pkg => pkg.Dependencies.Contains(package));
         }
 
         /// <summary>

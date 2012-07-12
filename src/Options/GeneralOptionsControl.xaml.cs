@@ -2,19 +2,16 @@
 using System.IO;
 using System.Diagnostics;
 using CoApp.VisualStudio.VsCore;
-using CoApp.Toolkit.Configuration;
 
 namespace CoApp.VisualStudio.Options
 {
-    using OptionsResources = CoApp.VisualStudio.Options.Resources;
+    using OptionsResources = Resources;
 
     /// <summary>
     /// Interaction logic for GeneralOptionsControl.xaml
     /// </summary>
     public partial class GeneralOptionsControl
     {
-        private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
-
         private string _lastItemsOnPage;
 
         public GeneralOptionsControl()
@@ -30,11 +27,11 @@ namespace CoApp.VisualStudio.Options
         /// </summary>
         internal void ApplyChangedSettings()
         {
-            _settings["#update"].IntValue = UpdateComboBox.SelectedIndex;
-            _settings["#restore"].IntValue = RestoreComboBox.SelectedIndex;
+            CoAppWrapper.Settings["#update"].IntValue = UpdateComboBox.SelectedIndex;
+            CoAppWrapper.Settings["#restore"].IntValue = RestoreComboBox.SelectedIndex;
 
-            _settings["#rememberFilters"].BoolValue = (RememberFiltersCheckBox.IsChecked == true);
-            _settings["#itemsOnPage"].IntValue = string.IsNullOrEmpty(ItemsOnPageTextBox.Text) ? 8 : int.Parse(ItemsOnPageTextBox.Text);
+            CoAppWrapper.Settings["#rememberFilters"].BoolValue = (RememberFiltersCheckBox.IsChecked == true);
+            CoAppWrapper.Settings["#itemsOnPage"].IntValue = string.IsNullOrEmpty(ItemsOnPageTextBox.Text) ? 8 : int.Parse(ItemsOnPageTextBox.Text);
 
             CoAppWrapper.SetTelemetry(TelemetryCheckBox.IsChecked == true);
         }
@@ -107,13 +104,13 @@ namespace CoApp.VisualStudio.Options
 
         private void LoadSettings()
         {
-            int update = _settings["#update"].IntValue;
-            int restore = _settings["#restore"].IntValue;
-            bool rememberFilters = _settings["#rememberFilters"].BoolValue;
-            int itemsOnPage = _settings["#itemsOnPage"].IntValue;
+            int update = CoAppWrapper.Settings["#update"].IntValue;
+            int restore = CoAppWrapper.Settings["#restore"].IntValue;
+            bool rememberFilters = CoAppWrapper.Settings["#rememberFilters"].BoolValue;
+            int itemsOnPage = CoAppWrapper.Settings["#itemsOnPage"].IntValue;
 
-            UpdateComboBox.SelectedIndex = update >= 0 && update <= 2 ? update : 0;
-            RestoreComboBox.SelectedIndex = restore >= 0 && restore <= 2 ? restore : 0;
+            UpdateComboBox.SelectedIndex = update == 0 || update == 1 ? update : 1;
+            RestoreComboBox.SelectedIndex = restore >= 0 && restore <= 2 ? restore : 2;
 
             RememberFiltersCheckBox.IsChecked = rememberFilters;
 

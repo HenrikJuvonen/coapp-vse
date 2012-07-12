@@ -35,6 +35,8 @@
     <DeployExtension>True</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CoApp.Client" />
+    <Reference Include="CoApp.Toolkit" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
@@ -131,6 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Toolbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CoApp.ico" />
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

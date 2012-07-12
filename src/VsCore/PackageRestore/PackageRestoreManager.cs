@@ -16,7 +16,6 @@ namespace CoApp.VisualStudio.VsCore
     {
         private readonly ISolutionManager _solutionManager;
         private readonly WaitDialog _waitDialog;
-        private readonly RegistryView _settings = RegistryView.CoAppUser["coapp_vse"];
         
         /// <summary>
         /// 0 = automatic restore
@@ -26,6 +25,8 @@ namespace CoApp.VisualStudio.VsCore
         private int _level;
 
         private bool _fromActivation;
+
+        public bool IsSuspended { get; set; }
 
         [ImportingConstructor]
         public PackageRestoreManager(ISolutionManager solutionManager)
@@ -122,7 +123,7 @@ namespace CoApp.VisualStudio.VsCore
                 }
             }
         }
-
+        
         public void BeginRestore(bool fromActivation)
         {
             if (!_solutionManager.IsSolutionOpen)
@@ -178,7 +179,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<IPackage> GetMissingPackages()
         {
-            var packages = CoAppWrapper.GetPackages(useFilters: false);
+            var packages = CoAppWrapper.GetPackages();
             var resultPackages = new HashSet<IPackage>();
 
             foreach (var p in _solutionManager.GetProjects())
@@ -187,10 +188,7 @@ namespace CoApp.VisualStudio.VsCore
 
                 foreach (var packageReference in packageReferenceFile.GetPackageReferences())
                 {
-                    var pkg = packages.FirstOrDefault(package => package.Name == packageReference.Name &&
-                                                                 package.Flavor == packageReference.Flavor &&
-                                                                 package.Version == packageReference.Version &&
-                                                                 package.Architecture == packageReference.Architecture);
+                    var pkg = packages.FirstOrDefault(package => packageReference.Equals(package));
 
                     if (pkg != null)
                     {
@@ -204,7 +202,7 @@ namespace CoApp.VisualStudio.VsCore
 
         private IEnumerable<string> GetUnrecoverablePackages()
         {
-            var packages = CoAppWrapper.GetPackages(null, null, false);
+            var packages = CoAppWrapper.GetPackages();
             var unrecoverable = new HashSet<string>();
 
             foreach (var p in _solutionManager.GetProjects())
@@ -226,12 +224,12 @@ namespace CoApp.VisualStudio.VsCore
 
             return unrecoverable;
         }
-        
+
         private void OnSolutionOpened(object sender, EventArgs e)
         {
-            _level = _settings["#restore"].IntValue;
+            _level = CoAppWrapper.Settings["#restore"].IntValue;
 
-            if (_level != 2)
+            if (_level != 2 && !IsSuspended)
             {
                 BeginRestore(fromActivation: false);
             }

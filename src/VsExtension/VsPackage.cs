@@ -3,9 +3,11 @@ extern alias dialog10;
 
 using System;
 using System.ComponentModel.Design;
+using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
@@ -34,6 +36,7 @@ namespace CoApp.VisualStudio.Tools
         private IVsMonitorSelection _vsMonitorSelection;
         private ISolutionManager _solutionManager;
         private IPackageRestoreManager _packageRestoreManager;
+        private bool _isUpdateNotifierShown;
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -42,24 +45,58 @@ namespace CoApp.VisualStudio.Tools
         protected override void Initialize()
         {
             base.Initialize();
-
+            
             CoAppWrapper.Initialize();
+
+            if (CoAppWrapper.Settings["#update"].IntValue == 0)
+                CoAppWrapper.UpdatesAvailable += OnUpdatesAvailable;
 
             // get the UI context cookie for the debugging mode
             _vsMonitorSelection = (IVsMonitorSelection)GetService(typeof(IVsMonitorSelection));
             // get debugging context cookie
-            Guid debuggingContextGuid = VSConstants.UICONTEXT_Debugging;
+            var debuggingContextGuid = VSConstants.UICONTEXT_Debugging;
             _vsMonitorSelection.GetCmdUIContextCookie(ref debuggingContextGuid, out _debuggingContextCookie);
 
             // get the solution building cookie
-            Guid solutionBuildingContextGuid = VSConstants.UICONTEXT_SolutionBuilding;
+            var solutionBuildingContextGuid = VSConstants.UICONTEXT_SolutionBuilding;
             _vsMonitorSelection.GetCmdUIContextCookie(ref solutionBuildingContextGuid, out _solutionBuildingContextCookie);
 
-            _packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
             _solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
+            _packageRestoreManager = ServiceLocator.GetInstance<IPackageRestoreManager>();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             AddMenuCommandHandlers();
+
+            _solutionManager.SolutionOpened += (sender, args) =>
+            {
+                // Delayed check for updates
+                var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimer.Tick += (o, a) => CoAppWrapper.GetPackages("updatable");
+                dispatcherTimer.Interval = new TimeSpan(0, 0, 15);
+                dispatcherTimer.Start();
+            };
+        }
+
+        private void OnUpdatesAvailable(object sender, EventArgs e)
+        {
+            if (_isUpdateNotifierShown)
+                return;
+
+            _isUpdateNotifierShown = true;
+
+            var notifier = new NotifyIcon
+            {
+                Icon = Resources.CoApp,
+                BalloonTipIcon = ToolTipIcon.Info,
+                BalloonTipTitle = Resources.NotifierTitle,
+                BalloonTipText = Resources.NotifierText
+            };
+
+            notifier.BalloonTipClicked += ShowManageLibraryPackageDialogUpdates;
+            notifier.BalloonTipClicked += (o, args) => { notifier.Visible = false; };
+            notifier.BalloonTipClosed += (o, args) => { notifier.Visible = false; };
+            notifier.Visible = true;
+            notifier.ShowBalloonTip(10000);
         }
 
         private void AddMenuCommandHandlers()
@@ -107,6 +144,30 @@ namespace CoApp.VisualStudio.Tools
                 GetVS10PackageManagerWindow():
                 GetPackageManagerWindow();
 
+            // do not notify after the dialog is opened
+            _isUpdateNotifierShown = true;
+
+            try
+            {
+                window.ShowModal();
+            }
+            catch (TargetInvocationException exception)
+            {
+                MessageHelper.ShowErrorMessage(exception, Resources.ErrorDialogBoxTitle);
+                ExceptionHelper.WriteToActivityLog(exception);
+            }
+        }
+
+        private void ShowManageLibraryPackageDialogUpdates(object sender, EventArgs e)
+        {
+            _packageRestoreManager.IsSuspended = true;
+
+            var window = VsVersionHelper.IsVisualStudio2010 ?
+                GetVS10PackageManagerWindow(true) :
+                GetPackageManagerWindow(true);
+
+            window.Closed += (o, args) => _packageRestoreManager.IsSuspended = false;
+
             try
             {
                 window.ShowModal();
@@ -119,15 +180,15 @@ namespace CoApp.VisualStudio.Tools
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static DialogWindow GetVS10PackageManagerWindow()
+        private static DialogWindow GetVS10PackageManagerWindow(bool updatesOnly = false)
         {
-            return new VS10PackageManagerDialog();
+            return new VS10PackageManagerDialog(updatesOnly);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static DialogWindow GetPackageManagerWindow()
+        private static DialogWindow GetPackageManagerWindow(bool updatesOnly = false)
         {
-            return new PackageManagerDialog();
+            return new PackageManagerDialog(updatesOnly);
         }
 
         private bool IsIDEInDebuggingOrBuildingContext()

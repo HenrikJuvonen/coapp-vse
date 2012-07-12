@@ -11,7 +11,7 @@ provides {
 
 metadata {
     summary: "Visual Studio Extension for managing CoApp-packages";
-    description: "CoApp for Visual Studio is an extension for managing CoApp-packages inside Visual Studio.";
+    description: "Visual Studio extension for managing CoApp-packages";
     icon: @"images\logo3.png";
     
     author-version : "0.4";

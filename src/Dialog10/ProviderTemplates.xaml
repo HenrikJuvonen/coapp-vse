@@ -48,12 +48,12 @@
             <Grid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Wanted" IsEnabled="True" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsWanted, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetWanted}" />
-                    <MenuItem Header="Blocked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsBlocked, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetBlocked}" />
-                    <MenuItem Header="Locked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsLocked, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetLocked}" />
-                    <MenuItem Header="Updatable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpdatable, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetUpdatable}" />
-                    <MenuItem Header="Upgradeable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpgradable, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetUpgradable}" />
-                    <MenuItem Header="Required" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsRequired, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetRequired}" />
-                    <MenuItem Header="Active" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsActive, Mode=OneWay}" Command="{x:Static self:PackageManagerWindowCommands.PackageOperationSetActive}" />
+                    <MenuItem Header="Blocked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsBlocked, Mode=OneWay}" />
+                    <MenuItem Header="Locked" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsLocked, Mode=OneWay}" />
+                    <MenuItem Header="Updatable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpdatable, Mode=OneWay}" />
+                    <MenuItem Header="Upgradeable" IsEnabled="False" IsCheckable="true" IsChecked="{Binding IsUpgradable, Mode=OneWay}" />
+                    <MenuItem Header="Required" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsRequired, Mode=OneWay}" />
+                    <MenuItem Header="Active" IsEnabled="False" IsCheckable="true" IsChecked="{Binding PackageIdentity.IsActive, Mode=OneWay}" />
                 </ContextMenu>
             </Grid.ContextMenu>
             

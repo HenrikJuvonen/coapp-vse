@@ -40,8 +40,7 @@
         </GroupBox>
         <GroupBox Header="Automatic updates" Height="58">
             <Grid Height="24" VerticalAlignment="Top" Margin="4,4,4,4">
-                <ComboBox Name="UpdateComboBox" IsEnabled="False" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
-                    <ComboBoxItem Content="{x:Static self:Resources.Update_Automatic}" />
+                <ComboBox Name="UpdateComboBox" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
                     <ComboBoxItem Content="{x:Static self:Resources.Update_Notify}" />
                     <ComboBoxItem Content="{x:Static self:Resources.Update_DoNothing}" />
                 </ComboBox>

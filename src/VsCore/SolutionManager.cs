@@ -17,7 +17,8 @@ namespace CoApp.VisualStudio.VsCore
     {
         private readonly DTE _dte;
         private readonly SolutionEvents _solutionEvents;
-        private IVsSolution _vsSolution;
+
+        private readonly IVsSolution _vsSolution;
 
         private ProjectCache _projectCache;
 
@@ -134,10 +135,17 @@ namespace CoApp.VisualStudio.VsCore
         {
             get
             {
-                return _dte != null && 
-                       _dte.Solution != null && 
-                       _dte.Solution.IsOpen &&
-                       !IsSolutionSavedAsRequired();
+                try
+                {
+                    return _dte != null &&
+                            _dte.Solution != null &&
+                            _dte.Solution.IsOpen &&
+                            !IsSolutionSavedAsRequired();
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 

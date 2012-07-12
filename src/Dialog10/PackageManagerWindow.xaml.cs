@@ -17,7 +17,7 @@ namespace CoApp.VisualStudio.Dialog
 
         private readonly IOptionsPageActivator _optionsPageActivator;
 
-        public PackageManagerWindow()
+        public PackageManagerWindow(bool updatesOnly = false)
         {
             InitializeComponent();
 
@@ -29,22 +29,27 @@ namespace CoApp.VisualStudio.Dialog
             _optionsPageActivator = ServiceLocator.GetInstance<IOptionsPageActivator>();
 
             SetupFilters();
-            SetupProviders();
+            SetupProviders(updatesOnly);
+
+            if (updatesOnly)
+                OptionsButton.IsEnabled = false;
         }
 
-        private void SetupProviders()
+        private void SetupProviders(bool updatesOnly)
         {
             var providerServices = new ProviderServices();
             var solutionManager = ServiceLocator.GetInstance<ISolutionManager>();
 
-            var solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
-            var installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
-            var onlineProvider = new OnlineProvider(Resources, providerServices);
+            if (!updatesOnly)
+            {
+                var solutionProvider = new SolutionProvider(Resources, providerServices, solutionManager);
+                var installedProvider = new InstalledProvider(Resources, providerServices, solutionManager);
+                var onlineProvider = new OnlineProvider(Resources, providerServices);
+                explorer.Providers.Add(solutionProvider);
+                explorer.Providers.Add(installedProvider);
+                explorer.Providers.Add(onlineProvider);
+            }
             var updatesProvider = new UpdatesProvider(Resources, providerServices);
-
-            explorer.Providers.Add(solutionProvider);
-            explorer.Providers.Add(installedProvider);
-            explorer.Providers.Add(onlineProvider);
             explorer.Providers.Add(updatesProvider);
 
             explorer.SelectedProvider = explorer.Providers[0];

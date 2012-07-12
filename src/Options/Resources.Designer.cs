@@ -124,15 +124,6 @@ namespace CoApp.VisualStudio.Options {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install packages automatically.
-        /// </summary>
-        public static string Update_Automatic {
-            get {
-                return ResourceManager.GetString("Update_Automatic", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Never check or install packages automatically.
         /// </summary>
         public static string Update_DoNothing {

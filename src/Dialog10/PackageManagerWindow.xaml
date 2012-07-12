@@ -13,6 +13,7 @@
     HasMinimizeButton="False"
     ResizeMode="CanResize"
     ShowInTaskbar="False"
+    Topmost="True"
     SnapsToDevicePixels="True"
     Width="900"
     Height="650"
@@ -98,7 +99,8 @@
                     MinHeight="23"
                     Padding="4,0,4,0"
                     Command="{x:Static dialogCommands:PackageManagerWindowCommands.ShowOptionsPage}" 
-                    Content="{x:Static resources:Resources.Dialog_Settings}" />
+                    Content="{x:Static resources:Resources.Dialog_Settings}" 
+                    Name="OptionsButton" />
 
             <Button HorizontalAlignment="Right"
                     VerticalAlignment="Center"

@@ -2,6 +2,8 @@
 {
     public interface IPackageRestoreManager
     {
+        bool IsSuspended { get; set; }
+
         /// <summary>
         /// Begins restoring packages.
         /// </summary>

@@ -138,9 +138,6 @@
   <data name="ShowWarning_SourceRequried" xml:space="preserve">
     <value>The feed specified cannot be empty. Please provide a valid feed.</value>
   </data>
-  <data name="Update_Automatic" xml:space="preserve">
-    <value>Install packages automatically</value>
-  </data>
   <data name="Update_DoNothing" xml:space="preserve">
     <value>Never check or install packages automatically</value>
   </data>

@@ -28,6 +28,7 @@ namespace CoApp.VisualStudio.Tools {
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
@@ -69,6 +70,16 @@ namespace CoApp.VisualStudio.Tools {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon CoApp {
+            get {
+                object obj = ResourceManager.GetObject("CoApp", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operation failed.
         /// </summary>
         public static string ErrorDialogBoxTitle {
@@ -92,6 +103,24 @@ namespace CoApp.VisualStudio.Tools {
         public static string NoProjectSelected {
             get {
                 return ResourceManager.GetString("NoProjectSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New updates are available. Click to install them..
+        /// </summary>
+        public static string NotifierText {
+            get {
+                return ResourceManager.GetString("NotifierText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CoApp for Visual Studio.
+        /// </summary>
+        public static string NotifierTitle {
+            get {
+                return ResourceManager.GetString("NotifierTitle", resourceCulture);
             }
         }
     }
