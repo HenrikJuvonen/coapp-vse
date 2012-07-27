@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<OrderedTest name="Core" storage="c:\users\ideal\documents\github\coapp-vse\tests\core.test\core.orderedtest" id="75ad2834-e47f-4a1c-b92d-05292c668db9" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <TestLinks>
-    <TestLink id="a478f155-c5a1-77ab-3f1d-f6d35f6ea92d" name="InstallPackageTest" storage="bin\debug\core.test.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <TestLink id="550287d0-d3a6-0788-dc76-eca69e2273b8" name="RemovePackageTest" storage="bin\debug\core.test.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  </TestLinks>
-</OrderedTest>

@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidVsPkg">
+    <Menus>
+      <Menu guid="guidVsCmdSet" id="cmdidVsContextMenu" type="Menu" priority="0x500">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_TOOLS_OTHER2" />
+        <Strings>
+          <ButtonText>CoApp for Visual Studio</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+    
+    <Groups>
+      <Group guid="guidVsCmdSet" id="VsContextMenuGroup" priority="0x100">
+        <Parent guid="guidVsCmdSet" id="cmdidVsContextMenu" />
+      </Group>
+    </Groups>
+
+    <Buttons>      
+      <Button guid="guidVsCmdSet" id="cmdidShowMain" priority="0x0100" type="Button">
+        <Parent guid="guidVsCmdSet" id="VsContextMenuGroup" />
+        <Icon guid="guidImages" id="bmpShowMain" />
+        <Strings>
+          <CommandName>cmdidShowMain</CommandName>
+          <ButtonText>Package Manager...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVsCmdSet" id="cmdidShowOptions" priority="0x0101" type="Button">
+        <Parent guid="guidVsCmdSet" id="VsContextMenuGroup" />
+        <Icon guid="guidImages" id="bmpShowOptions" />
+        <Strings>
+          <CommandName>cmdidShowOptions</CommandName>
+          <ButtonText>Options...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVsCmdSet" id="cmdidRestorePackages" priority="0x0102" type="Button">
+        <Parent guid="guidVsCmdSet" id="VsContextMenuGroup" />
+        <Icon guid="guidImages" id="bmpRestorePackages" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>cmdidRestorePackages</CommandName>
+          <ButtonText>Restore packages for Solution</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\Toolbar.png" />
+    </Bitmaps>
+  </Commands>
+
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidVsCmdSet" id="cmdidRestorePackages" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+  </VisibilityConstraints>
+
+  <Symbols>
+    <GuidSymbol name="guidVsPkg" value="{5F058D4C-1DA8-4FA4-8FF7-CB039283F751}" />
+
+    <GuidSymbol name="guidVsCmdSet" value="{3B9792BD-7B73-42DF-804A-17BCB3CA67E6}">
+      <IDSymbol name="VsContextMenuGroup" value="0x1020" />
+      <IDSymbol name="cmdidVsContextMenu" value="0x0103" />
+      <IDSymbol name="cmdidShowMain" value="0x0100" />
+      <IDSymbol name="cmdidShowOptions" value="0x0101" />
+      <IDSymbol name="cmdidRestorePackages" value="0x0102" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{8A83C033-B2BF-4434-8701-4578EAFC5996}" >
+      <IDSymbol name="bmpShowOptions" value="3" />
+      <IDSymbol name="bmpShowMain" value="6" />
+      <IDSymbol name="bmpRestorePackages" value="7" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" value="{D0E4DEEC-1B53-4CDA-8559-D454583AD23B}" />
+  </Symbols>
+
+</CommandTable>

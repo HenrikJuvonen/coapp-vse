@@ -1,0 +1,40 @@
+﻿<UserControl
+    x:Class="CoApp.VSE.Controls.Options.FeedOptionsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="0,2,0,2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="Package Feeds" FontWeight="Bold" />
+        <Grid Grid.Row="1" Margin="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="Available feeds:" />
+                <Button Grid.Column="1" Content="Remove" Click="OnRemoveButtonClick" Width="54"/>
+            </Grid>
+            <ListBox Grid.Row="1" Name="FeedsListBox" Margin="0,2,0,2" />
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="Location:" />
+                <TextBox Grid.Column="1" Name="FeedLocation" KeyDown="OnKeyDown" TextChanged="OnTextChanged"/>
+                <Button Grid.Column="3" Name="AddButton" Content="Add" Click="OnAddButtonClick" IsEnabled="False" Width="54" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

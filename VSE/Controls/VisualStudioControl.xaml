@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="CoApp.VSE.Controls.VisualStudioControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:VSE="clr-namespace:CoApp.VSE"
+        xmlns:Model="clr-namespace:CoApp.VSE.Model">
+    <UserControl.Resources>
+        <HierarchicalDataTemplate DataType="{x:Type Model:TreeNodeBase}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal" Margin="2,0">
+                <CheckBox IsChecked="{Binding IsChecked}" VerticalAlignment="Center" />
+                <Image x:Name="Icon" Margin="2,0" Stretch="None" Source="{Binding Icon}" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+    </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding
+            Command="{x:Static VSE:Commands.Cancel}"
+            Executed="ExecuteCancel" />
+        <CommandBinding
+            Command="{x:Static VSE:Commands.Ok}"
+            Executed="ExecuteOk" />
+    </UserControl.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" VerticalAlignment="Center">
+            <Grid.Background>
+                <SolidColorBrush Color="{DynamicResource Gray13}"/>
+            </Grid.Background>
+            <WrapPanel>
+                <Button Margin="5,5,0,5" Content="Cancel" Command="{x:Static VSE:Commands.Cancel}" Width="54" />
+                <Button Margin="5,5,0,5" Content="Apply" Command="{x:Static VSE:Commands.Ok}" Width="54" />
+            </WrapPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" Content="Packages:" />
+            <DataGrid Grid.Row="1" Grid.Column="0" Name="PackagesDataGrid" Margin="5,0,5,20" BorderThickness="1" SelectionChanged="OnSelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Flavor.Plain}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Version}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Architecture}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Label Grid.Row="0" Grid.Column="1" Margin="5,5,5,0" Content="Solution:" />
+            <TreeView Grid.Row="1" Grid.Column="1" Margin="5,0,5,20" Name="SolutionTreeView" ItemsSource="{Binding Nodes}" >
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="IsExpanded" Value="True" />
+                        <Setter Property="Margin" Value="0,2,0,2" />
+                    </Style>
+                </TreeView.ItemContainerStyle>
+            </TreeView>
+        </Grid>
+    </Grid>
+</UserControl>
