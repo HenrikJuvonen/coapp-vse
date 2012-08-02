@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using CoApp.VSE.Packaging;
 using CoApp.VSE.ViewModel;
 using CoApp.Packaging.Client;
@@ -57,6 +58,9 @@ namespace CoApp.VSE.Controls
 
         internal void Initialize()
         {
+            VsPane.Visibility = Visibility.Collapsed;
+            ProgressPane.Visibility = Visibility.Visible;
+
             SolutionTreeView.DataContext = null;
             PackagesDataGrid.ItemsSource = null;
 
@@ -73,7 +77,7 @@ namespace CoApp.VSE.Controls
                     lock (this)
                     {
                         if (!_solutions.ContainsKey(package))
-                            _solutions.Add(package, new SolutionViewModel(new PackageReference(package)));
+                            _solutions.Add(package, new SolutionViewModel(package));
                     }
                 });
 
@@ -85,6 +89,9 @@ namespace CoApp.VSE.Controls
                                                select packageNsolution.Key;
 
                 PackagesDataGrid.SelectedIndex = 0;
+
+                VsPane.Visibility = Visibility.Visible;
+                ProgressPane.Visibility = Visibility.Collapsed;
             };
 
             worker.RunWorkerAsync();

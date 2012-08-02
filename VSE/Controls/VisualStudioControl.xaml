@@ -1,8 +1,9 @@
-﻿<UserControl x:Class="CoApp.VSE.Controls.VisualStudioControl"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:VSE="clr-namespace:CoApp.VSE"
-        xmlns:Model="clr-namespace:CoApp.VSE.Model">
+﻿<UserControl 
+    x:Class="CoApp.VSE.Controls.VisualStudioControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE;assembly="
+    xmlns:Model="clr-namespace:CoApp.VSE.Model;assembly=">
     <UserControl.Resources>
         <HierarchicalDataTemplate DataType="{x:Type Model:TreeNodeBase}" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal" Margin="2,0">
@@ -34,7 +35,10 @@
                 <Button Margin="5,5,0,5" Content="Apply" Command="{x:Static VSE:Commands.Ok}" Width="54" />
             </WrapPanel>
         </Grid>
-        <Grid Grid.Row="1">
+
+        <ProgressBar Grid.Row="1" Name="ProgressPane" VerticalAlignment="Center" Width="150" IsIndeterminate="True" Style="{DynamicResource MainProgressBar}"/>
+
+        <Grid Grid.Row="1" Name="VsPane">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />

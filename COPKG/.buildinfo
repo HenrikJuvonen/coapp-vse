@@ -6,18 +6,13 @@
     packager: "henrik juvonen <henjuv@utu.fi>";
 }
 
-normal {
-	set: solution = "coapp-vse.sln";
-	uses: package;
-}
-
-metro {
-	default: false;
-	set: solution = "coapp-vse-metro.sln";
-	uses: package;
-}
-
 build {
+	set: solution = "coapp-vse.sln";
+    uses: release;
+}
+
+build-metro {
+	set: solution = "coapp-vse-metro.sln";
     uses: release;
 }
 
@@ -27,16 +22,31 @@ release {
 }
 
 package {
-    uses: sign;
+	default: true;
+	set: solution = "coapp-vse.sln";
+    uses: { build, sign };
     build-command: @"
-        cd copkg
+        cscript //e:jscript scripts\increment-build-version.js
+        cd COPKG
         autopackage coapp.vse.autopkg || goto failed
-        erase /Q *.wixpdb
+        erase /Q *.wixpdb > nul 2>&1
+    ";
+}
+
+package-metro {
+	set: solution = "coapp-vse-metro.sln";
+    uses: { build, sign };
+    build-command: @"
+        cscript //e:jscript scripts\increment-build-version.js
+        cd COPKG
+        erase /Q *.msi > nul 2>&1
+        autopackage coapp.vse.autopkg || goto failed
+        erase /Q *.wixpdb > nul 2>&1
     ";
 }
 
 install {
-    set: cfg = "Release";
+    set: cfg = "release";
     uses: package;
     build-command: @"
         for /F %%G in ('dir /s /b /o-n  coapp.vse*.msi') do ( 
@@ -47,35 +57,33 @@ install {
 }
 
 sign {
-    set: cfg = "Release";
-    set: bin_path = @"VsExtension\bin\${cfg}\";
-    
-    uses: release;
+    set: bin_path = @"output\any\release\bin\";
     
     build-command: @"
-        rem simplesigner --nologo --sign --strong-name ""${bin_path}**.exe"" ""${bin_path}**.dll"" || goto failed
+        simplesigner --nologo --sign ${bin_path}CoApp.VSE.Standalone.exe ${bin_path}CoApp.VSE.dll ${bin_path}CoApp.VSE.VisualStudio.Tools.dll || goto failed
     ";
 }
 
 anycpu {
     compiler: vc10;
-    set: bin_path = @"VsExtension\bin\${cfg}\";
+    set: bin_path = @"output\any\${cfg}\bin\";
     uses: clean;
 	
     targets: {
-        "${bin_path}CoApp.VSE.exe",
+        "${bin_path}CoApp.VSE.Standalone.exe",
+        "${bin_path}CoApp.VSE.dll",
         "${bin_path}CoApp.VSE.VisualStudio.Tools.dll",
     };
 
     build-command: @"
-        cscript //e:jscript scripts\increment-build-version.js
-        msbuild /p:Configuration=${cfg} /p:Platform=""Any CPU"" ${solution} /verbosity:q /nologo || goto failed
+		msbuild /p:Configuration=${cfg} /p:Platform=""Any CPU"" ${solution} /verbosity:q /nologo || goto failed
     ";
 }
 
 clean {    
     clean-command: @"
-        for /d %%v in (*) do if exist %%v\obj rmdir /s /q %%v\obj        
-        for /d %%v in (*) do if exist %%v\bin rmdir /s /q %%v\bin
+        for /d %%v in (*) do if exist %%v\obj rmdir /s /q %%v\obj > nul 2>&1
+        for /d %%v in (*) do if exist %%v\bin rmdir /s /q %%v\bin > nul 2>&1
+		rmdir /s /q output > nul 2>&1
     ";
 }

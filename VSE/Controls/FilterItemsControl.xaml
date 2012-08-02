@@ -2,7 +2,32 @@
     x:Class="CoApp.VSE.Controls.FilterItemsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer>
-        <ItemsControl Name="FilterBox" HorizontalContentAlignment="Stretch" BorderThickness="0"/>
-    </ScrollViewer>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{DynamicResource GrayBrush13}" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="0,2,0,2">
+            <WrapPanel>
+                <Button Click="OnClearButtonClick" Name="ClearButton" HorizontalAlignment="Left" Margin="5,0,0,0">
+                    <WrapPanel Margin="2,0,2,0">
+                        <TextBlock VerticalAlignment="Center" Text="r" FontFamily="Marlett" />
+                        <TextBlock VerticalAlignment="Center" Margin="4,0,0,0" Text="Clear" />
+                    </WrapPanel>
+                </Button>
+                <Button Click="OnAddFilterButtonClick" Name="AddFilterButton" HorizontalAlignment="Left" Margin="2,0,0,0">
+                    <WrapPanel Margin="3,0,3,0">
+                        <Image Source="pack://application:,,,/CoApp.VSE;component/Resources/plus.png" SnapsToDevicePixels="True" Width="12" Height="12"/>
+                        <TextBlock VerticalAlignment="Center" Margin="4,0,0,0" Text="Add filter..." />
+                    </WrapPanel>
+                </Button>
+            </WrapPanel>
+        </Border>
+        <Border Grid.Row="1" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="0,2,2,0">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden">
+                <ItemsControl Name="FilterBox" HorizontalContentAlignment="Stretch"/>
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>

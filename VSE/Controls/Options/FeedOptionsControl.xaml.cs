@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using System.Windows;
     using System.Windows.Input;
     
     public partial class FeedOptionsControl
@@ -11,9 +12,29 @@
         public FeedOptionsControl()
         {
             InitializeComponent();
+
             UpdateFeeds();
 
             FeedLocation.DataContext = this;
+
+            RemoveButtonShield.UpdateShield(RemoveButton.IsEnabled);
+            AddButtonShield.UpdateShield(AddButton.IsEnabled);
+        }
+
+        private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender == RemoveButton && RemoveButtonShield != null)
+                RemoveButtonShield.UpdateShield(RemoveButton.IsEnabled);
+
+            if (sender == AddButton && AddButtonShield != null)
+                AddButtonShield.UpdateShield(AddButton.IsEnabled);
+        }
+
+        private void OnSelectionChanged(object sender, EventArgs e)
+        {
+            if (sender == FeedsListBox)
+                RemoveButton.IsEnabled = FeedsListBox.SelectedIndex >= 0;
+
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

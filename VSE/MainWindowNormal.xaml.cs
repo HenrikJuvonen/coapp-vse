@@ -44,7 +44,7 @@
 
             foreach (FilterControl item in MainControl.FilterItemsControl.FilterBox.Items)
             {
-                if (item.Caption != "Add Filter..." && item.Caption != "Project" && item.Caption != "Feed URL")
+                if (item.Caption != "Project" && item.Caption != "Feed URL")
                 {
                     if (!filters.ContainsKey(item.Caption))
                         filters.Add(item.Caption, item.Details);

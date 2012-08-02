@@ -20,6 +20,42 @@ namespace CoApp.VSE.Controls
             Module.PackageManager.Message += OnMessage;
             Module.PackageManager.Warning += OnWarning;
             Module.PackageManager.Error += OnError;
+            Module.PackageManager.Elevated += OnElevated;
+        }
+
+        public void OnElevated()
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (Module.IsApplying)
+                {
+                    Module.PackageManager.SetNewCancellationTokenSource();
+
+                    var worker = new BackgroundWorker();
+                    worker.DoWork += (sender, args) => Module.PackageManager.RemovePackages(Module.PackageManager.RemovePlan);
+                    worker.DoWork += (sender, args) => Module.PackageManager.InstallPackages(Module.PackageManager.InstallPlan);
+                    worker.DoWork += (sender, args) => Module.FinishPackageRestore();
+                    worker.RunWorkerCompleted += (sender, args) =>
+                    {
+                        var unrecoverable = Module.GetUnrecoverablePackages();
+
+                        if (unrecoverable.Any())
+                        {
+                            WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), Brushes.DarkGoldenrod);
+                        }
+
+                        var text = string.Format("Completed {0}/{1} operations.", Packages.Count(n => n.Progress == 100), Packages.Count());
+
+                        WriteToLog(text, Brushes.Blue);
+
+                        if (Module.MainWindow.WindowState == WindowState.Minimized || Module.MainWindow.IsVisible == false)
+                            Module.ShowBalloonTip(text);
+
+                        End();
+                    };
+                    worker.RunWorkerAsync();
+                }
+            }));
         }
 
         public void Initialize()
@@ -32,12 +68,9 @@ namespace CoApp.VSE.Controls
             CancelButton.IsEnabled = true;
 
             OverallProgress.Value = 0;
-
-            var removePlan = Module.PackageManager.RemovePlan;
-            var installPlan = Module.PackageManager.InstallPlan;
-
+            
             var plan =
-                from package in removePlan.Union(installPlan)
+                from package in Module.PackageManager.RemovePlan.Union(Module.PackageManager.InstallPlan)
                 orderby package.CanonicalName
                 select new ProgressEventArgs(package.CanonicalName, null, 0);
 
@@ -45,36 +78,14 @@ namespace CoApp.VSE.Controls
 
             ProgressDataGrid.ItemsSource = Packages;
             
-            Module.PackageManager.SetNewCancellationTokenSource();
-
             var worker = new BackgroundWorker();
-            worker.DoWork += (sender, args) => Module.PackageManager.RemovePackages(removePlan);
-            worker.DoWork += (sender, args) => Module.PackageManager.InstallPackages(installPlan);
-            worker.DoWork += (sender, args) => Module.FinishPackageRestore();
-            worker.RunWorkerCompleted += (sender, args) =>
-            {
-                var unrecoverable = Module.GetUnrecoverablePackages();
-
-                if (unrecoverable.Any())
-                {
-                    WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), Brushes.DarkGoldenrod);
-                }
-
-                var text = string.Format("Completed {0}/{1} operations.", Packages.Count(n => n.Progress == 100), Packages.Count());
-
-                WriteToLog(text, Brushes.Blue);
-
-                if (Module.MainWindow.WindowState == WindowState.Minimized || Module.MainWindow.IsVisible == false)
-                    Module.ShowBalloonTip(text);
-
-                End();
-            };
+            worker.DoWork += (sender, args) => Module.PackageManager.Elevate();
             worker.RunWorkerAsync();
         }
 
         private void ExecuteCancel(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (!CancelButton.IsEnabled)
                     return;
@@ -94,12 +105,12 @@ namespace CoApp.VSE.Controls
             Module.HideBalloonTip();
 
             Module.PackageManager.Reset();
-            Module.MainWindow.MainControl.Reload();
+            Module.ReloadMainControl();
         }
 
         private void OnMessage(object sender, LogEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() => WriteToLog(e.Message, Brushes.Black)));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => WriteToLog(e.Message, Brushes.Black)));
         }
 
         private void OnWarning(object sender, LogEventArgs e)
@@ -109,15 +120,25 @@ namespace CoApp.VSE.Controls
 
         private void OnError(object sender, LogEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() => WriteToLog(e.Message, Brushes.Red)));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                WriteToLog(e.Message, Brushes.Red);
 
-            if (IsVisible)
-                ExecuteCancel(null, null);
+                if (IsVisible)
+                {
+                    if (e.Message == "Not elevated.")
+                    {
+                        End();
+                        return;
+                    }
+                    ExecuteCancel(null, null);
+                }
+            }));
         }
 
         private void OnProgressAvailable(object sender, ProgressEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 var items = Packages;
 

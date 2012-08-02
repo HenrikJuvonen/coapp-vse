@@ -16,7 +16,7 @@ metadata {
     
     author-version : "0.7";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
-    stability : "-50";
+    stability : "-30";
 }
 
 compatability-policy {
@@ -36,23 +36,24 @@ files[all] {
 };
 
 files[exes] {
-    root: "..\VsExtension\bin\Release";
+    root: "..\output\any\release\bin";
     
     include: {
-        "*.exe",
+        "CoApp.VSE.Standalone.exe",
     };
 };
 
 files[dlls] {
-    root: "..\VsExtension\bin\Release";
+    root: "..\output\any\release\bin";
     
     include: {
-        "*.dll",
+        "CoApp.VSE.dll",
+        "CoApp.VSE.VisualStudio.Tools.dll",
     };
 };
 
 files[defs] {
-    root: "..\VsExtension\bin\Release";
+    root: "..\output\any\release\bin";
     
     include: {
         "CoApp.VSE.VisualStudio.Tools.pkgdef",
@@ -60,16 +61,9 @@ files[defs] {
     };
 };
 
-application {
-    include : {
-        exes
-    };
-};
-
 faux-pax {
     include : {
-        dlls,
-		defs
+		all
     };
 };
 
@@ -87,11 +81,10 @@ package-composition {
     symlinks : {
         all => @"${apps}\program files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
         all => @"${apps}\program files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\CoApp for Visual Studio\${Package.Version}\${each.Name}" = @"${packagedir}\${each.Name}";
-		
-        exes => @"${bin}\${each.Name}" = @"${packagedir}\${each.Name}";
     };
 	
     shortcuts : { 
-        @"${apps}\start menu\CoApp\CoApp for Visual Studio (Standalone).lnk" = @"${packagedir}\CoApp.VSE.exe";
+        @"${bin}\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.Standalone.exe";
+        @"${apps}\start menu\CoApp\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.Standalone.exe";
     };
 };

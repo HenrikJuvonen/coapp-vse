@@ -1,4 +1,6 @@
-﻿namespace CoApp.VSE.Controls.Options
+﻿using System.Windows;
+
+namespace CoApp.VSE.Controls.Options
 {
     using System;
 

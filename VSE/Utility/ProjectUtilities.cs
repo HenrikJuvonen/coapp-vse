@@ -10,7 +10,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace CoApp.VSE.VisualStudio
+namespace CoApp.VSE.Utility
 {
     internal static class ProjectUtilities
     {

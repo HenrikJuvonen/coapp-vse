@@ -14,7 +14,7 @@ CoApp for Visual Studio is an extension for managing CoApp-packages inside Visua
 - Have coapp.devtools installed and setup properly
 - Open Visual Studio command prompt as Administrator and change directory to the solution directory
 - "cd COPKG"
-- "ptk normal" (or "ptk metro" if you have the latest mahapps.metro)
+- "ptk package" (or "ptk package-metro" if you have mahapps.metro 0.8+)
 - install the .msi-package in the COPKG directory
 
 ## Getting Started

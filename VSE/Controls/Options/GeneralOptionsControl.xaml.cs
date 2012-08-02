@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
 using CoApp.Packaging.Common;
@@ -15,6 +16,7 @@ namespace CoApp.VSE.Controls.Options
         public GeneralOptionsControl()
         {
             InitializeComponent();
+
             LoadSettings();
 
             if (!Module.IsDTELoaded)
@@ -23,13 +25,27 @@ namespace CoApp.VSE.Controls.Options
                 StartInTrayCheckBox.Visibility = Visibility.Visible;
                 RestorePanel.Visibility = Visibility.Collapsed;
             }
+
+            if (Toolkit.Win32.AdminPrivilege.IsRunAsAdmin)
+                CacheClearButtonShield.Visibility = Visibility.Collapsed;
+            else
+                CacheClearButton.IsEnabled = false;
+            
+            TelemetryCheckBoxShield.UpdateShield(TelemetryCheckBox.IsEnabled);
+        }
+
+        private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender == TelemetryCheckBox && TelemetryCheckBoxShield != null)
+                TelemetryCheckBoxShield.UpdateShield(TelemetryCheckBox.IsEnabled);
         }
 
         private void OnClearPackageCacheClick(object sender, EventArgs e)
         {
             var cacheDirectory = new DirectoryInfo(PackageManagerSettings.CoAppCacheDirectory + "\\packages\\");
 
-            CacheClearStatusLabel.Content = "Please wait...";
+            CacheClearStatusLabel.Text = "Please wait...";
+            CacheClearStatusLabel.Visibility = Visibility.Visible;
             CacheClearButton.IsEnabled = false;
 
             var worker = new BackgroundWorker();
@@ -37,23 +53,25 @@ namespace CoApp.VSE.Controls.Options
             worker.DoWork += (o, args) => 
             {
                 var installedPackages = Module.PackageManager.PackagesViewModel.Packages.Where(n => n.PackageIdentity.IsInstalled);
+                var feedLocations = Module.PackageManager.GetFeedLocations().Select(n => n.Replace("://", "-").Replace("/", "-"));
 
                 foreach (var file in cacheDirectory.GetFiles())
                 {
-                    if (installedPackages.All(n => n.PackageIdentity.LocalPackagePath != file.FullName))
+                    if (installedPackages.All(n => n.PackageIdentity.LocalPackagePath != file.FullName) && !feedLocations.Contains(file.Name))
                         file.Delete();
                 }
             };
 
             worker.RunWorkerCompleted += (o, args) =>
             {
-                CacheClearStatusLabel.Content = args.Error != null ? args.Error.Message : "Cleared.";
+                CacheClearStatusLabel.Text = args.Error != null ? args.Error.Message : "Cleared.";
                 CacheClearButton.IsEnabled = true;
 
                 var dispatcherTimer = new DispatcherTimer();
                 dispatcherTimer.Tick += (ob, a) =>
                 {
-                    CacheClearStatusLabel.Content = string.Empty;
+                    CacheClearStatusLabel.Text = string.Empty;
+                    CacheClearStatusLabel.Visibility = Visibility.Collapsed;
                     dispatcherTimer.Stop();
                 };
                 dispatcherTimer.Interval = new TimeSpan(0,0,4);
@@ -68,17 +86,22 @@ namespace CoApp.VSE.Controls.Options
             if (!_isLoaded)
                 return;
 
-            Module.PackageManager.Settings["#rememberFilters"].BoolValue = (RememberFiltersCheckBox.IsChecked == true);
-            Module.PackageManager.SetTelemetry(TelemetryCheckBox.IsChecked == true);
-            Module.PackageManager.Settings["#autoEnd"].BoolValue = (AutoEndCheckBox.IsChecked == true);
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Module.PackageManager.Elevated -= SaveSettings;
+                
+                Module.PackageManager.Settings["#rememberFilters"].BoolValue = (RememberFiltersCheckBox.IsChecked == true);
+                Module.PackageManager.SetTelemetry(TelemetryCheckBox.IsChecked == true);
+                Module.PackageManager.Settings["#autoEnd"].BoolValue = (AutoEndCheckBox.IsChecked == true);
 
-            Module.PackageManager.Settings["#closeToTray"].BoolValue = (CloseToTrayCheckBox.IsChecked == true);
-            Module.PackageManager.Settings["#showTrayIcon"].BoolValue = (ShowTrayIconCheckBox.IsChecked == true);
-            Module.PackageManager.Settings["#showNotifications"].BoolValue = (ShowNotificationsInTrayCheckBox.IsChecked == true);
-            Module.PackageManager.Settings["#startInTray"].BoolValue = (StartInTrayCheckBox.IsChecked == true);
+                Module.PackageManager.Settings["#closeToTray"].BoolValue = (CloseToTrayCheckBox.IsChecked == true);
+                Module.PackageManager.Settings["#showTrayIcon"].BoolValue = (ShowTrayIconCheckBox.IsChecked == true);
+                Module.PackageManager.Settings["#showNotifications"].BoolValue = (ShowNotificationsInTrayCheckBox.IsChecked == true);
+                Module.PackageManager.Settings["#startInTray"].BoolValue = (StartInTrayCheckBox.IsChecked == true);
 
-            Module.PackageManager.Settings["#update"].IntValue = UpdateComboBox.SelectedIndex;
-            Module.PackageManager.Settings["#restore"].IntValue = RestoreComboBox.SelectedIndex;
+                Module.PackageManager.Settings["#update"].IntValue = UpdateComboBox.SelectedIndex;
+                Module.PackageManager.Settings["#restore"].IntValue = RestoreComboBox.SelectedIndex;
+            }));
         }
 
         private void LoadSettings()
@@ -113,6 +136,13 @@ namespace CoApp.VSE.Controls.Options
 
         private void OnChanged(object sender, EventArgs e)
         {
+            if (sender == TelemetryCheckBox && _isLoaded)
+            {
+                Module.PackageManager.Elevated += SaveSettings;
+                Module.PackageManager.Elevate();
+                return;
+            }
+
             SaveSettings();
         }
     }

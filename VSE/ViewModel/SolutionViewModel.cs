@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using CoApp.Packaging.Client;
 using CoApp.VSE.Model;
 using CoApp.VSE.Packaging;
-using CoApp.VSE.VisualStudio;
+using CoApp.VSE.Utility;
 using EnvDTE;
 
 namespace CoApp.VSE.ViewModel
@@ -10,9 +11,9 @@ namespace CoApp.VSE.ViewModel
     {
         private readonly SolutionNode _solutionNode;
 
-        public SolutionViewModel(PackageReference packageReference)
+        public SolutionViewModel(Package package)
         {
-            _solutionNode = SolutionWalker.Walk(packageReference);
+            _solutionNode = SolutionWalker.Walk(package);
         }
 
         public IEnumerable<TreeNodeBase> Nodes

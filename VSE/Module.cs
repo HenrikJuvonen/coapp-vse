@@ -55,6 +55,11 @@ namespace CoApp.VSE
             }
         }
 
+        public static void ReloadMainControl()
+        {
+            MainWindow.MainControl.Reload();
+        }
+
         public static void ShowMainWindow()
         {
             if (!_isLoaded)
@@ -66,7 +71,7 @@ namespace CoApp.VSE
                     MainWindow.Owner = (System.Windows.Window) HwndSource.FromHwnd(new IntPtr(DTE.MainWindow.HWnd)).RootVisual;
                 }
 
-                MainWindow.MainControl.Reload();
+                ReloadMainControl();
                 
                 MainWindow.ShowDialog();
             }
@@ -170,7 +175,7 @@ namespace CoApp.VSE
         public static void Initialize()
         {
             PackageManager = new PackageManager();
-            //PackageManager.Elevate();
+            
             PackageManager.InitializeSettings();
 
             PackageManager.UpdatesAvailable += OnUpdatesAvailable;
@@ -328,7 +333,7 @@ namespace CoApp.VSE
             }
             else
             {
-                MainWindow.Title = "CoApp";
+                MainWindow.Title = "CoApp.VSE";
                 TrayIcon.Text = MainWindow.Title;
 
                 if (PackageManager.Settings["#showTrayIcon"].BoolValue && PackageManager.Settings["#startInTray"].BoolValue)
@@ -346,7 +351,7 @@ namespace CoApp.VSE
         public static void ShowBalloonTip(string message)
         {
             if (PackageManager.Settings["#showNotifications"].BoolValue)
-                TrayIcon.ShowBalloonTip(2000, Resources.Title, message, ToolTipIcon.Info);
+                TrayIcon.ShowBalloonTip(2000, MainWindow.Title, message, ToolTipIcon.Info);
         }
 
         public static void HideBalloonTip()
@@ -362,7 +367,7 @@ namespace CoApp.VSE
                 packageItem.InSolution = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
             }
 
-            MainWindow.MainControl.Reload();
+            ReloadMainControl();
         }
 
         public static void ManagePackage(PackageReference packageReference, IEnumerable<Project> checkedProjects, IEnumerable<LibraryReference> libraries)
@@ -443,7 +448,12 @@ namespace CoApp.VSE
             var missingPackages = GetMissingPackages();
 
             if (!missingPackages.Any())
+            {
+                if (force)
+                    ShowBalloonTip(Resources.RestoreNone);
+
                 return;
+            }
 
             string tooltipText;
 
@@ -512,7 +522,7 @@ namespace CoApp.VSE
 
                 foreach (var packageReference in packageReferenceFile.GetPackageReferences())
                 {
-                    var pkg = packages.FirstOrDefault(package => packageReference.Equals(package));
+                    var pkg = packages.FirstOrDefault(package => packageReference.CanonicalName.PackageName == package.CanonicalName.PackageName);
 
                     if (pkg != null)
                     {

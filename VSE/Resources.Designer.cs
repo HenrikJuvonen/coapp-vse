@@ -125,6 +125,15 @@ namespace CoApp.VSE {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No missing packages found..
+        /// </summary>
+        public static string RestoreNone {
+            get {
+                return ResourceManager.GetString("RestoreNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} missing packages found. Click to view them..
         /// </summary>
         public static string RestoresAvailable {
@@ -139,15 +148,6 @@ namespace CoApp.VSE {
         public static string RestoresInstalling {
             get {
                 return ResourceManager.GetString("RestoresInstalling", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CoApp.
-        /// </summary>
-        public static string Title {
-            get {
-                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
         

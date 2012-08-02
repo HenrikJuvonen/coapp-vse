@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using CoApp.Packaging.Common;
 using CoApp.VSE.Packaging;
-using CoApp.VSE.VisualStudio;
+using CoApp.VSE.Utility;
 using VSLangProj;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Construction;
@@ -83,14 +83,12 @@ namespace CoApp.VSE.Extensions
         }
 
         /// <summary>
-        /// Checks if project is compatible with the package described in packageReference.
+        /// Checks if project is compatible with the package.
         /// </summary>
-        public static bool IsCompatible(this Project project, PackageReference packageReference)
+        public static bool IsCompatible(this Project project, IPackage package)
         {
-            if (packageReference == null)
-            {
+            if (package == null)
                 return true;
-            }
 
             var targetFramework = project.GetTargetFramework();
             var targetFrameworkVersion = project.GetTargetFrameworkVersion(targetFramework);
@@ -98,19 +96,19 @@ namespace CoApp.VSE.Extensions
             var targetsNetFramework = targetFramework.Contains(".NETFramework") || targetFramework.Contains("Silverlight");
 
             // VC-compatibility
-            var compatible = ((packageReference.Type == DeveloperLibraryType.VcInclude ||
-                               (packageReference.Type == DeveloperLibraryType.VcLibrary && project.IsCompatibleArchitecture(packageReference.CanonicalName.Architecture)))
+            var compatible = ((package.GetDeveloperLibraryType() == DeveloperLibraryType.VcInclude ||
+                               (package.GetDeveloperLibraryType() == DeveloperLibraryType.VcLibrary && project.IsCompatibleArchitecture(package.Architecture)))
                                && project.IsVcProject());
 
             // NET-compatibility
-            compatible = compatible || (packageReference.Type == DeveloperLibraryType.Net && project.IsNetProject() && 
+            compatible = compatible || (package.GetDeveloperLibraryType() == DeveloperLibraryType.Net && project.IsNetProject() && 
                 (
-                (packageReference.CanonicalName.Flavor == "" && targetsNetFramework) ||
-                (packageReference.CanonicalName.Flavor == "[net20]" && (targetsNetFramework && targetFrameworkVersion >= 2.0)) ||
-                (packageReference.CanonicalName.Flavor == "[net35]" && (targetsNetFramework && targetFrameworkVersion >= 3.5)) ||
-                (packageReference.CanonicalName.Flavor == "[net40]" && (targetsNetFramework && targetFrameworkVersion >= 4.0)) ||
-                (packageReference.CanonicalName.Flavor == "[net45]" && (targetsNetFramework && targetFrameworkVersion >= 4.5)) ||
-                (packageReference.CanonicalName.Flavor == "[silverlight]" && targetsNetFramework)
+                (package.Flavor == "" && targetsNetFramework) ||
+                (package.Flavor == "[net20]" && (targetsNetFramework && targetFrameworkVersion >= 2.0)) ||
+                (package.Flavor == "[net35]" && (targetsNetFramework && targetFrameworkVersion >= 3.5)) ||
+                (package.Flavor == "[net40]" && (targetsNetFramework && targetFrameworkVersion >= 4.0)) ||
+                (package.Flavor == "[net45]" && (targetsNetFramework && targetFrameworkVersion >= 4.5)) ||
+                (package.Flavor == "[silverlight]" && targetsNetFramework)
                 ));
             
             return compatible;
@@ -297,6 +295,7 @@ namespace CoApp.VSE.Extensions
         /// </summary>
         public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<LibraryReference> libraries)
         {
+            // TODO: This will be changed to "referenceassemblies\\flavor\\arch\\simplename-version\\" in 1.2.0.444+
             string path = string.Format(@"C:\ProgramData\ReferenceAssemblies\{0}\{1}{2}-{3}\",
                 packageReference.CanonicalName.Architecture, packageReference.CanonicalName.Name, packageReference.CanonicalName.Flavor, packageReference.CanonicalName.Version);
 

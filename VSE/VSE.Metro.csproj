@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>$(SolutionDir)output\any\debug\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;METRO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,7 +32,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>$(SolutionDir)output\any\release\bin\</OutputPath>
     <DefineConstants>TRACE;METRO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -76,6 +76,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\FilterPopup.xaml.cs">
+      <DependentUpon>FilterPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\Nodes.cs" />
     <Compile Include="Controls\SummaryControl.xaml.cs">
       <DependentUpon>SummaryControl.xaml</DependentUpon>
@@ -123,10 +126,14 @@
     <Compile Include="Packaging\PackageManager.cs" />
     <Compile Include="Packaging\PackageReference.cs" />
     <Compile Include="Packaging\PackageReferenceFile.cs" />
-    <Compile Include="VisualStudio\ProjectUtilities.cs" />
-    <Compile Include="VisualStudio\SolutionWalker.cs" />
+    <Compile Include="Utility\ProjectUtilities.cs" />
+    <Compile Include="Utility\SolutionWalker.cs" />
     <Compile Include="ViewModel\SolutionViewModel.cs" />
-    <Compile Include="VisualStudio\VsConstants.cs" />
+    <Compile Include="Utility\VsConstants.cs" />
+    <Page Include="Controls\FilterPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SummaryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -206,7 +213,6 @@
       <SubType>Code</SubType>
     </Compile>
     <AppDesigner Include="Properties\" />
-    <None Include="app.config" />
     <Page Include="Styles\TextBoxMetro.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -230,6 +236,9 @@
     <Resource Include="Resources\search.png" />
     <Resource Include="Resources\CoApp.ico" />
     <Resource Include="Resources\vs.png" />
+    <Resource Include="Resources\UAC-Win7-Disabled.png" />
+    <Resource Include="Resources\UAC-Win7.png" />
+    <Resource Include="Resources\plus.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

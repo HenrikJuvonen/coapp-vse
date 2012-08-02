@@ -9,6 +9,14 @@
         public SummaryControl()
         {
             InitializeComponent();
+
+            ApplyButtonShield.UpdateShield(ApplyButton.IsEnabled);
+        }
+
+        private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender == ApplyButton && ApplyButtonShield != null)
+                ApplyButtonShield.UpdateShield(ApplyButton.IsEnabled);
         }
         
         private void ExecuteCancel(object sender, EventArgs e)

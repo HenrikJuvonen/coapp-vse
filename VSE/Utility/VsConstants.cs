@@ -1,4 +1,4 @@
-namespace CoApp.VSE.VisualStudio
+namespace CoApp.VSE.Utility
 {
     internal static class VsConstants
     {

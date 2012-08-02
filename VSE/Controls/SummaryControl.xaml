@@ -1,7 +1,9 @@
-﻿<UserControl x:Class="CoApp.VSE.Controls.SummaryControl"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:VSE="clr-namespace:CoApp.VSE">
+﻿<UserControl 
+    x:Class="CoApp.VSE.Controls.SummaryControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE;assembly="
+    xmlns:Controls="clr-namespace:CoApp.VSE.Controls;assembly=">
     <UserControl.CommandBindings>
         <CommandBinding
             Command="{x:Static VSE:Commands.Cancel}"
@@ -21,7 +23,12 @@
             </Grid.Background>
             <WrapPanel>
                 <Button Margin="5,5,0,5" Content="Cancel" Command="{x:Static VSE:Commands.Cancel}" Width="54" />
-                <Button Margin="5,5,0,5" Content="Apply" Command="{x:Static VSE:Commands.Ok}" Width="54" />
+                <Button Margin="5,5,0,5" Command="{x:Static VSE:Commands.Ok}" Width="60" IsEnabledChanged="OnIsEnabledChanged" Name="ApplyButton">
+                    <StackPanel Orientation="Horizontal">
+                        <Controls:ElevationShield x:Name="ApplyButtonShield"/>
+                        <TextBlock Text="Apply" />
+                    </StackPanel>
+                </Button>
             </WrapPanel>
         </Grid>
         <Grid Grid.Row="1">

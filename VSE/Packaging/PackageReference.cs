@@ -35,35 +35,5 @@ namespace CoApp.VSE.Packaging
         public string PackageDirectory { get; private set; }
         public IEnumerable<LibraryReference> Libraries { get; private set; }
         public DeveloperLibraryType Type { get; private set; }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is PackageReference)
-            {
-                var other = obj as PackageReference;
-                return 
-                    CanonicalName.Name == other.CanonicalName.Name &&
-                    CanonicalName.Flavor == other.CanonicalName.Flavor &&
-                    CanonicalName.Version == other.CanonicalName.Version &&
-                    CanonicalName.Architecture == other.CanonicalName.Architecture;
-            }
-
-            if (obj is IPackage)
-            {
-                var other = obj as IPackage;
-                return
-                    CanonicalName.Name == other.CanonicalName.Name &&
-                    CanonicalName.Flavor == other.CanonicalName.Flavor &&
-                    CanonicalName.Version == other.CanonicalName.Version &&
-                    CanonicalName.Architecture == other.CanonicalName.Architecture;
-            }
-
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
     }
 }

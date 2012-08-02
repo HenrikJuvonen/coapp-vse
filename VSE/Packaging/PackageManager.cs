@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using CoApp.Packaging.Client;
@@ -11,7 +13,10 @@ using CoApp.Toolkit.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CoApp.Toolkit.Text;
+using CoApp.VSE.Extensions;
 using CoApp.VSE.ViewModel;
+using EnvDTE;
 
 namespace CoApp.VSE.Packaging
 {
@@ -91,6 +96,7 @@ namespace CoApp.VSE.Packaging
                 foreach (var packageItem in PackagesViewModel.Packages.Where(n => n.PackageIdentity == package))
                 {
                     packageItem.SetStatus();
+                    packageItem.InSolution = Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
                     packageItem.ItemBackground = null;
                 }
             }
@@ -189,11 +195,12 @@ namespace CoApp.VSE.Packaging
 
         private readonly CoApp.Packaging.Client.PackageManager _pkm = new CoApp.Packaging.Client.PackageManager();
 
-        public readonly RegistryView Settings = RegistryView.CoAppUser["coapp_lightgui"];
+        public readonly RegistryView Settings = RegistryView.CoAppUser["coapp_vse"];
 
         private CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public event EventHandler<EventArgs> FeedsUpdated = delegate { };
+        public event Action Elevated = delegate { };
+        public event Action FeedsUpdated = delegate { };
         public event EventHandler<UpdatesAvailableEventArgs> UpdatesAvailable = delegate { };
         public event EventHandler<ProgressEventArgs> ProgressAvailable = delegate { };
 
@@ -254,17 +261,13 @@ namespace CoApp.VSE.Packaging
                 Settings["#closeToTray"].BoolValue = false;
         }
 
-        public void Elevate()
+        public bool Elevate()
         {
-            try
-            {
-                _pkm.Elevate().Wait();
-            }
-            catch
-            {
-                MessageBox.Show("This program requires elevated user.");
-                Application.Current.Shutdown();
-            }
+            var isElevated = false;
+
+            ContinueTask(_pkm.Elevate().Continue(() => { Elevated(); isElevated = true;}).ContinueOnCanceled(() => Error(this, new LogEventArgs("Not elevated."))));
+
+            return isElevated;
         }
 
         private void ResetPackagesInFeeds()
@@ -324,7 +327,7 @@ namespace CoApp.VSE.Packaging
 
                     foreach (var value in filters[key])
                     {
-                        var index = string.Format("{0}", filters[key].IndexOf(value));
+                        var index = String.Format("{0}", filters[key].IndexOf(value));
                         Settings["filters"][key, index].StringValue = value;
                     }
                 }
@@ -347,7 +350,7 @@ namespace CoApp.VSE.Packaging
                         {
                             var value = Settings["filters"][key, index].StringValue;
 
-                            if (!string.IsNullOrEmpty(value))
+                            if (!String.IsNullOrEmpty(value))
                                 list.Add(value);
                         }
 
@@ -380,21 +383,27 @@ namespace CoApp.VSE.Packaging
         {
             var feeds = PackageManagerSettings.PerFeedSettings.Subkeys;
 
-            return feeds.Select(Toolkit.Text.HttpUtility.UrlDecode);
+            return feeds.Select(HttpUtility.UrlDecode);
         }
 
         public void AddFeed(string feedLocation)
         {
+            if (!Elevate())
+                return;
+
             CancellationTokenSource.Cancel();
             CancellationTokenSource = new CancellationTokenSource();
 
             ContinueTask(_pkm.AddSystemFeed(feedLocation));
 
-            FeedsUpdated(null, EventArgs.Empty);
+            FeedsUpdated();
         }
 
         public void RemoveFeed(string feedLocation)
         {
+            if (!Elevate())
+                return;
+
             CancellationTokenSource.Cancel();
             CancellationTokenSource = new CancellationTokenSource();
 
@@ -404,7 +413,7 @@ namespace CoApp.VSE.Packaging
             if (GetFeedLocations().IsNullOrEmpty())
                 AddFeed(null);
 
-            FeedsUpdated(null, EventArgs.Empty);
+            FeedsUpdated();
         }
 
         public bool IsPackageHighestInstalled(Package package)
@@ -423,15 +432,25 @@ namespace CoApp.VSE.Packaging
 
             var dependencies = new List<Package> { package };
 
-            foreach (Package dependency in package.Dependencies)
+            try
             {
-                var newest = (Package) dependency.InstalledNewest ?? (Package) dependency.AvailableNewest;
-
-                if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
-                    (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
+                Parallel.ForEach(package.Dependencies, dependency =>
                 {
-                    dependencies.AddRange(IdentifyPackageAndDependencies(newest));
-                }
+                    var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
+
+                    if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
+                        (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
+                    {
+                        var subdependencies = IdentifyPackageAndDependencies((Package)newest);
+                        lock (this)
+                        {
+                            dependencies.AddRange(subdependencies);
+                        }
+                    }
+                });
+            }
+            catch
+            {
             }
 
             return dependencies.Distinct();
@@ -441,15 +460,24 @@ namespace CoApp.VSE.Packaging
         {
             var dependencies = new List<Package>();
 
-            foreach (Package dependency in package.Dependencies)
+            try
             {
-                var newest = (Package)dependency.InstalledNewest ?? (Package)dependency.AvailableNewest;
-
-                if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
-                    (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
+                Parallel.ForEach(package.Dependencies, dependency =>
                 {
-                    dependencies.Add(newest);
-                }
+                    var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
+
+                    if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
+                        (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
+                    {
+                        lock (this)
+                        {
+                            dependencies.Add((Package)newest);
+                        }
+                    }
+                });
+            }
+            catch
+            {
             }
 
             return dependencies;

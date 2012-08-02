@@ -37,6 +37,10 @@ namespace CoApp.VSE.ViewModel
             Packages = new ObservableCollection<PackageItem>();
             
             BuildPackageCollection(packages);
+            
+            View = CollectionViewSource.GetDefaultView(Packages);
+            View.Filter = FilterOut;
+            View.SortDescriptions.Add(new SortDescription("PackageIdentity.CanonicalName", ListSortDirection.Ascending));
         }
 
         private void BuildPackageCollection(IEnumerable<Package> packages)
@@ -49,9 +53,6 @@ namespace CoApp.VSE.ViewModel
                 if (package != null)
                     Packages.Add(new PackageItem(package));
             }
-
-            View = CollectionViewSource.GetDefaultView(Packages);
-            View.Filter = FilterOut;
         }
 
         public bool FilterOut(object o)
@@ -166,13 +167,13 @@ namespace CoApp.VSE.ViewModel
 
                 result = result && isInProjects;
             }
-
+            
             if (filters.ContainsKey("Search"))
             {
                 var searchText = filters["Search"].FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(searchText))
-                    result = result && string.Format("{0}{1}-{2}-{3}", n.Name, n.PackageIdentity.Flavor, n.Version, n.Architecture).Contains(searchText);
+                    result = result && n.PackageIdentity.CanonicalName.PackageName.Contains(searchText);
             }
 
             return result;
@@ -180,11 +181,13 @@ namespace CoApp.VSE.ViewModel
 
         public void Sort(ListSortDirection sortDirection)
         {
-            var view = (ListCollectionView)View;
+            View.SortDescriptions.Clear();
+            View.SortDescriptions.Add(new SortDescription("PackageIdentity.CanonicalName", sortDirection));
+        }
 
-            view.CustomSort = sortDirection == ListSortDirection.Ascending ? new SortAscending() : (IComparer)new SortDescending();
-
-            view.Refresh();
+        public void Refresh()
+        {
+            View.Refresh();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -194,40 +197,6 @@ namespace CoApp.VSE.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
-    }
-
-    public class SortAscending : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var a = ((PackageItem) x).PackageIdentity;
-            var b = ((PackageItem) y).PackageIdentity;
-
-            if (a == null || b == null)
-                return 0;
-
-            var aN = a.CanonicalName.PackageName;
-            var bN = b.CanonicalName.PackageName;
-
-            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
-        }
-    }
-
-    public class SortDescending : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var a = ((PackageItem)y).PackageIdentity;
-            var b = ((PackageItem)x).PackageIdentity;
-
-            if (a == null || b == null)
-                return 0;
-
-            var aN = a.CanonicalName.PackageName;
-            var bN = b.CanonicalName.PackageName;
-
-            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
         }
     }
 }

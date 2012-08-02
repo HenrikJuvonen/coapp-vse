@@ -1,6 +1,7 @@
-﻿<UserControl x:Class="CoApp.VSE.Controls.ConsoleControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<UserControl
+    x:Class="CoApp.VSE.Controls.ConsoleControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <RichTextBox Name="ConsoleBox" FontFamily="Consolas" ScrollViewer.VerticalScrollBarVisibility="Visible" KeyUp="OnKeyUp" PreviewKeyDown="OnPreviewKeyDown" GotFocus="OnGotFocus">
         <RichTextBox.Resources>
             <Style TargetType="{x:Type Paragraph}">

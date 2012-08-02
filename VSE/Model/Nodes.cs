@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 using CoApp.VSE.Packaging;
-using CoApp.VSE.VisualStudio;
+using CoApp.VSE.Utility;
 using EnvDTE;
 
 namespace CoApp.VSE.Model

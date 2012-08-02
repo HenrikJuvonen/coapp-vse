@@ -1,4 +1,5 @@
-﻿using CoApp.Packaging.Client;
+﻿using System.Threading;
+using CoApp.Packaging.Client;
 
 namespace CoApp.VSE.Controls
 {
@@ -19,7 +20,6 @@ namespace CoApp.VSE.Controls
     public partial class MainControl
     {
         private ListSortDirection _sortDirection;
-        private readonly DispatcherTimer _timedSearch;
 
         public MainControl()
         {
@@ -27,45 +27,37 @@ namespace CoApp.VSE.Controls
 
             Module.PackageManager.FeedsUpdated += OnFeedsUpdated;
 
-            _timedSearch = new DispatcherTimer();
-            _timedSearch.Tick += (o, args) => { Reload(true); _timedSearch.Stop(); };
-            _timedSearch.Interval = new TimeSpan(30000);
-
             if (Module.IsDTELoaded)
                 InSolutionColumn.Visibility = Visibility.Visible;
         }
         
-        private void UpdateFilters(object sender, EventArgs e)
+        private void UpdateFilters()
         {
             Module.PackageManager.Filters.Clear();
 
             foreach (FilterControl item in FilterItemsControl.FilterBox.Items)
             {
-                if (item.Caption != "Add Filter...")
-                {
-                    if (!Module.PackageManager.Filters.ContainsKey(item.Caption))
-                        Module.PackageManager.Filters.Add(item.Caption, item.Details);
-                    else
-                        Module.PackageManager.Filters[item.Caption].AddRange(item.Details);
-                }
+                if (!Module.PackageManager.Filters.ContainsKey(item.Caption))
+                    Module.PackageManager.Filters.Add(item.Caption, item.Details);
+                else
+                    Module.PackageManager.Filters[item.Caption].AddRange(item.Details);
             }
-
 
             if (Module.PackageManager.Filters.ContainsKey("Search"))
                 Module.PackageManager.Filters.Remove("Search");
 
             Module.PackageManager.Filters.Add("Search", new List<string> { SearchBox.Text.ToLowerInvariant() });
-
+            
             PackagesDataGrid.CommitEdit();
             PackagesDataGrid.CancelEdit();
-            Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
+            Module.PackageManager.PackagesViewModel.Refresh();
 
             DataContext = Module.PackageManager.PackagesViewModel;
 
             PackagesDataGrid.SelectedIndex = 0;
         }
 
-        public void OnFeedsUpdated(object sender, EventArgs e)
+        public void OnFeedsUpdated()
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -75,16 +67,12 @@ namespace CoApp.VSE.Controls
             }));
         }
 
+        private readonly ManualResetEvent _reloadEvent = new ManualResetEvent(true);
+
         public void Reload(bool search = false)
         {
-            if (Module.PackageManager.IsQuerying && !search)
-            {
-                var timer = new DispatcherTimer();
-                timer.Tick += (o, args) => { Reload(); timer.Stop(); };
-                timer.Interval = new TimeSpan(0,0,1);
-                timer.Start();
-                return;
-            }
+            _reloadEvent.WaitOne();
+            _reloadEvent.Reset();
             
             NoItemsPane.Visibility = Visibility.Collapsed;
 
@@ -106,7 +94,7 @@ namespace CoApp.VSE.Controls
 
         private void Finish(object sender, RunWorkerCompletedEventArgs e)
         {
-            UpdateFilters(null, null);
+            UpdateFilters();
 
             if (PackagesDataGrid.HasItems)
             {
@@ -123,6 +111,8 @@ namespace CoApp.VSE.Controls
             MarkAllUpdatesButton.IsEnabled = true;
             MarkAllUpgradesButton.IsEnabled = true;
             ApplyButton.IsEnabled = Module.PackageManager.IsAnyMarked;
+
+            _reloadEvent.Set();
         }
 
         private void OnSortSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -151,8 +141,7 @@ namespace CoApp.VSE.Controls
 
         private void OnSearchBoxTextChanged(object sender, TextChangedEventArgs e)
         {
-            _timedSearch.Stop();
-            _timedSearch.Start();
+            Reload(true);
         }
 
         public void ExecuteShowOptions(object sender = null, ExecutedRoutedEventArgs e = null)

@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using CoApp.Toolkit.Extensions;
 
 namespace CoApp.VSE.Controls
 {
     public partial class FilterItemsControl
     {
-        private FilterControl _adder;
+        private FilterPopup _filterPopup;
 
         public FilterItemsControl()
         {
             InitializeComponent();
 
+            _filterPopup = new FilterPopup(this);
+
             FilterBox.Items.Clear();
-            _adder = new FilterControl(this);
-            FilterBox.Items.Add(_adder);
 
             if (Module.PackageManager.Settings["#rememberFilters"].BoolValue)
             {
@@ -23,11 +25,7 @@ namespace CoApp.VSE.Controls
 
                 foreach (var caption in filters.Keys)
                 {
-                    if (filters[caption].IsNullOrEmpty())
-                    {
-                        FilterBox.Items.Add(new FilterControl(this, caption));
-                    }
-                    else
+                    if (!filters[caption].IsNullOrEmpty())
                     {
                         var details = filters[caption];
 
@@ -42,26 +40,43 @@ namespace CoApp.VSE.Controls
                             if (!details.Any())
                                 continue;
                         }
-                        
+
+                        foreach (var detail in details)
+                        {
+                            _filterPopup.SetFilterBlockVisibility(caption, detail, Visibility.Collapsed);
+                        }
+
                         FilterBox.Items.Add(new FilterControl(this, caption, details));
                     }
                 }
             }
         }
 
+        private void OnAddFilterButtonClick(object sender, EventArgs e)
+        {
+            _filterPopup.PlacementTarget = AddFilterButton;
+            _filterPopup.Placement = PlacementMode.Bottom;
+            _filterPopup.IsOpen = true;
+            _filterPopup.StaysOpen = false;
+        }
+
+        private void OnClearButtonClick(object sender, EventArgs e)
+        {
+            Clear();
+            Module.ReloadMainControl();
+        }
+
         internal void Clear()
         {
+            _filterPopup.IsOpen = false;
+            _filterPopup = new FilterPopup(this);
             FilterBox.Items.Clear();
-            _adder = new FilterControl(this);
-            FilterBox.Items.Add(_adder);
-
             Module.PackageManager.Filters.Clear();
         }
 
         internal void AddFilter(string caption, string detail = null)
         {
-            var adder = (FilterControl) FilterBox.Items[0];
-            adder.SetFilterBlockVisibility(caption, detail, Visibility.Collapsed);
+            _filterPopup.SetFilterBlockVisibility(caption, detail, Visibility.Collapsed);
 
             foreach (FilterControl filterControl in FilterBox.Items)
             {
@@ -70,23 +85,21 @@ namespace CoApp.VSE.Controls
                     filterControl.Details.Add(detail);
                     filterControl.Details.Sort();
                     filterControl.Refresh();
-                    Module.MainWindow.MainControl.Reload();
+                    Module.ReloadMainControl();
                     return;
                 }
             }
 
             FilterBox.Items.Add(new FilterControl(this, caption, detail == null ? new List<string>() : new List<string> { detail }));
 
-            Module.MainWindow.MainControl.Reload();
+            Module.ReloadMainControl();
         }
 
         internal void RemoveFilter(FilterControl filterControl, string detail = null)
         {
-            var adder = (FilterControl)FilterBox.Items[0];
-
             if (detail != null)
             {
-                adder.SetFilterBlockVisibility(filterControl.Caption, detail, Visibility.Visible);
+                _filterPopup.SetFilterBlockVisibility(filterControl.Caption, detail, Visibility.Visible);
 
                 filterControl.Details.Remove(detail);
                 filterControl.Refresh();
@@ -99,13 +112,13 @@ namespace CoApp.VSE.Controls
                 if (filterControl.Details != null)
                 {
                     foreach (var d in filterControl.Details)
-                        adder.SetFilterBlockVisibility(filterControl.Caption, d, Visibility.Visible);
+                        _filterPopup.SetFilterBlockVisibility(filterControl.Caption, d, Visibility.Visible);
                 }
 
                 FilterBox.Items.Remove(filterControl);
             }
 
-            Module.MainWindow.MainControl.Reload();
+            Module.ReloadMainControl();
         }
 
         internal void RemoveFilters(string caption)
@@ -115,7 +128,7 @@ namespace CoApp.VSE.Controls
                 if (filterControl.Caption == caption)
                 {
                     FilterBox.Items.Remove(filterControl);
-                    Module.MainWindow.MainControl.Reload();
+                    Module.ReloadMainControl();
                     return;
                 }
             }

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using CoApp.Packaging.Client;
+﻿using CoApp.Packaging.Client;
 
 namespace CoApp.VSE.Controls
 {
@@ -330,12 +329,9 @@ namespace CoApp.VSE.Controls
         {
             InitializeComponent();
 
-            var gui = AssemblyName.GetAssemblyName(Assembly.GetAssembly(GetType()).Location);
-            var engine = AssemblyName.GetAssemblyName(Assembly.GetAssembly(typeof(Package)).Location);
-
             ConsoleBox.Document.Blocks.Clear();
 
-            WriteLine(string.Format("{0}/{1}\nF2=Toggle Console", gui.Version, engine.Version), Brushes.DarkGoldenrod, FontStyles.Normal, FontWeights.Bold);
+            WriteLine(string.Format("{0}\nPress F2 to toggle console.", GetType().Assembly.FullName), Brushes.DarkGoldenrod, FontStyles.Normal, FontWeights.Bold);
             WriteLine(PromptString, Brushes.Black, FontStyles.Normal, FontWeights.Bold);
 
             DataObject.AddPastingHandler(ConsoleBox, OnPaste);

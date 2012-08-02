@@ -1,8 +1,9 @@
-﻿<UserControl x:Class="CoApp.VSE.Controls.Options.OptionsControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:VSE="clr-namespace:CoApp.VSE"
-             xmlns:Options="clr-namespace:CoApp.VSE.Controls.Options">
+﻿<UserControl 
+    x:Class="CoApp.VSE.Controls.Options.OptionsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE;assembly="
+    xmlns:Options="clr-namespace:CoApp.VSE.Controls.Options;assembly=">
     <UserControl.CommandBindings>
         <CommandBinding
             Command="{x:Static VSE:Commands.Cancel}"

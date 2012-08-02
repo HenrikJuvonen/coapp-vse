@@ -4,6 +4,7 @@
 
     public static class Commands
     {
+        public readonly static RoutedCommand AddFilter = new RoutedCommand();
         public readonly static RoutedCommand Reload = new RoutedCommand();
         public readonly static RoutedCommand MarkUpdates = new RoutedCommand();
         public readonly static RoutedCommand MarkUpgrades = new RoutedCommand();

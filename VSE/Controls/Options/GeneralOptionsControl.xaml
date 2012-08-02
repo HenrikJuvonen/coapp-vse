@@ -2,13 +2,19 @@
     x:Class="CoApp.VSE.Controls.Options.GeneralOptionsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:VSE="clr-namespace:CoApp.VSE">
+    xmlns:VSE="clr-namespace:CoApp.VSE;assembly="
+    xmlns:Controls="clr-namespace:CoApp.VSE.Controls;assembly=">
     <StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Package Manager" FontWeight="Bold" />
             <StackPanel Margin="4">
                 <CheckBox Name="RememberFiltersCheckBox" Content="Remember filters" Checked="OnChanged" Unchecked="OnChanged"/>
-                <CheckBox Name="TelemetryCheckBox" Content="Enable anonymous feedback" Checked="OnChanged" Unchecked="OnChanged"/>
+                <CheckBox Name="TelemetryCheckBox" Checked="OnChanged" Unchecked="OnChanged">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Enable anonymous feedback" />
+                        <Controls:ElevationShield x:Name="TelemetryCheckBoxShield" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </CheckBox>
                 <CheckBox Name="AutoEndCheckBox" Content="Automatically end progress screen after applying changes succesfully" Checked="OnChanged" Unchecked="OnChanged" />
             </StackPanel>
         </StackPanel>
@@ -27,10 +33,13 @@
         </StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Package Cache" FontWeight="Bold" />
-            <WrapPanel Margin="4">
-                <Button Name="CacheClearButton" Content="Clear" Click="OnClearPackageCacheClick" Width="54" />
-                <Label Margin="4,0,0,0" Name="CacheClearStatusLabel" />
-            </WrapPanel>
+            <Button Margin="4,4,4,2" Name="CacheClearButton" Click="OnClearPackageCacheClick" Width="60" HorizontalAlignment="Left" IsEnabledChanged="OnIsEnabledChanged">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/CoApp.VSE;component/Resources/UAC-Win7-Disabled.png" Stretch="None" x:Name="CacheClearButtonShield" Margin="0,0,4,0"/>
+                    <TextBlock Text="Clear" />
+                </StackPanel>
+            </Button>
+            <TextBlock Margin="4,0,4,4" Name="CacheClearStatusLabel" TextWrapping="Wrap" Visibility="Collapsed"/>
         </StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Automatic Updates" FontWeight="Bold" />
