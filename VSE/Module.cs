@@ -190,8 +190,8 @@ namespace CoApp.VSE
             TrayIcon.DoubleClick += OnTrayIconDoubleClicked;
 
             TrayIcon.ContextMenu = new ContextMenu();
-            TrayIcon.ContextMenu.MenuItems.Add("Package Manager...", (sender, args) => { ShowMainWindow(); ShowMainControl(); });
-            TrayIcon.ContextMenu.MenuItems.Add("Options...", (sender, args) => { ShowMainWindow(); ShowOptionsControl(); });
+            TrayIcon.ContextMenu.MenuItems.Add("Package Manager...", (sender, args) => { ShowMainControl(); ShowMainWindow(); });
+            TrayIcon.ContextMenu.MenuItems.Add("Options...", (sender, args) => { ShowOptionsControl(); ShowMainWindow(); });
 
             if (!IsDTELoaded)
                 TrayIcon.ContextMenu.MenuItems.Add("Exit", (sender, args) => { IsShutdownForced = true; MainWindow.Close(); });

@@ -26,9 +26,7 @@ namespace CoApp.VSE.Controls.Options
                 RestorePanel.Visibility = Visibility.Collapsed;
             }
 
-            if (Toolkit.Win32.AdminPrivilege.IsRunAsAdmin)
-                CacheClearButtonShield.Visibility = Visibility.Collapsed;
-            else
+            if (!Toolkit.Win32.AdminPrivilege.IsRunAsAdmin)
                 CacheClearButton.IsEnabled = false;
             
             TelemetryCheckBoxShield.UpdateShield(TelemetryCheckBox.IsEnabled);

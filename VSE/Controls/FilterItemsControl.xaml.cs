@@ -31,11 +31,11 @@ namespace CoApp.VSE.Controls
 
                         if (!Module.IsDTELoaded)
                         {
-                            if (details.Contains("In Solution"))
-                                details.Remove("In Solution");
+                            if (details.Contains("Is Used In Projects"))
+                                details.Remove("Is Used In Projects");
 
-                            if (details.Contains("For Development"))
-                                details.Remove("For Development");
+                            if (details.Contains("Is Dev. Package"))
+                                details.Remove("Is Dev. Package");
 
                             if (!details.Any())
                                 continue;

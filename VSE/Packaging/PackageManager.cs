@@ -96,9 +96,23 @@ namespace CoApp.VSE.Packaging
                 foreach (var packageItem in PackagesViewModel.Packages.Where(n => n.PackageIdentity == package))
                 {
                     packageItem.SetStatus();
-                    packageItem.InSolution = Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
                     packageItem.ItemBackground = null;
+
+                    packageItem.InSolution = Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
                 }
+            }
+        }
+
+        public void ClearMarks(bool forceClearInSolution)
+        {
+            _marks.Clear();
+
+            foreach (var packageItem in PackagesViewModel.Packages)
+            {
+                packageItem.SetStatus();
+                packageItem.ItemBackground = null;
+
+                packageItem.InSolution = !forceClearInSolution && Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
             }
         }
 
@@ -428,20 +442,27 @@ namespace CoApp.VSE.Packaging
 
         public IEnumerable<Package> IdentifyPackageAndDependencies(Package package)
         {
-            // This function should work the same way as the coapp install graph generator when autoupgrade is false.
-
             var dependencies = new List<Package> { package };
 
             try
             {
                 Parallel.ForEach(package.Dependencies, dependency =>
                 {
-                    var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
+                    /*var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
 
                     if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
                         (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
                     {
                         var subdependencies = IdentifyPackageAndDependencies((Package)newest);
+                        lock (this)
+                        {
+                            dependencies.AddRange(subdependencies);
+                        }
+                    }*/
+
+                    if (PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
+                    {
+                        var subdependencies = IdentifyPackageAndDependencies((Package) dependency);
                         lock (this)
                         {
                             dependencies.AddRange(subdependencies);
@@ -464,6 +485,7 @@ namespace CoApp.VSE.Packaging
             {
                 Parallel.ForEach(package.Dependencies, dependency =>
                 {
+                    /*
                     var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
 
                     if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
@@ -473,7 +495,16 @@ namespace CoApp.VSE.Packaging
                         {
                             dependencies.Add((Package)newest);
                         }
+                    }*/
+
+                    if (PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
+                    {
+                        lock (this)
+                        {
+                            dependencies.Add((Package)dependency);
+                        }
                     }
+
                 });
             }
             catch
@@ -491,23 +522,21 @@ namespace CoApp.VSE.Packaging
                 () => Parallel.ForEach(GetFeedLocations(), feedLocation =>
                 {
                     var pkgs = GetPackages(location: feedLocation);
-                    AddRange(ref packages, pkgs);
+                    lock (this)
+                    {
+                        packages.AddRange(pkgs);
+                    }
                 }),
                 () =>
                 {
                     var pkgs = GetPackages("installed");
-                    AddRange(ref packages, pkgs);
+                    lock (this)
+                    {
+                        packages.AddRange(pkgs);
+                    }
                 });
 
             return packages.Distinct();
-        }
-
-        private void AddRange(ref List<Package> list, IEnumerable<Package> packages)
-        {
-            lock (this)
-            {
-                list.AddRange(packages);
-            }
         }
 
         public IEnumerable<Package> GetPackages(string type = null, string location = null)
@@ -550,10 +579,8 @@ namespace CoApp.VSE.Packaging
         {
             IEnumerable<Package> packages = null;
 
-            ContinueTask(Task.Factory.StartNew(() =>
-            {
-                ContinueTask(_pkm.QueryPackages(queries, pkgFilter, null, location).Continue(n => packages = n));
-            }));
+            ContinueTask(Task.Factory.StartNew(() => 
+                ContinueTask(_pkm.QueryPackages(queries, pkgFilter, null, location).Continue(n => packages = n))));
 
             return packages ?? Enumerable.Empty<Package>();
         }
@@ -578,10 +605,8 @@ namespace CoApp.VSE.Packaging
         {
             var impl = new PackageManagerResponseImpl();
 
-            return Task.Factory.StartNew(() =>
-            {
-                impl.RequireRemoteFile(package.CanonicalName, package.RemoteLocations, PackageManagerSettings.CoAppCacheDirectory + "\\packages", false);
-            });
+            return Task.Factory.StartNew(() => 
+                impl.RequireRemoteFile(package.CanonicalName, package.RemoteLocations, PackageManagerSettings.CoAppCacheDirectory + "\\packages", false));
         }
 
         public void InstallPackages(IEnumerable<Package> packages)

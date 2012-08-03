@@ -36,10 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoApp.Client">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="CoApp.Toolkit">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -181,10 +179,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Colors.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\Colors2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

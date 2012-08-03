@@ -35,6 +35,7 @@
         <Setter Property="HeadersVisibility" Value="None" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="Background" Value="White" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="EnableRowVirtualization" Value="True" />
@@ -46,7 +47,7 @@
     <Style TargetType="DataGridRow">
         <Style.Triggers>
             <Trigger Property="AlternationIndex" Value="0">
-                <Setter Property="Background" Value="{DynamicResource Gray13}" />
+                <Setter Property="Background" Value="#FFf0f0f0" />
             </Trigger>
             <Trigger Property="AlternationIndex" Value="1">
                 <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />

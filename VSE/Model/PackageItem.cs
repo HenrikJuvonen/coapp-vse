@@ -74,6 +74,7 @@ namespace CoApp.VSE.Model
 
                 _inSolution = value;
                 OnPropertyChanged("InSolution");
+                OnPropertyChanged("InSolutionImage");
             }
         }
 

@@ -9,14 +9,13 @@
             <ComboBox Name="FilterProjectComboBox" SelectionChanged="OnComboBoxSelectionChanged" Visibility="Collapsed" Margin="1"/>
             <ComboBox Name="FilterBooleanComboBox" SelectionChanged="OnComboBoxSelectionChanged" SelectedIndex="0" Margin="1">
                 <ComboBoxItem Content="Boolean" Visibility="Collapsed" />
-                <ComboBoxItem Content="For Development" />
-                <ComboBoxItem Content="In Solution" />
+                <ComboBoxItem Content="Is Dev. Package" />
+                <ComboBoxItem Content="Is Used In Projects" />
                 <ComboBoxItem Content="Is Blocked" />
                 <ComboBoxItem Content="Is Dependency" />
                 <ComboBoxItem Content="Is Highest" />
                 <ComboBoxItem Content="Is Installed" />
                 <ComboBoxItem Content="Is Update" />
-                <ComboBoxItem Content="Is Safe For Work" />
                 <ComboBoxItem Content="Is Stable" />
                 <ComboBoxItem Content="Is Wanted" />
             </ComboBox>

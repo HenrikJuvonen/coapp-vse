@@ -39,6 +39,7 @@ namespace CoApp.VSE.Controls
 
             Module.HideVisualStudioControl();
             Module.PackageManager.ClearVisualStudioMarks();
+            Module.ReloadMainControl();
 
             if (Module.PackageManager.UpdatePlan.Any() || Module.PackageManager.InstallPlan.Any() || Module.PackageManager.RemovePlan.Any())
                 Module.ShowSummaryControl();

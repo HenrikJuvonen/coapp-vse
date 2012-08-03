@@ -33,12 +33,7 @@
         </StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Package Cache" FontWeight="Bold" />
-            <Button Margin="4,4,4,2" Name="CacheClearButton" Click="OnClearPackageCacheClick" Width="60" HorizontalAlignment="Left" IsEnabledChanged="OnIsEnabledChanged">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/CoApp.VSE;component/Resources/UAC-Win7-Disabled.png" Stretch="None" x:Name="CacheClearButtonShield" Margin="0,0,4,0"/>
-                    <TextBlock Text="Clear" />
-                </StackPanel>
-            </Button>
+            <Button Margin="4,4,4,2" Name="CacheClearButton" Content="Clear" Click="OnClearPackageCacheClick" Width="60" HorizontalAlignment="Left" IsEnabledChanged="OnIsEnabledChanged" />
             <TextBlock Margin="4,0,4,4" Name="CacheClearStatusLabel" TextWrapping="Wrap" Visibility="Collapsed"/>
         </StackPanel>
         <StackPanel Margin="0,2,0,2">

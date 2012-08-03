@@ -8,7 +8,6 @@ namespace CoApp.VSE.Controls
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
-    using System.Windows.Threading;
     using System.Windows.Controls;
     using System.Windows.Documents;
     using System.Windows.Input;
@@ -28,10 +27,54 @@ namespace CoApp.VSE.Controls
             Module.PackageManager.FeedsUpdated += OnFeedsUpdated;
 
             if (Module.IsDTELoaded)
+            {
+                var action = new Action<bool>(b =>
+                {
+                    Module.PackageManager.ClearMarks(b);
+                    Reload();
+                });
+
+                Module.DTE.Events.SolutionEvents.AfterClosing += () => action.Invoke(true);
+                Module.DTE.Events.SolutionEvents.ProjectAdded += project => action.Invoke(false);
+                Module.DTE.Events.SolutionEvents.ProjectRemoved += project => action.Invoke(false);
+                Module.DTE.Events.SolutionEvents.ProjectRenamed += (project, name) => action.Invoke(false);
+
                 InSolutionColumn.Visibility = Visibility.Visible;
+            }
         }
-        
-        private void UpdateFilters()
+
+        public void OnFeedsUpdated()
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Module.PackageManager.Reset();
+                FilterItemsControl.Clear();
+                Reload();
+            }));
+        }
+
+        public void Reload(bool search = false)
+        {
+            MarkAllUpgradesButton.IsEnabled = false;
+            MarkAllUpdatesButton.IsEnabled = false;
+            ApplyButton.IsEnabled = false;
+            NoItemsPane.Visibility = Visibility.Collapsed;
+            PackageDetailsPanel.Visibility = Visibility.Collapsed;
+            PackagesDataGrid.Visibility = Visibility.Collapsed;
+            ProgressPane.Visibility = Visibility.Visible;
+
+            var searchText = SearchBox.Text.ToLowerInvariant();
+            DataContext = null;
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, args) => Module.PackageManager.QueryPackages();
+            worker.DoWork += RefreshView;
+            worker.RunWorkerCompleted += Finish;
+            worker.RunWorkerAsync(searchText);
+        }
+
+        private int _counter;
+        private void RefreshView(object sender, DoWorkEventArgs e)
         {
             Module.PackageManager.Filters.Clear();
 
@@ -46,55 +89,27 @@ namespace CoApp.VSE.Controls
             if (Module.PackageManager.Filters.ContainsKey("Search"))
                 Module.PackageManager.Filters.Remove("Search");
 
-            Module.PackageManager.Filters.Add("Search", new List<string> { SearchBox.Text.ToLowerInvariant() });
-            
-            PackagesDataGrid.CommitEdit();
-            PackagesDataGrid.CancelEdit();
-            Module.PackageManager.PackagesViewModel.Refresh();
+            Module.PackageManager.Filters.Add("Search", new List<string> { (string) e.Argument });
 
-            DataContext = Module.PackageManager.PackagesViewModel;
+            _counter++;
 
-            PackagesDataGrid.SelectedIndex = 0;
-        }
+            Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
 
-        public void OnFeedsUpdated()
-        {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                Module.PackageManager.Reset();
-                FilterItemsControl.Clear();
-                Reload();
-            }));
-        }
+            Thread.Sleep(50);
 
-        private readonly ManualResetEvent _reloadEvent = new ManualResetEvent(true);
+            _counter--;
 
-        public void Reload(bool search = false)
-        {
-            _reloadEvent.WaitOne();
-            _reloadEvent.Reset();
-            
-            NoItemsPane.Visibility = Visibility.Collapsed;
-
-            if (!search)
-            {
-                MarkAllUpgradesButton.IsEnabled = false;
-                MarkAllUpdatesButton.IsEnabled = false;
-                ApplyButton.IsEnabled = false;
-                PackageDetailsPanel.Visibility = Visibility.Collapsed;
-                PackagesDataGrid.Visibility = Visibility.Collapsed;
-                ProgressPane.Visibility = Visibility.Visible;
-            }
-
-            var worker = new BackgroundWorker();
-            worker.DoWork += (sender, args) => Module.PackageManager.QueryPackages();
-            worker.RunWorkerCompleted += Finish;
-            worker.RunWorkerAsync();
+            if (_counter > 0)
+                e.Cancel = true;
         }
 
         private void Finish(object sender, RunWorkerCompletedEventArgs e)
         {
-            UpdateFilters();
+            if (e.Cancelled)
+                return;
+
+            DataContext = Module.PackageManager.PackagesViewModel;
+            PackagesDataGrid.SelectedIndex = 0;
 
             if (PackagesDataGrid.HasItems)
             {
@@ -111,8 +126,6 @@ namespace CoApp.VSE.Controls
             MarkAllUpdatesButton.IsEnabled = true;
             MarkAllUpgradesButton.IsEnabled = true;
             ApplyButton.IsEnabled = Module.PackageManager.IsAnyMarked;
-
-            _reloadEvent.Set();
         }
 
         private void OnSortSelectionChanged(object sender, SelectionChangedEventArgs e)

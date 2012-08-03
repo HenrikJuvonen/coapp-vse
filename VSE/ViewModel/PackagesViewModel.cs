@@ -40,7 +40,7 @@ namespace CoApp.VSE.ViewModel
             
             View = CollectionViewSource.GetDefaultView(Packages);
             View.Filter = FilterOut;
-            View.SortDescriptions.Add(new SortDescription("PackageIdentity.CanonicalName", ListSortDirection.Ascending));
+            Sort(ListSortDirection.Ascending);
         }
 
         private void BuildPackageCollection(IEnumerable<Package> packages)
@@ -94,10 +94,7 @@ namespace CoApp.VSE.ViewModel
 
                 if (boolean.Contains("Is Wanted"))
                     result = result && n.PackageIdentity.IsWanted;
-
-                if (boolean.Contains("Is Safe For Work"))
-                    result = result && !n.PackageIdentity.PackageDetails.IsNsfw;
-
+                
                 if (boolean.Contains("Is Highest"))
                 {
                     var allVersions = View.Cast<PackageItem>().Where(m => m.Name == n.Name && m.Flavor == n.Flavor && m.Architecture == n.Architecture);
@@ -106,18 +103,11 @@ namespace CoApp.VSE.ViewModel
                         result = result && n.Version == allVersions.Max(m => m.PackageIdentity.Version);
                 }
 
-                if (Module.IsSolutionOpen)
-                {
-                    if (boolean.Contains("In Solution"))
-                    {
-                        result = result && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(n.PackageIdentity));
-                    }
+                if (boolean.Contains("Is Used In Projects"))
+                    result = result && Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(n.PackageIdentity));
 
-                    if (boolean.Contains("For Development"))
-                    {
-                        result = result && n.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None;
-                    }
-                }
+                if (boolean.Contains("Is Dev. Package"))
+                    result = result && n.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None;
             }
 
             if (filters.ContainsKey("Feed URL"))
@@ -181,13 +171,8 @@ namespace CoApp.VSE.ViewModel
 
         public void Sort(ListSortDirection sortDirection)
         {
-            View.SortDescriptions.Clear();
-            View.SortDescriptions.Add(new SortDescription("PackageIdentity.CanonicalName", sortDirection));
-        }
-
-        public void Refresh()
-        {
-            View.Refresh();
+            var view = (ListCollectionView) View;
+            view.CustomSort = sortDirection == ListSortDirection.Ascending ? new SortAscending() : (IComparer)new SortDescending();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -197,6 +182,40 @@ namespace CoApp.VSE.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+    }
+
+    public class SortAscending : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            var a = ((PackageItem)x).PackageIdentity;
+            var b = ((PackageItem)y).PackageIdentity;
+
+            if (a == null || b == null)
+                return 0;
+
+            var aN = a.CanonicalName.PackageName;
+            var bN = b.CanonicalName.PackageName;
+
+            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
+        }
+    }
+
+    public class SortDescending : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            var a = ((PackageItem)y).PackageIdentity;
+            var b = ((PackageItem)x).PackageIdentity;
+
+            if (a == null || b == null)
+                return 0;
+
+            var aN = a.CanonicalName.PackageName;
+            var bN = b.CanonicalName.PackageName;
+
+            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
         }
     }
 }

@@ -34,14 +34,14 @@ namespace CoApp.VSE.Controls
             if (Module.IsDTELoaded)
             {
                 Module.DTE.Events.SolutionEvents.Opened += UpdateProjects;
-                Module.DTE.Events.SolutionEvents.BeforeClosing += UpdateProjects;
+                Module.DTE.Events.SolutionEvents.AfterClosing += UpdateProjects;
                 Module.DTE.Events.SolutionEvents.ProjectAdded += project => UpdateProjects();
                 Module.DTE.Events.SolutionEvents.ProjectRemoved += project => UpdateProjects();
                 Module.DTE.Events.SolutionEvents.ProjectRenamed += (project, name) => UpdateProjects();
             }
             else
             {
-                // Remove "For Development" and "In Solution"
+                // Remove "Is Dev. Package" and "Is Used In Projects"
                 FilterBooleanComboBox.Items.RemoveAt(1);
                 FilterBooleanComboBox.Items.RemoveAt(1);
             }
@@ -71,13 +71,16 @@ namespace CoApp.VSE.Controls
 
             foreach (ComboBoxItem item in FilterBooleanComboBox.Items)
             {
-                if ((string)item.Content == "In Solution" || (string)item.Content == "For Development")
+                var detail = (string) item.Content;
+                if (detail == "Is Used In Projects" || detail == "Is Dev. Package")
                 {
-                    item.Visibility = anyProjects ? Visibility.Visible : Visibility.Collapsed;
+                    var detailFiltered = Module.PackageManager.Filters.ContainsKey("Boolean") && !Module.PackageManager.Filters["Boolean"].Contains(detail);
+                    item.Visibility = anyProjects && detailFiltered ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
 
             FilterProjectComboBox.Visibility = anyProjects ? Visibility.Visible : Visibility.Collapsed;
+            FilterProjectComboBox.IsEnabled = anyProjects;
         }
 
         public void SetFilterBlockVisibility(string caption, string details, Visibility visibility)
