@@ -7,12 +7,6 @@
 }
 
 build {
-	set: solution = "coapp-vse.sln";
-    uses: release;
-}
-
-build-metro {
-	set: solution = "coapp-vse-metro.sln";
     uses: release;
 }
 
@@ -23,23 +17,10 @@ release {
 
 package {
 	default: true;
-	set: solution = "coapp-vse.sln";
     uses: { build, sign };
     build-command: @"
         cscript //e:jscript scripts\increment-build-version.js
         cd COPKG
-        autopackage coapp.vse.autopkg || goto failed
-        erase /Q *.wixpdb > nul 2>&1
-    ";
-}
-
-package-metro {
-	set: solution = "coapp-vse-metro.sln";
-    uses: { build, sign };
-    build-command: @"
-        cscript //e:jscript scripts\increment-build-version.js
-        cd COPKG
-        erase /Q *.msi > nul 2>&1
         autopackage coapp.vse.autopkg || goto failed
         erase /Q *.wixpdb > nul 2>&1
     ";
@@ -60,7 +41,7 @@ sign {
     set: bin_path = @"output\any\release\bin\";
     
     build-command: @"
-        simplesigner --nologo --sign ${bin_path}CoApp.VSE.Standalone.exe ${bin_path}CoApp.VSE.dll ${bin_path}CoApp.VSE.VisualStudio.Tools.dll || goto failed
+        simplesigner --nologo --sign ${bin_path}CoApp.VSE.Standalone.exe ${bin_path}CoApp.VSE.Core.dll ${bin_path}CoApp.VSE.VSPackage.dll || goto failed
     ";
 }
 
@@ -71,12 +52,12 @@ anycpu {
 	
     targets: {
         "${bin_path}CoApp.VSE.Standalone.exe",
-        "${bin_path}CoApp.VSE.dll",
-        "${bin_path}CoApp.VSE.VisualStudio.Tools.dll",
+        "${bin_path}CoApp.VSE.Core.dll",
+        "${bin_path}CoApp.VSE.VSPackage.dll",
     };
 
     build-command: @"
-		msbuild /p:Configuration=${cfg} /p:Platform=""Any CPU"" ${solution} /verbosity:q /nologo || goto failed
+		msbuild /p:Configuration=${cfg} /p:Platform=""Any CPU"" coapp-vse.sln /verbosity:q /nologo || goto failed
     ";
 }
 

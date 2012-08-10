@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CoApp.VSE.VisualStudio.Tools
+namespace CoApp.VSE.VSPackage
 {
     //
     // http://msdn.microsoft.com/en-us/library/ms228772(v=vs.100).aspx

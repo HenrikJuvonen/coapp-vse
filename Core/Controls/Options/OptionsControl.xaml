@@ -1,0 +1,35 @@
+﻿<UserControl 
+    x:Class="CoApp.VSE.Core.Controls.Options.OptionsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
+    xmlns:Options="clr-namespace:CoApp.VSE.Core.Controls.Options">
+    <UserControl.CommandBindings>
+        <CommandBinding
+            Command="{x:Static VSE:Commands.Cancel}"
+            Executed="ExecuteBack" />
+    </UserControl.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="26" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush13}">
+            <WrapPanel VerticalAlignment="Center">
+                <Button Margin="3,0,0,0" ToolTip="Back" Command="{x:Static VSE:Commands.Cancel}" Style="{DynamicResource ChromelessButtonStyle}">
+                    <WrapPanel Margin="2,0,2,0">
+                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/back.png" Width="16" Height="16" />
+                    </WrapPanel>
+                </Button>
+            </WrapPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="510" />
+                <ColumnDefinition Width="*" MaxWidth="510"/>
+            </Grid.ColumnDefinitions>
+            <Options:GeneralOptionsControl x:Name="GeneralOptions" Grid.Column="0" Margin="5" MaxHeight="500" VerticalAlignment="Top" />
+            <Options:FeedOptionsControl x:Name="FeedOptions" Grid.Column="1" Margin="5" Height="400" VerticalAlignment="Top" />
+        </Grid>
+    </Grid>
+</UserControl>

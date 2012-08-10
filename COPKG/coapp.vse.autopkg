@@ -6,7 +6,11 @@ package {
 }
 
 provides {
-    feature: "coapp.vse" = "0.7";
+    feature: "coapp.vse" = "0.8";
+}
+
+requires {
+	package: "MahApps.Metro-0.8-any";
 }
 
 metadata {
@@ -14,16 +18,16 @@ metadata {
     description: "Visual Studio extension for managing CoApp-packages";
     icon: @"images\logo3.png";
     
-    author-version : "0.7";
+    author-version : "0.8";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
-    stability : "-30";
+    stability : "-10";
 }
 
 compatability-policy {
     minimum: "0.0.0.0";
     maximum: "${OneLessThanCurrent}";
     versions : {
-        "0.7",
+        "0.8",
     };
 }
 
@@ -47,8 +51,8 @@ files[dlls] {
     root: "..\output\any\release\bin";
     
     include: {
-        "CoApp.VSE.dll",
-        "CoApp.VSE.VisualStudio.Tools.dll",
+        "CoApp.VSE.Core.dll",
+        "CoApp.VSE.VSPackage.dll",
     };
 };
 
@@ -56,7 +60,7 @@ files[defs] {
     root: "..\output\any\release\bin";
     
     include: {
-        "CoApp.VSE.VisualStudio.Tools.pkgdef",
+        "CoApp.VSE.VSPackage.pkgdef",
         "extension.vsixmanifest",
     };
 };

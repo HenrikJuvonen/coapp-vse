@@ -1,0 +1,278 @@
+﻿<UserControl
+    x:Class="CoApp.VSE.Core.Controls.MainControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
+    xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls"
+    KeyDown="OnKeyDown">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.CommandBindings>
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.Reload}"
+            Executed="ExecuteReload" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.Apply}"
+            Executed="ExecuteApply" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.MarkUpdates}"
+            Executed="ExecuteMarkUpdates" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.MarkUpgrades}"
+            Executed="ExecuteMarkUpgrades" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.ShowOptions}"
+            Executed="ExecuteShowOptions" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.OpenExternalLink}"
+            Executed="ExecuteOpenLicenseLink" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.FocusSearch}"
+            Executed="ExecuteFocusSearch" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.ClearSearch}"
+            Executed="ExecuteClearSearch" />
+    </UserControl.CommandBindings>
+    
+    <UserControl.InputBindings>
+        <KeyBinding Command="{x:Static VSE:Commands.FocusSearch}" Gesture="CTRL+F" />
+    </UserControl.InputBindings>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="26" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource GrayBrush13}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" >
+                <Button Margin="3,0,0,0" ToolTip="Options" Command="{x:Static VSE:Commands.ShowOptions}" Style="{DynamicResource ChromelessButtonStyle}">
+                    <WrapPanel Margin="2,0,2,0">
+                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/options.png" Width="16" Height="16" />
+                    </WrapPanel>
+                </Button>
+                <Button Margin="2,0,0,0" ToolTip="Reload" Command="{x:Static VSE:Commands.Reload}" Name="ReloadButton" Style="{DynamicResource ChromelessButtonStyle}">
+                    <WrapPanel Margin="2,0,2,0">
+                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/reload.png" Width="16" Height="16" />
+                    </WrapPanel>
+                </Button>
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                    <WrapPanel Margin="2,0,2,0">
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Mark Updates" />
+                    </WrapPanel>
+                </Button>
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpgrades}" Name="MarkAllUpgradesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False" Visibility="Collapsed">
+                    <WrapPanel Margin="2,0,2,0">
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Mark Upgrades" />
+                    </WrapPanel>
+                </Button>
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Apply}" Name="ApplyButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                    <WrapPanel Margin="2,0,2,0">
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Apply" />
+                    </WrapPanel>
+                </Button>
+            </WrapPanel>
+
+            <WrapPanel Grid.Row="0" Grid.Column="1" Background="{DynamicResource GrayBrush13}">
+                <Label Margin="2,0,2,0" Content="Sort by:" />
+                <ComboBox Margin="0,0,2,0" Name="SortComboBox" Height="23" Width="150" SelectionChanged="OnSortSelectionChanged" SelectedIndex="0">
+                    <ComboBox.Items>
+                        <ComboBoxItem Content="Name: Ascending" />
+                        <ComboBoxItem Content="Name: Descending" />
+                    </ComboBox.Items>
+                </ComboBox>
+                <TextBox Margin="0,0,3,0" Width="207" VerticalContentAlignment="Center" FontSize="12" x:Name="SearchBox" TextChanged="OnSearchBoxTextChanged" Tag="Search Packages"/>
+            </WrapPanel>
+        </Grid>
+
+        <Controls:FilterItemsControl Grid.Row="1" x:Name="FilterItemsControl" />
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="210" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="4,0,0,0">
+                <DataGrid Name="PackagesDataGrid" ItemsSource="{Binding View}" SelectedItem="{Binding SelectedPackage}" Visibility="Collapsed">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="16">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Style="{StaticResource StatusCheckBoxStyle}" ToolTip="{Binding StatusText}" Checked="OnStatusCheckBoxChanged" Unchecked="OnStatusCheckBoxChanged">
+                                        <CheckBox.ContextMenu>
+                                            <ContextMenu Opened="OnStatusContextMenuOpened">
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Unmark"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Installation"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Reinstallation"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Update"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Upgrade" Visibility="Collapsed"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Removal"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Complete Removal"/>
+                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Visual Studio"/>
+                                                <Separator />
+                                                <MenuItem Click="OnStatusContextMenuItemClick2" />
+                                                <MenuItem IsEnabled="False" />
+                                                <MenuItem IsEnabled="False" />
+                                                <MenuItem IsEnabled="False" />
+                                                <MenuItem IsEnabled="False" />
+                                            </ContextMenu>
+                                        </CheckBox.ContextMenu>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="16" x:Name="InSolutionColumn" Visibility="Collapsed">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding InSolutionImage}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="185" MinWidth="185">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Flavor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Version}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Architecture}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*" MinWidth="0">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextTrimming="WordEllipsis"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <ProgressBar Grid.Row="1" Grid.Column="0" Name="ProgressPane" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Center" Visibility="Collapsed" Content="No packages found." Width="150" HorizontalContentAlignment="Center" />
+
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="1,0,0,0">
+                <ScrollViewer Name="PackageDetailsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch">
+                    <StackPanel Width="205" DataContext="{Binding SelectedPackage}">
+                        <WrapPanel Visibility="{Binding Name, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Name:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Name}"/>
+                        </WrapPanel>
+                        <WrapPanel Visibility="{Binding Flavor, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Flavor:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Flavor}"/>
+                        </WrapPanel>
+                        <WrapPanel Visibility="{Binding Version, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Version:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Version}"/>
+                        </WrapPanel>
+                        <WrapPanel Visibility="{Binding Architecture, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Architecture:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Architecture}"/>
+                        </WrapPanel>
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Publisher:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" TextWrapping="Wrap">
+                                <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
+                                    <Run Text="{Binding PackageIdentity.PackageDetails.Publisher.Name}" />
+                                </Hyperlink>                            
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Date Published:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.PublishDate}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Licenses, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Licenses:" />
+                            <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource PropertyValueStyle}" TextTrimming="CharacterEllipsis">
+                                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
+                                                <Run Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.SummaryDescription, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Summary:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Tags, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Tags:" />
+                            <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Tags}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding Dependencies, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Dependencies:" />
+                            <ItemsControl ItemsSource="{Binding Dependencies}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding}" ToolTip="{Binding}" TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <Controls:ConsoleControl Grid.Row="3" Grid.ColumnSpan="2" x:Name="ConsoleControl" Visibility="Collapsed" />
+        
+    </Grid>
+</UserControl>

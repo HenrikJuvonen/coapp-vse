@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="CoApp.VSE.Core.Controls.Options.GeneralOptionsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
+    xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls">
+    <StackPanel>
+        <StackPanel Margin="0,2,0,2">
+            <Label Content="Package Manager" FontWeight="Bold" />
+            <StackPanel Margin="4">
+                <CheckBox Name="RememberFiltersCheckBox" Content="Remember filters" Checked="OnChanged" Unchecked="OnChanged"/>
+                <CheckBox Name="ShowConsoleCheckBox" Content="Always show console in main view" Checked="OnChanged" Unchecked="OnChanged"/>
+                <CheckBox Name="AutoTrimCheckBox" Content="Remove unused packages after applying changes successfully" Checked="OnChanged" Unchecked="OnChanged" Visibility="Collapsed"/>
+                <CheckBox Name="AutoEndCheckBox" Content="Return to main view after applying changes successfully" Checked="OnChanged" Unchecked="OnChanged" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="0,2,0,2">
+            <Label Content="System Tray" FontWeight="Bold" />
+            <WrapPanel Margin="4">
+                <StackPanel Margin="0,0,8,0">
+                    <CheckBox Name="ShowTrayIconCheckBox" Content="Always show tray icon" Checked="OnShowTrayIconChecked" Unchecked="OnShowTrayIconChecked"/>
+                    <CheckBox Name="ShowNotificationsInTrayCheckBox" Content="Show balloon notifications in tray" Checked="OnChanged" Unchecked="OnChanged"/>
+                </StackPanel>
+                <StackPanel>
+                    <CheckBox Name="StartInTrayCheckBox" Content="Start in tray" Checked="OnChanged" Unchecked="OnChanged" Visibility="Collapsed"/>
+                    <CheckBox Name="CloseToTrayCheckBox" Content="Close to tray" Checked="OnChanged" Unchecked="OnChanged" Visibility="Collapsed"/>
+                </StackPanel>
+            </WrapPanel>
+        </StackPanel>
+        <StackPanel Margin="0,2,0,2">
+            <Label Content="Package Cache" FontWeight="Bold" />
+            <Button Margin="4,4,4,2" Name="CacheClearButton" Click="OnClearPackageCacheClick" HorizontalAlignment="Left">
+                <TextBlock Margin="2,0,2,0" Text="Clear" />
+            </Button>
+            <TextBlock Margin="4,0,4,4" Name="CacheClearStatusLabel" TextWrapping="Wrap" Visibility="Collapsed"/>
+        </StackPanel>
+        <StackPanel Margin="0,2,0,2">
+            <Label Content="Automatic Updates" FontWeight="Bold" />
+            <ComboBox Name="UpdateComboBox" SelectionChanged="OnChanged" Margin="4">
+                <ComboBoxItem Content="{x:Static VSE:Resources.Update_Automatic}" />
+                <ComboBoxItem Content="{x:Static VSE:Resources.Update_Notify}" />
+                <ComboBoxItem Content="{x:Static VSE:Resources.Update_DoNothing}" />
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Margin="0,2,0,2" Name="RestorePanel">
+            <Label Content="Automatic Restore" FontWeight="Bold" />
+            <ComboBox Name="RestoreComboBox" SelectionChanged="OnChanged" Margin="4">
+                <ComboBoxItem Content="{x:Static VSE:Resources.Restore_Automatic}" />
+                <ComboBoxItem Content="{x:Static VSE:Resources.Restore_Notify}" />
+                <ComboBoxItem Content="{x:Static VSE:Resources.Restore_DoNothing}" />
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Margin="0,2,0,2">
+            <Label Content="CoApp Improvement Program" FontWeight="Bold" />
+            <StackPanel Margin="4">
+                <TextBlock Text="The program improves CoApp. Anonymous information about packages installed with will be sent to CoApp.org for the improvement of CoApp. No identifying information will be sent." TextWrapping="Wrap" Margin="0,0,0,4" HorizontalAlignment="Left" />
+                <RadioButton Name="TelemetryRadio1" Content="Yes, I would like to participate" />
+                <RadioButton Name="TelemetryRadio2" Content="No, I don't want to participate" />
+                <Button Name="ApplyTelemetryButton" Click="OnChanged" Margin="0,4,0,0" HorizontalAlignment="Left">
+                    <WrapPanel Margin="2,0,2,0">
+                        <Controls:ElevationShield x:Name="TelemetryShield"/>
+                        <TextBlock Text="Save" VerticalAlignment="Center" />
+                    </WrapPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -6,8 +6,10 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace CoApp.VSE.VisualStudio.Tools
+namespace CoApp.VSE.VSPackage
 {
+    using Core;
+
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideBindingPath] // Definition dll needs to be on VS binding path

@@ -1,6 +1,0 @@
-﻿<Image 
-    x:Class="CoApp.VSE.Controls.ElevationShield"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Stretch="None"
-    Margin="0,0,4,0"/>

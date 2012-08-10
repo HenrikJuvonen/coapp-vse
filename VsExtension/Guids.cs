@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoApp.VSE.VisualStudio.Tools
+namespace CoApp.VSE.VSPackage
 {
     public static class GuidList
     {

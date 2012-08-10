@@ -1,0 +1,47 @@
+﻿<ContextMenu
+    x:Class="CoApp.VSE.Core.Controls.FilterMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Opened="OnOpened">
+
+    <MenuItem Name="FilterNameMenuItem" Click="OnMenuItemClick">
+        <MenuItem.Header>
+            <Border Margin="-12,-2,-26.5,-2" Background="White">
+                <TextBox Name="FilterNameTextBox" Tag="Name" VerticalContentAlignment="Center" KeyDown="OnFilterNameTextBoxKeyDown" Width="100" Margin="6,2,5,2" Height="23"/>
+            </Border>
+        </MenuItem.Header>
+    </MenuItem>
+    <MenuItem Name="FilterProjectMenuItem" Header="Projects" Visibility="Collapsed" />
+    <MenuItem Name="FilterBooleanMenuItem" Header="Boolean">
+        <MenuItem Header="Is Used In Projects" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Blocked" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Dependency" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Development Package" Click="OnMenuItemClick"/>
+        <MenuItem Header="Is Highest Version" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Installed" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Update" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Stable" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Wanted" Click="OnMenuItemClick" />
+    </MenuItem>
+    <MenuItem Name="FilterFlavorMenuItem" Header="Flavor">
+        <MenuItem Header="net20" Click="OnMenuItemClick" />
+        <MenuItem Header="net35" Click="OnMenuItemClick" />
+        <MenuItem Header="net40" Click="OnMenuItemClick" />
+        <MenuItem Header="net45" Click="OnMenuItemClick" />
+        <MenuItem Header="vc10" Click="OnMenuItemClick" />
+        <MenuItem Header="vc11" Click="OnMenuItemClick" />
+        <MenuItem Header="vc8" Click="OnMenuItemClick" />
+        <MenuItem Header="vc9" Click="OnMenuItemClick" />
+    </MenuItem>
+    <MenuItem Name="FilterArchitectureMenuItem" Header="Architecture">
+        <MenuItem Header="any" Click="OnMenuItemClick" />
+        <MenuItem Header="x64" Click="OnMenuItemClick" />
+        <MenuItem Header="x86" Click="OnMenuItemClick" />
+    </MenuItem>
+    <MenuItem Name="FilterRoleMenuItem" Header="Role">
+        <MenuItem Header="Application" Click="OnMenuItemClick" />
+        <MenuItem Header="Assembly" Click="OnMenuItemClick" />
+        <MenuItem Header="DeveloperLibrary" Click="OnMenuItemClick" />
+    </MenuItem>
+    <MenuItem Name="FilterFeedUrlMenuItem" Header="Feed URL" />
+</ContextMenu>
