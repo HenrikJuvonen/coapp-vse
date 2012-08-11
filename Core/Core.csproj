@@ -68,6 +68,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoAppApplication.cs" />
     <Compile Include="Controls\ElevationShield.xaml.cs">
       <DependentUpon>ElevationShield.xaml</DependentUpon>
     </Compile>

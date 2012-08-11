@@ -22,9 +22,11 @@ namespace CoApp.VSE.VSPackage
         private IVsMonitorSelection _vsMonitorSelection;
 
         private DTEEvents DTEEvents;
-
+        
         protected override void Initialize()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CoAppApplication.ResolveAssembly);
+
             base.Initialize();
             
             // get the UI context cookie for the debugging mode

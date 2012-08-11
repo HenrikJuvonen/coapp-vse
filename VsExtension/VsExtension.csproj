@@ -48,6 +48,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">

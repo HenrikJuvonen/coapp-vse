@@ -41,7 +41,7 @@ sign {
     set: bin_path = @"output\any\release\bin\";
     
     build-command: @"
-        simplesigner --nologo --sign ${bin_path}CoApp.VSE.Standalone.exe ${bin_path}CoApp.VSE.Core.dll ${bin_path}CoApp.VSE.VSPackage.dll || goto failed
+        simplesigner --nologo --sign --strong-name ${bin_path}CoApp.VSE.Standalone.exe ${bin_path}CoApp.VSE.Core.dll ${bin_path}CoApp.VSE.VSPackage.dll || goto failed
     ";
 }
 
@@ -49,6 +49,8 @@ anycpu {
     compiler: vc10;
     set: bin_path = @"output\any\${cfg}\bin\";
     uses: clean;
+	
+    requires: "MahApps.Metro-0.9";
 	
     targets: {
         "${bin_path}CoApp.VSE.Standalone.exe",
