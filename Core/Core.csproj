@@ -42,10 +42,7 @@
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\MahApps.Metro.dll</HintPath>
-    </Reference>
+    <Reference Include="MahApps.Metro" />
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -74,9 +71,6 @@
     </Compile>
     <Compile Include="Controls\FilterMenu.xaml.cs">
       <DependentUpon>FilterMenu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FilterPopup.xaml.cs">
-      <DependentUpon>FilterPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Nodes.cs" />
     <Compile Include="Controls\SummaryControl.xaml.cs">
@@ -136,10 +130,6 @@
     <Page Include="Controls\FilterMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\FilterPopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SummaryControl.xaml">
       <SubType>Designer</SubType>

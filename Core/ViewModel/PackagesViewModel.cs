@@ -135,11 +135,11 @@ namespace CoApp.VSE.Core.ViewModel
                     result = result && isHighest;
             }
 
-            if (filters.ContainsKey("Project"))
+            if (filters.ContainsKey("Projects"))
             {
                 var isInProjects = false;
 
-                foreach (var projectName in filters["Project"].Where(m => m != null))
+                foreach (var projectName in filters["Projects"].Where(m => m != null))
                 {
                     var project = Module.DTE.Solution.Projects.OfType<Project>().FirstOrDefault(m => m.Name == projectName);
 
