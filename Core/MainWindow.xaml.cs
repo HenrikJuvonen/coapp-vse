@@ -6,71 +6,21 @@
     using System.Windows;
     using System.Windows.Input;
     using Controls;
+    using System.Runtime.InteropServices;
+    using System.Windows.Interop;
 
     public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
-            InitHeader();
-        }
-
-        private void InitHeader()
-        {
-            var border = Header;
-            var restoreOnMouseMove = false;
-
-            border.MouseLeftButtonDown += (s, e) =>
-            {
-                if (e.ClickCount == 2)
-                {
-                    WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
-                    e.Handled = true;
-                }
-                else
-                {
-                    if (WindowState == WindowState.Maximized)
-                    {
-                        restoreOnMouseMove = true;
-                    }
-                }
-            };
-
-            border.MouseMove += (s, e) =>
-            {
-                if (restoreOnMouseMove)
-                {
-                    restoreOnMouseMove = false;
-
-                    var width = RestoreBounds.Width;
-                    var x = e.GetPosition(this).X - width / 2;
-
-                    if (x < 0)
-                    {
-                        x = 0;
-                    }
-                    else if (x + width > System.Windows.SystemParameters.PrimaryScreenWidth)
-                    {
-                        x = System.Windows.SystemParameters.PrimaryScreenWidth - width;
-                    }
-
-                    WindowState = WindowState.Normal;
-                    Left = x;
-                    Top = 0;
-
-                    try
-                    {
-                        DragMove();
-                    }
-                    catch
-                    {
-                    }
-                }
-            };
         }
 
         public void ExecuteToggleConsole(object sender = null, EventArgs e = null)
         {
+            if (Module.PackageManager.Settings["#showConsole"].BoolValue || !MainControl.IsVisible)
+                return;
+
             MainControl.ConsoleControl.Visibility = MainControl.ConsoleControl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
 
             if (MainControl.ConsoleControl.IsVisible)

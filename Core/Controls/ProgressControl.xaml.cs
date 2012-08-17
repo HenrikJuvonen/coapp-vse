@@ -150,22 +150,26 @@ namespace CoApp.VSE.Core.Controls
 
         private void OnProgressAvailable(object sender, ProgressEventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            try
             {
-                if (Packages == null)
-                    return;
-
-                var item = Packages.FirstOrDefault(n => n.Name == e.Name && n.Flavor == e.Flavor && n.Version == e.Version && n.Architecture == e.Architecture);
-
-                if (item != null)
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    //WriteToLog(string.Format("{0};{1};{2}", e.CanonicalName, e.Status, e.Progress), Brushes.Blue);
-                    item.Status = e.Status;
-                    item.Progress = e.Progress;
-                }
-                
-                OverallProgress.Value = Packages.Average(n => n.Progress);
-            }));
+                    if (Packages == null)
+                        return;
+
+                    var item = Packages.FirstOrDefault(n => n.Name == e.Name && n.Flavor == e.Flavor && n.Version == e.Version && n.Architecture == e.Architecture);
+
+                    if (item != null)
+                    {
+                        //WriteToLog(string.Format("{0};{1};{2}", e.CanonicalName, e.Status, e.Progress), Brushes.Blue);
+                        item.Status = e.Status;
+                        item.Progress = e.Progress;
+                    }
+
+                    OverallProgress.Value = Packages.Average(n => n.Progress);
+                }));
+            }
+            catch { }
         }
 
         private void End()

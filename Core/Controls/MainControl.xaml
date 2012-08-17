@@ -16,6 +16,9 @@
 
     <UserControl.CommandBindings>
         <CommandBinding 
+            Command="{x:Static VSE:Commands.Browse}"
+            Executed="ExecuteBrowse" />
+        <CommandBinding 
             Command="{x:Static VSE:Commands.Reload}"
             Executed="ExecuteReload" />
         <CommandBinding 
@@ -73,6 +76,11 @@
                         <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/reload.png" Width="16" Height="16" />
                     </WrapPanel>
                 </Button>
+                <Button Margin="2,0,0,0" ToolTip="Browse Package Contents" Command="{x:Static VSE:Commands.Browse}" Name="BrowseButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="{Binding SelectedPackage.PackageIdentity.IsInstalled}">
+                    <WrapPanel Margin="2,0,2,0">
+                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/browse.png" Width="16" Height="16" />
+                    </WrapPanel>
+                </Button>
                 <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Mark Updates" />
@@ -115,7 +123,7 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="4,0,0,0">
-                <DataGrid Name="PackagesDataGrid" ItemsSource="{Binding View}" SelectedItem="{Binding SelectedPackage}" Visibility="Collapsed">
+                <DataGrid Name="PackagesDataGrid" ItemsSource="{Binding View}" SelectedItem="{Binding SelectedPackage}" Visibility="Collapsed" MouseDoubleClick="OnDataGridMouseDoubleClick">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="16">
                             <DataGridTemplateColumn.CellTemplate>
@@ -195,7 +203,8 @@
 
             <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="1,0,0,0">
                 <ScrollViewer Name="PackageDetailsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch">
-                    <StackPanel Width="205" DataContext="{Binding SelectedPackage}">
+                    <StackPanel Width="190" Margin="5" DataContext="{Binding SelectedPackage}">
+                        <!--
                         <WrapPanel Visibility="{Binding Name, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Name:" />
                             <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Name}"/>
@@ -212,35 +221,34 @@
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Architecture:" />
                             <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Architecture}"/>
                         </WrapPanel>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}">
+                        -->
+                        <TextBlock Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}" TextWrapping="Wrap">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Publisher:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" TextWrapping="Wrap">
-                                <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
-                                    <Run Text="{Binding PackageIdentity.PackageDetails.Publisher.Name}" />
-                                </Hyperlink>                            
-                            </TextBlock>
-                        </StackPanel>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
+                                <Run Text="{Binding PackageIdentity.PackageDetails.Publisher.Name}" />
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock Visibility="{Binding PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Date Published:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.PublishDate}" TextWrapping="Wrap" />
-                        </StackPanel>
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PublishDate}" />
+                        </TextBlock>
                         <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Licenses, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Licenses:" />
                             <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Style="{StaticResource PropertyValueStyle}" TextTrimming="CharacterEllipsis">
+                                        <TextBlock ToolTip="{Binding Name}">
                                             <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
-                                                <Run Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                                <Run Text="{Binding Name}" />
                                             </Hyperlink>
                                         </TextBlock>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.SummaryDescription, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Summary:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextWrapping="Wrap" />
+                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Description, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Description:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.Description}" TextWrapping="Wrap" IsHyphenationEnabled="True" />
                         </StackPanel>
                         <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Tags, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Tags:" />

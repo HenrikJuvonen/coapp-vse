@@ -33,22 +33,17 @@ namespace CoApp.VSE.Core.ViewModel
 
         public ICollectionView View { get; private set; }
 
-        public PackagesViewModel(IEnumerable<Package> packages = null)
+        public PackagesViewModel(IEnumerable<Package> packages)
         {
             Packages = new ObservableCollection<PackageItem>();
             
             BuildPackageCollection(packages);
             
-            View = CollectionViewSource.GetDefaultView(Packages);
-            View.Filter = FilterOut;
             Sort(ListSortDirection.Ascending);
         }
 
         private void BuildPackageCollection(IEnumerable<Package> packages)
         {
-            if (packages == null)
-                return;
-
             foreach (var package in packages)
             {
                 if (package != null)
@@ -96,9 +91,9 @@ namespace CoApp.VSE.Core.ViewModel
                 if (boolean.Contains("Is Wanted"))
                     result = result && n.PackageIdentity.IsWanted;
                 
-                if (boolean.Contains("Is Highest Version"))
+                if (boolean.Contains("Is Latest Version"))
                 {
-                    var allVersions = View.Cast<PackageItem>().Where(m => m.Name == n.Name && m.Flavor == n.Flavor && m.Architecture == n.Architecture);
+                    var allVersions = Packages.Where(m => m.Name == n.Name && m.Flavor == n.Flavor && m.Architecture == n.Architecture);
 
                     if (allVersions.Any())
                         result = result && n.Version == allVersions.Max(m => m.PackageIdentity.Version);
@@ -113,26 +108,14 @@ namespace CoApp.VSE.Core.ViewModel
 
             if (filters.ContainsKey("Feed URL"))
             {
-                var isHighest = false;
                 var isInFeeds = false;
 
                 foreach (var feedLocation in filters["Feed URL"].Where(m => m != null))
                 {
                     isInFeeds = isInFeeds || Module.PackageManager.IsPackageInFeed(n.PackageIdentity, feedLocation);
-
-                    if (boolean != null && boolean.Contains("Is Highest Version"))
-                    {
-                        var allVersions = Module.PackageManager.PackagesInFeeds[feedLocation].Where(m => m.Name == n.Name && m.Flavor == n.Flavor && m.Architecture == n.Architecture);
-
-                        if (allVersions.Any())
-                            isHighest = isHighest || n.Version == allVersions.Max(m => m.Version);
-                    }
                 }
 
                 result = result && isInFeeds;
-
-                if (boolean != null && boolean.Contains("Is Highest Version"))
-                    result = result && isHighest;
             }
 
             if (filters.ContainsKey("Projects"))
@@ -154,7 +137,20 @@ namespace CoApp.VSE.Core.ViewModel
                 var searchText = filters["Search"].FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(searchText))
-                    result = result && n.PackageIdentity.CanonicalName.PackageName.Contains(searchText);
+                {
+                    var split = searchText.Split(' ');
+                    var matches = false;
+                    foreach (var text in split)
+                    {
+                        if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+                            continue;
+
+                        if (n.PackageIdentity.CanonicalName.PackageName.Contains(text) || n.PackageIdentity.PackageDetails.Tags.Contains(text))
+                            matches = true;
+                    }
+
+                    result = result && matches;
+                }
             }
 
             return result;
@@ -162,7 +158,12 @@ namespace CoApp.VSE.Core.ViewModel
 
         public void Sort(ListSortDirection sortDirection)
         {
-            var view = (ListCollectionView) View;
+            SelectedPackage = null;
+
+            View = CollectionViewSource.GetDefaultView(Packages);
+            View.Filter = FilterOut;
+
+            var view = (ListCollectionView)View;
             view.CustomSort = sortDirection == ListSortDirection.Ascending ? new SortAscending() : (IComparer)new SortDescending();
         }
 

@@ -17,7 +17,7 @@
         <MenuItem Header="Is Blocked" Click="OnMenuItemClick" />
         <MenuItem Header="Is Dependency" Click="OnMenuItemClick" />
         <MenuItem Header="Is Development Package" Click="OnMenuItemClick"/>
-        <MenuItem Header="Is Highest Version" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Latest Version" Click="OnMenuItemClick" />
         <MenuItem Header="Is Installed" Click="OnMenuItemClick" />
         <MenuItem Header="Is Update" Click="OnMenuItemClick" />
         <MenuItem Header="Is Stable" Click="OnMenuItemClick" />
@@ -30,6 +30,7 @@
         <MenuItem Header="net45" Click="OnMenuItemClick" />
         <MenuItem Header="vc10" Click="OnMenuItemClick" />
         <MenuItem Header="vc11" Click="OnMenuItemClick" />
+        <MenuItem Header="vc6" Click="OnMenuItemClick" />
         <MenuItem Header="vc8" Click="OnMenuItemClick" />
         <MenuItem Header="vc9" Click="OnMenuItemClick" />
     </MenuItem>

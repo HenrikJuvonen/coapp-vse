@@ -5,6 +5,7 @@
 
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="{DynamicResource HighlightDarkColor}" />
 
+    <Converters:BooleanToVisibilityConverter x:Key="booleanToVisibility" />
     <Converters:NullOrEmptyToVisibilityConverter x:Key="nullOrEmptyToVisibility" />
     <Converters:NullOrEmptyToBooleanConverter x:Key="nullOrEmptyToBoolean" />
     <Converters:IntegerToBooleanConverter x:Key="integerToBoolean" />
@@ -12,17 +13,13 @@
     
     <Style x:Key="PropertyNameStyle" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Margin" Value="3,1,3,1" />
-    </Style>
-    
-    <Style x:Key="PropertyValueStyle" TargetType="TextBlock">
-        <Setter Property="Margin" Value="3,1,3,1" />
-    </Style>
-    
-    <Style x:Key="DefaultMargin" TargetType="Control">
-        <Setter Property="Margin" Value="3,3,3,3" />
+        <Setter Property="Margin" Value="0,1,0,1" />
     </Style>
 
+    <Style x:Key="PropertyValueStyle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,1,10,1" />
+    </Style>
+    
     <Style TargetType="DataGrid" >
         <Setter Property="IsReadOnly" Value="True" />
         <Setter Property="SelectionMode" Value="Single" />
@@ -35,7 +32,7 @@
         <Setter Property="HeadersVisibility" Value="None" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="AlternationCount" Value="2" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource GrayBrush12}" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="EnableRowVirtualization" Value="True" />
@@ -47,7 +44,7 @@
     <Style TargetType="DataGridRow">
         <Style.Triggers>
             <Trigger Property="AlternationIndex" Value="0">
-                <Setter Property="Background" Value="#FFf6f6f6" />
+                <Setter Property="Background" Value="{DynamicResource GrayBrush12}" />
             </Trigger>
             <Trigger Property="AlternationIndex" Value="1">
                 <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
@@ -100,7 +97,6 @@
 
     <Style TargetType="Hyperlink" x:Key="HyperlinkStyle">
         <Setter Property="Foreground" Value="Black" />
-
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="Blue" />

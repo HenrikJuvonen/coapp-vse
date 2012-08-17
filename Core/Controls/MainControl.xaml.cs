@@ -61,12 +61,12 @@ namespace CoApp.VSE.Core.Controls
             }));
         }
 
-        public void Reload(bool search = false)
+        public void Reload()
         {
             if (Module.PackageManager.IsQuerying)
             {
                 var timer = new DispatcherTimer();
-                timer.Tick += (o, a) => { timer.Stop(); Reload(search); };
+                timer.Tick += (o, a) => { timer.Stop(); Reload(); };
                 timer.Interval = new TimeSpan(0, 0, 1);
                 timer.Start();
                 return;
@@ -80,20 +80,8 @@ namespace CoApp.VSE.Core.Controls
             PackagesDataGrid.Visibility = Visibility.Collapsed;
             ProgressPane.Visibility = Visibility.Visible;
 
-            var searchText = SearchBox.Text.ToLowerInvariant();
             DataContext = null;
-
-            var worker = new BackgroundWorker();
-            worker.DoWork += (sender, args) => Module.PackageManager.QueryPackages();
-            worker.DoWork += RefreshView;
-            worker.RunWorkerCompleted += Finish;
-            worker.RunWorkerAsync(searchText);
-        }
-
-        private int _counter;
-        private AutoResetEvent _resetEvent = new AutoResetEvent(true);
-        private void RefreshView(object sender, DoWorkEventArgs e)
-        {
+            
             Module.PackageManager.Filters.Clear();
 
             foreach (FilterControl item in FilterItemsControl.FilterBox.Items)
@@ -107,22 +95,44 @@ namespace CoApp.VSE.Core.Controls
             if (Module.PackageManager.Filters.ContainsKey("Search"))
                 Module.PackageManager.Filters.Remove("Search");
 
-            Module.PackageManager.Filters.Add("Search", new List<string> { (string) e.Argument });
+            Module.PackageManager.Filters.Add("Search", new List<string> { SearchBox.Text.ToLowerInvariant() });
 
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, args) => Module.PackageManager.QueryPackages();
+            worker.DoWork += RefreshView;
+            worker.RunWorkerCompleted += Finish;
+            worker.RunWorkerAsync();
+        }
+
+        private int _counter;
+        private void RefreshView(object sender, DoWorkEventArgs e)
+        {
             _counter++;
-            
-            _resetEvent.WaitOne();
-            _resetEvent.Reset();
 
-            Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
-
-            Thread.Sleep(500);
-            _resetEvent.Set();
+            Thread.Sleep(120);
 
             _counter--;
 
-            if (_counter > 0)
+            if (_counter != 0)
+            {
                 e.Cancel = true;
+                return;
+            }
+            
+            lock (this)
+            {
+                Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
+            }
+
+            if (!Module.PackageManager.PackagesViewModel.View.IsEmpty)
+            {
+                Thread.Sleep(400);
+            }
+
+            if (_counter != 0)
+            {
+                e.Cancel = true;
+            }
         }
 
         private void Finish(object sender, RunWorkerCompletedEventArgs e)
@@ -130,13 +140,16 @@ namespace CoApp.VSE.Core.Controls
             if (e.Cancelled)
                 return;
 
-            DataContext = Module.PackageManager.PackagesViewModel;
-            PackagesDataGrid.SelectedIndex = 0;
+            lock (this)
+            {
+                DataContext = Module.PackageManager.PackagesViewModel;
+            }
 
-            if (PackagesDataGrid.HasItems)
+            if (!Module.PackageManager.PackagesViewModel.View.IsEmpty)
             {
                 PackageDetailsPanel.Visibility = Visibility.Visible;
                 PackagesDataGrid.Visibility = Visibility.Visible;
+                PackagesDataGrid.SelectedIndex = 0;
             }
             else
             {
@@ -156,9 +169,7 @@ namespace CoApp.VSE.Core.Controls
 
             if (IsLoaded && !Module.PackageManager.IsQuerying)
             {
-                PackagesDataGrid.CommitEdit();
-                PackagesDataGrid.CancelEdit();
-                Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
+                Reload();
             }
         }
 
@@ -166,9 +177,16 @@ namespace CoApp.VSE.Core.Controls
         {
             if (e.Key == Key.Escape)
             {
-                if (SearchBox.IsFocused && !SearchBox.Text.IsNullOrEmpty())
+                if (SearchBox.IsFocused)
                 {
-                    SearchBox.Clear();
+                    if (SearchBox.Text.IsNullOrEmpty())
+                    {
+                        FocusManager.SetFocusedElement(Module.MainWindow, Module.MainWindow);
+                    }
+                    else
+                    {
+                        SearchBox.Clear();
+                    }
                     e.Handled = true;
                 }
             }
@@ -176,7 +194,7 @@ namespace CoApp.VSE.Core.Controls
 
         private void OnSearchBoxTextChanged(object sender, TextChangedEventArgs e)
         {
-            Reload(true);
+            Reload();
         }
 
         public void ExecuteShowOptions(object sender = null, ExecutedRoutedEventArgs e = null)
@@ -190,6 +208,13 @@ namespace CoApp.VSE.Core.Controls
                 Module.ShowVisualStudioControl();
             else
                 Module.ShowSummaryControl();
+        }
+
+        private void ExecuteBrowse(object sender, ExecutedRoutedEventArgs e)
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += (o, a) => System.Diagnostics.Process.Start(Module.PackageManager.PackagesViewModel.SelectedPackage.PackageIdentity.GetPackageDirectory());
+            worker.RunWorkerAsync();
         }
 
         private void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
@@ -264,9 +289,20 @@ namespace CoApp.VSE.Core.Controls
             worker.RunWorkerAsync();            
         }
 
+        private void OnDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (PackagesDataGrid.CurrentColumn.DisplayIndex == 0)
+                return;
+
+            OnStatusCheckBoxChanged(null, null);
+        }
+
         private void OnStatusCheckBoxChanged(object sender, EventArgs e)
         {
             var packageItem = (PackageItem)PackagesDataGrid.SelectedItem;
+
+            if (packageItem == null)
+                return;
 
             if (packageItem.PackageIdentity.IsInstalled)
             {
@@ -405,13 +441,13 @@ namespace CoApp.VSE.Core.Controls
         private void UpdatePackageItemBackground(PackageItem packageItem)
         {
             if (Module.PackageManager.VisualStudioPlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = Brushes.LightSeaGreen;
+                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xaa, 0xaa, 0xd0));
             else if (Module.PackageManager.UpdatePlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = Brushes.Gold;
+                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xe7, 0xdd, 0xa3));
             else if (Module.PackageManager.InstallPlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = Brushes.SpringGreen;
+                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0x9a, 0xd0, 0x9a));
             else if (Module.PackageManager.RemovePlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = Brushes.LightCoral;
+                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xe0, 0x9a, 0x9a));
             else
                 packageItem.ItemBackground = null;
         }
@@ -437,7 +473,7 @@ namespace CoApp.VSE.Core.Controls
             if (packageItem.PackageIdentity.IsInstalled)
             {
                 ((MenuItem)menu.Items[1]).IsEnabled = false;
-                ((MenuItem)menu.Items[2]).IsEnabled = !unmark.IsEnabled && 
+                ((MenuItem)menu.Items[2]).IsEnabled = !unmark.IsEnabled && !packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange) &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
                 ((MenuItem)menu.Items[3]).IsEnabled = !unmark.IsEnabled && !packageItem.IsHighestInstalled;
                 ((MenuItem)menu.Items[4]).IsEnabled = !unmark.IsEnabled && !packageItem.IsHighestInstalled;

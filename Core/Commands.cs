@@ -6,6 +6,7 @@
     {
         public readonly static RoutedCommand AddFilter = new RoutedCommand();
         public readonly static RoutedCommand Reload = new RoutedCommand();
+        public readonly static RoutedCommand Browse = new RoutedCommand();
         public readonly static RoutedCommand MarkUpdates = new RoutedCommand();
         public readonly static RoutedCommand MarkUpgrades = new RoutedCommand();
         public readonly static RoutedCommand Apply = new RoutedCommand();

@@ -43,7 +43,7 @@ files[exes] {
     root: "..\output\any\release\bin";
     
     include: {
-        "CoApp.VSE.Standalone.exe",
+        "CoApp.VSE.exe",
     };
 };
 
@@ -88,7 +88,7 @@ package-composition {
     };
 	
     shortcuts : { 
-        @"${bin}\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.Standalone.exe";
-        @"${apps}\start menu\CoApp\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.Standalone.exe";
+        @"${bin}\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.exe";
+        @"${apps}\start menu\CoApp\CoApp.VSE.lnk" = @"${packagedir}\CoApp.VSE.exe";
     };
 };

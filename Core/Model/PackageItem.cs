@@ -49,9 +49,6 @@ namespace CoApp.VSE.Core.Model
             }
         }
         
-        /// <summary>
-        /// StatusImage of the package
-        /// </summary>
         public BitmapImage StatusImage
         {
             get
@@ -140,36 +137,29 @@ namespace CoApp.VSE.Core.Model
             get { return Module.PackageManager.IsPackageHighestInstalled(PackageIdentity); }
         }
 
-        /// <summary>
-        /// Name of the package
-        /// </summary>
         public string Name
         {
             get { return PackageIdentity.Name; }
         }
 
-        /// <summary>
-        /// Flavor of the package
-        /// </summary>
         public string Flavor
         {
             get { return PackageIdentity.Flavor.Plain; }
         }
 
-        /// <summary>
-        /// Version of the package
-        /// </summary>
         public string Version
         {
             get { return PackageIdentity.Version; }
         }
 
-        /// <summary>
-        /// Architecture of the package
-        /// </summary>
         public string Architecture
         {
             get { return PackageIdentity.Architecture; }
+        }
+
+        public string PublishDate
+        {
+            get { return PackageIdentity.PackageDetails.PublishDate.ToShortDateString(); }
         }
 
         public IEnumerable<string> Dependencies

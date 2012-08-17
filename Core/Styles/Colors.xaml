@@ -5,7 +5,7 @@
     <Color x:Key="HighlightDarkColor">#66000000</Color>
     <Color x:Key="HighlightLightColor">#66000000</Color>
     <Color x:Key="AccentDarkColor">#FF1c739d</Color>
-    <Color x:Key="AccentColor">#FFf1f1f1</Color>
+    <Color x:Key="AccentColor">#FFefeff2</Color>
     <Color x:Key="AccentColor2">#FF086F9E</Color>
     <Color x:Key="AccentColor3">#FF086F9E</Color>
     <Color x:Key="AccentColor4">#FF086F9E</Color>
@@ -24,8 +24,8 @@
     <Color x:Key="Gray9">#FFA59F93</Color>
     <Color x:Key="Gray10">#7FFFFFFF</Color>
     <Color x:Key="Gray11">#7FA9A9A9</Color>
-    <Color x:Key="Gray12">#A5F7F7F7</Color>
-    <Color x:Key="Gray13">#FFf1f1f1</Color>
+    <Color x:Key="Gray12">#FFf6f6f6</Color>
+    <Color x:Key="Gray13">#FFefeff2</Color>
     <Color x:Key="TextBoxText">#FF414141</Color>
     <Color x:Key="NormalForegroundColor">#FF000000</Color>
     <Color x:Key="HoverForegroundColor">#FFFFFFFF</Color>

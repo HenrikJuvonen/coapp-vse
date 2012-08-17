@@ -76,7 +76,6 @@ namespace CoApp.VSE.Core
             }
 
             MainWindow.WindowState = WindowState.Normal;
-            MainWindow.Activate();
         }
 
         public static void ClearControls()
@@ -313,6 +312,7 @@ namespace CoApp.VSE.Core
             {
                 MainWindow.Title = "CoApp for Visual Studio";
                 TrayIcon.Text = MainWindow.Title;
+                MainWindow.ShowMinButton = false;
                 MainWindow.ShowInTaskbar = false;
             }
             else

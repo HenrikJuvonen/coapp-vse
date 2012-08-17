@@ -25,8 +25,8 @@ namespace CoApp.VSE.Core.Packaging
 
         public bool IsQuerying { get; private set; }
         public bool IsQueryCompleted { get { return _packagesViewModel != null; } }
-        
-        private readonly Dictionary<Package, Mark> _marks = new Dictionary<Package, Mark>();
+
+        private readonly Dictionary<Package, List<Mark>> _marks = new Dictionary<Package, List<Mark>>();
         public Dictionary<string, List<string>> Filters = new Dictionary<string, List<string>>();
 
         private bool _initialUpdateCheckCompleted;
@@ -140,24 +140,25 @@ namespace CoApp.VSE.Core.Packaging
         {
             if (_marks.ContainsKey(package))
             {
-                _marks[package] |= mark;
+                _marks[package].Add(mark);
             }
             else
             {
-                _marks.Add(package, mark);
+                _marks.Add(package, new List<Mark> { mark });
             }
         }
 
         public bool RemoveMark(Package package, Mark mark)
         {
-            if (_marks.ContainsKey(package) && _marks[package].HasFlag(mark))
+            if (_marks.ContainsKey(package) && _marks[package].Contains(mark))
             {
-                _marks[package] ^= mark;
+                _marks[package].Remove(mark);
 
-                if (_marks[package] == Mark.None)
+                if (!_marks[package].Any())
                 {
                     _marks.Remove(package);
                 }
+
                 return true;
             }
             return false;
@@ -167,12 +168,13 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                return _marks.Where(n => (n.Value & (Mark.DirectReinstall |
-                                                    Mark.DirectUpgrade |
-                                                    Mark.DirectRemove |
-                                                    Mark.DirectCompletelyRemove |
-                                                    Mark.IndirectRemove |
-                                                    Mark.IndirectCompletelyRemove)) != 0)
+                return _marks
+                    .Where(n => n.Value.Contains(Mark.DirectReinstall) ||
+                                n.Value.Contains(Mark.DirectUpgrade) ||
+                                n.Value.Contains(Mark.DirectRemove) ||
+                                n.Value.Contains(Mark.DirectCompletelyRemove) ||
+                                n.Value.Contains(Mark.IndirectRemove) ||
+                                n.Value.Contains(Mark.IndirectCompletelyRemove))
                     .Select(n => n.Key)
                     .Where(package => !(package.Name == "coapp" && package.IsActive) && !package.PackageState.HasFlag(PackageState.DoNotChange)).ToArray();
             }
@@ -200,12 +202,13 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                return _marks.Where(n => (n.Value & (Mark.DirectInstall |
-                                                    Mark.DirectReinstall |
-                                                    Mark.IndirectInstall |
-                                                    Mark.IndirectReinstall |
-                                                    Mark.IndirectUpdate |
-                                                    Mark.IndirectUpgrade)) != 0)
+                return _marks
+                    .Where(n => n.Value.Contains(Mark.DirectInstall) ||
+                                n.Value.Contains(Mark.DirectReinstall) ||
+                                n.Value.Contains(Mark.IndirectInstall) ||
+                                n.Value.Contains(Mark.IndirectReinstall) ||
+                                n.Value.Contains(Mark.IndirectUpdate) ||
+                                n.Value.Contains(Mark.IndirectUpgrade))
                     .Select(n => n.Key)
                     .Where(package => !package.IsBlocked && (!package.IsInstalled || (package.IsInstalled && RemovePlan.Contains(package)))).ToArray();
             }
@@ -215,7 +218,8 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                return _marks.Where(n => (n.Value & Mark.DirectUpdate) != 0)
+                return _marks
+                    .Where(n => n.Value.Contains(Mark.DirectUpdate))
                     .Select(n => n.Key).ToArray();
             }
         }
@@ -224,7 +228,9 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                return _marks.Where(n => (n.Value & (Mark.DirectVisualStudio | Mark.IndirectVisualStudio)) != 0)
+                return _marks
+                    .Where(n => n.Value.Contains(Mark.DirectVisualStudio) ||
+                                n.Value.Contains(Mark.IndirectVisualStudio))
                     .Select(n => n.Key).ToArray();
             }
         }
@@ -503,7 +509,7 @@ namespace CoApp.VSE.Core.Packaging
                         }
                     }*/
 
-                    if (PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
+                    if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
                         var subdependencies = IdentifyPackageAndDependencies((Package) dependency);
                         lock (this)
@@ -564,10 +570,9 @@ namespace CoApp.VSE.Core.Packaging
                         }
                     }*/
 
-                    if (PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
+                    if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
                             dependencies.Add((Package)dependency);
-
                     }
 
                 });

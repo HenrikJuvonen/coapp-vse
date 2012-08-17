@@ -137,7 +137,7 @@ namespace CoApp.VSE.Core.Controls
                 }
 
                 // Boolean
-                var details = new[] { "Is Used In Projects", "Is Dependency", "Is Development Package", "Is Highest Version", "Is Installed", "Is Update", "Is Stable", "Is Wanted" };
+                var details = new[] { "Is Used In Projects", "Is Dependency", "Is Development Package", "Is Latest Version", "Is Installed", "Is Update", "Is Stable", "Is Wanted" };
                 foreach (var detail in details)
                 {
                     foreach (var filter in filters[2])
