@@ -62,6 +62,8 @@ namespace CoApp.VSE.Core.Controls
             VsPane.Visibility = Visibility.Collapsed;
             ProgressPane.Visibility = Visibility.Visible;
 
+            ApplyButton.IsEnabled = false;
+
             SolutionTreeView.DataContext = null;
             PackagesDataGrid.ItemsSource = null;
 
@@ -93,6 +95,8 @@ namespace CoApp.VSE.Core.Controls
 
                 VsPane.Visibility = Visibility.Visible;
                 ProgressPane.Visibility = Visibility.Collapsed;
+
+                ApplyButton.IsEnabled = true;
             };
 
             worker.RunWorkerAsync();

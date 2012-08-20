@@ -72,11 +72,13 @@ namespace CoApp.VSE.Core.Packaging
 
         public void Reset()
         {
-            _packagesViewModel = null;
-            IsQuerying = false;
-            PackagesInFeeds.Clear();
-
-            _marks.Clear();
+            if (IsQueryCompleted)
+            {
+                _packagesViewModel = null;
+                IsQuerying = false;
+                PackagesInFeeds.Clear();
+                _marks.Clear();
+            }
         }
 
         public bool IsAnyUpdates
@@ -307,6 +309,9 @@ namespace CoApp.VSE.Core.Packaging
 
             if (Settings["#closeToTray"].Value == null)
                 Settings["#closeToTray"].BoolValue = false;
+
+            if (Settings["#theme"].Value == null)
+                Settings["#theme"].StringValue = "Light";
         }
 
         public bool Elevate()
@@ -572,16 +577,15 @@ namespace CoApp.VSE.Core.Packaging
 
                     if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
-                            dependencies.Add((Package)dependency);
+                        dependencies.Add((Package)dependency);
                     }
-
                 });
             }
             catch
             {
             }
 
-            return dependencies;
+            return dependencies.Where(n => n != null);
         }
 
         private IEnumerable<Package> GetPackagesFromAllFeeds()
@@ -619,6 +623,17 @@ namespace CoApp.VSE.Core.Packaging
                 pkgFilter = Package.Filters.PackagesWithUpdateAvailable & Package.Filters.InstalledPackages;
 
             IEnumerable<Package> packages = QueryPackages(new[] { "*" }, pkgFilter, location).ToArray();
+
+            if (type == "installed")
+            {
+                lock (this)
+                {
+                    if (PackagesInFeeds.ContainsKey(""))
+                        PackagesInFeeds.Remove("");
+
+                    PackagesInFeeds.Add("", packages.ToList());
+                }
+            }
 
             if (type == "updatable")
             {

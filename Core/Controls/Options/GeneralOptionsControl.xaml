@@ -29,10 +29,12 @@
         </StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Package Cache" FontWeight="Bold" />
-            <Button Margin="4,4,4,2" Name="CacheClearButton" Click="OnClearPackageCacheClick" HorizontalAlignment="Left">
-                <TextBlock Margin="2,0,2,0" Text="Clear" />
-            </Button>
-            <TextBlock Margin="4,0,4,4" Name="CacheClearStatusLabel" TextWrapping="Wrap" Visibility="Collapsed"/>
+            <WrapPanel Margin="4" HorizontalAlignment="Left">
+                <Button Name="CacheClearButton" Click="OnClearPackageCacheClick">
+                    <TextBlock Text="Clear" />
+                </Button>
+                <TextBlock VerticalAlignment="Center" Margin="4,0,4,0" Name="CacheClearStatusLabel" Visibility="Collapsed"/>
+            </WrapPanel>
         </StackPanel>
         <StackPanel Margin="0,2,0,2">
             <Label Content="Automatic Updates" FontWeight="Bold" />
@@ -54,14 +56,22 @@
             <Label Content="CoApp Improvement Program" FontWeight="Bold" />
             <StackPanel Margin="4">
                 <TextBlock Text="The program improves CoApp. Anonymous information about packages installed with will be sent to CoApp.org for the improvement of CoApp. No identifying information will be sent." TextWrapping="Wrap" Margin="0,0,0,4" HorizontalAlignment="Left" />
-                <RadioButton Name="TelemetryRadio1" Content="Yes, I would like to participate" />
-                <RadioButton Name="TelemetryRadio2" Content="No, I don't want to participate" />
-                <Button Name="ApplyTelemetryButton" Click="OnChanged" Margin="0,4,0,0" HorizontalAlignment="Left">
-                    <WrapPanel Margin="2,0,2,0">
-                        <Controls:ElevationShield x:Name="TelemetryShield"/>
-                        <TextBlock Text="Save" VerticalAlignment="Center" />
-                    </WrapPanel>
-                </Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <RadioButton Name="TelemetryRadio1" Content="Yes, I would like to participate" />
+                        <RadioButton Name="TelemetryRadio2" Content="No, I don't want to participate" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Name="ApplyTelemetryButton" Click="OnChanged" VerticalAlignment="Bottom">
+                        <WrapPanel Margin="2,0,2,0">
+                            <Controls:ElevationShield x:Name="TelemetryShield"/>
+                            <TextBlock Text="Save" VerticalAlignment="Center" />
+                        </WrapPanel>
+                    </Button>
+                </Grid>
             </StackPanel>
         </StackPanel>
     </StackPanel>

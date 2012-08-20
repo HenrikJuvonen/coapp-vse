@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Model;
+using CoApp.Toolkit.Extensions;
 
 namespace CoApp.VSE.Core.Extensions
 {
-    using Toolkit.Extensions;
-
     public static class PackageExtensions
     {
         private static PackageModel GetPackageModel(this IPackage package)
@@ -18,7 +19,8 @@ namespace CoApp.VSE.Core.Extensions
 
         public static string GetPackageDirectory(this IPackage package)
         {
-            string dir = string.Format(@"C:\ProgramData\program files{0}\",
+            string dir = string.Format(@"{0}\program files{1}\",
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                 package.Architecture == "any" ? string.Empty :
                 package.Architecture == "x64" ? " (x64)" :
                 package.Architecture == "x86" ? " (x86)" :

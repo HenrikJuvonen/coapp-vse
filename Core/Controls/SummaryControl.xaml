@@ -17,14 +17,14 @@
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush13}">
+        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
             <WrapPanel VerticalAlignment="Center">
-                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Cancel" />
                     </WrapPanel>
                 </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Ok}" IsEnabledChanged="OnIsEnabledChanged" Style="{DynamicResource ChromelessButtonStyle}" Name="ApplyButton">
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Ok}" IsEnabledChanged="OnIsEnabledChanged" Name="ApplyButton">
                     <WrapPanel Margin="2,0,2,0">
                         <Controls:ElevationShield x:Name="ApplyButtonShield"/>
                         <TextBlock Text="Apply" />
@@ -32,7 +32,7 @@
                 </Button>
             </WrapPanel>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Background="{DynamicResource GrayBrush7}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -45,7 +45,7 @@
             <DataGrid Grid.Row="1" Grid.Column="0" Name="RemoveDataGrid" Margin="5,0,5,20" BorderThickness="1">
                 <DataGrid.Resources>
                     <Style TargetType="DataGridCell">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />
@@ -89,7 +89,7 @@
             <DataGrid Grid.Row="1" Grid.Column="1" Name="InstallDataGrid" Margin="5,0,5,20" BorderThickness="1">
                 <DataGrid.Resources>
                     <Style TargetType="DataGridCell">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />

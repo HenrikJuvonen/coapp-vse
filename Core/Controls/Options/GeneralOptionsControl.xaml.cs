@@ -62,7 +62,7 @@ namespace CoApp.VSE.Core.Controls.Options
 
             worker.RunWorkerCompleted += (o, args) =>
             {
-                CacheClearStatusLabel.Text = args.Error != null ? args.Error.Message : "Cleared.";
+                CacheClearStatusLabel.Text = args.Error != null ? "Error occurred." : "Cleared.";
                 CacheClearButton.IsEnabled = true;
 
                 var dispatcherTimer = new DispatcherTimer();

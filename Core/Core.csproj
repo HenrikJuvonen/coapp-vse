@@ -72,6 +72,9 @@
     <Compile Include="Controls\FilterMenu.xaml.cs">
       <DependentUpon>FilterMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\InfoControl.xaml.cs">
+      <DependentUpon>InfoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Model\Nodes.cs" />
     <Compile Include="Controls\SummaryControl.xaml.cs">
@@ -122,6 +125,8 @@
     <Compile Include="Packaging\PackageReferenceFile.cs" />
     <Compile Include="Utility\ProjectUtilities.cs" />
     <Compile Include="Utility\SolutionWalker.cs" />
+    <Compile Include="Utility\ThemeManager.cs" />
+    <Compile Include="Utility\UriHelper.cs" />
     <Compile Include="ViewModel\SolutionViewModel.cs" />
     <Compile Include="Utility\VsConstants.cs" />
     <Page Include="Controls\ElevationShield.xaml">
@@ -131,6 +136,10 @@
     <Page Include="Controls\FilterMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\InfoControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SummaryControl.xaml">
       <SubType>Designer</SubType>
@@ -203,6 +212,22 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Page Include="Styles\Accent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\BaseLight.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\BaseDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Accent2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\MetroWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -223,23 +248,16 @@
     <Resource Include="Resources\11.png" />
     <Resource Include="Resources\12.png" />
     <Resource Include="Resources\13.png" />
-    <Resource Include="Resources\search.png" />
     <Resource Include="Resources\CoApp.ico" />
     <Resource Include="Resources\vs.png" />
     <Resource Include="Resources\UAC-Win7-Disabled.png" />
     <Resource Include="Resources\UAC-Win7.png" />
-    <Resource Include="Resources\back.png" />
-    <Resource Include="Resources\options.png" />
-    <Resource Include="Resources\reload.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\browse.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

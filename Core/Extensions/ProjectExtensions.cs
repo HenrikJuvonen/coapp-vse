@@ -296,7 +296,8 @@ namespace CoApp.VSE.Core.Extensions
         public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<LibraryReference> libraries)
         {
             // TODO: This will be changed to "referenceassemblies\\flavor\\arch\\simplename-version\\" in 1.2.0.444+
-            string path = string.Format(@"C:\ProgramData\ReferenceAssemblies\{0}\{1}{2}-{3}\",
+            string path = string.Format(@"{0}\ReferenceAssemblies\{1}\{2}{3}-{4}\",
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                 packageReference.CanonicalName.Architecture, packageReference.CanonicalName.Name, packageReference.CanonicalName.Flavor, packageReference.CanonicalName.Version);
 
             var buildProject = project.AsMsBuildProject();
@@ -346,7 +347,9 @@ namespace CoApp.VSE.Core.Extensions
         /// </summary>
         public static void ManageLinkerDefinitions(this Project project, PackageReference packageReference, IEnumerable<Project> projects, IEnumerable<LibraryReference> libraries)
         {
-            var path = string.Format(@"C:\ProgramData\lib\{0}\", packageReference.CanonicalName.Architecture);
+            var path = string.Format(@"{0}\lib\{1}\",
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                packageReference.CanonicalName.Architecture);
 
             foreach (var configuration in project.GetConfigurations())
             {
@@ -389,7 +392,10 @@ namespace CoApp.VSE.Core.Extensions
         /// </summary>
         public static void ManageIncludeDirectories(this Project project, PackageReference packageReference, IEnumerable<Project> projects)
         {
-            var path = string.Format(@"C:\ProgramData\include\{0}-{1}\", packageReference.CanonicalName.Name.Split('-')[0], packageReference.CanonicalName.Version);
+            var path = string.Format(@"{0}\include\{1}-{2}\",
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                packageReference.CanonicalName.Name.Split('-')[0],
+                packageReference.CanonicalName.Version);
 
             foreach (var configuration in project.GetConfigurations())
             {

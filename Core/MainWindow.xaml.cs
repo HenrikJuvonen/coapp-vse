@@ -15,6 +15,29 @@
         {
             InitializeComponent();
         }
+        
+        private void ExecuteFocusSearch(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!MainControl.IsVisible)
+                return;
+
+            if (!MainControl.SearchBox.IsFocused)
+                MainControl.SearchBox.Focus();
+        }
+
+        public void ExecuteChangeTheme(object sender, EventArgs e)
+        {
+            if (Module.PackageManager.Settings["#theme"].StringValue == "Dark")
+            {
+                Module.PackageManager.Settings["#theme"].StringValue = "Light";
+                Utility.ThemeManager.ChangeTheme(Module.MainWindow, MahApps.Metro.Theme.Light);
+            }
+            else
+            {
+                Module.PackageManager.Settings["#theme"].StringValue = "Dark";
+                Utility.ThemeManager.ChangeTheme(Module.MainWindow, MahApps.Metro.Theme.Dark);
+            }
+        }
 
         public void ExecuteToggleConsole(object sender = null, EventArgs e = null)
         {
@@ -36,6 +59,8 @@
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
+            WindowState = WindowState.Normal;
+
             if (Module.IsApplying)
             {
                 Module.TrayIcon.Visible = true;

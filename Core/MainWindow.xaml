@@ -8,17 +8,18 @@
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     Icon="Resources/CoApp.ico"
     Width="800"
-    Height="556"
+    Height="557"
     MinWidth="800"
-    MinHeight="556"
+    MinHeight="557"
     Closing="OnClosing"
     ShowIconOnTitleBar="False"
     ShowTitleBar="True"
-    ResizeMode="CanResizeWithGrip"
+    ResizeMode="CanResize"
     WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ContextMenu.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Tooltip.xaml" />
@@ -27,8 +28,6 @@
                 <ResourceDictionary Source="Styles/Controls2.xaml" />
                 <ResourceDictionary Source="Styles/MetroWindow.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="ToolTip" BasedOn="{StaticResource MetroToolTip}" />
-            <Style TargetType="Separator" BasedOn="{StaticResource MetroSeparator}" />
             <Style TargetType="ContextMenu" BasedOn="{StaticResource MetroContextMenu}" />
         </ResourceDictionary>
     </Window.Resources>
@@ -37,10 +36,18 @@
         <CommandBinding 
             Command="{x:Static VSE:Commands.ToggleConsole}"
             Executed="ExecuteToggleConsole" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.ChangeTheme}"
+            Executed="ExecuteChangeTheme" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.FocusSearch}"
+            Executed="ExecuteFocusSearch" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
+        <KeyBinding Command="{x:Static VSE:Commands.FocusSearch}" Gesture="CTRL+F" />
         <KeyBinding Command="{x:Static VSE:Commands.ToggleConsole}" Gesture="F2" />
+        <KeyBinding Command="{x:Static VSE:Commands.ChangeTheme}" Gesture="F3" />
     </Window.InputBindings>
 
     <Grid>
@@ -49,10 +56,11 @@
             <RowDefinition Height="23" />
         </Grid.RowDefinitions>
         <Controls:MainControl x:Name="MainControl" Visibility="Visible" />
+        <Controls:InfoControl x:Name="InfoControl" Visibility="Collapsed" />
         <Options:OptionsControl x:Name="OptionsControl" Visibility="Collapsed" />
         <Controls:VisualStudioControl x:Name="VisualStudioControl" Visibility="Collapsed" />
         <Controls:SummaryControl x:Name="SummaryControl" Visibility="Collapsed" />
         <Controls:ProgressControl x:Name="ProgressControl" Visibility="Collapsed" />
-        <Border Grid.Row="1" Background="#FF68217a" />
+        <Border Name="BottomBorder" Grid.Row="1" Background="{DynamicResource AccentColorBrush}" />
     </Grid>
 </MetroControls:MetroWindow>

@@ -2,12 +2,14 @@
     x:Class="CoApp.VSE.Core.Controls.FilterMenu"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Opened="OnOpened">
+    Opened="OnOpened"
+    BorderBrush="{DynamicResource GrayBrush5}"
+    BorderThickness="1">
 
     <MenuItem Name="FilterNameMenuItem" Click="OnMenuItemClick">
         <MenuItem.Header>
-            <Border Margin="-12,-2,-26.5,-2" Background="White">
-                <TextBox Name="FilterNameTextBox" Tag="Name" VerticalContentAlignment="Center" KeyDown="OnFilterNameTextBoxKeyDown" Width="100" Margin="6,2,5,2" Height="23"/>
+            <Border Margin="-29,-2,-26,-2" Background="{DynamicResource ControlBackgroundBrush}">
+                <TextBox Name="FilterNameTextBox" Tag="Name" VerticalContentAlignment="Center" KeyDown="OnFilterNameTextBoxKeyDown" Width="100" Margin="26,2,3,2" Height="23"/>
             </Border>
         </MenuItem.Header>
     </MenuItem>
@@ -18,6 +20,7 @@
         <MenuItem Header="Is Dependency" Click="OnMenuItemClick" />
         <MenuItem Header="Is Development Package" Click="OnMenuItemClick"/>
         <MenuItem Header="Is Latest Version" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Locked" Click="OnMenuItemClick" />
         <MenuItem Header="Is Installed" Click="OnMenuItemClick" />
         <MenuItem Header="Is Update" Click="OnMenuItemClick" />
         <MenuItem Header="Is Stable" Click="OnMenuItemClick" />
@@ -43,6 +46,11 @@
         <MenuItem Header="Application" Click="OnMenuItemClick" />
         <MenuItem Header="Assembly" Click="OnMenuItemClick" />
         <MenuItem Header="DeveloperLibrary" Click="OnMenuItemClick" />
+        <MenuItem Header="Driver" Click="OnMenuItemClick" />
+        <MenuItem Header="Faux" Click="OnMenuItemClick" />
+        <MenuItem Header="Service" Click="OnMenuItemClick" />
+        <MenuItem Header="SourceCode" Click="OnMenuItemClick" />
+        <MenuItem Header="WebApplication" Click="OnMenuItemClick" />
     </MenuItem>
     <MenuItem Name="FilterFeedUrlMenuItem" Header="Feed URL" />
 </ContextMenu>

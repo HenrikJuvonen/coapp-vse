@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using CoApp.Packaging.Client;
 
 namespace CoApp.VSE.Core.Controls
 {
@@ -48,12 +47,12 @@ namespace CoApp.VSE.Core.Controls
 
                         if (unrecoverable.Any())
                         {
-                            WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), Brushes.DarkGoldenrod);
+                            WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), (Brush)FindResource("YellowBrush"));
                         }
 
                         var text = string.Format("Completed {0}/{1} operations.", Packages.Count(n => n.Progress == 100), Packages.Count());
 
-                        WriteToLog(text, Brushes.Blue);
+                        WriteToLog(text, Brushes.DarkSlateBlue);
 
                         if (Module.MainWindow.WindowState == WindowState.Minimized || Module.MainWindow.IsVisible == false)
                             Module.ShowBalloonTip(text);
@@ -122,7 +121,7 @@ namespace CoApp.VSE.Core.Controls
 
         private void OnMessage(object sender, LogEventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => WriteToLog(e.Message, Brushes.Black)));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => WriteToLog(e.Message)));
         }
 
         private void OnWarning(object sender, LogEventArgs e)
@@ -134,7 +133,7 @@ namespace CoApp.VSE.Core.Controls
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                WriteToLog(e.Message, Brushes.Red);
+                WriteToLog(e.Message, Brushes.DarkRed);
 
                 if (IsVisible)
                 {
@@ -186,9 +185,15 @@ namespace CoApp.VSE.Core.Controls
             }));
         }
 
+        private void WriteToLog(string message)
+        {
+            Log.Document.Blocks.Add(new Paragraph(new Run(message)));
+            Log.ScrollToEnd();
+        }
+
         private void WriteToLog(string message, Brush brush)
         {
-            Log.Document.Blocks.Add(new Paragraph(new Run(message) { Foreground = brush }));
+            Log.Document.Blocks.Add(new Paragraph(new Run(message) { Foreground = brush, FontWeight = FontWeights.Bold }));
             Log.ScrollToEnd();
         }
     }

@@ -26,14 +26,14 @@
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush13}">
+        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
             <WrapPanel VerticalAlignment="Center">
-                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Cancel" />
                     </WrapPanel>
                 </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Ok}" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Ok}" Name="ApplyButton">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Apply" />
                     </WrapPanel>
@@ -43,7 +43,7 @@
 
         <ProgressBar Grid.Row="1" Name="ProgressPane" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
 
-        <Grid Grid.Row="1" Name="VsPane">
+        <Grid Grid.Row="1" Name="VsPane" Background="{DynamicResource GrayBrush7}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />

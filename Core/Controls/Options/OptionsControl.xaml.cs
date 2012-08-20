@@ -11,7 +11,7 @@ namespace CoApp.VSE.Core.Controls.Options
             InitializeComponent();
         }
 
-        public void ExecuteBack(object sender = null, EventArgs e = null)
+        private void ExecuteBack(object sender, EventArgs e)
         {
             Module.ShowMainControl();
         }

@@ -1,23 +1,23 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
+using CoApp.Toolkit.Extensions;
 
 namespace CoApp.VSE.Core.Controls
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Documents;
-    using System.Windows.Input;
-    using System.Windows.Media;
-    using Toolkit.Extensions;
-    using Model;
     using Extensions;
-    using System.Windows.Threading;
-    using CoApp.Packaging.Common;
-    using System.Windows.Shapes;
+    using Model;
+    using Utility;
 
     public partial class MainControl
     {
@@ -26,7 +26,7 @@ namespace CoApp.VSE.Core.Controls
         public MainControl()
         {
             InitializeComponent();
-
+            
             Module.PackageManager.FeedsUpdated += OnFeedsUpdated;
 
             if (Module.IsDTELoaded)
@@ -81,7 +81,7 @@ namespace CoApp.VSE.Core.Controls
             ProgressPane.Visibility = Visibility.Visible;
 
             DataContext = null;
-            
+
             Module.PackageManager.Filters.Clear();
 
             foreach (FilterControl item in FilterItemsControl.FilterBox.Items)
@@ -100,7 +100,7 @@ namespace CoApp.VSE.Core.Controls
             var worker = new BackgroundWorker();
             worker.DoWork += (sender, args) => Module.PackageManager.QueryPackages();
             worker.DoWork += RefreshView;
-            worker.RunWorkerCompleted += Finish;
+            worker.RunWorkerCompleted += FinishReload;
             worker.RunWorkerAsync();
         }
 
@@ -109,7 +109,7 @@ namespace CoApp.VSE.Core.Controls
         {
             _counter++;
 
-            Thread.Sleep(120);
+            Thread.Sleep(200);
 
             _counter--;
 
@@ -119,7 +119,7 @@ namespace CoApp.VSE.Core.Controls
                 return;
             }
             
-            lock (this)
+            lock (Module.PackageManager.PackagesViewModel)
             {
                 Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
             }
@@ -135,12 +135,12 @@ namespace CoApp.VSE.Core.Controls
             }
         }
 
-        private void Finish(object sender, RunWorkerCompletedEventArgs e)
+        private void FinishReload(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
                 return;
 
-            lock (this)
+            lock (Module.PackageManager.PackagesViewModel)
             {
                 DataContext = Module.PackageManager.PackagesViewModel;
             }
@@ -190,6 +190,15 @@ namespace CoApp.VSE.Core.Controls
                     e.Handled = true;
                 }
             }
+
+            if (e.Key == Key.Space)
+            {
+                if (sender is DataGrid)
+                {
+                    OnStatusCheckBoxChanged(null, null);
+                    e.Handled = true;
+                }
+            }
         }
 
         private void OnSearchBoxTextChanged(object sender, TextChangedEventArgs e)
@@ -217,10 +226,21 @@ namespace CoApp.VSE.Core.Controls
             worker.RunWorkerAsync();
         }
 
+        private void CanExecuteBrowse(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (PackagesDataGrid != null)
+                e.CanExecute = PackagesDataGrid.IsVisible;
+        }
+
         private void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
         {
             Module.PackageManager.Reset();
             Reload();
+        }
+
+        private void ExecuteMoreInformation(object sender, ExecutedRoutedEventArgs e)
+        {
+            Module.ShowInformationControl();
         }
 
         public void ExecuteMarkUpdates(object sender = null, ExecutedRoutedEventArgs e = null)
@@ -251,12 +271,6 @@ namespace CoApp.VSE.Core.Controls
                 UriHelper.OpenExternalLink(hyperlink.NavigateUri);
                 e.Handled = true;
             }
-        }
-
-        private void ExecuteFocusSearch(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (!SearchBox.IsFocused)
-                SearchBox.Focus();
         }
 
         private void ExecuteClearSearch(object sender, ExecutedRoutedEventArgs e)
@@ -291,7 +305,7 @@ namespace CoApp.VSE.Core.Controls
 
         private void OnDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (PackagesDataGrid.CurrentColumn.DisplayIndex == 0)
+            if (PackagesDataGrid.CurrentColumn != null && PackagesDataGrid.CurrentColumn.DisplayIndex == 0)
                 return;
 
             OnStatusCheckBoxChanged(null, null);
@@ -441,13 +455,13 @@ namespace CoApp.VSE.Core.Controls
         private void UpdatePackageItemBackground(PackageItem packageItem)
         {
             if (Module.PackageManager.VisualStudioPlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xaa, 0xaa, 0xd0));
+                packageItem.ItemBackground = "Blue";
             else if (Module.PackageManager.UpdatePlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xe7, 0xdd, 0xa3));
+                packageItem.ItemBackground = "Yellow";
             else if (Module.PackageManager.InstallPlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0x9a, 0xd0, 0x9a));
+                packageItem.ItemBackground = "Green";
             else if (Module.PackageManager.RemovePlan.Contains(packageItem.PackageIdentity))
-                packageItem.ItemBackground = new SolidColorBrush(Color.FromRgb(0xe0, 0x9a, 0x9a));
+                packageItem.ItemBackground = "Red";
             else
                 packageItem.ItemBackground = null;
         }
@@ -529,41 +543,12 @@ namespace CoApp.VSE.Core.Controls
             border.VerticalAlignment = VerticalAlignment.Center;
             border.Width = 12;
             border.Height = 14;
-            border.Margin = new Thickness(-12, 0, 1, 0);
+            border.Margin = new Thickness(-20, 0, 1, 0);
             
             var wrap = new WrapPanel();
             wrap.Children.Add(border);
             
             return wrap;
-        }
-    }
-
-    public static class UriHelper
-    {
-        public static void OpenExternalLink(Uri url)
-        {
-            if (url == null || !url.IsAbsoluteUri)
-            {
-                return;
-            }
-
-            // mitigate security risk
-            if (url.IsFile || url.IsLoopback || url.IsUnc)
-            {
-                return;
-            }
-
-            if (IsHttpUrl(url))
-            {
-                // REVIEW: Will this allow a package author to execute arbitrary program on user's machine?
-                // We have limited the url to be HTTP only, but is it sufficient?
-                System.Diagnostics.Process.Start(url.AbsoluteUri);
-            }
-        }
-
-        private static bool IsHttpUrl(Uri uri)
-        {
-            return (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

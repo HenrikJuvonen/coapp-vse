@@ -17,6 +17,7 @@
     <UserControl.CommandBindings>
         <CommandBinding 
             Command="{x:Static VSE:Commands.Browse}"
+            CanExecute="CanExecuteBrowse"
             Executed="ExecuteBrowse" />
         <CommandBinding 
             Command="{x:Static VSE:Commands.Reload}"
@@ -37,20 +38,16 @@
             Command="{x:Static VSE:Commands.OpenExternalLink}"
             Executed="ExecuteOpenLicenseLink" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.FocusSearch}"
-            Executed="ExecuteFocusSearch" />
-        <CommandBinding 
             Command="{x:Static VSE:Commands.ClearSearch}"
             Executed="ExecuteClearSearch" />
+        <CommandBinding 
+            Command="{x:Static VSE:Commands.MoreInformation}"
+            Executed="ExecuteMoreInformation" />
     </UserControl.CommandBindings>
-    
-    <UserControl.InputBindings>
-        <KeyBinding Command="{x:Static VSE:Commands.FocusSearch}" Gesture="CTRL+F" />
-    </UserControl.InputBindings>
     
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="170" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -59,46 +56,114 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource GrayBrush13}">
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource GrayBrush8}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" >
-                <Button Margin="3,0,0,0" ToolTip="Options" Command="{x:Static VSE:Commands.ShowOptions}" Style="{DynamicResource ChromelessButtonStyle}">
-                    <WrapPanel Margin="2,0,2,0">
-                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/options.png" Width="16" Height="16" />
-                    </WrapPanel>
+            <WrapPanel Grid.Column="0" VerticalAlignment="Center">
+                <Button Margin="3,0,0,0" ToolTip="Options" Command="{x:Static VSE:Commands.ShowOptions}" Name="OptionsButton" Style="{DynamicResource ChromelessButtonStyle}">
+                    <Grid>
+                        <Ellipse Width="10" Height="10" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="11,0,0,0" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,0,11,0" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,11,0,0" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,0,0,11" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="8,8,0,0" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="8,0,0,8" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,8,8,0" />
+                        <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,0,8,8" />
+                    </Grid>
                 </Button>
                 <Button Margin="2,0,0,0" ToolTip="Reload" Command="{x:Static VSE:Commands.Reload}" Name="ReloadButton" Style="{DynamicResource ChromelessButtonStyle}">
-                    <WrapPanel Margin="2,0,2,0">
-                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/reload.png" Width="16" Height="16" />
-                    </WrapPanel>
+                    <Grid Width="12">                        
+                        <Path
+                            Margin="0,1,4,0"
+                            HorizontalAlignment="Left"
+                            Data="M 0,0 A 100,100 0 0 0 0,100"
+                            Stretch="Fill"
+                            Height="12"
+                            Width="6"
+                            Stroke="{Binding ElementName=ReloadButton, Path=Foreground}"
+                            StrokeThickness="2" />
+                        <Path
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,6"
+                            Data="M 50,51 L 55,50 L 54,60"
+                            Stretch="Fill"
+                            Height="6"
+                            Width="6"
+                            Stroke="{Binding ElementName=ReloadButton, Path=Foreground}"
+                            StrokeStartLineCap="Triangle"
+                            StrokeEndLineCap="Triangle"
+                            StrokeThickness="2" />
+                        <Path
+                            Margin="4,0,0,1"
+                            HorizontalAlignment="Right"
+                            Data="M 0,0 A 100,100 0 0 1 0,100"
+                            Stretch="Fill"
+                            Height="12"
+                            Width="6"
+                            Stroke="{Binding ElementName=ReloadButton, Path=Foreground}"
+                            StrokeThickness="2" />
+                        <Path
+                            HorizontalAlignment="Right"
+                            Margin="0,6,0,0"
+                            Data="M 50,49 L 45,50 L 46,40"
+                            Stretch="Fill"
+                            Height="6"
+                            Width="6"
+                            Stroke="{Binding ElementName=ReloadButton, Path=Foreground}"
+                            StrokeStartLineCap="Triangle"
+                            StrokeEndLineCap="Triangle"
+                            StrokeThickness="2" />
+                    </Grid>
                 </Button>
                 <Button Margin="2,0,0,0" ToolTip="Browse Package Contents" Command="{x:Static VSE:Commands.Browse}" Name="BrowseButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="{Binding SelectedPackage.PackageIdentity.IsInstalled}">
-                    <WrapPanel Margin="2,0,2,0">
-                        <Image Source="pack://application:,,,/CoApp.VSE.Core;component/Resources/browse.png" Width="16" Height="16" />
-                    </WrapPanel>
+                    <Border>
+                        <Path
+                            Data="M 55,110 S 50,110 50,100 M 50,100 S 50,90 65,90 M 60,82 L 65,90 L 60,98"
+                            Stretch="Fill"
+                            Height="13"
+                            Width="13"
+                            Stroke="{Binding ElementName=BrowseButton, Path=Foreground}"
+                            StrokeStartLineCap="Triangle"
+                            StrokeEndLineCap="Triangle"
+                            StrokeThickness="2" />
+                    </Border>
                 </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
-                    <WrapPanel Margin="2,0,2,0">
-                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Mark Updates" />
-                    </WrapPanel>
+                <Button Margin="2,0,0,0" ToolTip="Mark All Updates" Command="{x:Static VSE:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                    <Border>
+                        <Path
+                            Data="M 55,130 L 55,90 M 50,100 L 55,80 L 60,100"
+                            Stretch="Fill"
+                            Height="13"
+                            Width="11"
+                            Stroke="{Binding ElementName=MarkAllUpdatesButton, Path=Foreground}"
+                            StrokeStartLineCap="Square"
+                            StrokeEndLineCap="Square"
+                            StrokeThickness="2" />
+                    </Border>
                 </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpgrades}" Name="MarkAllUpgradesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False" Visibility="Collapsed">
-                    <WrapPanel Margin="2,0,2,0">
-                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Mark Upgrades" />
-                    </WrapPanel>
-                </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.Apply}" Name="ApplyButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
-                    <WrapPanel Margin="2,0,2,0">
-                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Apply" />
-                    </WrapPanel>
+                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpgrades}" Name="MarkAllUpgradesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False" Visibility="Collapsed" />
+                <Button Margin="2,0,0,0" ToolTip="Apply" Command="{x:Static VSE:Commands.Apply}" Name="ApplyButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                    <Border>
+                        <Path
+                            Data="M49,110 L51,112 L56,107"
+                            Height="13"
+                            Stretch="Fill"
+                            Stroke="{Binding ElementName=ApplyButton, Path=Foreground}"
+                            Width="15"
+                            StrokeStartLineCap="Triangle"
+                            StrokeEndLineCap="Triangle"
+                            StrokeThickness="2" />
+                    </Border>
                 </Button>
             </WrapPanel>
 
-            <WrapPanel Grid.Row="0" Grid.Column="1" Background="{DynamicResource GrayBrush13}">
+            <WrapPanel Grid.Column="1" Background="{DynamicResource GrayBrush8}">
                 <Label Margin="2,0,2,0" Content="Sort by:" />
                 <ComboBox Margin="0,0,2,0" Name="SortComboBox" Height="23" Width="150" SelectionChanged="OnSortSelectionChanged" SelectedIndex="0">
                     <ComboBox.Items>
@@ -106,7 +171,7 @@
                         <ComboBoxItem Content="Name: Descending" />
                     </ComboBox.Items>
                 </ComboBox>
-                <TextBox Margin="0,0,3,0" Width="207" VerticalContentAlignment="Center" FontSize="12" x:Name="SearchBox" TextChanged="OnSearchBoxTextChanged" Tag="Search Packages"/>
+                <TextBox Margin="0,0,3,0" Width="205" x:Name="SearchBox" TextChanged="OnSearchBoxTextChanged" Tag="Search Packages (Ctrl+F)" ToolTip="Type words to search for"/>
             </WrapPanel>
         </Grid>
 
@@ -122,57 +187,88 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="1" Grid.Column="0" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="4,0,0,0">
-                <DataGrid Name="PackagesDataGrid" ItemsSource="{Binding View}" SelectedItem="{Binding SelectedPackage}" Visibility="Collapsed" MouseDoubleClick="OnDataGridMouseDoubleClick">
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="{DynamicResource GrayBrush8}" BorderThickness="4,0,0,0" Background="{DynamicResource GrayBrush7}">
+                <Border.Resources>
+                    <ContextMenu Opened="OnStatusContextMenuOpened" x:Key="RowMenu" BorderBrush="{DynamicResource GrayBrush5}" BorderThickness="1">
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Unmark"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Installation"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Reinstallation"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Update"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Upgrade" Visibility="Collapsed"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Removal"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Complete Removal"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Visual Studio"/>
+                        <Separator>
+                            <Separator.Style>
+                                <Style TargetType="Separator">
+                                    <Setter Property="IsTabStop" Value="False" />
+                                    <Setter Property="Margin" Value="25,3,3,3" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Separator">
+                                                <Border Background="{DynamicResource BlackBrush}" Opacity="0.125" Height="1" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Separator.Style>
+                        </Separator>
+                        <MenuItem Click="OnStatusContextMenuItemClick2" />
+                        <MenuItem IsEnabled="False" />
+                        <MenuItem IsEnabled="False" />
+                        <MenuItem IsEnabled="False" />
+                        <MenuItem IsEnabled="False" />
+                    </ContextMenu>
+                    <Style TargetType="DataGridRow" BasedOn="{StaticResource DataGridRowStyle}" x:Key="DataGridRowStyle2">
+                        <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
+                    </Style>
+                </Border.Resources>
+                <DataGrid Name="PackagesDataGrid" RowStyle="{StaticResource DataGridRowStyle2}" ItemsSource="{Binding View}" SelectedItem="{Binding SelectedPackage}" Visibility="Collapsed" MouseDoubleClick="OnDataGridMouseDoubleClick" KeyDown="OnKeyDown">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="16">
+                        <DataGridTemplateColumn Width="15">
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="IsTabStop" Value="False" />
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter Property="IsTabStop" Value="True" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <CheckBox Style="{StaticResource StatusCheckBoxStyle}" ToolTip="{Binding StatusText}" Checked="OnStatusCheckBoxChanged" Unchecked="OnStatusCheckBoxChanged">
-                                        <CheckBox.ContextMenu>
-                                            <ContextMenu Opened="OnStatusContextMenuOpened">
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Unmark"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Installation"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Reinstallation"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Update"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Upgrade" Visibility="Collapsed"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Removal"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Complete Removal"/>
-                                                <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Visual Studio"/>
-                                                <Separator />
-                                                <MenuItem Click="OnStatusContextMenuItemClick2" />
-                                                <MenuItem IsEnabled="False" />
-                                                <MenuItem IsEnabled="False" />
-                                                <MenuItem IsEnabled="False" />
-                                                <MenuItem IsEnabled="False" />
-                                            </ContextMenu>
-                                        </CheckBox.ContextMenu>
-                                    </CheckBox>
+                                    <CheckBox Style="{StaticResource StatusCheckBoxStyle}" ToolTip="{Binding StatusText}" Checked="OnStatusCheckBoxChanged" Unchecked="OnStatusCheckBoxChanged" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="16" x:Name="InSolutionColumn" Visibility="Collapsed">
+                        <DataGridTemplateColumn Width="15" x:Name="InSolutionColumn" Visibility="Collapsed">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Image Source="{Binding InSolutionImage}" />
+                                    <Rectangle Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type DataGridCell}},Path=Foreground}" Width="15" Height="15">
+                                        <Rectangle.OpacityMask>
+                                            <ImageBrush ImageSource="{Binding InSolutionImage}" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="185" MinWidth="185">
+                        <DataGridTemplateColumn Width="180" MinWidth="180">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Flavor}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Version}" />
@@ -199,45 +295,27 @@
 
             <ProgressBar Grid.Row="1" Grid.Column="0" Name="ProgressPane" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
 
-            <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Center" Visibility="Collapsed" Content="No packages found." Width="150" HorizontalContentAlignment="Center" />
+            <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Top" Visibility="Collapsed" Content="No packages found." Width="150" Margin="0,10,0,0" HorizontalContentAlignment="Center" />
 
-            <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource GrayBrush13}" BorderThickness="1,0,0,0">
-                <ScrollViewer Name="PackageDetailsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch">
-                    <StackPanel Width="190" Margin="5" DataContext="{Binding SelectedPackage}">
-                        <!--
-                        <WrapPanel Visibility="{Binding Name, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Name:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Name}"/>
-                        </WrapPanel>
-                        <WrapPanel Visibility="{Binding Flavor, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Flavor:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Flavor}"/>
-                        </WrapPanel>
-                        <WrapPanel Visibility="{Binding Version, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Version:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Version}"/>
-                        </WrapPanel>
-                        <WrapPanel Visibility="{Binding Architecture, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Architecture:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding Architecture}"/>
-                        </WrapPanel>
-                        -->
-                        <TextBlock Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}" TextWrapping="Wrap">
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource GrayBrush8}" BorderThickness="1,0,0,0">
+                <ScrollViewer Name="PackageDetailsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch">
+                    <StackPanel Width="192" Margin="5" DataContext="{Binding SelectedPackage}" HorizontalAlignment="Left">
+                        <TextBlock Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}" TextWrapping="Wrap">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Publisher:" />
                             <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
                                 <Run Text="{Binding PackageIdentity.PackageDetails.Publisher.Name}" />
                             </Hyperlink>
                         </TextBlock>
-                        <TextBlock Visibility="{Binding PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
+                        <TextBlock Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Date Published:" />
                             <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PublishDate}" />
                         </TextBlock>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Licenses, Converter={StaticResource nullOrEmptyToVisibility}}">
+                        <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Licenses, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Licenses:" />
-                            <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}">
+                            <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}" IsTabStop="False">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock ToolTip="{Binding Name}">
+                                        <TextBlock>
                                             <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
                                                 <Run Text="{Binding Name}" />
                                             </Hyperlink>
@@ -246,11 +324,11 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Description, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Description:" />
-                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.Description}" TextWrapping="Wrap" IsHyphenationEnabled="True" />
+                        <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.SummaryDescription, Converter={StaticResource nullOrEmptyToVisibility}}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Summary:" />
+                            <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextWrapping="Wrap" />
                         </StackPanel>
-                        <StackPanel Visibility="{Binding PackageIdentity.PackageDetails.Tags, Converter={StaticResource nullOrEmptyToVisibility}}">
+                        <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Tags, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Tags:" />
                             <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Tags}">
                                 <ItemsControl.ItemsPanel>
@@ -265,7 +343,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        <StackPanel Visibility="{Binding Dependencies, Converter={StaticResource nullOrEmptyToVisibility}}">
+                        <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding Dependencies, Converter={StaticResource nullOrEmptyToVisibility}}">
                             <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Dependencies:" />
                             <ItemsControl ItemsSource="{Binding Dependencies}">
                                 <ItemsControl.ItemTemplate>
@@ -275,6 +353,11 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
+                        <TextBlock Style="{StaticResource PropertyNameStyle}">
+                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri=";;;" Command="{x:Static VSE:Commands.MoreInformation}">
+                                <Run Text="More Information" Foreground="{DynamicResource HighlightLightBrush}" />
+                            </Hyperlink>
+                        </TextBlock>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

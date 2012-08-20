@@ -35,7 +35,7 @@ namespace CoApp.VSE.Core.Controls
             ConsoleBox.Document.Blocks.Clear();
 
             WriteLine(string.Format("Press F2 to toggle console."), Brushes.DarkGoldenrod, FontStyles.Normal, FontWeights.Bold);
-            WriteLine(PromptString, Brushes.Black, FontStyles.Normal, FontWeights.Bold);
+            WriteLine(PromptString, FontWeights.Bold);
 
             DataObject.AddPastingHandler(ConsoleBox, OnPaste);
         }
@@ -503,7 +503,7 @@ namespace CoApp.VSE.Core.Controls
                 }
                 else
                 {
-                    Write(text, Brushes.Black, FontStyles.Normal, FontWeights.Bold);
+                    Write(text, FontWeights.Bold);
                     ConsoleBox.CaretPosition = ConsoleBox.CaretPosition.DocumentEnd;
                 }
             }
@@ -532,7 +532,7 @@ namespace CoApp.VSE.Core.Controls
                 _isBusy = false;
 
                 _input = string.Empty;
-                WriteLine(PromptString, Brushes.Black, FontStyles.Normal, FontWeights.Bold);
+                WriteLine(PromptString, FontWeights.Bold);
                 e.Handled = true;
 
                 ConsoleBox.CaretPosition = ConsoleBox.CaretPosition.DocumentEnd;
@@ -604,7 +604,7 @@ namespace CoApp.VSE.Core.Controls
                 {
                     ConsoleBox.Selection.Select(start, ConsoleBox.CaretPosition.DocumentEnd);
                     ConsoleBox.Selection.Text = string.Empty;
-                    Write(_commandHistory[_commandHistoryCursor], Brushes.Black, FontStyles.Normal, FontWeights.Bold);
+                    Write(_commandHistory[_commandHistoryCursor], FontWeights.Bold);
                     ConsoleBox.CaretPosition = ConsoleBox.CaretPosition.DocumentEnd;
                 }
 
@@ -668,6 +668,13 @@ namespace CoApp.VSE.Core.Controls
             ConsoleBox.ScrollToEnd();
         }
 
+        private void Write(string message, FontWeight weight)
+        {
+            var lastBlock = (Paragraph)ConsoleBox.Document.Blocks.LastBlock;
+            lastBlock.Inlines.Add(new Run(message) { FontWeight = weight });
+            ConsoleBox.ScrollToEnd();
+        }
+
         private void Write(string message, Brush brush, FontStyle style, FontWeight weight)
         {
             var lastBlock = (Paragraph)ConsoleBox.Document.Blocks.LastBlock;
@@ -683,7 +690,13 @@ namespace CoApp.VSE.Core.Controls
 
         private void WriteLine(string message, Brush brush)
         {
-            ConsoleBox.Document.Blocks.Add(new Paragraph(new Run(message) { Foreground = brush, FontStyle = FontStyles.Normal, FontWeight = FontWeights.Normal }));
+            ConsoleBox.Document.Blocks.Add(new Paragraph(new Run(message) { Foreground = brush }));
+            ConsoleBox.ScrollToEnd();
+        }
+
+        private void WriteLine(string message, FontWeight weight)
+        {
+            ConsoleBox.Document.Blocks.Add(new Paragraph(new Run(message) { FontWeight = weight }));
             ConsoleBox.ScrollToEnd();
         }
         

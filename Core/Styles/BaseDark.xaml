@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="BlackColor">#FFFFFFFF</Color>
+    <Color x:Key="WhiteColor">#FF252525</Color>
+
+    <Color x:Key="NormalForegroundColor">#FFFFFFFF</Color>
+    <Color x:Key="HoverForegroundColor">#FF000000</Color>
+    
+    <Color x:Key="Gray5">#FF3e3e42</Color>
+    <Color x:Key="Gray6">#FF3f3f40</Color>
+    <Color x:Key="Gray7">#FF252526</Color>
+    <Color x:Key="Gray8">#FF2d2d30</Color>
+
+    <Color x:Key="Gray19">#FF3f3f46</Color>
+    <Color x:Key="Gray20">#FF252525</Color>
+
+    <Color x:Key="GrayNormal">#FF7D7D7D</Color>
+    <Color x:Key="GrayHover">#FFAAAAAA</Color>
+    
+    <SolidColorBrush x:Key="BlueBrush" Color="DarkSlateBlue"/>
+    <SolidColorBrush x:Key="YellowBrush" Color="DarkGoldenrod"/>
+    <SolidColorBrush x:Key="GreenBrush" Color="DarkGreen"/>
+    <SolidColorBrush x:Key="RedBrush" Color="DarkRed"/>
+    
+    <SolidColorBrush x:Key="HighlightBrush" Color="White"/>
+</ResourceDictionary>

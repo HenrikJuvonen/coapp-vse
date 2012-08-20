@@ -18,28 +18,25 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="57" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Click="OnClearButtonClick" Name="ClearButton" Margin="3,0,0,3" HorizontalAlignment="Stretch" Style="{DynamicResource ChromelessButtonStyle}">
-                <WrapPanel Margin="2,3,2,0">
-                    <Border>
-                        <Path Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="Black" StrokeThickness="2" Width="9" Height="9" />
-                    </Border>
-                    <TextBlock VerticalAlignment="Center" Margin="4,0,0,0" Text="Clear" />
-                </WrapPanel>
+            <Button Grid.Column="0" Click="OnClearButtonClick" Name="ClearButton" Margin="3,0,0,3" Style="{DynamicResource ChromelessButtonStyle}" ToolTip="Clear">
+                <Border>
+                    <Path Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="{Binding ElementName=ClearButton, Path=Foreground}" StrokeThickness="2" Width="8" Height="8" HorizontalAlignment="Center" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+                </Border>
             </Button>
-            <Button Grid.Column="1" Click="OnAddFilterButtonClick" Name="AddFilterButton" Margin="2,0,0,3" HorizontalAlignment="Stretch" Style="{DynamicResource ChromelessButtonStyle}">
-                <WrapPanel Margin="2,3,2,0">
+            <ToggleButton Grid.Column="1" Click="OnAddFilterButtonClick" Name="AddFilterButton" Margin="2,0,0,3" Style="{DynamicResource ChromelessToggleButtonStyle}" Tag="Mod" ToolTip="Add filter">
+                <WrapPanel Margin="2">
                     <Border>
-                        <Path Data="M0.5,0 L0.5,1 M0,0.5 L1,0.5" Stretch="Fill" Stroke="Black" StrokeThickness="2" Width="11" Height="11" />
+                        <Path Data="M0.5,0 L0.5,1 M0,0.5 L1,0.5" Stretch="Fill" Stroke="{Binding ElementName=AddFilterButton, Path=Foreground}" StrokeThickness="2" Width="11" Height="11" />
                     </Border>
-                    <TextBlock VerticalAlignment="Center" Margin="4,0,0,0" Text="Add filter..." />
+                    <TextBlock Margin="4,0,0,0" Text="Add filter" />
                 </WrapPanel>
-            </Button>
+            </ToggleButton>
         </Grid>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden">
-            <ItemsControl Name="FilterBox" HorizontalContentAlignment="Stretch"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Left">
+            <ItemsControl Name="FilterBox" Width="152" IsTabStop="False"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

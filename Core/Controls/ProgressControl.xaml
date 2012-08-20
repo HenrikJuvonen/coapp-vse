@@ -16,21 +16,21 @@
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush13}">
+        <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
             <WrapPanel VerticalAlignment="Center">
-                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}" Style="{DynamicResource ChromelessButtonStyle}" Name="CancelButton">
+                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}" Name="CancelButton">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Cancel" />
                     </WrapPanel>
                 </Button>
-                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Ok}" Name="EndButton" Style="{DynamicResource ChromelessButtonStyle}" Visibility="Collapsed">
+                <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Ok}" Name="EndButton" Visibility="Collapsed">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="End" />
                     </WrapPanel>
                 </Button>
             </WrapPanel>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Background="{DynamicResource GrayBrush7}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -43,7 +43,7 @@
             <DataGrid Grid.Row="1" Grid.Column="0" Margin="5" Name="ProgressDataGrid" BorderThickness="1">
                 <DataGrid.Resources>
                     <Style TargetType="DataGridCell">
-                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />
@@ -97,13 +97,15 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <RichTextBox Name="Log" Grid.Row="2" Margin="5,0,5,20" IsReadOnly="True" FontFamily="Consolas" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
+            <Border Grid.Row="2" Margin="5,0,5,20" BorderBrush="{DynamicResource GrayBrush5}" BorderThickness="1">
+                <RichTextBox Name="Log" IsReadOnly="True" FontFamily="Consolas" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

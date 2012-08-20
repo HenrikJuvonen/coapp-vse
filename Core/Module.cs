@@ -71,11 +71,11 @@ namespace CoApp.VSE.Core
             }
             else
             {
+                MainWindow.WindowState = WindowState.Normal;
+
                 if (!MainWindow.IsVisible)
                     MainWindow.ShowDialog();
             }
-
-            MainWindow.WindowState = WindowState.Normal;
         }
 
         public static void ClearControls()
@@ -86,6 +86,19 @@ namespace CoApp.VSE.Core
             MainWindow.ProgressControl.ProgressDataGrid.ItemsSource = null;
             MainWindow.ProgressControl.Packages = null;
             MainWindow.ProgressControl.Log.Document.Blocks.Clear();
+            MainWindow.InfoControl.DataContext = null;
+        }
+
+        public static void ShowInformationControl()
+        {
+            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
+            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
+            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
+            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
+            MainWindow.MainControl.Visibility = Visibility.Collapsed;
+            MainWindow.InfoControl.Visibility = Visibility.Visible;
+
+            MainWindow.InfoControl.DataContext = PackageManager.PackagesViewModel.SelectedPackage;
         }
 
         public static void ShowMainControl()
@@ -95,6 +108,7 @@ namespace CoApp.VSE.Core
             MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
             MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
             MainWindow.MainControl.Visibility = Visibility.Visible;
+            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
 
             _isRestoring = false;
 
@@ -108,6 +122,7 @@ namespace CoApp.VSE.Core
             MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
             MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
             MainWindow.MainControl.Visibility = Visibility.Collapsed;
+            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
 
             ClearControls();
         }
@@ -119,6 +134,7 @@ namespace CoApp.VSE.Core
             MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
             MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
             MainWindow.MainControl.Visibility = Visibility.Collapsed;
+            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
 
             ClearControls();
             MainWindow.VisualStudioControl.Initialize();
@@ -138,6 +154,7 @@ namespace CoApp.VSE.Core
             MainWindow.SummaryControl.Visibility = Visibility.Visible;
             MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
             MainWindow.MainControl.Visibility = Visibility.Collapsed;
+            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
 
             ClearControls();
             MainWindow.SummaryControl.Initialize();
@@ -150,6 +167,7 @@ namespace CoApp.VSE.Core
             MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
             MainWindow.ProgressControl.Visibility = Visibility.Visible;
             MainWindow.MainControl.Visibility = Visibility.Collapsed;
+            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
 
             ClearControls();
             MainWindow.ProgressControl.Initialize();
@@ -197,6 +215,8 @@ namespace CoApp.VSE.Core
         {
             if (MainWindow.IsVisible)
             {
+                MainWindow.WindowState = WindowState.Normal;
+
                 if (PackageManager.Settings["#closeToTray"].BoolValue)
                 {
                     MainWindow.Close();
@@ -298,6 +318,11 @@ namespace CoApp.VSE.Core
         public static void OnStartup(object sender, StartupEventArgs e)
         {
             MainWindow = new MainWindow();
+
+            if (PackageManager.Settings["#theme"].StringValue == "Dark")
+                Utility.ThemeManager.ChangeTheme(MainWindow, MahApps.Metro.Theme.Dark);
+            else
+                Utility.ThemeManager.ChangeTheme(MainWindow, MahApps.Metro.Theme.Light);
 
             if (PackageManager.Settings["#showTrayIcon"].BoolValue)
             {

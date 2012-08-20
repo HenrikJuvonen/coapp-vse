@@ -17,6 +17,8 @@
         public readonly static RoutedCommand LaunchUpdater = new RoutedCommand();
         public readonly static RoutedCommand MarkStatus = new RoutedCommand();
         public readonly static RoutedCommand ToggleConsole = new RoutedCommand();
+        public readonly static RoutedCommand ChangeTheme = new RoutedCommand();
+        public readonly static RoutedCommand MoreInformation = new RoutedCommand();
 
         public readonly static RoutedCommand Cancel = new RoutedCommand();
         public readonly static RoutedCommand Ok = new RoutedCommand();

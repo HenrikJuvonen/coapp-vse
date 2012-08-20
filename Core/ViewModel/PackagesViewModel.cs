@@ -12,6 +12,7 @@ namespace CoApp.VSE.Core.ViewModel
     using System.Windows.Data;
     using Model;
     using System;
+    using CoApp.Packaging.Common;
 
     public class PackagesViewModel : INotifyPropertyChanged
     {
@@ -99,6 +100,9 @@ namespace CoApp.VSE.Core.ViewModel
                         result = result && n.Version == allVersions.Max(m => m.PackageIdentity.Version);
                 }
 
+                if (boolean.Contains("Is Locked"))
+                    result = result && n.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange);
+
                 if (boolean.Contains("Is Used In Projects"))
                     result = result && Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(n.PackageIdentity));
 
@@ -118,7 +122,7 @@ namespace CoApp.VSE.Core.ViewModel
                 result = result && isInFeeds;
             }
 
-            if (filters.ContainsKey("Projects"))
+            if (filters.ContainsKey("Projects") && Module.IsSolutionOpen)
             {
                 var isInProjects = false;
 

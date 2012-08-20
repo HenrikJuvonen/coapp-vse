@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
@@ -31,8 +30,8 @@ namespace CoApp.VSE.Core.Model
             SetStatus();
         }
 
-        private Brush _background;
-        public Brush ItemBackground
+        private string _background;
+        public string ItemBackground
         {
             get
             {
@@ -164,7 +163,15 @@ namespace CoApp.VSE.Core.Model
 
         public IEnumerable<string> Dependencies
         {
-            get { return _dependencies.Select(n => string.Format("{0}{1}-{2}-{3}", n.Name, n.Flavor, n.Version, n.Architecture)); }
+            get 
+            { 
+                return _dependencies.Select(n => 
+                    string.Format("{0}{1}-{2}-{3}", 
+                        n.CanonicalName.Name, 
+                        n.CanonicalName.Flavor, 
+                        n.CanonicalName.Version, 
+                        n.CanonicalName.Architecture));
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

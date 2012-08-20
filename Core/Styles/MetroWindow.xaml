@@ -9,28 +9,25 @@
     <ControlTemplate x:Key="WindowTemplateKey" TargetType="{x:Type Controls:MetroWindow}">
         <Grid Background="{TemplateBinding Background}">
             <AdornerDecorator>
-                <Border BorderThickness="1" BorderBrush="#FF68217a">
-                    <Controls:MetroContentControl>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid x:Name="PART_TitleBar"
+                <Controls:MetroContentControl KeyboardNavigation.IsTabStop="False">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid x:Name="PART_TitleBar"
+                            Background="{DynamicResource GrayBrush8}"
                             Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                             Visibility="{TemplateBinding ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Grid.Background>
-                                    <SolidColorBrush Color="{DynamicResource AccentColor}"/>
-                                </Grid.Background>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Image
-                            Visibility="{TemplateBinding ShowIconOnTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Source="{TemplateBinding Icon}"/>
-                            </Grid>
-                            <ContentPresenter
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                Visibility="{TemplateBinding ShowIconOnTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Source="{TemplateBinding Icon}"/>
+                        </Grid>
+                        <ContentPresenter
                             Content="{Binding WindowCommands, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" 
                             x:Name="PART_WindowCommands"
                             Panel.ZIndex="1"
@@ -38,10 +35,9 @@
                             VerticalAlignment="Top"
                             HorizontalAlignment="Right"
                             Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" />
-                            <ContentPresenter Grid.Row="1"/>
-                        </Grid>
-                    </Controls:MetroContentControl>
-                </Border>
+                        <ContentPresenter Grid.Row="1"/>
+                    </Grid>
+                </Controls:MetroContentControl>
             </AdornerDecorator>
             <Border x:Name="PART_Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" IsTabStop="false" Visibility="Collapsed" VerticalAlignment="Bottom"/>
@@ -58,16 +54,10 @@
     </ControlTemplate>
 
     <Style TargetType="{x:Type Core:MainWindow}">
-        <Setter Property="Foreground">
-            <Setter.Value>
-                <SolidColorBrush Color="{DynamicResource BlackColor}"/>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Background">
-            <Setter.Value>
-                <SolidColorBrush Color="{DynamicResource Gray12}"/>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
+        <Setter Property="Background" Value="{DynamicResource GrayBrush8}" />
         <Setter Property="Behaviours:StylizedBehaviors.Behaviors">
             <Setter.Value>
                 <Behaviours:StylizedBehaviorCollection>
@@ -80,6 +70,7 @@
     </Style>
 
     <Style TargetType="{x:Type Controls:WindowCommands}">
+        <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -100,7 +91,7 @@
                                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                             RecognizesAccessKey="True"
-                                                            Opacity="0.75" Margin="11,1,11,1" />
+                                                            Opacity="0.75" Margin="11,0,11,0" />
 
                                                 <Rectangle x:Name="border" 
                                                                SnapsToDevicePixels="True"
@@ -136,7 +127,7 @@
                             </Style>
                         </ResourceDictionary>
                     </ControlTemplate.Resources>
-                    <StackPanel Margin="0,0,5,0" Orientation="Horizontal" VerticalAlignment="Center" >
+                    <StackPanel Margin="0,0,0,0" Orientation="Horizontal" VerticalAlignment="Top">
                         <ItemsControl ItemsSource="{Binding Items, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:WindowCommands}}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -145,50 +136,43 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
                         <Button x:Name="PART_Min"
-                            Margin="2,0,0,0"
-                            Width="20"
-                            Height="20"
+                            Width="34"
+                            Height="26"
                             FontSize="13"
                             Style="{DynamicResource ChromelessButtonStyle}"
                             Padding="0"
                             ToolTip="{Binding Minimize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:WindowCommands}}}"
                             Visibility="{Binding ShowMinButton, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}, Converter={StaticResource BooleanToVisibilityConverter}}"
                             FontFamily="Marlett"
-                            Foreground="{TemplateBinding Foreground}"
-                            Opacity="0.8" Content="0" />
+                            Content="0" />
 
                         <Button x:Name="PART_Max"
-                            Margin="2,0,0,0"
-                            Width="20"
-                            Height="20"
+                            Width="34"
+                            Height="26"
                             FontSize="13"
                             Style="{DynamicResource ChromelessButtonStyle}"
                             Padding="0"
-                            Foreground="{TemplateBinding Foreground}"
                             Visibility="{Binding ShowMaxRestoreButton, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}, Converter={StaticResource BooleanToVisibilityConverter}}"
                             ToolTip="{Binding Maximize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:WindowCommands}}}"
-                            Opacity="0.8" FontFamily="Marlett"
+                            FontFamily="Marlett"
                             Content="1" />
 
                         <Button x:Name="PART_Close"
-                            Margin="2,0,0,0"
-                            Width="20"
-                            Height="20"
+                            Width="34"
+                            Height="26"
                             FontSize="13"
                             Style="{DynamicResource ChromelessButtonStyle}"
                             ToolTip="{Binding Close, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:WindowCommands}}}"
                             Visibility="{Binding ShowCloseButton, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Foreground="{TemplateBinding Foreground}"
-                            Opacity="0.8" FontFamily="Marlett"
+                            FontFamily="Marlett"
                             Content="r" />
                     </StackPanel>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" Value="True">
-                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
