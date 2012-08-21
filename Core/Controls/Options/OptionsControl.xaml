@@ -33,7 +33,7 @@
         </Grid>
         <Grid Grid.Row="1" Background="{DynamicResource GrayBrush7}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="510" />
+                <ColumnDefinition Width="*" MinWidth="410" MaxWidth="510" />
                 <ColumnDefinition Width="*" MaxWidth="510"/>
             </Grid.ColumnDefinitions>
             <Options:GeneralOptionsControl x:Name="GeneralOptions" Grid.Column="0" Margin="5" MaxHeight="500" VerticalAlignment="Top" />

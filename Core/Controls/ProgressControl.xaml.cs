@@ -47,12 +47,15 @@ namespace CoApp.VSE.Core.Controls
 
                         if (unrecoverable.Any())
                         {
-                            WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), (Brush)FindResource("YellowBrush"));
+                            WriteToLog("Unable to recover following packages:\n" + string.Join("\n", unrecoverable), Brushes.DarkGoldenrod);
                         }
 
                         var text = string.Format("Completed {0}/{1} operations.", Packages.Count(n => n.Progress == 100), Packages.Count());
 
-                        WriteToLog(text, Brushes.DarkSlateBlue);
+                        if (Packages.Count() - Packages.Count(n => n.Progress == 100) == 0)
+                            WriteToLog(text, Brushes.DarkGreen);
+                        else
+                            WriteToLog(text, Brushes.Red);
 
                         if (Module.MainWindow.WindowState == WindowState.Minimized || Module.MainWindow.IsVisible == false)
                             Module.ShowBalloonTip(text);
@@ -133,7 +136,7 @@ namespace CoApp.VSE.Core.Controls
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                WriteToLog(e.Message, Brushes.DarkRed);
+                WriteToLog(e.Message, Brushes.Red);
 
                 if (IsVisible)
                 {

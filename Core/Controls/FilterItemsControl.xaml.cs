@@ -52,7 +52,12 @@ namespace CoApp.VSE.Core.Controls
             }
             else
             {
-                var details = new List<string> { "Is Development Package", "Is Latest Version", "Is Installed" };
+                var details = new List<string> { "Is Installed" };
+
+                if (Module.IsDTELoaded)
+                {
+                    details.Add("Is Development Package");
+                }
 
                 foreach (var detail in details)
                 {

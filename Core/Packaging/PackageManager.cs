@@ -186,7 +186,7 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                return PackagesInFeeds.SelectMany(n => n.Value).Where(n => n.IsTrimable && n.IsInstalled).Except(Module.PackageManager.DoNotTrimPlan).ToArray();
+                return PackagesInFeeds.SelectMany(n => n.Value).Where(n => n.IsTrimable && n.IsInstalled).Except(DoNotTrimPlan).ToArray();
             }
         }
 

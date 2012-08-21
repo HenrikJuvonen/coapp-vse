@@ -15,7 +15,6 @@
     </MenuItem>
     <MenuItem Name="FilterProjectMenuItem" Header="Projects" Visibility="Collapsed" />
     <MenuItem Name="FilterBooleanMenuItem" Header="Boolean">
-        <MenuItem Header="Is Used In Projects" Click="OnMenuItemClick" />
         <MenuItem Header="Is Blocked" Click="OnMenuItemClick" />
         <MenuItem Header="Is Dependency" Click="OnMenuItemClick" />
         <MenuItem Header="Is Development Package" Click="OnMenuItemClick"/>
@@ -23,6 +22,7 @@
         <MenuItem Header="Is Locked" Click="OnMenuItemClick" />
         <MenuItem Header="Is Installed" Click="OnMenuItemClick" />
         <MenuItem Header="Is Update" Click="OnMenuItemClick" />
+        <MenuItem Header="Is Used In Projects" Click="OnMenuItemClick" />
         <MenuItem Header="Is Stable" Click="OnMenuItemClick" />
         <MenuItem Header="Is Wanted" Click="OnMenuItemClick" />
     </MenuItem>

@@ -66,7 +66,6 @@
     <Compile Include="Guids.cs" />
     <Compile Include="MessageFilter.cs" />
     <Compile Include="PkgCmdID.cs" />
-    <Compile Include="ProvideBindingPath.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

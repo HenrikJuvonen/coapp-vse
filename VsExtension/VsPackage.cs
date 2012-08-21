@@ -12,7 +12,6 @@ namespace CoApp.VSE.VSPackage
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideBindingPath] // Definition dll needs to be on VS binding path
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
 
     [Guid(GuidList.guidVsPkgString)]
@@ -94,7 +93,7 @@ namespace CoApp.VSE.VSPackage
         private void QueryStatusEnable(object sender, EventArgs args)
         {
             var command = (OleMenuCommand)sender;
-            command.Visible = !IsIDEInDebuggingOrBuildingContext();
+            command.Visible = !IsIDEInDebuggingOrBuildingContext() && Module.IsSolutionOpen;
             command.Enabled = true;
         }
 

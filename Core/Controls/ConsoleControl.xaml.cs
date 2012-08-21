@@ -332,7 +332,7 @@ namespace CoApp.VSE.Core.Controls
             }
             else
             {
-                WriteLine("Invalid command: " + command, Brushes.Red);
+                WriteLine("Invalid command: " + command, Brushes.Red, FontStyles.Normal, FontWeights.Bold);
             }
         }
 
@@ -409,7 +409,7 @@ namespace CoApp.VSE.Core.Controls
                     }
                     else
                     {
-                        WriteLine("Invalid parameter: " + parameter, Brushes.Red, FontStyles.Normal, FontWeights.Normal);
+                        WriteLine("Invalid parameter: " + parameter, Brushes.Red, FontStyles.Normal, FontWeights.Bold);
                     }
                 }
             }
@@ -455,7 +455,7 @@ namespace CoApp.VSE.Core.Controls
                     else if ("installed".StartsWith(a))
                         installed = "true".StartsWith(b) ? true : "false".StartsWith(b) ? false : (bool?)null;
                     else
-                        WriteLine("Invalid parameter: " + parameter, Brushes.Red, FontStyles.Normal, FontWeights.Normal);
+                        WriteLine("Invalid parameter: " + parameter, Brushes.Red, FontStyles.Normal, FontWeights.Bold);
                 }
                 else
                 {

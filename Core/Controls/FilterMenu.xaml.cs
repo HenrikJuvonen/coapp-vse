@@ -44,7 +44,7 @@ namespace CoApp.VSE.Core.Controls
             else
             {
                 // Remove "Is Used In Projects"
-                FilterBooleanMenuItem.Items.RemoveAt(0);
+                FilterBooleanMenuItem.Items.RemoveAt(7);
             }
             
         }
