@@ -174,6 +174,46 @@ namespace CoApp.VSE.Core.Model
             }
         }
 
+        private string VersionAsSortableString()
+        {
+            string ver = 
+                PackageIdentity.Version.Major.ToString("D8") +
+                PackageIdentity.Version.Minor.ToString("D8") +
+                PackageIdentity.Version.Revision.ToString("D8") +
+                PackageIdentity.Version.Build.ToString("D8");
+            return ver;
+        }
+
+        public string SortByStatus
+        {
+            get { return Status + ";" + SortByName; }
+        }
+
+        public string SortByInSolution
+        {
+            get { return InSolution + ";" + SortByName; }
+        }
+
+        public string SortByName
+        {
+            get { return string.Format("{0};{1};{2};{3}", Name, Flavor, VersionAsSortableString(), Architecture); }
+        }
+
+        public string SortByFlavor
+        {
+            get { return string.Format("{0};{1};{2};{3}", Flavor, Name, VersionAsSortableString(), Architecture); }
+        }
+
+        public string SortByVersion
+        {
+            get { return string.Format("{0};{1};{2};{3}", VersionAsSortableString(), Name, Flavor, Architecture); }
+        }
+
+        public string SortByArchitecture
+        {
+            get { return string.Format("{0};{1};{2};{3}", Architecture, Name, Flavor, VersionAsSortableString()); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName)
         {

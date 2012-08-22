@@ -1,9 +1,9 @@
-﻿namespace CoApp.VSE.Core.Controls
-{
-    using System;
-    using System.Linq;
-    using System.Windows;
+﻿using System;
+using System.Linq;
+using System.Windows;
 
+namespace CoApp.VSE.Core.Controls
+{
     public partial class SummaryControl
     {
         public SummaryControl()
@@ -42,12 +42,12 @@
                                          select package;
 
             RemoveDataGrid.Visibility = RemoveDataGrid.HasItems ? Visibility.Visible : Visibility.Collapsed;
-
+            
             InstallDataGrid.ItemsSource = from package in Module.PackageManager.InstallPlan
                                           orderby package.CanonicalName
                                           select package;
 
-            InstallDataGrid.Visibility = InstallDataGrid.HasItems ? Visibility.Visible : Visibility.Collapsed;
+            InstallDataGrid.Visibility = InstallDataGrid.HasItems ? Visibility.Visible : Visibility.Collapsed;            
         }
     }
 }

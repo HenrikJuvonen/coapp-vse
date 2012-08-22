@@ -12,6 +12,8 @@
     <Color x:Key="Gray7">#FFf6f6f6</Color>
     <Color x:Key="Gray8">#FFefeff2</Color>
 
+    <Color x:Key="Gray17">#FFFFFFFF</Color>
+    <Color x:Key="Gray18">#FFfcfcfc</Color>
     <Color x:Key="Gray19">#FFcccedb</Color>
     <Color x:Key="Gray20">#FFe7e8ec</Color>
 

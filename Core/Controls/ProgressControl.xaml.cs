@@ -91,7 +91,7 @@ namespace CoApp.VSE.Core.Controls
             Packages = new ObservableCollection<ProgressEventArgs>(plan);
 
             ProgressDataGrid.ItemsSource = Packages;
-            
+                        
             var worker = new BackgroundWorker();
             worker.DoWork += (sender, args) => Module.PackageManager.Elevate();
             worker.RunWorkerAsync();

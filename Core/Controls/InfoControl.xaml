@@ -20,11 +20,11 @@
     </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="26" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
-            <WrapPanel VerticalAlignment="Center">
+            <WrapPanel VerticalAlignment="Top">
                 <Button Margin="3,0,0,0" ToolTip="Back" Command="{x:Static VSE:Commands.Cancel}" Name="BackButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Border>
                         <Path

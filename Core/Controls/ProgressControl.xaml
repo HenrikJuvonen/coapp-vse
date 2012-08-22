@@ -13,11 +13,11 @@
     </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="26" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
-            <WrapPanel VerticalAlignment="Center">
+            <WrapPanel VerticalAlignment="Top">
                 <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}" Name="CancelButton">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Cancel" />
@@ -53,42 +53,42 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="240" MaxWidth="240">
+                    <DataGridTemplateColumn MinWidth="240" MaxWidth="240" Header="Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Flavor">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Flavor}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Version">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Version}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="50" MaxWidth="50">
+                    <DataGridTemplateColumn MinWidth="50" MaxWidth="50" Header="Arch">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="100" MaxWidth="100">
+                    <DataGridTemplateColumn MinWidth="100" MaxWidth="100" Header="Status">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Status}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="150">
+                    <DataGridTemplateColumn Width="150" Header="Progress">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ProgressBar IsIndeterminate="False" Value="{Binding Progress}" />

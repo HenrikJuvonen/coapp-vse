@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using CoApp.Packaging.Client;
-using CoApp.VSE.Core.Extensions;
-using CoApp.VSE.Core.Packaging;
-using PackageManager = CoApp.VSE.Core.Packaging.PackageManager;
+using EnvDTE;
 
 namespace CoApp.VSE.Core
 {
-    using System;
-    using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Threading;
-    using EnvDTE;
+    using Extensions;
+    using Packaging;
 
     public static class Module
     {

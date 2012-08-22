@@ -1,0 +1,113 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="TextBox">
+        <Setter Property="Height" Value="23" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush5}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" SnapsToDevicePixels="True" Name="BoxBorder">
+                        <Grid Background="{DynamicResource WhiteBrush}" x:Name="BoxGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollViewer Grid.Column="0" x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="2,0,2,0"/>
+                            <ContentPresenter Grid.Column="0" x:Name="Watermark" IsHitTestVisible="False" Margin="5,0,0,0" Content="{TemplateBinding Tag}" VerticalAlignment="Center" Visibility="Hidden" Opacity="0.7" />
+                            <ToggleButton Style="{DynamicResource ChromelessToggleButtonStyle}" x:Name="SearchButton" Grid.Column="1" Width="18" SnapsToDevicePixels="True" Visibility="Hidden" ToolTip="Search">
+                                <Border Width="14" Height="14">
+                                    <Grid>
+                                        <Path Data="M 0,1 L 1,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Stretch="Fill" Width="8" Height="8" Margin="1,0,0,1" Stroke="{Binding ElementName=SearchButton, Path=Foreground}" StrokeThickness="3" StrokeStartLineCap="Square" />
+                                        <Path Data="M 0,0 A 180,180 180 1 1 1,1" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="Fill" Width="9" Height="9" Stroke="{Binding ElementName=SearchButton, Path=Foreground}" StrokeThickness="2" />
+                                    </Grid>
+                                </Border>
+                            </ToggleButton>
+                            <ToggleButton Style="{DynamicResource ChromelessToggleButtonStyle}" x:Name="ClearButton" Grid.Column="2" Width="18" SnapsToDevicePixels="True" ToolTip="Clear">
+                                <Border>
+                                    <Path Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="{Binding ElementName=ClearButton, Path=Foreground}" StrokeThickness="2" Width="8" Height="8" HorizontalAlignment="Center" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+                                </Border>
+                            </ToggleButton>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                        <Trigger Property="Tag" Value="Search Packages (Ctrl+F)">
+                            <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush18}" />
+                            <Setter Property="Background" TargetName="BoxGrid" Value="{DynamicResource GrayBrush18}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsKeyboardFocusWithin" Value="True" />
+                                <Condition Property="Tag" Value="Search Packages (Ctrl+F)" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="BoxGrid" Value="{DynamicResource GrayBrush17}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="Tag" Value="Search Packages (Ctrl+F)" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="BoxGrid" Value="{DynamicResource GrayBrush17}" />
+                            <Setter Property="Opacity" TargetName="Watermark" Value="1" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value="" />
+                                <Condition Property="Tag" Value="Search Packages (Ctrl+F)" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="SearchButton" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value="" />
+                                <Condition Property="Tag" Value="Search Packages (Ctrl+F)" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="SearchButton" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value="" />
+                                <Condition Property="IsKeyboardFocusWithin" Value="false" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Watermark" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ClearButton" Property="Visibility" Value="Collapsed" />
+                        </MultiTrigger>
+                        <Trigger SourceName="ClearButton" Property="IsChecked" Value="True">
+                            <Setter Property="Text" Value="" />
+                            <Setter Property="IsChecked" TargetName="ClearButton" Value="False" />
+                        </Trigger>
+                        <Trigger SourceName="ClearButton" Property="IsChecked" Value="True">
+                            <Setter Property="Text" Value="" />
+                            <Setter Property="IsChecked" TargetName="ClearButton" Value="False" />
+                        </Trigger>
+                        <Trigger SourceName="SearchButton" Property="IsChecked" Value="True">
+                            <Setter Property="IsChecked" TargetName="SearchButton" Value="False" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition SourceName="SearchButton" Property="IsMouseOver" Value="True" />
+                                <Condition SourceName="SearchButton" Property="IsPressed" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Foreground" TargetName="SearchButton" Value="{DynamicResource HighlightBrush}" />
+                        </MultiTrigger>
+                        <Trigger SourceName="ClearButton" Property="IsPressed" Value="False">
+                            <Setter Property="Foreground" TargetName="ClearButton" Value="{DynamicResource HighlightBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

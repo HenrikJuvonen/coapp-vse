@@ -1,12 +1,12 @@
-﻿namespace CoApp.VSE.Core.Controls.Options
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
     
+namespace CoApp.VSE.Core.Controls.Options
+{
     public partial class FeedOptionsControl
     {
         public FeedOptionsControl()
@@ -63,7 +63,7 @@
 
         private void ApplyChangedSettings()
         {
-            if (TryAddFeed())
+            if (AddButton.IsEnabled && TryAddFeed())
                 UpdateFeeds();
         }
         
@@ -127,6 +127,7 @@
         private bool TryAddFeed()
         {
             var feed = FeedLocation.Text.Trim();
+            FeedLocation.Clear();
 
             SetFeedsListBoxMessage("Loading feeds...");
 
@@ -134,8 +135,6 @@
             {
                 Module.PackageManager.AddFeed(feed);
             }).ContinueWith(t => UpdateFeeds());
-
-            FeedLocation.Text = String.Empty;
 
             return true;
         }

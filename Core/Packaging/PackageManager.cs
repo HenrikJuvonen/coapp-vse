@@ -502,18 +502,6 @@ namespace CoApp.VSE.Core.Packaging
             {
                 Parallel.ForEach(package.Dependencies, dependency =>
                 {
-                    /*var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
-
-                    if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
-                        (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
-                    {
-                        var subdependencies = IdentifyPackageAndDependencies((Package)newest);
-                        lock (this)
-                        {
-                            dependencies.AddRange(subdependencies);
-                        }
-                    }*/
-
                     if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
                         var subdependencies = IdentifyPackageAndDependencies((Package) dependency);
@@ -563,21 +551,12 @@ namespace CoApp.VSE.Core.Packaging
             {
                 Parallel.ForEach(package.Dependencies, dependency =>
                 {
-                    /*
-                    var newest = dependency.InstalledNewest ?? dependency.AvailableNewest;
-
-                    if (newest != null && PackagesInFeeds.Any(n => n.Value.Contains(newest)) &&
-                        (dependency.AvailableNewest == null || newest.Version >= dependency.AvailableNewest.Version))
+                    if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
                         lock (this)
                         {
-                            dependencies.Add((Package)newest);
+                            dependencies.Add((Package)dependency);
                         }
-                    }*/
-
-                    if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
-                    {
-                        dependencies.Add((Package)dependency);
                     }
                 });
             }

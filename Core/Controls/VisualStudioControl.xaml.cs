@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using CoApp.VSE.Core.Packaging;
-using CoApp.VSE.Core.ViewModel;
 using CoApp.Packaging.Client;
 
 namespace CoApp.VSE.Core.Controls
 {
+    using Packaging;
+    using ViewModel;
+
     public partial class VisualStudioControl
     {
         private readonly Dictionary<Package, SolutionViewModel> _solutions = new Dictionary<Package, SolutionViewModel>(); 

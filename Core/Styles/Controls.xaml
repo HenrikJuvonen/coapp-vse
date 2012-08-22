@@ -3,13 +3,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Converters="clr-namespace:CoApp.VSE.Core.Converters">
 
-    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="{DynamicResource HighlightDarkColor}" />
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Controls.Button.xaml" />
+        <ResourceDictionary Source="Controls.CheckBox.xaml" />
+        <ResourceDictionary Source="Controls.ComboBox.xaml" />
+        <ResourceDictionary Source="Controls.DataGrid.xaml" />
+        <ResourceDictionary Source="Controls.MenuItem.xaml" />
+        <ResourceDictionary Source="Controls.ProgressBar.xaml" />
+        <ResourceDictionary Source="Controls.RadioButton.xaml" />
+        <ResourceDictionary Source="Controls.ScrollBars.xaml" />
+        <ResourceDictionary Source="Controls.TextBox.xaml" />
+        <ResourceDictionary Source="Controls.ToolTip.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 
     <Converters:BooleanToVisibilityConverter x:Key="booleanToVisibility" />
     <Converters:NullOrEmptyToVisibilityConverter x:Key="nullOrEmptyToVisibility" />
-    <Converters:NullOrEmptyToBooleanConverter x:Key="nullOrEmptyToBoolean" />
-    <Converters:IntegerToBooleanConverter x:Key="integerToBoolean" />
-    <Converters:IntegerToBooleanConverter Inverted="True" x:Key="invertedIntegerToBoolean" />
 
     <Style x:Key="PropertyBlockStyle" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="0,0,0,4" />
@@ -24,88 +32,38 @@
         <Setter Property="Margin" Value="0,0,10,0" />
     </Style>
 
-    <Style TargetType="DataGridRow" x:Key="DataGridRowStyle">
+    <Style TargetType="Hyperlink" x:Key="HyperlinkStyle">
+        <Setter Property="Foreground" Value="{DynamicResource HighlightLightBrush}" />
         <Style.Triggers>
-            <DataTrigger Binding="{Binding ItemBackground}" Value="Blue">
-                <Setter Property="Background" Value="{DynamicResource BlueBrush}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding ItemBackground}" Value="Yellow">
-                <Setter Property="Background" Value="{DynamicResource YellowBrush}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding ItemBackground}" Value="Green">
-                <Setter Property="Background" Value="{DynamicResource GreenBrush}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding ItemBackground}" Value="Red">
-                <Setter Property="Background" Value="{DynamicResource RedBrush}" />
-            </DataTrigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource HighlightLightBrush}" />
+            </Trigger>
+
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
+            </Trigger>
+
+            <Trigger Property="NavigateUri" Value="{x:Null}">
+                <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
+                <Setter Property="IsEnabled" Value="False" />
+            </Trigger>
         </Style.Triggers>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="DataGridRow">
-                    <Border x:Name="DGR_Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
-                        <SelectiveScrollingGrid x:Name="selectiveScrollingGrid">
-                            <SelectiveScrollingGrid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </SelectiveScrollingGrid.ColumnDefinitions>
-                            <SelectiveScrollingGrid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </SelectiveScrollingGrid.RowDefinitions>
-                            <Rectangle x:Name="Rect" Grid.Column="1" />
-                            <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                            <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Visibility="{TemplateBinding DetailsVisibility}"/>
-                            <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                        </SelectiveScrollingGrid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Rect" Property="Fill" Value="{DynamicResource GrayBrush6}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
 
-    <Style TargetType="DataGrid" >
-        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush5}" />
-        <Setter Property="IsReadOnly" Value="True" />
-        <Setter Property="SelectionMode" Value="Single" />
-        <Setter Property="CanUserResizeRows" Value="False" />
-        <Setter Property="CanUserResizeColumns" Value="False" />
-        <Setter Property="CanUserReorderColumns" Value="False" />
-        <Setter Property="GridLinesVisibility" Value="None" />
-        <Setter Property="AutoGenerateColumns" Value="False" />
-        <Setter Property="RowHeaderWidth" Value="0" />
-        <Setter Property="HeadersVisibility" Value="None" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Background" Value="{DynamicResource GrayBrush7}" />
-        <Setter Property="RowBackground" Value="{DynamicResource GrayBrush7}" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-        <Setter Property="EnableRowVirtualization" Value="True" />
-        <Setter Property="EnableColumnVirtualization" Value="True" />
-        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True" />
-        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling" />
-        <Setter Property="RowStyle" Value="{StaticResource DataGridRowStyle}" />
-    </Style>
-
-    <Style TargetType="DataGridCell">
+    <Style x:Key="StatusCheckBoxStyle" TargetType="{x:Type CheckBox}">
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="DataGridCell">
-                    <Border Padding="0,1,0,1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                        <ContentPresenter SnapsToDevicePixels="True"/>
-                    </Border>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Image Source="{Binding StatusImage}" Width="14" Height="14"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-
+    </Style>    
+    
     <Style TargetType="RichTextBox">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="{DynamicResource GrayBrush7}" />
@@ -183,55 +141,5 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-    
-    <Style TargetType="ComboBoxItem">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ComboBoxItem">
-                    <Border Name="Border" Padding="2,0,2,0" SnapsToDevicePixels="True">
-                        <ContentPresenter />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource GrayBrush6}" />
-                            <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="StatusCheckBoxStyle" TargetType="{x:Type CheckBox}">
-        <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Image Source="{Binding StatusImage}" Width="14" Height="14"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Hyperlink" x:Key="HyperlinkStyle">
-        <Setter Property="Foreground" Value="{DynamicResource HighlightLightBrush}" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource HighlightLightBrush}" />
-            </Trigger>
-
-            <Trigger Property="IsMouseOver" Value="False">
-                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
-            </Trigger>
-
-            <Trigger Property="NavigateUri" Value="{x:Null}">
-                <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
-                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
-                <Setter Property="IsEnabled" Value="False" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 </ResourceDictionary>

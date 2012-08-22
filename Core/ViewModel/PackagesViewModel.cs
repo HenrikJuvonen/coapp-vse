@@ -1,18 +1,17 @@
-﻿using CoApp.Packaging.Client;
-using CoApp.VSE.Core.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Data;
+using CoApp.Packaging.Client;
+using CoApp.Packaging.Common;
 using EnvDTE;
 
 namespace CoApp.VSE.Core.ViewModel
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Windows.Data;
+    using Extensions;
     using Model;
-    using System;
-    using CoApp.Packaging.Common;
 
     public class PackagesViewModel : INotifyPropertyChanged
     {
@@ -39,8 +38,8 @@ namespace CoApp.VSE.Core.ViewModel
             Packages = new ObservableCollection<PackageItem>();
             
             BuildPackageCollection(packages);
-            
-            Sort(ListSortDirection.Ascending);
+
+            Refresh();
         }
 
         private void BuildPackageCollection(IEnumerable<Package> packages)
@@ -160,15 +159,12 @@ namespace CoApp.VSE.Core.ViewModel
             return result;
         }
 
-        public void Sort(ListSortDirection sortDirection)
+        public void Refresh()
         {
             SelectedPackage = null;
 
             View = CollectionViewSource.GetDefaultView(Packages);
             View.Filter = FilterOut;
-
-            var view = (ListCollectionView)View;
-            view.CustomSort = sortDirection == ListSortDirection.Ascending ? new SortAscending() : (IComparer)new SortDescending();
         }
 
         internal void ReplacePackage(Package package, Package newPackage)
@@ -185,40 +181,6 @@ namespace CoApp.VSE.Core.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
-    }
-
-    public class SortAscending : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var a = ((PackageItem)x).PackageIdentity;
-            var b = ((PackageItem)y).PackageIdentity;
-
-            if (a == null || b == null)
-                return 0;
-
-            var aN = a.CanonicalName.PackageName;
-            var bN = b.CanonicalName.PackageName;
-
-            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
-        }
-    }
-
-    public class SortDescending : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var a = ((PackageItem)y).PackageIdentity;
-            var b = ((PackageItem)x).PackageIdentity;
-
-            if (a == null || b == null)
-                return 0;
-
-            var aN = a.CanonicalName.PackageName;
-            var bN = b.CanonicalName.PackageName;
-
-            return string.Compare(aN, 0, bN, 0, aN.Length + bN.Length);
         }
     }
 }

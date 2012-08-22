@@ -9,7 +9,7 @@
     <MenuItem Name="FilterNameMenuItem" Click="OnMenuItemClick">
         <MenuItem.Header>
             <Border Margin="-29,-2,-26,-2" Background="{DynamicResource ControlBackgroundBrush}">
-                <TextBox Name="FilterNameTextBox" Tag="Name" VerticalContentAlignment="Center" KeyDown="OnFilterNameTextBoxKeyDown" Width="100" Margin="26,2,3,2" Height="23"/>
+                <TextBox Name="FilterNameTextBox" Tag="Name" VerticalContentAlignment="Center" KeyDown="OnFilterNameTextBoxKeyDown" Width="100" Margin="23,2,3,2" />
             </Border>
         </MenuItem.Header>
     </MenuItem>

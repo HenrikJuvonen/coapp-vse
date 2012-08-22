@@ -14,11 +14,11 @@
     </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="26" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
-            <WrapPanel VerticalAlignment="Center">
+            <WrapPanel VerticalAlignment="Top">
                 <Button Margin="3,0,0,0" Command="{x:Static VSE:Commands.Cancel}">
                     <WrapPanel Margin="2,0,2,0">
                         <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" Text="Cancel" />
@@ -38,8 +38,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MaxWidth="400" />
-                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="Auto" MaxWidth="395" />
+                <ColumnDefinition Width="395" />
             </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" Content="Packages to be removed:" Visibility="{Binding ElementName=RemoveDataGrid, Path=Visibility}"/>
             <DataGrid Grid.Row="1" Grid.Column="0" Name="RemoveDataGrid" Margin="5,0,5,20" BorderThickness="1">
@@ -55,28 +55,28 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160">
+                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160" Header="Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Flavor">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Flavor.Plain}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Version">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Version}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45">
+                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45" Header="Arch">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />
@@ -99,28 +99,28 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160">
+                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160" Header="Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Flavor">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Flavor.Plain}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80">
+                    <DataGridTemplateColumn MinWidth="80" MaxWidth="80" Header="Version">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Version}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45">
+                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45" Header="Arch">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />

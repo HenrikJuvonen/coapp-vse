@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
@@ -18,10 +19,11 @@ namespace CoApp.VSE.Core.Controls
     using Extensions;
     using Model;
     using Utility;
+    using System.Windows.Controls.Primitives;
 
     public partial class MainControl
     {
-        private ListSortDirection _sortDirection;
+        private SortDescription[] sortDescriptions;
 
         public MainControl()
         {
@@ -80,6 +82,7 @@ namespace CoApp.VSE.Core.Controls
             PackagesDataGrid.Visibility = Visibility.Collapsed;
             ProgressPane.Visibility = Visibility.Visible;
 
+            sortDescriptions = PackagesDataGrid.Items.SortDescriptions.ToArray();
             DataContext = null;
 
             Module.PackageManager.Filters.Clear();
@@ -121,7 +124,7 @@ namespace CoApp.VSE.Core.Controls
             
             lock (Module.PackageManager.PackagesViewModel)
             {
-                Module.PackageManager.PackagesViewModel.Sort(_sortDirection);
+                Module.PackageManager.PackagesViewModel.Refresh();
             }
 
             if (!Module.PackageManager.PackagesViewModel.View.IsEmpty)
@@ -149,6 +152,7 @@ namespace CoApp.VSE.Core.Controls
             {
                 PackageDetailsPanel.Visibility = Visibility.Visible;
                 PackagesDataGrid.Visibility = Visibility.Visible;
+                RestoreSortDescriptions();
                 PackagesDataGrid.SelectedIndex = 0;
             }
             else
@@ -163,16 +167,27 @@ namespace CoApp.VSE.Core.Controls
             ApplyButton.IsEnabled = Module.PackageManager.IsAnyMarked;
         }
 
-        private void OnSortSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RestoreSortDescriptions()
         {
-            _sortDirection = SortComboBox.SelectedIndex == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending;
-
-            if (IsLoaded && !Module.PackageManager.IsQuerying)
+            foreach (var column in PackagesDataGrid.Columns)
             {
-                Reload();
+                var sortDescription = sortDescriptions.FirstOrDefault(n => n.PropertyName == column.SortMemberPath);
+                column.SortDirection = sortDescription != null ? sortDescription.Direction : ListSortDirection.Ascending;
+            }
+
+            if (sortDescriptions.Any())
+            {
+                foreach (var sortDescription in sortDescriptions)
+                {
+                    PackagesDataGrid.Items.SortDescriptions.Add(sortDescription);
+                }
+            }
+            else
+            {
+                PackagesDataGrid.Items.SortDescriptions.Add(new SortDescription("SortByName", ListSortDirection.Ascending));
             }
         }
-
+        
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -305,6 +320,11 @@ namespace CoApp.VSE.Core.Controls
 
         private void OnDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            dynamic src = e.OriginalSource;
+
+            if (e.OriginalSource is Rectangle || src.TemplatedParent is DataGridColumnHeader)
+                return;
+
             if (PackagesDataGrid.CurrentColumn != null && PackagesDataGrid.CurrentColumn.DisplayIndex == 0)
                 return;
 
