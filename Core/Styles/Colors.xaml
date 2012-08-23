@@ -2,12 +2,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <DropShadowEffect x:Key="DropShadowBrush" Opacity="0.6" ShadowDepth="3" BlurRadius="4"/>
-
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{DynamicResource Gray20}"/>
 
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="{DynamicResource HighlightLightColor}"/>
     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource Gray19}"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="{DynamicResource BlackColor}"/>
 
     <SolidColorBrush x:Key="GrayBrush17" Color="{DynamicResource Gray17}"/>
     <SolidColorBrush x:Key="GrayBrush18" Color="{DynamicResource Gray18}"/>

@@ -254,6 +254,8 @@ namespace CoApp.VSE.Core.Packaging
 
         public Dictionary<string, IList<Package>> PackagesInFeeds = new Dictionary<string, IList<Package>>();
 
+        public readonly List<string> Downloads = new List<string>();
+
         public PackageManager()
         {
             CurrentTask.Events += new PackageInstallProgress((name, progress, overall) =>
@@ -272,10 +274,43 @@ namespace CoApp.VSE.Core.Packaging
                 Warning(null, new LogEventArgs("Unable to download package (" + name + ")")));
 
             CurrentTask.Events += new DownloadProgress((remoteLocation, location, progress) =>
-                ProgressAvailable(null, new ProgressEventArgs(remoteLocation.UrlDecode(), "Downloading", progress / 2)));
+                {
+                    var decodedUrl = remoteLocation.UrlDecode();
+
+                    try
+                    {
+                        CanonicalName result = new CanonicalName(decodedUrl);
+                        ProgressAvailable(null, new ProgressEventArgs(result, "Downloading", progress / 2));
+                    }
+                    catch
+                    {
+                        if (!Downloads.Contains(decodedUrl))
+                        {
+                            Downloads.Add(decodedUrl);
+                            Message(null, new LogEventArgs("Downloading " + decodedUrl));
+                        }
+                    }
+                });
 
             CurrentTask.Events += new DownloadCompleted((remoteLocation, locallocation) =>
-                ProgressAvailable(null, new ProgressEventArgs(remoteLocation.UrlDecode(), "Downloaded", 50)));
+                {
+                    var decodedUrl = remoteLocation.UrlDecode();
+
+                    try
+                    {
+                        CanonicalName result = new CanonicalName(decodedUrl);
+                        ProgressAvailable(null, new ProgressEventArgs(result, "Downloaded", 50));
+                    }
+                    catch
+                    {
+                        if (Downloads.Contains(decodedUrl))
+                        {
+                            Downloads.Remove(decodedUrl);
+                        }
+                        Message(null, new LogEventArgs("Downloaded " + decodedUrl));
+                    }
+                });
+
         }
 
         public void InitializeSettings()

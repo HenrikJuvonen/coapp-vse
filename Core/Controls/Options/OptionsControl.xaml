@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
             <WrapPanel VerticalAlignment="Top">
-                <Button Margin="3,0,0,0" ToolTip="Back" Command="{x:Static VSE:Commands.Cancel}" Name="BackButton" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="4,0,0,0" ToolTip="Back" Command="{x:Static VSE:Commands.Cancel}" Name="BackButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Border>
                         <Path
                             Data="M 130,55 L 90,55 M 100,50 L 80,55 L 100,60"
@@ -36,8 +36,8 @@
                 <ColumnDefinition Width="*" MinWidth="410" MaxWidth="510" />
                 <ColumnDefinition Width="*" MaxWidth="510"/>
             </Grid.ColumnDefinitions>
-            <Options:GeneralOptionsControl x:Name="GeneralOptions" Grid.Column="0" Margin="5" MaxHeight="500" VerticalAlignment="Top" />
-            <Options:FeedOptionsControl x:Name="FeedOptions" Grid.Column="1" Margin="5" Height="400" VerticalAlignment="Top" />
+            <Options:GeneralOptionsControl x:Name="GeneralOptions" Grid.Column="0" Margin="4" Height="460" VerticalAlignment="Top" />
+            <Options:FeedOptionsControl x:Name="FeedOptions" Grid.Column="1" Margin="4" Height="461" VerticalAlignment="Top" />
         </Grid>
     </Grid>
 </UserControl>

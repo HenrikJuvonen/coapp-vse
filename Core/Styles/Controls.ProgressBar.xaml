@@ -17,7 +17,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ProgressBar">
-                    <MetroControls:ProgressRing IsActive="True" Foreground="{DynamicResource BlackBrush}" Opacity="0.675" IsTabStop="False"/>
+                    <MetroControls:ProgressRing IsActive="True" Foreground="{DynamicResource BlackBrush}" Opacity="0.8" IsTabStop="False"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

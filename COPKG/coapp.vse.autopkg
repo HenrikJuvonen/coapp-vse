@@ -6,7 +6,7 @@ package {
 }
 
 provides {
-    feature: "coapp.vse" = "0.8";
+    feature: "coapp.vse" = "1.0";
 }
 
 requires {
@@ -16,9 +16,9 @@ requires {
 metadata {
     summary: "Visual Studio Extension for managing CoApp-packages";
     description: "Visual Studio extension for managing CoApp-packages";
-    icon: @"images\logo3.png";
+    icon: @"images\logo.png";
     
-    author-version : "0.8";
+    author-version : "1.0";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
     stability : "-10";
 }
@@ -27,7 +27,7 @@ compatability-policy {
     minimum: "0.0.0.0";
     maximum: "${OneLessThanCurrent}";
     versions : {
-        "0.8",
+        "1.0",
     };
 }
 

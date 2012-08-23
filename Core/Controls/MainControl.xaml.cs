@@ -237,7 +237,15 @@ namespace CoApp.VSE.Core.Controls
         private void ExecuteBrowse(object sender, ExecutedRoutedEventArgs e)
         {
             var worker = new BackgroundWorker();
-            worker.DoWork += (o, a) => System.Diagnostics.Process.Start(Module.PackageManager.PackagesViewModel.SelectedPackage.PackageIdentity.GetPackageDirectory());
+            worker.DoWork += (o, a) =>
+            {
+                try
+                {
+                    var directory = Module.PackageManager.PackagesViewModel.SelectedPackage.PackageIdentity.GetPackageDirectory();
+                    System.Diagnostics.Process.Start(directory);
+                }
+                catch { }
+            };
             worker.RunWorkerAsync();
         }
 

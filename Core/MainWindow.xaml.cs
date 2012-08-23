@@ -1,16 +1,23 @@
-﻿namespace CoApp.VSE.Core
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
+
+namespace CoApp.VSE.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Windows;
-    using System.Windows.Input;
     using Controls;
-    using System.Runtime.InteropServices;
-    using System.Windows.Interop;
+    using Controls.Options;
 
     public partial class MainWindow
     {
+        public readonly MainControl MainControl = new MainControl();
+        public readonly InfoControl InfoControl = new InfoControl();
+        public readonly OptionsControl OptionsControl = new OptionsControl();
+        public readonly VisualStudioControl VisualStudioControl = new VisualStudioControl();
+        public readonly SummaryControl SummaryControl = new SummaryControl();
+        public readonly ProgressControl ProgressControl = new ProgressControl();
+
         public MainWindow()
         {
             InitializeComponent();

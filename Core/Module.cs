@@ -65,6 +65,7 @@ namespace CoApp.VSE.Core
                 }
 
                 ReloadMainControl();
+                ShowMainControl();
                 
                 MainWindow.ShowDialog();
             }
@@ -87,54 +88,29 @@ namespace CoApp.VSE.Core
             MainWindow.ProgressControl.Log.Document.Blocks.Clear();
             MainWindow.InfoControl.DataContext = null;
         }
-
+        
         public static void ShowInformationControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
-            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
-            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
-            MainWindow.MainControl.Visibility = Visibility.Collapsed;
-            MainWindow.InfoControl.Visibility = Visibility.Visible;
-
+            MainWindow.ContentControl.Content = MainWindow.InfoControl;
             MainWindow.InfoControl.DataContext = PackageManager.PackagesViewModel.SelectedPackage;
         }
 
         public static void ShowMainControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
-            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
-            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
-            MainWindow.MainControl.Visibility = Visibility.Visible;
-            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
-
-            _isRestoring = false;
-
+            MainWindow.ContentControl.Content = MainWindow.MainControl;
             ClearControls();
+            _isRestoring = false;
         }
 
         public static void ShowOptionsControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Visible;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
-            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
-            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
-            MainWindow.MainControl.Visibility = Visibility.Collapsed;
-            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
-
+            MainWindow.ContentControl.Content = MainWindow.OptionsControl;
             ClearControls();
         }
 
         public static void ShowVisualStudioControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Visible;
-            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
-            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
-            MainWindow.MainControl.Visibility = Visibility.Collapsed;
-            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
-
+            MainWindow.ContentControl.Content = MainWindow.VisualStudioControl;
             ClearControls();
             MainWindow.VisualStudioControl.Initialize();
         }
@@ -148,26 +124,14 @@ namespace CoApp.VSE.Core
 
         public static void ShowSummaryControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
-            MainWindow.SummaryControl.Visibility = Visibility.Visible;
-            MainWindow.ProgressControl.Visibility = Visibility.Collapsed;
-            MainWindow.MainControl.Visibility = Visibility.Collapsed;
-            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
-
+            MainWindow.ContentControl.Content = MainWindow.SummaryControl;
             ClearControls();
             MainWindow.SummaryControl.Initialize();
         }
 
         public static void ShowProgressControl()
         {
-            MainWindow.OptionsControl.Visibility = Visibility.Collapsed;
-            MainWindow.VisualStudioControl.Visibility = Visibility.Collapsed;
-            MainWindow.SummaryControl.Visibility = Visibility.Collapsed;
-            MainWindow.ProgressControl.Visibility = Visibility.Visible;
-            MainWindow.MainControl.Visibility = Visibility.Collapsed;
-            MainWindow.InfoControl.Visibility = Visibility.Collapsed;
-
+            MainWindow.ContentControl.Content = MainWindow.ProgressControl;
             ClearControls();
             MainWindow.ProgressControl.Initialize();
         }

@@ -47,14 +47,16 @@
                       Data="M 0,0 L 4,3.5 L 0,7 Z"/>
             </Grid>
             <Popup x:Name="PART_Popup"
-                   HorizontalOffset="-1"
                    Placement="Right"
                    IsOpen="{Binding Path=IsSubmenuOpen,RelativeSource={RelativeSource TemplatedParent}}"
                    Focusable="false"
                    AllowsTransparency="True"
                    PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
 
-                <Border Background="{DynamicResource ControlBackgroundBrush}" Margin="3" Effect="{DynamicResource DropShadowBrush}" BorderBrush="{DynamicResource GrayBrush5}" BorderThickness="1">
+                <Border Background="{DynamicResource ControlBackgroundBrush}" Margin="0,5,5,5" BorderBrush="{DynamicResource GrayBrush19}" BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="2" Opacity="0.6" BlurRadius="5" />
+                    </Border.Effect>
                     <ScrollViewer Name="SubMenuScrollViewer" CanContentScroll="true"
                                   Style="{DynamicResource {ComponentResourceKey TypeInTargetAssembly={x:Type FrameworkElement}, ResourceId=MenuScrollViewer}}">
                         <Grid>
@@ -98,4 +100,42 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="{x:Type ContextMenu}" x:Key="MetroContextMenu">
+        <Setter Property="Background" Value="{DynamicResource GrayBrush20}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush19}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border 
+                        Margin="1,5,5,5"
+                        x:Name="Menu"
+                        Opacity="0"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="0">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" Opacity="0.6" BlurRadius="5" />
+                        </Border.Effect>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Rectangle.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.1" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Menu" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                        <Grid>
+                            <ItemsPresenter Margin="{TemplateBinding Padding}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ContextMenu" BasedOn="{StaticResource MetroContextMenu}" />
 </ResourceDictionary>

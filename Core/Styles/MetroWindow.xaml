@@ -7,41 +7,43 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
     <ControlTemplate x:Key="WindowTemplateKey" TargetType="{x:Type Controls:MetroWindow}">
-        <Grid Background="{TemplateBinding Background}">
-            <AdornerDecorator>
-                <Controls:MetroContentControl KeyboardNavigation.IsTabStop="False">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid x:Name="PART_TitleBar"
-                            Background="{DynamicResource GrayBrush8}"
-                            Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
-                            Visibility="{TemplateBinding ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Image
-                                Visibility="{TemplateBinding ShowIconOnTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                Source="{TemplateBinding Icon}"/>
-                        </Grid>
-                        <ContentPresenter
-                            Content="{Binding WindowCommands, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" 
-                            x:Name="PART_WindowCommands"
-                            Panel.ZIndex="1"
-                            Grid.RowSpan="2"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" />
-                        <ContentPresenter Grid.Row="1"/>
-                    </Grid>
-                </Controls:MetroContentControl>
-            </AdornerDecorator>
-            <Border x:Name="PART_Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-            <ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" IsTabStop="false" Visibility="Collapsed" VerticalAlignment="Bottom"/>
-        </Grid>
+		<Border BorderBrush="{DynamicResource GrayBrush20}" BorderThickness="1">
+			<Grid Background="{TemplateBinding Background}">
+				<AdornerDecorator>
+					<Controls:MetroContentControl KeyboardNavigation.IsTabStop="False">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Grid x:Name="PART_TitleBar"
+								Background="{DynamicResource GrayBrush8}"
+								Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
+								Visibility="{TemplateBinding ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Image
+									Visibility="{TemplateBinding ShowIconOnTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+									Source="{TemplateBinding Icon}"/>
+							</Grid>
+							<ContentPresenter
+								Content="{Binding WindowCommands, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" 
+								x:Name="PART_WindowCommands"
+								Panel.ZIndex="1"
+								Grid.RowSpan="2"
+								VerticalAlignment="Top"
+								HorizontalAlignment="Right"
+								Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" />
+							<ContentPresenter Grid.Row="1"/>
+						</Grid>
+					</Controls:MetroContentControl>
+				</AdornerDecorator>
+				<Border x:Name="PART_Border" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+				<ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" IsTabStop="false" Visibility="Collapsed" VerticalAlignment="Bottom"/>
+			</Grid>
+		</Border>
         <ControlTemplate.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -54,8 +56,6 @@
     </ControlTemplate>
 
     <Style TargetType="{x:Type Core:MainWindow}">
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="Background" Value="{DynamicResource GrayBrush8}" />
         <Setter Property="Behaviours:StylizedBehaviors.Behaviors">

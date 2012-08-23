@@ -127,11 +127,7 @@
                                       StrokeStartLineCap="Triangle"
                                       StrokeEndLineCap="Triangle"
                                       StrokeThickness="2" />
-                                <Rectangle x:Name="IndeterminateIcon" Height="8" Width="8" Opacity="0">
-                                    <Rectangle.Fill>
-                                        <SolidColorBrush Color="{DynamicResource Gray3}" />
-                                    </Rectangle.Fill>
-                                </Rectangle>
+                                <Rectangle x:Name="IndeterminateIcon" Height="8" Width="8" Opacity="0" Fill="{DynamicResource BlackBrush}" />
                                 <Rectangle x:Name="DisabledVisualElement" Fill="{DynamicResource DisabledWhiteColorBrush}" Opacity="0" RadiusY="1" RadiusX="1" />
                             </Grid>
                             <Border x:Name="ValidationErrorElement"
@@ -143,10 +139,10 @@
                                       Visibility="Collapsed">
                                 <ToolTipService.ToolTip>
                                     <ToolTip x:Name="validationTooltip"
-                           DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                           Placement="Right"
-                           PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                           Template="{DynamicResource ValidationToolTipTemplate}">
+                                       DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                       Placement="Right"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                       Template="{DynamicResource ValidationToolTipTemplate}">
                                         <ToolTip.Triggers>
                                             <EventTrigger RoutedEvent="Canvas.Loaded">
                                                 <BeginStoryboard>
@@ -171,7 +167,7 @@
                                 </Grid>
                             </Border>
                         </Grid>
-                        <ContentControl Grid.Column="1">
+                        <ContentControl Grid.Column="1" IsTabStop="False">
                             <ContentControl.Foreground>
                                 <SolidColorBrush x:Name="ContentPresenterWrapperColor" Color="{DynamicResource BlackColor}" />
                             </ContentControl.Foreground>

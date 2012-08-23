@@ -3,6 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="ToolTip">
+        <Setter Property="FontFamily" Value="{DynamicResource ContentFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource ContentFontSize}" />
         <Setter Property="Background" Value="#FFf6f6f6" />
         <Setter Property="Foreground" Value="Black" />
         <Setter Property="Padding" Value="3,1,3,1" />
@@ -19,19 +21,19 @@
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="OpenStates">
                                 <VisualStateGroup.Transitions>
-                                    <VisualTransition From="Open" GeneratedDuration="0:0:0.3" To="Closed" />
+                                    <VisualTransition From="Open" GeneratedDuration="0:0:0" To="Closed" />
                                 </VisualStateGroup.Transitions>
                                 <VisualState x:Name="Closed">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
-                                            <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="0" />
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Open">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
-                                            <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1" />
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

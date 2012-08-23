@@ -73,8 +73,8 @@ namespace CoApp.VSE.Core.Controls
             _filterMenu.PlacementTarget = AddFilterButton;
             _filterMenu.Placement = PlacementMode.Bottom;
             _filterMenu.IsOpen = true;
-            _filterMenu.VerticalOffset = -4;
-            _filterMenu.HorizontalOffset = -4;
+            _filterMenu.VerticalOffset = -5;
+            _filterMenu.HorizontalOffset = -1;
             _filterMenu.StaysOpen = false;
             _filterMenu.Closed += (o, a) => AddFilterButton.IsChecked = false;
             _filterMenu.Opened += (o, a) => AddFilterButton.IsChecked = true;

@@ -19,7 +19,7 @@ namespace CoApp.VSE.Core.Extensions
 
         public static string GetPackageDirectory(this IPackage package)
         {
-            string dir = string.Format(@"{0}\program files{1}\",
+            string dir = string.Format(@"{0}\program files{1}",
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                 package.Architecture == "any" ? string.Empty :
                 package.Architecture == "x64" ? " (x64)" :
