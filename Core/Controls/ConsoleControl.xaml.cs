@@ -34,7 +34,6 @@ namespace CoApp.VSE.Core.Controls
 
             ConsoleBox.Document.Blocks.Clear();
 
-            WriteLine(string.Format("Press F2 to toggle console."), Brushes.DarkGoldenrod, FontStyles.Normal, FontWeights.Bold);
             WriteLine(PromptString, FontWeights.Bold);
 
             DataObject.AddPastingHandler(ConsoleBox, OnPaste);

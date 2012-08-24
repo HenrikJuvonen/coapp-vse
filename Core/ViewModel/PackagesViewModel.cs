@@ -55,43 +55,49 @@ namespace CoApp.VSE.Core.ViewModel
         {
             var n = (PackageItem) o;
             var filters = Module.PackageManager.Filters;
-            var boolean = filters.ContainsKey("Boolean") ? filters["Boolean"] : null;
+            var boolean = filters.ContainsKey(Resources.Filter_Boolean) ? filters[Resources.Filter_Boolean] : null;
 
             var result = true;
 
-            if (filters.ContainsKey("Name"))
-                result = filters["Name"].Any(m => n.Name != string.Empty && n.Name.Contains(m));
+            if (filters.ContainsKey(Resources.Filter_Name))
+                result = filters[Resources.Filter_Name].Any(m => n.Name != string.Empty && n.Name.Contains(m));
 
-            if (filters.ContainsKey("Flavor"))
-                result = result && filters["Flavor"].Any(m => n.Flavor != string.Empty && m.Contains(n.Flavor));
+            if (filters.ContainsKey(Resources.Filter_Flavor))
+                result = result && filters[Resources.Filter_Flavor].Any(m => n.Flavor != string.Empty && m.Contains(n.Flavor));
 
-            if (filters.ContainsKey("Architecture"))
-                result = result && filters["Architecture"].Contains(n.Architecture);
+            if (filters.ContainsKey(Resources.Filter_Architecture))
+                result = result && filters[Resources.Filter_Architecture].Contains(n.Architecture);
 
-            if (filters.ContainsKey("Role"))
-                result = result && filters["Role"].Any(m => n.PackageIdentity.Roles.Select(k => k.PackageRole.ToString()).Contains(m));
+            if (filters.ContainsKey(Resources.Filter_Role))
+                result = result && filters[Resources.Filter_Role].Any(m => n.PackageIdentity.Roles.Select(k => k.PackageRole.ToString()).Contains(m));
 
             if (boolean != null)
             {
-                if (boolean.Contains("Is Stable"))
+                if (boolean.Contains(Resources.Filter_Boolean_Stable))
                     result = result && n.PackageIdentity.PackageDetails.Stability == 0;
 
-                if (boolean.Contains("Is Dependency"))
+                if (boolean.Contains(Resources.Filter_Boolean_Active))
+                    result = result && n.PackageIdentity.IsActive;
+
+                if (boolean.Contains(Resources.Filter_Boolean_Trimable))
+                    result = result && n.PackageIdentity.IsTrimable;
+
+                if (boolean.Contains(Resources.Filter_Boolean_Dependency))
                     result = result && n.PackageIdentity.IsDependency;
 
-                if (boolean.Contains("Is Blocked"))
+                if (boolean.Contains(Resources.Filter_Boolean_Blocked))
                     result = result && n.PackageIdentity.IsBlocked;
 
-                if (boolean.Contains("Is Installed"))
+                if (boolean.Contains(Resources.Filter_Boolean_Installed))
                     result = result && n.PackageIdentity.IsInstalled;
 
-                if (boolean.Contains("Is Update"))
+                if (boolean.Contains(Resources.Filter_Boolean_Update))
                     result = result && n.IsUpdate;
 
-                if (boolean.Contains("Is Wanted"))
+                if (boolean.Contains(Resources.Filter_Boolean_Wanted))
                     result = result && n.PackageIdentity.IsWanted;
                 
-                if (boolean.Contains("Is Latest Version"))
+                if (boolean.Contains(Resources.Filter_Boolean_Latest))
                 {
                     var allVersions = Packages.Where(m => m.Name == n.Name && m.Flavor == n.Flavor && m.Architecture == n.Architecture);
 
@@ -99,21 +105,21 @@ namespace CoApp.VSE.Core.ViewModel
                         result = result && n.Version == allVersions.Max(m => m.PackageIdentity.Version);
                 }
 
-                if (boolean.Contains("Is Locked"))
+                if (boolean.Contains(Resources.Filter_Boolean_Locked))
                     result = result && n.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange);
 
-                if (boolean.Contains("Is Used In Projects"))
+                if (boolean.Contains(Resources.Filter_Boolean_UsedInProjects))
                     result = result && Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(n.PackageIdentity));
 
-                if (boolean.Contains("Is Development Package"))
+                if (boolean.Contains(Resources.Filter_Boolean_Devel))
                     result = result && n.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None;
             }
 
-            if (filters.ContainsKey("Feed URL"))
+            if (filters.ContainsKey(Resources.Filter_FeedUrl))
             {
                 var isInFeeds = false;
 
-                foreach (var feedLocation in filters["Feed URL"].Where(m => m != null))
+                foreach (var feedLocation in filters[Resources.Filter_FeedUrl].Where(m => m != null))
                 {
                     isInFeeds = isInFeeds || Module.PackageManager.IsPackageInFeed(n.PackageIdentity, feedLocation);
                 }
@@ -121,11 +127,11 @@ namespace CoApp.VSE.Core.ViewModel
                 result = result && isInFeeds;
             }
 
-            if (filters.ContainsKey("Projects") && Module.IsSolutionOpen)
+            if (filters.ContainsKey(Resources.Filter_Project) && Module.IsSolutionOpen)
             {
                 var isInProjects = false;
 
-                foreach (var projectName in filters["Projects"].Where(m => m != null))
+                foreach (var projectName in filters[Resources.Filter_Project].Where(m => m != null))
                 {
                     var project = Module.DTE.Solution.Projects.OfType<Project>().FirstOrDefault(m => m.Name == projectName);
 

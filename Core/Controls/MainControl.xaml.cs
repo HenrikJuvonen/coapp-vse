@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -19,7 +20,6 @@ namespace CoApp.VSE.Core.Controls
     using Extensions;
     using Model;
     using Utility;
-    using System.Windows.Controls.Primitives;
 
     public partial class MainControl
     {
@@ -306,10 +306,7 @@ namespace CoApp.VSE.Core.Controls
             var menuItem = (MenuItem)sender;
             var packageItem = (PackageItem)PackagesDataGrid.SelectedItem;
 
-            var statusText = (string)menuItem.Header;
-            statusText = statusText.Replace("Mark for ", "MarkedFor").Replace(" ", "");
-
-            var status = (PackageItemStatus)Enum.Parse(typeof(PackageItemStatus), statusText);
+            var status = (PackageItemStatus)int.Parse((string)menuItem.Tag);
             
             packageItem.SetStatus(status);
 
@@ -319,9 +316,10 @@ namespace CoApp.VSE.Core.Controls
         private void OnStatusContextMenuItemClick2(object sender, RoutedEventArgs e)
         {
             var packageItem = (PackageItem)PackagesDataGrid.SelectedItem;
-            
+            var state = (string)((MenuItem)sender).Tag;
+
             var worker = new BackgroundWorker();
-            worker.DoWork += (o, a) => Module.PackageManager.SetPackageState(packageItem.PackageIdentity, "Wanted");
+            worker.DoWork += (o, a) => Module.PackageManager.SetPackageState(packageItem.PackageIdentity, state);
             worker.RunWorkerCompleted += (o, a) => UpdateMarkLists(packageItem);
             worker.RunWorkerAsync();            
         }
@@ -537,29 +535,24 @@ namespace CoApp.VSE.Core.Controls
                 ((MenuItem)menu.Items[7]).IsEnabled = false;
             }
 
-
-            var wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsWanted, Brushes.Black);
-            wrap.Children.Add(new TextBlock { Text = "Wanted" });
+            var wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsWanted, Core.Resources.Main_State_Wanted, Brushes.Black);
             ((MenuItem)menu.Items[9]).Header = wrap;
 
-            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsBlocked, Brushes.Gray);
-            wrap.Children.Add(new TextBlock { Text = "Blocked" });
+            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsBlocked, Core.Resources.Main_State_Blocked, packageItem.PackageIdentity.IsInstalled ? Brushes.Gray : Brushes.Black);
             ((MenuItem)menu.Items[10]).Header = wrap;
+            ((MenuItem)menu.Items[10]).IsEnabled = !packageItem.PackageIdentity.IsInstalled;
 
-            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange), Brushes.Gray);
-            wrap.Children.Add(new TextBlock { Text = "Locked" });
+            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange), Core.Resources.Main_State_Locked, Brushes.Gray);
             ((MenuItem)menu.Items[11]).Header = wrap;
 
-            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsTrimable, Brushes.Gray);
-            wrap.Children.Add(new TextBlock { Text = "Trimable" });
+            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsTrimable, Core.Resources.Main_State_Trimable, Brushes.Gray);
             ((MenuItem)menu.Items[12]).Header = wrap;
 
-            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsActive, Brushes.Gray);
-            wrap.Children.Add(new TextBlock { Text = "Active" });
+            wrap = GetWrapPanelForPackageStateHeader(packageItem.PackageIdentity.IsActive, Core.Resources.Main_State_Active, Brushes.Gray);
             ((MenuItem)menu.Items[13]).Header = wrap;
         }
 
-        private WrapPanel GetWrapPanelForPackageStateHeader(bool state, Brush checkBrush)
+        private WrapPanel GetWrapPanelForPackageStateHeader(bool state, string text, Brush checkBrush)
         {
             var border = new Border();
 
@@ -575,6 +568,7 @@ namespace CoApp.VSE.Core.Controls
             
             var wrap = new WrapPanel();
             wrap.Children.Add(border);
+            wrap.Children.Add(new TextBlock { Text = text });
             
             return wrap;
         }

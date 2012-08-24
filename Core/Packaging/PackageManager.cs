@@ -454,12 +454,15 @@ namespace CoApp.VSE.Core.Packaging
             {
                 switch (state)
                 {
+                    case "Blocked":
+                        _pkm.SetGeneralPackageInformation(50, package.CanonicalName, "state", package.IsBlocked ? null : PackageState.Blocked.ToString());
+                        RefreshPackage(package);
+                        break;
                     case "Wanted":
                         _pkm.SetPackageWanted(package.CanonicalName, !package.IsWanted);
                         RefreshPackage(package);
                         break;
                 }
-
             }));
         }
 

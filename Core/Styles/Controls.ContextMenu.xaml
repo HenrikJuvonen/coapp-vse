@@ -47,6 +47,7 @@
                       Data="M 0,0 L 4,3.5 L 0,7 Z"/>
             </Grid>
             <Popup x:Name="PART_Popup"
+                   HorizontalOffset="-1"
                    Placement="Right"
                    IsOpen="{Binding Path=IsSubmenuOpen,RelativeSource={RelativeSource TemplatedParent}}"
                    Focusable="false"
@@ -80,7 +81,9 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <Style TargetType="MenuItem">
+    <Style TargetType="MenuItem">    
+        <Setter Property="FontFamily" Value="{DynamicResource ContentFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource ContentFontSize}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="Padding" Value="25,2,10,2" />

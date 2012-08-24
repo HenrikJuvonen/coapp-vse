@@ -43,15 +43,14 @@ namespace CoApp.VSE.Core.Controls
             }
             else
             {
-                // Remove "Is Used In Projects"
-                FilterBooleanMenuItem.Items.RemoveAt(7);
+                ((MenuItem)FilterBooleanMenuItem.Items[10]).Visibility = Visibility.Collapsed;
             }
             
         }
 
         public void UpdateProjects()
         {
-            _itemsControl.RemoveFilters("Project");
+            _itemsControl.RemoveFilters(Core.Resources.Filter_Project);
             FilterProjectMenuItem.Items.Clear();
 
             var anyProjects = false;
@@ -73,9 +72,9 @@ namespace CoApp.VSE.Core.Controls
             foreach (MenuItem item in FilterBooleanMenuItem.Items)
             {
                 var detail = (string) item.Header;
-                if (detail == "Is Used In Projects")
+                if (detail == Core.Resources.Filter_Boolean_UsedInProjects)
                 {
-                    var detailFiltered = Module.PackageManager.Filters.ContainsKey("Boolean") && !Module.PackageManager.Filters["Boolean"].Contains(detail);
+                    var detailFiltered = Module.PackageManager.Filters.ContainsKey(Core.Resources.Filter_Boolean) && !Module.PackageManager.Filters[Core.Resources.Filter_Boolean].Contains(detail);
                     item.Visibility = anyProjects && detailFiltered ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
@@ -116,7 +115,7 @@ namespace CoApp.VSE.Core.Controls
         {
             if (e.Key == Key.Enter && FilterNameTextBox.IsFocused)
             {
-                _itemsControl.AddFilter("Name", FilterNameTextBox.Text);
+                _itemsControl.AddFilter(Core.Resources.Filter_Name, FilterNameTextBox.Text);
 
                 FilterNameTextBox.Clear();
             }

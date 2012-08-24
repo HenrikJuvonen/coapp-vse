@@ -71,146 +71,1046 @@ namespace CoApp.VSE.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All packages have been cleared from the cache..
+        ///   Looks up a localized string similar to Architecture.
         /// </summary>
-        public static string Info_ClearPackageCache {
+        public static string Filter_Architecture {
             get {
-                return ResourceManager.GetString("Info_ClearPackageCache", resourceCulture);
+                return ResourceManager.GetString("Filter_Architecture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boolean.
+        /// </summary>
+        public static string Filter_Boolean {
+            get {
+                return ResourceManager.GetString("Filter_Boolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Active.
+        /// </summary>
+        public static string Filter_Boolean_Active {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Blocked.
+        /// </summary>
+        public static string Filter_Boolean_Blocked {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Blocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Dependency.
+        /// </summary>
+        public static string Filter_Boolean_Dependency {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Dependency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Development Package.
+        /// </summary>
+        public static string Filter_Boolean_Devel {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Devel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Installed.
+        /// </summary>
+        public static string Filter_Boolean_Installed {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Latest Version.
+        /// </summary>
+        public static string Filter_Boolean_Latest {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Latest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Locked.
+        /// </summary>
+        public static string Filter_Boolean_Locked {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Stable.
+        /// </summary>
+        public static string Filter_Boolean_Stable {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Stable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Trimable.
+        /// </summary>
+        public static string Filter_Boolean_Trimable {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Trimable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Update.
+        /// </summary>
+        public static string Filter_Boolean_Update {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Used In Projects.
+        /// </summary>
+        public static string Filter_Boolean_UsedInProjects {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_UsedInProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Wanted.
+        /// </summary>
+        public static string Filter_Boolean_Wanted {
+            get {
+                return ResourceManager.GetString("Filter_Boolean_Wanted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feed URL.
+        /// </summary>
+        public static string Filter_FeedUrl {
+            get {
+                return ResourceManager.GetString("Filter_FeedUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flavor.
+        /// </summary>
+        public static string Filter_Flavor {
+            get {
+                return ResourceManager.GetString("Filter_Flavor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Filter_Name {
+            get {
+                return ResourceManager.GetString("Filter_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project.
+        /// </summary>
+        public static string Filter_Project {
+            get {
+                return ResourceManager.GetString("Filter_Project", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role.
+        /// </summary>
+        public static string Filter_Role {
+            get {
+                return ResourceManager.GetString("Filter_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Architecture:.
+        /// </summary>
+        public static string Info_Architecture {
+            get {
+                return ResourceManager.GetString("Info_Architecture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Info_Button_Back {
+            get {
+                return ResourceManager.GetString("Info_Button_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dependencies:.
+        /// </summary>
+        public static string Info_Dependencies {
+            get {
+                return ResourceManager.GetString("Info_Dependencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description:.
+        /// </summary>
+        public static string Info_Description {
+            get {
+                return ResourceManager.GetString("Info_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flavor:.
+        /// </summary>
+        public static string Info_Flavor {
+            get {
+                return ResourceManager.GetString("Info_Flavor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to License:.
+        /// </summary>
+        public static string Info_License {
+            get {
+                return ResourceManager.GetString("Info_License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Licenses:.
+        /// </summary>
+        public static string Info_Licenses {
+            get {
+                return ResourceManager.GetString("Info_Licenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More Information.
+        /// </summary>
+        public static string Info_MoreInformation {
+            get {
+                return ResourceManager.GetString("Info_MoreInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string Info_Name {
+            get {
+                return ResourceManager.GetString("Info_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date Published:.
+        /// </summary>
+        public static string Info_PublishDate {
+            get {
+                return ResourceManager.GetString("Info_PublishDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publisher:.
+        /// </summary>
+        public static string Info_Publisher {
+            get {
+                return ResourceManager.GetString("Info_Publisher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Info_Status {
+            get {
+                return ResourceManager.GetString("Info_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary:.
+        /// </summary>
+        public static string Info_Summary {
+            get {
+                return ResourceManager.GetString("Info_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags:.
+        /// </summary>
+        public static string Info_Tags {
+            get {
+                return ResourceManager.GetString("Info_Tags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version:.
+        /// </summary>
+        public static string Info_Version {
+            get {
+                return ResourceManager.GetString("Info_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Filter.
+        /// </summary>
+        public static string Main_Button_AddFilter {
+            get {
+                return ResourceManager.GetString("Main_Button_AddFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply.
+        /// </summary>
+        public static string Main_Button_Apply {
+            get {
+                return ResourceManager.GetString("Main_Button_Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browse Package Contents.
+        /// </summary>
+        public static string Main_Button_Browse {
+            get {
+                return ResourceManager.GetString("Main_Button_Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string Main_Button_Clear {
+            get {
+                return ResourceManager.GetString("Main_Button_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark All Updates.
+        /// </summary>
+        public static string Main_Button_MarkAllUpdates {
+            get {
+                return ResourceManager.GetString("Main_Button_MarkAllUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string Main_Button_Options {
+            get {
+                return ResourceManager.GetString("Main_Button_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload.
+        /// </summary>
+        public static string Main_Button_Reload {
+            get {
+                return ResourceManager.GetString("Main_Button_Reload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arch.
+        /// </summary>
+        public static string Main_Column_Architecture {
+            get {
+                return ResourceManager.GetString("Main_Column_Architecture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flavor.
+        /// </summary>
+        public static string Main_Column_Flavor {
+            get {
+                return ResourceManager.GetString("Main_Column_Flavor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Main_Column_Name {
+            get {
+                return ResourceManager.GetString("Main_Column_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string Main_Column_Progress {
+            get {
+                return ResourceManager.GetString("Main_Column_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Main_Column_Status {
+            get {
+                return ResourceManager.GetString("Main_Column_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        public static string Main_Column_Summary {
+            get {
+                return ResourceManager.GetString("Main_Column_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string Main_Column_Version {
+            get {
+                return ResourceManager.GetString("Main_Column_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Complete Removal.
+        /// </summary>
+        public static string Main_Mark_CompleteRemove {
+            get {
+                return ResourceManager.GetString("Main_Mark_CompleteRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Installation.
+        /// </summary>
+        public static string Main_Mark_Install {
+            get {
+                return ResourceManager.GetString("Main_Mark_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Reinstallation.
+        /// </summary>
+        public static string Main_Mark_Reinstall {
+            get {
+                return ResourceManager.GetString("Main_Mark_Reinstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Removal.
+        /// </summary>
+        public static string Main_Mark_Remove {
+            get {
+                return ResourceManager.GetString("Main_Mark_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unmark.
+        /// </summary>
+        public static string Main_Mark_Unmark {
+            get {
+                return ResourceManager.GetString("Main_Mark_Unmark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Update.
+        /// </summary>
+        public static string Main_Mark_Update {
+            get {
+                return ResourceManager.GetString("Main_Mark_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark for Visual Studio.
+        /// </summary>
+        public static string Main_Mark_VisualStudio {
+            get {
+                return ResourceManager.GetString("Main_Mark_VisualStudio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No packages found..
+        /// </summary>
+        public static string Main_NoPackagesFound {
+            get {
+                return ResourceManager.GetString("Main_NoPackagesFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Main_State_Active {
+            get {
+                return ResourceManager.GetString("Main_State_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blocked.
+        /// </summary>
+        public static string Main_State_Blocked {
+            get {
+                return ResourceManager.GetString("Main_State_Blocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locked.
+        /// </summary>
+        public static string Main_State_Locked {
+            get {
+                return ResourceManager.GetString("Main_State_Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trimable.
+        /// </summary>
+        public static string Main_State_Trimable {
+            get {
+                return ResourceManager.GetString("Main_State_Trimable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wanted.
+        /// </summary>
+        public static string Main_State_Wanted {
+            get {
+                return ResourceManager.GetString("Main_State_Wanted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Options_Button_Back {
+            get {
+                return ResourceManager.GetString("Options_Button_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package Cache.
+        /// </summary>
+        public static string Options_Cache {
+            get {
+                return ResourceManager.GetString("Options_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string Options_Cache_Button_Clear {
+            get {
+                return ResourceManager.GetString("Options_Cache_Button_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleared..
+        /// </summary>
+        public static string Options_Cache_Cleared {
+            get {
+                return ResourceManager.GetString("Options_Cache_Cleared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error occurred..
+        /// </summary>
+        public static string Options_Cache_ErrorOccurred {
+            get {
+                return ResourceManager.GetString("Options_Cache_ErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package Feeds.
+        /// </summary>
+        public static string Options_Feeds {
+            get {
+                return ResourceManager.GetString("Options_Feeds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available feeds:.
+        /// </summary>
+        public static string Options_Feeds_Available {
+            get {
+                return ResourceManager.GetString("Options_Feeds_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string Options_Feeds_Button_Add {
+            get {
+                return ResourceManager.GetString("Options_Feeds_Button_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string Options_Feeds_Button_Remove {
+            get {
+                return ResourceManager.GetString("Options_Feeds_Button_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location:.
+        /// </summary>
+        public static string Options_Feeds_Location {
+            get {
+                return ResourceManager.GetString("Options_Feeds_Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package Manager.
+        /// </summary>
+        public static string Options_Pkm {
+            get {
+                return ResourceManager.GetString("Options_Pkm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return to the main view after applying changes succesfully.
+        /// </summary>
+        public static string Options_Pkm_AutoEnd {
+            get {
+                return ResourceManager.GetString("Options_Pkm_AutoEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember filters.
+        /// </summary>
+        public static string Options_Pkm_RememberFilters {
+            get {
+                return ResourceManager.GetString("Options_Pkm_RememberFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Always show console in the main view.
+        /// </summary>
+        public static string Options_Pkm_ShowConsole {
+            get {
+                return ResourceManager.GetString("Options_Pkm_ShowConsole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatic Restore.
+        /// </summary>
+        public static string Options_Restore {
+            get {
+                return ResourceManager.GetString("Options_Restore", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Restore missing packages automatically.
         /// </summary>
-        public static string Restore_Automatic {
+        public static string Options_Restore_Automatic {
             get {
-                return ResourceManager.GetString("Restore_Automatic", resourceCulture);
+                return ResourceManager.GetString("Options_Restore_Automatic", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Never check or restore missing packages automatically.
         /// </summary>
-        public static string Restore_DoNothing {
+        public static string Options_Restore_DoNothing {
             get {
-                return ResourceManager.GetString("Restore_DoNothing", resourceCulture);
+                return ResourceManager.GetString("Options_Restore_DoNothing", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Check for missing packages but let me choose whether to install them.
         /// </summary>
-        public static string Restore_Notify {
+        public static string Options_Restore_Notify {
             get {
-                return ResourceManager.GetString("Restore_Notify", resourceCulture);
+                return ResourceManager.GetString("Options_Restore_Notify", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1 missing package found. Click to view it..
+        ///   Looks up a localized string similar to CoApp Improvement Program.
         /// </summary>
-        public static string RestoreAvailable {
+        public static string Options_Telemetry {
             get {
-                return ResourceManager.GetString("RestoreAvailable", resourceCulture);
+                return ResourceManager.GetString("Options_Telemetry", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing 1 missing package....
+        ///   Looks up a localized string similar to Save.
         /// </summary>
-        public static string RestoreInstalling {
+        public static string Options_Telemetry_Button_Save {
             get {
-                return ResourceManager.GetString("RestoreInstalling", resourceCulture);
+                return ResourceManager.GetString("Options_Telemetry_Button_Save", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No missing packages found..
+        ///   Looks up a localized string similar to The program improves CoApp. Anonymous information about packages installed with will be sent to CoApp.org for the improvement of CoApp. No identifying information will be sent..
         /// </summary>
-        public static string RestoreNone {
+        public static string Options_Telemetry_Description {
             get {
-                return ResourceManager.GetString("RestoreNone", resourceCulture);
+                return ResourceManager.GetString("Options_Telemetry_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} missing packages found. Click to view them..
+        ///   Looks up a localized string similar to No, I don&apos;t want to participate.
         /// </summary>
-        public static string RestoresAvailable {
+        public static string Options_Telemetry_No {
             get {
-                return ResourceManager.GetString("RestoresAvailable", resourceCulture);
+                return ResourceManager.GetString("Options_Telemetry_No", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing {0} missing packages....
+        ///   Looks up a localized string similar to Yes, I would like to participate.
         /// </summary>
-        public static string RestoresInstalling {
+        public static string Options_Telemetry_Yes {
             get {
-                return ResourceManager.GetString("RestoresInstalling", resourceCulture);
+                return ResourceManager.GetString("Options_Telemetry_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System Tray.
+        /// </summary>
+        public static string Options_Tray {
+            get {
+                return ResourceManager.GetString("Options_Tray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close to tray.
+        /// </summary>
+        public static string Options_Tray_CloseToTray {
+            get {
+                return ResourceManager.GetString("Options_Tray_CloseToTray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show balloon notifications in tray.
+        /// </summary>
+        public static string Options_Tray_ShowNotifications {
+            get {
+                return ResourceManager.GetString("Options_Tray_ShowNotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Always show tray icon.
+        /// </summary>
+        public static string Options_Tray_ShowTrayIcon {
+            get {
+                return ResourceManager.GetString("Options_Tray_ShowTrayIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start in tray.
+        /// </summary>
+        public static string Options_Tray_StartInTray {
+            get {
+                return ResourceManager.GetString("Options_Tray_StartInTray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatic Updates.
+        /// </summary>
+        public static string Options_Update {
+            get {
+                return ResourceManager.GetString("Options_Update", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Install updates automatically.
         /// </summary>
-        public static string Update_Automatic {
+        public static string Options_Update_Automatic {
             get {
-                return ResourceManager.GetString("Update_Automatic", resourceCulture);
+                return ResourceManager.GetString("Options_Update_Automatic", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Never check or install packages automatically.
         /// </summary>
-        public static string Update_DoNothing {
+        public static string Options_Update_DoNothing {
             get {
-                return ResourceManager.GetString("Update_DoNothing", resourceCulture);
+                return ResourceManager.GetString("Options_Update_DoNothing", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Check for updates but let me choose whether to install them.
         /// </summary>
-        public static string Update_Notify {
+        public static string Options_Update_Notify {
             get {
-                return ResourceManager.GetString("Update_Notify", resourceCulture);
+                return ResourceManager.GetString("Options_Update_Notify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Progress_Button_Cancel {
+            get {
+                return ResourceManager.GetString("Progress_Button_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End.
+        /// </summary>
+        public static string Progress_Button_End {
+            get {
+                return ResourceManager.GetString("Progress_Button_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 missing package found. Click to view it..
+        /// </summary>
+        public static string Restore_Available {
+            get {
+                return ResourceManager.GetString("Restore_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} missing packages found. Click to view them..
+        /// </summary>
+        public static string Restore_AvailableMany {
+            get {
+                return ResourceManager.GetString("Restore_AvailableMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing 1 missing package....
+        /// </summary>
+        public static string Restore_Installing {
+            get {
+                return ResourceManager.GetString("Restore_Installing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing {0} missing packages....
+        /// </summary>
+        public static string Restore_InstallingMany {
+            get {
+                return ResourceManager.GetString("Restore_InstallingMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No missing packages found..
+        /// </summary>
+        public static string Restore_None {
+            get {
+                return ResourceManager.GetString("Restore_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search_ButtonToolTip {
+            get {
+                return ResourceManager.GetString("Search_ButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type words to search for.
+        /// </summary>
+        public static string Search_ToolTip {
+            get {
+                return ResourceManager.GetString("Search_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search Packages (Ctrl+F).
+        /// </summary>
+        public static string Search_Watermark {
+            get {
+                return ResourceManager.GetString("Search_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply.
+        /// </summary>
+        public static string Summary_Button_Apply {
+            get {
+                return ResourceManager.GetString("Summary_Button_Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Summary_Button_Cancel {
+            get {
+                return ResourceManager.GetString("Summary_Button_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packages to be installed:.
+        /// </summary>
+        public static string Summary_InstallPlan {
+            get {
+                return ResourceManager.GetString("Summary_InstallPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packages to be removed:.
+        /// </summary>
+        public static string Summary_RemovePlan {
+            get {
+                return ResourceManager.GetString("Summary_RemovePlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string TextBox_Clear {
+            get {
+                return ResourceManager.GetString("TextBox_Clear", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 1 update is available. Click to view it..
         /// </summary>
-        public static string UpdateAvailable {
+        public static string Update_Available {
             get {
-                return ResourceManager.GetString("UpdateAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Installing 1 update....
-        /// </summary>
-        public static string UpdateInstalling {
-            get {
-                return ResourceManager.GetString("UpdateInstalling", resourceCulture);
+                return ResourceManager.GetString("Update_Available", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} updates are available. Click to view them..
         /// </summary>
-        public static string UpdatesAvailable {
+        public static string Update_AvailableMany {
             get {
-                return ResourceManager.GetString("UpdatesAvailable", resourceCulture);
+                return ResourceManager.GetString("Update_AvailableMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing 1 update....
+        /// </summary>
+        public static string Update_Installing {
+            get {
+                return ResourceManager.GetString("Update_Installing", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Installing {0} updates....
         /// </summary>
-        public static string UpdatesInstalling {
+        public static string Update_InstallingMany {
             get {
-                return ResourceManager.GetString("UpdatesInstalling", resourceCulture);
+                return ResourceManager.GetString("Update_InstallingMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply.
+        /// </summary>
+        public static string VisualStudio_Button_Apply {
+            get {
+                return ResourceManager.GetString("VisualStudio_Button_Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string VisualStudio_Button_Cancel {
+            get {
+                return ResourceManager.GetString("VisualStudio_Button_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packages:.
+        /// </summary>
+        public static string VisualStudio_Packages {
+            get {
+                return ResourceManager.GetString("VisualStudio_Packages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solution:.
+        /// </summary>
+        public static string VisualStudio_Solution {
+            get {
+                return ResourceManager.GetString("VisualStudio_Solution", resourceCulture);
             }
         }
     }

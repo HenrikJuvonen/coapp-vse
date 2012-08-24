@@ -20,7 +20,7 @@ metadata {
     
     author-version : "1.0";
     bug-tracker: "https://github.com/henjuv/coapp-vse/issues";
-    stability : "-10";
+    stability : "0";
 }
 
 compatability-policy {

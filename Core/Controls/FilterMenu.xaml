@@ -2,9 +2,8 @@
     x:Class="CoApp.VSE.Core.Controls.FilterMenu"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Opened="OnOpened"
-    BorderBrush="{DynamicResource GrayBrush5}"
-    BorderThickness="1">
+    xmlns:Core="clr-namespace:CoApp.VSE.Core"
+    Opened="OnOpened">
 
     <MenuItem Name="FilterNameMenuItem" Click="OnMenuItemClick">
         <MenuItem.Header>
@@ -13,18 +12,20 @@
             </Border>
         </MenuItem.Header>
     </MenuItem>
-    <MenuItem Name="FilterProjectMenuItem" Header="Projects" Visibility="Collapsed" />
-    <MenuItem Name="FilterBooleanMenuItem" Header="Boolean">
-        <MenuItem Header="Is Blocked" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Dependency" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Development Package" Click="OnMenuItemClick"/>
-        <MenuItem Header="Is Latest Version" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Locked" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Installed" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Update" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Used In Projects" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Stable" Click="OnMenuItemClick" />
-        <MenuItem Header="Is Wanted" Click="OnMenuItemClick" />
+    <MenuItem Name="FilterProjectMenuItem" Header="{x:Static Core:Resources.Filter_Project}" Visibility="Collapsed" />
+    <MenuItem Name="FilterBooleanMenuItem" Header="{x:Static Core:Resources.Filter_Boolean}">
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Active}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Blocked}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Dependency}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Devel}" Click="OnMenuItemClick"/>
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Latest}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Locked}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Installed}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Stable}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Trimable}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Update}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_UsedInProjects}" Click="OnMenuItemClick" />
+        <MenuItem Header="{x:Static Core:Resources.Filter_Boolean_Wanted}" Click="OnMenuItemClick" />
     </MenuItem>
     <MenuItem Name="FilterFlavorMenuItem" Header="Flavor">
         <MenuItem Header="net20" Click="OnMenuItemClick" />

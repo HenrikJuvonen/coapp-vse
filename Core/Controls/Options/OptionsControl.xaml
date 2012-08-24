@@ -2,11 +2,11 @@
     x:Class="CoApp.VSE.Core.Controls.Options.OptionsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
+    xmlns:Core="clr-namespace:CoApp.VSE.Core"
     xmlns:Options="clr-namespace:CoApp.VSE.Core.Controls.Options">
     <UserControl.CommandBindings>
         <CommandBinding
-            Command="{x:Static VSE:Commands.Cancel}"
+            Command="{x:Static Core:Commands.Cancel}"
             Executed="ExecuteBack" />
     </UserControl.CommandBindings>
     <Grid>
@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource GrayBrush8}">
             <WrapPanel VerticalAlignment="Top">
-                <Button Margin="4,0,0,0" ToolTip="Back" Command="{x:Static VSE:Commands.Cancel}" Name="BackButton" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="4,0,0,0" ToolTip="Back" Command="{x:Static Core:Commands.Cancel}" Name="BackButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Border>
                         <Path
                             Data="M 130,55 L 90,55 M 100,50 L 80,55 L 100,60"

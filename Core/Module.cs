@@ -259,8 +259,8 @@ namespace CoApp.VSE.Core
                 if (PackageManager.Settings["#update"].IntValue == 0)
                 {
                     tooltipText = e.Count == 1
-                        ? Resources.UpdateInstalling
-                        : string.Format(Resources.UpdatesInstalling, e.Count);
+                        ? Resources.Update_Installing
+                        : string.Format(Resources.Update_InstallingMany, e.Count);
 
 
                     MainWindow.MainControl.ExecuteMarkUpdates();
@@ -269,8 +269,8 @@ namespace CoApp.VSE.Core
                 else
                 {
                     tooltipText = e.Count == 1
-                        ? Resources.UpdateAvailable
-                        : string.Format(Resources.UpdatesAvailable, e.Count);
+                        ? Resources.Update_Available
+                        : string.Format(Resources.Update_AvailableMany, e.Count);
                 }
 
                 TrayIcon.BalloonTipClicked += OnTrayIconBalloonTipUpdatesClosed;
@@ -425,7 +425,7 @@ namespace CoApp.VSE.Core
             if (!missingPackages.Any())
             {
                 if (force)
-                    ShowBalloonTip(Resources.RestoreNone);
+                    ShowBalloonTip(Resources.Restore_None);
 
                 return;
             }
@@ -434,7 +434,7 @@ namespace CoApp.VSE.Core
 
             if (PackageManager.Settings["#restore"].IntValue == 0 || force)
             {
-                tooltipText = missingPackages.Count() == 1 ? Resources.RestoreInstalling : string.Format(Resources.RestoresInstalling, missingPackages.Count());
+                tooltipText = missingPackages.Count() == 1 ? Resources.Restore_Installing : string.Format(Resources.Restore_InstallingMany, missingPackages.Count());
                 var packages = new List<Package>();
                 foreach (var package in missingPackages)
                 {
@@ -450,7 +450,7 @@ namespace CoApp.VSE.Core
             }
             else
             {
-                tooltipText = missingPackages.Count() == 1 ? Resources.RestoreAvailable : string.Format(Resources.RestoresAvailable, missingPackages.Count());
+                tooltipText = missingPackages.Count() == 1 ? Resources.Restore_Available : string.Format(Resources.Restore_AvailableMany, missingPackages.Count());
                 TrayIcon.BalloonTipClicked += OnTrayIconBalloonTipRestoreClosed;
             }
 

@@ -200,6 +200,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Converters\WindowCommandConverter.cs" />
     <Compile Include="Converters\NullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="Model\PackageItem.cs" />
     <Compile Include="ViewModel\PackagesViewModel.cs" />
@@ -290,6 +291,10 @@
     <Resource Include="Resources\vs.png" />
     <Resource Include="Resources\UAC-Win7-Disabled.png" />
     <Resource Include="Resources\UAC-Win7.png" />
+    <Resource Include="Resources\wr.png" />
+    <Resource Include="Resources\w0.png" />
+    <Resource Include="Resources\w1.png" />
+    <Resource Include="Resources\w2.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

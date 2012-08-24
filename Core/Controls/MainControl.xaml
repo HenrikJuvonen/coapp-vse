@@ -2,8 +2,8 @@
     x:Class="CoApp.VSE.Core.Controls.MainControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
     xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls"
+    xmlns:Core="clr-namespace:CoApp.VSE.Core"
     KeyDown="OnKeyDown">
     
     <UserControl.Resources>
@@ -16,32 +16,32 @@
 
     <UserControl.CommandBindings>
         <CommandBinding 
-            Command="{x:Static VSE:Commands.Browse}"
+            Command="{x:Static Core:Commands.Browse}"
             CanExecute="CanExecuteBrowse"
             Executed="ExecuteBrowse" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.Reload}"
+            Command="{x:Static Core:Commands.Reload}"
             Executed="ExecuteReload" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.Apply}"
+            Command="{x:Static Core:Commands.Apply}"
             Executed="ExecuteApply" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.MarkUpdates}"
+            Command="{x:Static Core:Commands.MarkUpdates}"
             Executed="ExecuteMarkUpdates" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.MarkUpgrades}"
+            Command="{x:Static Core:Commands.MarkUpgrades}"
             Executed="ExecuteMarkUpgrades" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.ShowOptions}"
+            Command="{x:Static Core:Commands.ShowOptions}"
             Executed="ExecuteShowOptions" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.OpenExternalLink}"
+            Command="{x:Static Core:Commands.OpenExternalLink}"
             Executed="ExecuteOpenLicenseLink" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.ClearSearch}"
+            Command="{x:Static Core:Commands.ClearSearch}"
             Executed="ExecuteClearSearch" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.MoreInformation}"
+            Command="{x:Static Core:Commands.MoreInformation}"
             Executed="ExecuteMoreInformation" />
     </UserControl.CommandBindings>
     
@@ -63,7 +63,7 @@
             </Grid.ColumnDefinitions>
 
             <WrapPanel Grid.Column="0" VerticalAlignment="Top">
-                <Button Margin="4,0,0,0" ToolTip="Options" Command="{x:Static VSE:Commands.ShowOptions}" Name="OptionsButton" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="4,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_Options}" Command="{x:Static Core:Commands.ShowOptions}" Name="OptionsButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Grid>
                         <Ellipse Width="10" Height="10" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" />
                         <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" />
@@ -77,7 +77,7 @@
                         <Rectangle Width="2" Height="2" Stroke="{Binding ElementName=OptionsButton, Path=Foreground}" StrokeThickness="2" Margin="0,0,8,8" />
                     </Grid>
                 </Button>
-                <Button Margin="2,0,0,0" ToolTip="Reload" Command="{x:Static VSE:Commands.Reload}" Name="ReloadButton" Style="{DynamicResource ChromelessButtonStyle}">
+                <Button Margin="2,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_Reload}" Command="{x:Static Core:Commands.Reload}" Name="ReloadButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Grid Width="12">                        
                         <Path
                             Margin="0,1,4,0"
@@ -121,7 +121,7 @@
                             StrokeThickness="2" />
                     </Grid>
                 </Button>
-                <Button Margin="2,0,0,0" ToolTip="Browse Package Contents" Command="{x:Static VSE:Commands.Browse}" Name="BrowseButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="{Binding SelectedPackage.PackageIdentity.IsInstalled}">
+                <Button Margin="2,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_Browse}" Command="{x:Static Core:Commands.Browse}" Name="BrowseButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="{Binding SelectedPackage.PackageIdentity.IsInstalled}">
                     <Border>
                         <Path
                             Data="M 55,110 S 50,110 50,100 M 50,100 S 50,90 65,90 M 60,82 L 65,90 L 60,98"
@@ -134,7 +134,7 @@
                             StrokeThickness="2" />
                     </Border>
                 </Button>
-                <Button Margin="2,0,0,0" ToolTip="Mark All Updates" Command="{x:Static VSE:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                <Button Margin="2,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_MarkAllUpdates}" Command="{x:Static Core:Commands.MarkUpdates}" Name="MarkAllUpdatesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
                     <Border>
                         <Path
                             Data="M 55,130 L 55,90 M 50,100 L 55,80 L 60,100"
@@ -147,8 +147,8 @@
                             StrokeThickness="2" />
                     </Border>
                 </Button>
-                <Button Margin="2,0,0,0" Command="{x:Static VSE:Commands.MarkUpgrades}" Name="MarkAllUpgradesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False" Visibility="Collapsed" />
-                <Button Margin="2,0,0,0" ToolTip="Apply" Command="{x:Static VSE:Commands.Apply}" Name="ApplyButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
+                <Button Margin="2,0,0,0" Command="{x:Static Core:Commands.MarkUpgrades}" Name="MarkAllUpgradesButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False" Visibility="Collapsed" />
+                <Button Margin="2,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_Apply}" Command="{x:Static Core:Commands.Apply}" Name="ApplyButton" Style="{DynamicResource ChromelessButtonStyle}" IsEnabled="False">
                     <Border>
                         <Path
                             Data="M49,110 L51,112 L56,107"
@@ -164,7 +164,7 @@
             </WrapPanel>
 
             <WrapPanel Grid.Column="1" Background="{DynamicResource GrayBrush8}" VerticalAlignment="Top">
-                <TextBox Margin="0,0,4,0" Width="204" x:Name="SearchBox" TextChanged="OnSearchBoxTextChanged" Tag="Search Packages (Ctrl+F)" ToolTip="Type words to search for"/>
+                <TextBox Margin="0,0,4,0" Width="204" x:Name="SearchBox" TextChanged="OnSearchBoxTextChanged" Tag="{x:Static Core:Resources.Search_Watermark}" ToolTip="{x:Static Core:Resources.Search_ToolTip}"/>
             </WrapPanel>
         </Grid>
 
@@ -183,14 +183,14 @@
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="{DynamicResource GrayBrush8}" BorderThickness="4,0,0,0" Background="{DynamicResource GrayBrush7}">
                 <Border.Resources>
                     <ContextMenu Opened="OnStatusContextMenuOpened" x:Key="RowMenu" BorderBrush="{DynamicResource GrayBrush5}" BorderThickness="1">
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Unmark"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Installation"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Reinstallation"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Update"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Upgrade" Visibility="Collapsed"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Removal"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Complete Removal"/>
-                        <MenuItem Click="OnStatusContextMenuItemClick" Header="Mark for Visual Studio"/>
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Unmark}" Tag="14" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Install}" Tag="0" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Reinstall}" Tag="1" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Update}" Tag="2" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Update}" Tag="3" Visibility="Collapsed" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_Remove}" Tag="4" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_CompleteRemove}" Tag="5" />
+                        <MenuItem Click="OnStatusContextMenuItemClick" Header="{x:Static Core:Resources.Main_Mark_VisualStudio}" Tag="13" />
                         <Separator>
                             <Separator.Style>
                                 <Style TargetType="Separator">
@@ -206,11 +206,11 @@
                                 </Style>
                             </Separator.Style>
                         </Separator>
-                        <MenuItem Click="OnStatusContextMenuItemClick2" />
-                        <MenuItem IsEnabled="False" />
-                        <MenuItem IsEnabled="False" />
-                        <MenuItem IsEnabled="False" />
-                        <MenuItem IsEnabled="False" />
+                        <MenuItem Click="OnStatusContextMenuItemClick2" Tag="Wanted" />
+                        <MenuItem Click="OnStatusContextMenuItemClick2" Tag="Blocked" />
+                        <MenuItem IsEnabled="False" Tag="Locked" />
+                        <MenuItem IsEnabled="False" Tag="Trimable" />
+                        <MenuItem IsEnabled="False" Tag="Active" />
                     </ContextMenu>
                     <Style TargetType="DataGridRow" BasedOn="{StaticResource DataGridRowStyle}" x:Key="DataGridRowStyle2">
                         <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
@@ -247,35 +247,35 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn MinWidth="176" MaxWidth="176" x:Name="NameColumn" SortMemberPath="SortByName" Header="Name" CanUserSort="True">
+                        <DataGridTemplateColumn MinWidth="176" MaxWidth="176" x:Name="NameColumn" SortMemberPath="SortByName" Header="{x:Static Core:Resources.Main_Column_Name}" CanUserSort="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75" SortMemberPath="SortByFlavor" Header="Flavor" CanUserSort="True">
+                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75" SortMemberPath="SortByFlavor" Header="{x:Static Core:Resources.Main_Column_Flavor}" CanUserSort="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Flavor}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75" SortMemberPath="SortByVersion" Header="Version" CanUserSort="True">
+                        <DataGridTemplateColumn MinWidth="75" MaxWidth="75" SortMemberPath="SortByVersion" Header="{x:Static Core:Resources.Main_Column_Version}" CanUserSort="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Version}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="55" SortMemberPath="SortByArchitecture" Header="Arch" CanUserSort="True">
+                        <DataGridTemplateColumn Width="55" SortMemberPath="SortByArchitecture" Header="{x:Static Core:Resources.Main_Column_Architecture}" CanUserSort="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Architecture}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*" MinWidth="0" Header="Summary">
+                        <DataGridTemplateColumn Width="*" MinWidth="0" Header="{x:Static Core:Resources.Main_Column_Summary}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextTrimming="WordEllipsis"/>
@@ -288,28 +288,28 @@
 
             <ProgressBar Grid.Row="1" Grid.Column="0" Name="ProgressPane" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
 
-            <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Top" Visibility="Collapsed" Content="No packages found." Width="150" Margin="0,10,0,0" HorizontalContentAlignment="Center" />
+            <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Top" Visibility="Collapsed" Content="{x:Static Core:Resources.Main_NoPackagesFound}" Width="150" Margin="0,10,0,0" HorizontalContentAlignment="Center" />
 
             <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource GrayBrush8}" BorderThickness="1,0,0,0">
                 <ScrollViewer Name="PackageDetailsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch">
                     <StackPanel Width="192" Margin="8" DataContext="{Binding SelectedPackage}" HorizontalAlignment="Left">
                         <TextBlock Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}" TextWrapping="Wrap">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Publisher:" />
-                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Publisher}" />
+                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding PackageIdentity.PackageDetails.Publisher.Location}" Command="{x:Static Core:Commands.OpenExternalLink}">
                                 <Run Text="{Binding PackageIdentity.PackageDetails.Publisher.Name}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PublishDate, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Date Published:" />
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_PublishDate}" />
                             <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PublishDate}" />
                         </TextBlock>
                         <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Licenses, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Licenses:" />
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Licenses}" />
                             <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Licenses}" IsTabStop="False">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock>
-                                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding Location}" Command="{x:Static VSE:Commands.OpenExternalLink}">
+                                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri="{Binding Location}" Command="{x:Static Core:Commands.OpenExternalLink}">
                                                 <Run Text="{Binding Name}" />
                                             </Hyperlink>
                                         </TextBlock>
@@ -318,11 +318,11 @@
                             </ItemsControl>
                         </StackPanel>
                         <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.SummaryDescription, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Summary:" />
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Summary}" />
                             <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding PackageIdentity.PackageDetails.SummaryDescription}" TextWrapping="Wrap" />
                         </StackPanel>
                         <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Tags, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Tags:" />
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Tags}" />
                             <ItemsControl ItemsSource="{Binding PackageIdentity.PackageDetails.Tags}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -337,7 +337,7 @@
                             </ItemsControl>
                         </StackPanel>
                         <StackPanel Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding Dependencies, Converter={StaticResource nullOrEmptyToVisibility}}">
-                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="Dependencies:" />
+                            <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Dependencies}" />
                             <ItemsControl ItemsSource="{Binding Dependencies}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
@@ -347,8 +347,8 @@
                             </ItemsControl>
                         </StackPanel>
                         <TextBlock Style="{StaticResource PropertyNameStyle}">
-                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri=";;;" Command="{x:Static VSE:Commands.MoreInformation}">
-                                <Run Text="More Information" Foreground="{DynamicResource HighlightLightBrush}" />
+                            <Hyperlink Style="{StaticResource HyperlinkStyle}" NavigateUri=";;;" Command="{x:Static Core:Commands.MoreInformation}">
+                                <Run Text="{x:Static Core:Resources.Info_MoreInformation}" Foreground="{DynamicResource HighlightLightBrush}" />
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>

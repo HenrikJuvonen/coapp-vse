@@ -25,7 +25,7 @@ namespace CoApp.VSE.Core.Controls
 
                 foreach (var caption in filters.Keys)
                 {
-                    if (!Module.IsSolutionOpen && caption == "Projects")
+                    if (!Module.IsSolutionOpen && caption == Core.Resources.Filter_Project)
                         continue;
 
                     if (!filters[caption].IsNullOrEmpty())
@@ -34,8 +34,8 @@ namespace CoApp.VSE.Core.Controls
 
                         if (!Module.IsSolutionOpen)
                         {
-                            if (details.Contains("Is Used In Projects"))
-                                details.Remove("Is Used In Projects");
+                            if (details.Contains(Core.Resources.Filter_Boolean_UsedInProjects))
+                                details.Remove(Core.Resources.Filter_Boolean_UsedInProjects);
 
                             if (!details.Any())
                                 continue;
@@ -52,19 +52,19 @@ namespace CoApp.VSE.Core.Controls
             }
             else
             {
-                var details = new List<string> { "Is Installed" };
+                var details = new List<string> { Core.Resources.Filter_Boolean_Installed };
 
                 if (Module.IsDTELoaded)
                 {
-                    details.Add("Is Development Package");
+                    details.Add(Core.Resources.Filter_Boolean_Devel);
                 }
 
                 foreach (var detail in details)
                 {
-                    _filterMenu.SetFilterBlockVisibility("Boolean", detail, Visibility.Collapsed);
+                    _filterMenu.SetFilterBlockVisibility(Core.Resources.Filter_Boolean, detail, Visibility.Collapsed);
                 }
 
-                FilterBox.Items.Add(new FilterControl(this, "Boolean", details));
+                FilterBox.Items.Add(new FilterControl(this, Core.Resources.Filter_Boolean, details));
             }
         }
 

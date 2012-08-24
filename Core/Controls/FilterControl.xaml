@@ -12,7 +12,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Margin="0,0,0,12" Background="{DynamicResource BlackBrush}" Opacity="0.125" Grid.Column="0" Grid.RowSpan="2" />
+        <Border Margin="1,0,0,12" Background="{DynamicResource BlackBrush}" Opacity="0.125" Grid.Column="0" Grid.RowSpan="2" />
 
         <Label Margin="-3,-6,0,-4" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Name="FilterCaption" IsTabStop="False"/>
 

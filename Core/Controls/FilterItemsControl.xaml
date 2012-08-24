@@ -2,7 +2,8 @@
     x:Class="CoApp.VSE.Core.Controls.FilterItemsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls">
+    xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls"
+    xmlns:Core="clr-namespace:CoApp.VSE.Core">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -21,20 +22,20 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ToggleButton Grid.Column="0" Click="OnAddFilterButtonClick" Name="AddFilterButton" Margin="4,0,0,4" Style="{DynamicResource ChromelessToggleButtonStyle}" Tag="Mod" ToolTip="Add filter">
+            <ToggleButton Grid.Column="0" Click="OnAddFilterButtonClick" Name="AddFilterButton" Margin="4,0,0,4" Style="{DynamicResource ChromelessToggleButtonStyle}" Tag="Mod">
                 <WrapPanel Margin="2">
                     <Border>
                         <Path Data="M0.5,0 L0.5,1 M0,0.5 L1,0.5" Stretch="Fill" Stroke="{Binding ElementName=AddFilterButton, Path=Foreground}" StrokeThickness="2" Width="11" Height="11" />
                     </Border>
-                    <TextBlock Margin="4,0,0,0" Text="Add filter" />
+                    <TextBlock Margin="4,0,0,0" Text="{x:Static Core:Resources.Main_Button_AddFilter}" />
                 </WrapPanel>
             </ToggleButton>
-            <Button Grid.Column="1" Click="OnClearButtonClick" Name="ClearButton" Margin="2,0,0,4" Style="{DynamicResource ChromelessButtonStyle}" ToolTip="Clear">
+            <Button Grid.Column="1" Click="OnClearButtonClick" Name="ClearButton" Margin="2,0,0,4" Style="{DynamicResource ChromelessButtonStyle}">
                 <WrapPanel Margin="2">
                     <Border>
                         <Path Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="{Binding ElementName=ClearButton, Path=Foreground}" StrokeThickness="2" Width="8" Height="8" HorizontalAlignment="Center" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
                     </Border>
-                    <TextBlock Margin="4,0,0,0" Text="Clear" />
+                    <TextBlock Margin="4,0,0,0" Text="{x:Static Core:Resources.Main_Button_Clear}" />
                 </WrapPanel>
             </Button>
         </Grid>

@@ -117,56 +117,356 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Info_ClearPackageCache" xml:space="preserve">
-    <value>All packages have been cleared from the cache.</value>
-  </data>
-  <data name="UpdateAvailable" xml:space="preserve">
+  <data name="Update_Available" xml:space="preserve">
     <value>1 update is available. Click to view it.</value>
   </data>
-  <data name="UpdatesAvailable" xml:space="preserve">
+  <data name="Update_AvailableMany" xml:space="preserve">
     <value>{0} updates are available. Click to view them.</value>
   </data>
-  <data name="Update_DoNothing" xml:space="preserve">
+  <data name="Options_Update_DoNothing" xml:space="preserve">
     <value>Never check or install packages automatically</value>
   </data>
-  <data name="Update_Notify" xml:space="preserve">
+  <data name="Options_Update_Notify" xml:space="preserve">
     <value>Check for updates but let me choose whether to install them</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="CoApp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\CoApp.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Update_Automatic" xml:space="preserve">
+  <data name="Options_Update_Automatic" xml:space="preserve">
     <value>Install updates automatically</value>
   </data>
-  <data name="UpdateInstalling" xml:space="preserve">
+  <data name="Update_Installing" xml:space="preserve">
     <value>Installing 1 update...</value>
   </data>
-  <data name="UpdatesInstalling" xml:space="preserve">
+  <data name="Update_InstallingMany" xml:space="preserve">
     <value>Installing {0} updates...</value>
   </data>
-  <data name="Restore_Automatic" xml:space="preserve">
+  <data name="Options_Restore_Automatic" xml:space="preserve">
     <value>Restore missing packages automatically</value>
   </data>
-  <data name="Restore_DoNothing" xml:space="preserve">
+  <data name="Options_Restore_DoNothing" xml:space="preserve">
     <value>Never check or restore missing packages automatically</value>
   </data>
-  <data name="Restore_Notify" xml:space="preserve">
+  <data name="Options_Restore_Notify" xml:space="preserve">
     <value>Check for missing packages but let me choose whether to install them</value>
   </data>
-  <data name="RestoreAvailable" xml:space="preserve">
+  <data name="Restore_Available" xml:space="preserve">
     <value>1 missing package found. Click to view it.</value>
   </data>
-  <data name="RestoreInstalling" xml:space="preserve">
+  <data name="Restore_Installing" xml:space="preserve">
     <value>Installing 1 missing package...</value>
   </data>
-  <data name="RestoresAvailable" xml:space="preserve">
+  <data name="Restore_AvailableMany" xml:space="preserve">
     <value>{0} missing packages found. Click to view them.</value>
   </data>
-  <data name="RestoresInstalling" xml:space="preserve">
+  <data name="Restore_InstallingMany" xml:space="preserve">
     <value>Installing {0} missing packages...</value>
   </data>
-  <data name="RestoreNone" xml:space="preserve">
+  <data name="Restore_None" xml:space="preserve">
     <value>No missing packages found.</value>
+  </data>
+  <data name="Info_Architecture" xml:space="preserve">
+    <value>Architecture:</value>
+  </data>
+  <data name="Info_Dependencies" xml:space="preserve">
+    <value>Dependencies:</value>
+  </data>
+  <data name="Info_Description" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="Info_Flavor" xml:space="preserve">
+    <value>Flavor:</value>
+  </data>
+  <data name="Info_License" xml:space="preserve">
+    <value>License:</value>
+  </data>
+  <data name="Info_Licenses" xml:space="preserve">
+    <value>Licenses:</value>
+  </data>
+  <data name="Info_MoreInformation" xml:space="preserve">
+    <value>More Information</value>
+  </data>
+  <data name="Info_Name" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="Info_PublishDate" xml:space="preserve">
+    <value>Date Published:</value>
+  </data>
+  <data name="Info_Publisher" xml:space="preserve">
+    <value>Publisher:</value>
+  </data>
+  <data name="Info_Summary" xml:space="preserve">
+    <value>Summary:</value>
+  </data>
+  <data name="Info_Tags" xml:space="preserve">
+    <value>Tags:</value>
+  </data>
+  <data name="Info_Version" xml:space="preserve">
+    <value>Version:</value>
+  </data>
+  <data name="Main_Button_AddFilter" xml:space="preserve">
+    <value>Add Filter</value>
+  </data>
+  <data name="Main_Button_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Main_Button_Browse" xml:space="preserve">
+    <value>Browse Package Contents</value>
+  </data>
+  <data name="Main_Button_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Main_Button_MarkAllUpdates" xml:space="preserve">
+    <value>Mark All Updates</value>
+  </data>
+  <data name="Main_Button_Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Main_Button_Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="Main_Column_Architecture" xml:space="preserve">
+    <value>Arch</value>
+  </data>
+  <data name="Main_Column_Flavor" xml:space="preserve">
+    <value>Flavor</value>
+  </data>
+  <data name="Main_Column_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Main_Column_Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Main_Column_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Main_Mark_CompleteRemove" xml:space="preserve">
+    <value>Mark for Complete Removal</value>
+  </data>
+  <data name="Main_Mark_Install" xml:space="preserve">
+    <value>Mark for Installation</value>
+  </data>
+  <data name="Main_Mark_Reinstall" xml:space="preserve">
+    <value>Mark for Reinstallation</value>
+  </data>
+  <data name="Main_Mark_Remove" xml:space="preserve">
+    <value>Mark for Removal</value>
+  </data>
+  <data name="Main_Mark_Unmark" xml:space="preserve">
+    <value>Unmark</value>
+  </data>
+  <data name="Main_Mark_Update" xml:space="preserve">
+    <value>Mark for Update</value>
+  </data>
+  <data name="Main_Mark_VisualStudio" xml:space="preserve">
+    <value>Mark for Visual Studio</value>
+  </data>
+  <data name="Main_NoPackagesFound" xml:space="preserve">
+    <value>No packages found.</value>
+  </data>
+  <data name="Main_State_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Main_State_Blocked" xml:space="preserve">
+    <value>Blocked</value>
+  </data>
+  <data name="Main_State_Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Main_State_Trimable" xml:space="preserve">
+    <value>Trimable</value>
+  </data>
+  <data name="Main_State_Wanted" xml:space="preserve">
+    <value>Wanted</value>
+  </data>
+  <data name="Search_ButtonToolTip" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Search_ToolTip" xml:space="preserve">
+    <value>Type words to search for</value>
+  </data>
+  <data name="Search_Watermark" xml:space="preserve">
+    <value>Search Packages (Ctrl+F)</value>
+  </data>
+  <data name="TextBox_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Info_Button_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Main_Column_Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Main_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Options_Button_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Options_Cache" xml:space="preserve">
+    <value>Package Cache</value>
+  </data>
+  <data name="Options_Cache_Button_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Options_Cache_Cleared" xml:space="preserve">
+    <value>Cleared.</value>
+  </data>
+  <data name="Options_Cache_ErrorOccurred" xml:space="preserve">
+    <value>Error occurred.</value>
+  </data>
+  <data name="Options_Feeds" xml:space="preserve">
+    <value>Package Feeds</value>
+  </data>
+  <data name="Options_Feeds_Available" xml:space="preserve">
+    <value>Available feeds:</value>
+  </data>
+  <data name="Options_Feeds_Button_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Options_Feeds_Button_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Options_Feeds_Location" xml:space="preserve">
+    <value>Location:</value>
+  </data>
+  <data name="Options_Pkm" xml:space="preserve">
+    <value>Package Manager</value>
+  </data>
+  <data name="Options_Pkm_AutoEnd" xml:space="preserve">
+    <value>Return to the main view after applying changes succesfully</value>
+  </data>
+  <data name="Options_Pkm_RememberFilters" xml:space="preserve">
+    <value>Remember filters</value>
+  </data>
+  <data name="Options_Pkm_ShowConsole" xml:space="preserve">
+    <value>Always show console in the main view</value>
+  </data>
+  <data name="Options_Restore" xml:space="preserve">
+    <value>Automatic Restore</value>
+  </data>
+  <data name="Options_Telemetry" xml:space="preserve">
+    <value>CoApp Improvement Program</value>
+  </data>
+  <data name="Options_Telemetry_Button_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Options_Telemetry_Description" xml:space="preserve">
+    <value>The program improves CoApp. Anonymous information about packages installed with will be sent to CoApp.org for the improvement of CoApp. No identifying information will be sent.</value>
+  </data>
+  <data name="Options_Telemetry_No" xml:space="preserve">
+    <value>No, I don't want to participate</value>
+  </data>
+  <data name="Options_Telemetry_Yes" xml:space="preserve">
+    <value>Yes, I would like to participate</value>
+  </data>
+  <data name="Options_Tray" xml:space="preserve">
+    <value>System Tray</value>
+  </data>
+  <data name="Options_Tray_CloseToTray" xml:space="preserve">
+    <value>Close to tray</value>
+  </data>
+  <data name="Options_Tray_ShowNotifications" xml:space="preserve">
+    <value>Show balloon notifications in tray</value>
+  </data>
+  <data name="Options_Tray_ShowTrayIcon" xml:space="preserve">
+    <value>Always show tray icon</value>
+  </data>
+  <data name="Options_Tray_StartInTray" xml:space="preserve">
+    <value>Start in tray</value>
+  </data>
+  <data name="Options_Update" xml:space="preserve">
+    <value>Automatic Updates</value>
+  </data>
+  <data name="Progress_Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Progress_Button_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Summary_Button_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Summary_Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Summary_InstallPlan" xml:space="preserve">
+    <value>Packages to be installed:</value>
+  </data>
+  <data name="Summary_RemovePlan" xml:space="preserve">
+    <value>Packages to be removed:</value>
+  </data>
+  <data name="VisualStudio_Button_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="VisualStudio_Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="VisualStudio_Packages" xml:space="preserve">
+    <value>Packages:</value>
+  </data>
+  <data name="VisualStudio_Solution" xml:space="preserve">
+    <value>Solution:</value>
+  </data>
+  <data name="Filter_Architecture" xml:space="preserve">
+    <value>Architecture</value>
+  </data>
+  <data name="Filter_Boolean" xml:space="preserve">
+    <value>Boolean</value>
+  </data>
+  <data name="Filter_Boolean_Active" xml:space="preserve">
+    <value>Is Active</value>
+  </data>
+  <data name="Filter_Boolean_Blocked" xml:space="preserve">
+    <value>Is Blocked</value>
+  </data>
+  <data name="Filter_Boolean_Dependency" xml:space="preserve">
+    <value>Is Dependency</value>
+  </data>
+  <data name="Filter_Boolean_Devel" xml:space="preserve">
+    <value>Is Development Package</value>
+  </data>
+  <data name="Filter_Boolean_Installed" xml:space="preserve">
+    <value>Is Installed</value>
+  </data>
+  <data name="Filter_Boolean_Latest" xml:space="preserve">
+    <value>Is Latest Version</value>
+  </data>
+  <data name="Filter_Boolean_Locked" xml:space="preserve">
+    <value>Is Locked</value>
+  </data>
+  <data name="Filter_Boolean_Stable" xml:space="preserve">
+    <value>Is Stable</value>
+  </data>
+  <data name="Filter_Boolean_Trimable" xml:space="preserve">
+    <value>Is Trimable</value>
+  </data>
+  <data name="Filter_Boolean_Update" xml:space="preserve">
+    <value>Is Update</value>
+  </data>
+  <data name="Filter_Boolean_UsedInProjects" xml:space="preserve">
+    <value>Is Used In Projects</value>
+  </data>
+  <data name="Filter_Boolean_Wanted" xml:space="preserve">
+    <value>Is Wanted</value>
+  </data>
+  <data name="Filter_FeedUrl" xml:space="preserve">
+    <value>Feed URL</value>
+  </data>
+  <data name="Filter_Flavor" xml:space="preserve">
+    <value>Flavor</value>
+  </data>
+  <data name="Filter_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Filter_Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="Filter_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Info_Status" xml:space="preserve">
+    <value>Status</value>
   </data>
 </root>

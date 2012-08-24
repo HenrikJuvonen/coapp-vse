@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Options="clr-namespace:CoApp.VSE.Core.Controls.Options"
     xmlns:Controls="clr-namespace:CoApp.VSE.Core.Controls"
-    xmlns:VSE="clr-namespace:CoApp.VSE.Core"
+    xmlns:Core="clr-namespace:CoApp.VSE.Core"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     Icon="Resources/CoApp.ico"
     Width="800"
@@ -15,8 +15,8 @@
     ShowIconOnTitleBar="False"
     ShowTitleBar="True"
     ResizeMode="CanResize"
-    FontFamily="Segoe UI"
-    FontSize="12"
+    FontFamily="{DynamicResource ContentFontFamily}"
+    FontSize="{DynamicResource ContentFontSize}"
     WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
@@ -31,20 +31,20 @@
 
     <Window.CommandBindings>
         <CommandBinding 
-            Command="{x:Static VSE:Commands.ToggleConsole}"
+            Command="{x:Static Core:Commands.ToggleConsole}"
             Executed="ExecuteToggleConsole" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.ChangeTheme}"
+            Command="{x:Static Core:Commands.ChangeTheme}"
             Executed="ExecuteChangeTheme" />
         <CommandBinding 
-            Command="{x:Static VSE:Commands.FocusSearch}"
+            Command="{x:Static Core:Commands.FocusSearch}"
             Executed="ExecuteFocusSearch" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
-        <KeyBinding Command="{x:Static VSE:Commands.FocusSearch}" Gesture="CTRL+F" />
-        <KeyBinding Command="{x:Static VSE:Commands.ToggleConsole}" Gesture="F2" />
-        <KeyBinding Command="{x:Static VSE:Commands.ChangeTheme}" Gesture="F3" />
+        <KeyBinding Command="{x:Static Core:Commands.FocusSearch}" Gesture="CTRL+F" />
+        <KeyBinding Command="{x:Static Core:Commands.ToggleConsole}" Gesture="F2" />
+        <KeyBinding Command="{x:Static Core:Commands.ChangeTheme}" Gesture="F3" />
     </Window.InputBindings>
 
     <Grid>

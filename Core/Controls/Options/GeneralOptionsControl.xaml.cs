@@ -27,7 +27,7 @@ namespace CoApp.VSE.Core.Controls.Options
             }
 
             if (!Toolkit.Win32.AdminPrivilege.IsRunAsAdmin)
-                CacheClearButton.IsEnabled = false;
+                PackageCachePanel.Visibility = Visibility.Collapsed;
 
             TelemetryShield.UpdateShield(ApplyTelemetryButton.IsEnabled);
         }
