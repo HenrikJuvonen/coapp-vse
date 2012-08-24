@@ -75,7 +75,6 @@
     <Compile Include="Controls\InfoControl.xaml.cs">
       <DependentUpon>InfoControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Model\Nodes.cs" />
     <Compile Include="Controls\SummaryControl.xaml.cs">
       <DependentUpon>SummaryControl.xaml</DependentUpon>

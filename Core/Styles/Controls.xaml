@@ -22,7 +22,6 @@
     <FontFamily x:Key="ContentFontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
     <System:Double x:Key="ContentFontSize">12</System:Double>
 
-    <Converters:BooleanToVisibilityConverter x:Key="booleanToVisibility" />
     <Converters:NullOrEmptyToVisibilityConverter x:Key="nullOrEmptyToVisibility" />
 
     <Style x:Key="PropertyBlockStyle" TargetType="FrameworkElement">
