@@ -5,8 +5,8 @@ CoApp for Visual Studio is an extension for managing CoApp-packages inside Visua
 
 ## Requirements
 
-- CoApp 1.2.0.443
-- MahApps.Metro 0.9
+- CoApp
+- MahApps.Metro
 - Visual Studio 2010 SP1 or Visual Studio 2012
 - Visual Studio 2010 SP1 SDK
 

@@ -10,7 +10,7 @@ provides {
 }
 
 requires {
-	package: "MahApps.Metro-0.9-any";
+	package: "MahApps.Metro-any";
 }
 
 metadata {
