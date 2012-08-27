@@ -114,6 +114,9 @@ namespace CoApp.VSE.Core.Packaging
 
         public IEnumerable<string> GetUnrecoverablePackages()
         {
+            if (!Module.IsSolutionOpen)
+                return Enumerable.Empty<string>();
+
             var packages = PackagesViewModel.Packages.Select(n => n.PackageIdentity);
             var unrecoverable = new List<string>();
 
