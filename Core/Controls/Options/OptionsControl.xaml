@@ -37,7 +37,16 @@
                 <ColumnDefinition Width="*" MaxWidth="510"/>
             </Grid.ColumnDefinitions>
             <Options:GeneralOptionsControl x:Name="GeneralOptions" Grid.Column="0" Margin="4" Height="460" VerticalAlignment="Top" />
-            <Options:FeedOptionsControl x:Name="FeedOptions" Grid.Column="1" Margin="4" Height="461" VerticalAlignment="Top" />
+            <StackPanel Grid.Column="1" Margin="4">
+                <Options:FeedOptionsControl x:Name="FeedOptions" Height="400" VerticalAlignment="Top" />
+                <StackPanel Margin="0,2,0,2">
+                    <Label Content="Color Theme" FontWeight="Bold" />
+                    <ComboBox Name="ThemeComboBox" SelectionChanged="OnThemeChanged" Margin="4" Width="200" HorizontalAlignment="Left">
+                        <ComboBoxItem Content="{x:Static Core:Resources.Options_Theme_Dark}" />
+                        <ComboBoxItem Content="{x:Static Core:Resources.Options_Theme_Light}" />
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

@@ -35,11 +35,11 @@ namespace CoApp.VSE.Core.Controls
                 var packageReference = new PackageReference(package, solution.LibraryReferences);
 
                 Module.RemoveExistingSimilarPackages(packageReference, solution.CheckedProjects);
+
                 Module.ManagePackage(packageReference, solution.CheckedProjects, solution.LibraryReferences);
             }
 
             Module.HideVisualStudioControl();
-            Module.PackageManager.ClearVisualStudioMarks();
             Module.ReloadMainControl();
 
             if (Module.PackageManager.UpdatePlan.Any() || Module.PackageManager.InstallPlan.Any() || Module.PackageManager.RemovePlan.Any())
@@ -68,29 +68,25 @@ namespace CoApp.VSE.Core.Controls
             SolutionTreeView.DataContext = null;
             PackagesDataGrid.ItemsSource = null;
 
-            lock (this)
-            {
-                _solutions.Clear();
-            }
-
             var worker = new BackgroundWorker();
 
-            worker.DoWork += (sender, args) => 
-                Parallel.ForEach(Module.PackageManager.VisualStudioPlan, package =>
+            worker.DoWork += (sender, args) =>
+            {
+                _solutions.Clear();
+
+                foreach (var package in Module.PackageManager.VisualStudioPlan)
                 {
-                    lock (this)
-                    {
-                        if (!_solutions.ContainsKey(package))
-                            _solutions.Add(package, new SolutionViewModel(package));
-                    }
-                });
+                    if (!_solutions.ContainsKey(package))
+                        _solutions.Add(package, new SolutionViewModel(package));
+                }
+            };
 
             worker.RunWorkerCompleted += (sender, args) =>
             {
                 PackagesDataGrid.ItemsSource = from packageNsolution in _solutions
-                                               where packageNsolution.Value.Nodes.Any()
-                                               orderby packageNsolution.Key.CanonicalName
-                                               select packageNsolution.Key;
+                                                where packageNsolution.Value.Nodes.Any()
+                                                orderby packageNsolution.Key.CanonicalName
+                                                select packageNsolution.Key;
 
                 PackagesDataGrid.SelectedIndex = 0;
 

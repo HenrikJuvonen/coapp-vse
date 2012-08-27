@@ -19,7 +19,7 @@
                             </Grid.ColumnDefinitions>
                             <ScrollViewer Grid.Column="0" x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="2,0,2,0"/>
                             <ContentPresenter Grid.Column="0" x:Name="Watermark" IsHitTestVisible="False" Margin="5,0,0,0" Content="{TemplateBinding Tag}" VerticalAlignment="Center" Visibility="Hidden" Opacity="0.7" />
-                            <ToggleButton Style="{DynamicResource ChromelessToggleButtonStyle}" x:Name="SearchButton" Grid.Column="1" Width="18" SnapsToDevicePixels="True" Visibility="Hidden" ToolTip="{x:Static Core:Resources.Search_ToolTip}">
+                            <ToggleButton Style="{DynamicResource ChromelessToggleButtonStyle}" x:Name="SearchButton" Grid.Column="1" Width="18" SnapsToDevicePixels="True" Visibility="Hidden" ToolTip="{x:Static Core:Resources.Search_ButtonToolTip}">
                                 <Border Width="14" Height="14">
                                     <Grid>
                                         <Path Data="M 0,1 L 1,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Stretch="Fill" Width="8" Height="8" Margin="1,0,0,1" Stroke="{Binding ElementName=SearchButton, Path=Foreground}" StrokeThickness="3" StrokeStartLineCap="Square" />

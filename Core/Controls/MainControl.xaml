@@ -38,9 +38,6 @@
             Command="{x:Static Core:Commands.OpenExternalLink}"
             Executed="ExecuteOpenLicenseLink" />
         <CommandBinding 
-            Command="{x:Static Core:Commands.ClearSearch}"
-            Executed="ExecuteClearSearch" />
-        <CommandBinding 
             Command="{x:Static Core:Commands.MoreInformation}"
             Executed="ExecuteMoreInformation" />
     </UserControl.CommandBindings>
@@ -80,7 +77,6 @@
                 <Button Margin="2,0,0,0" ToolTip="{x:Static Core:Resources.Main_Button_Reload}" Command="{x:Static Core:Commands.Reload}" Name="ReloadButton" Style="{DynamicResource ChromelessButtonStyle}">
                     <Grid Width="12">                        
                         <Path
-                            Margin="0,1,4,0"
                             HorizontalAlignment="Left"
                             Data="M 0,0 A 100,100 0 0 0 0,100"
                             Stretch="Fill"
@@ -100,7 +96,6 @@
                             StrokeEndLineCap="Triangle"
                             StrokeThickness="2" />
                         <Path
-                            Margin="4,0,0,1"
                             HorizontalAlignment="Right"
                             Data="M 0,0 A 100,100 0 0 1 0,100"
                             Stretch="Fill"
@@ -225,6 +220,7 @@
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="true">
+                                            <Setter Property="Background" Value="{DynamicResource HighlightLightBrush}" />
                                             <Setter Property="IsTabStop" Value="True" />
                                         </Trigger>
                                     </Style.Triggers>
@@ -236,10 +232,10 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="15" x:Name="InSolutionColumn" Visibility="Collapsed" SortMemberPath="SortByInSolution" CanUserSort="True">
+                        <DataGridTemplateColumn Width="13" x:Name="InSolutionColumn" Visibility="Collapsed" SortMemberPath="SortByInSolution" CanUserSort="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Rectangle Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type DataGridCell}},Path=Foreground}" Width="15" Height="15">
+                                    <Rectangle Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type DataGridCell}},Path=Foreground}" Width="13" Height="13">
                                         <Rectangle.OpacityMask>
                                             <ImageBrush ImageSource="{Binding InSolutionImage}" />
                                         </Rectangle.OpacityMask>
@@ -286,7 +282,7 @@
                 </DataGrid>
             </Border>
 
-            <ProgressBar Grid.Row="1" Grid.Column="0" Name="ProgressPane" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
+            <ProgressBar Grid.Row="1" Grid.Column="0" Name="ProgressPane" Visibility="Collapsed" VerticalAlignment="Center" Style="{DynamicResource MainProgressBar}"/>
 
             <Label Grid.Row="1" Grid.Column="0" Name="NoItemsPane" VerticalAlignment="Top" Visibility="Collapsed" Content="{x:Static Core:Resources.Main_NoPackagesFound}" Width="150" Margin="0,10,0,0" HorizontalContentAlignment="Center" />
 

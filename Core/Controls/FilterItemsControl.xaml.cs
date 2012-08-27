@@ -19,7 +19,7 @@ namespace CoApp.VSE.Core.Controls
 
             FilterBox.Items.Clear();
 
-            if (Module.PackageManager.Settings["#rememberFilters"].BoolValue)
+            if (Module.PackageManager != null && Module.PackageManager.Settings["#rememberFilters"].BoolValue)
             {
                 var filters = Module.PackageManager.LoadFilters();
 

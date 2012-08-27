@@ -4,7 +4,7 @@
 
     <ControlTemplate x:Key="{ComponentResourceKey TypeInTargetAssembly=MenuItem, ResourceId=TopLevelItemTemplateKey}" TargetType="MenuItem">
         <Grid>
-            <Rectangle x:Name="Bg" Margin="1,0,1,0" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" />
+            <Rectangle x:Name="Bg" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" />
             <Grid Margin="{TemplateBinding Padding}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -27,7 +27,7 @@
     
     <ControlTemplate x:Key="{ComponentResourceKey TypeInTargetAssembly=MenuItem, ResourceId=TopLevelHeaderTemplateKey}" TargetType="MenuItem">
         <Grid>
-            <Rectangle x:Name="Bg" Margin="1,0,1,0" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" />
+            <Rectangle x:Name="Bg" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" />
             <Grid Margin="{TemplateBinding Padding}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />

@@ -13,7 +13,6 @@
         public readonly static RoutedCommand ShowOptions = new RoutedCommand();
         public readonly static RoutedCommand OpenExternalLink = new RoutedCommand();
         public readonly static RoutedCommand FocusSearch = new RoutedCommand();
-        public readonly static RoutedCommand ClearSearch = new RoutedCommand();
         public readonly static RoutedCommand LaunchUpdater = new RoutedCommand();
         public readonly static RoutedCommand MarkStatus = new RoutedCommand();
         public readonly static RoutedCommand ToggleConsole = new RoutedCommand();

@@ -209,22 +209,22 @@
     <value>Add Filter</value>
   </data>
   <data name="Main_Button_Apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>Apply (Ctrl+Y)</value>
   </data>
   <data name="Main_Button_Browse" xml:space="preserve">
-    <value>Browse Package Contents</value>
+    <value>Browse Package Contents (Ctrl+B)</value>
   </data>
   <data name="Main_Button_Clear" xml:space="preserve">
     <value>Clear</value>
   </data>
   <data name="Main_Button_MarkAllUpdates" xml:space="preserve">
-    <value>Mark All Updates</value>
+    <value>Mark All Updates (Ctrl+U)</value>
   </data>
   <data name="Main_Button_Options" xml:space="preserve">
-    <value>Options</value>
+    <value>Options (Ctrl+O)</value>
   </data>
   <data name="Main_Button_Reload" xml:space="preserve">
-    <value>Reload</value>
+    <value>Reload (Ctrl+R)</value>
   </data>
   <data name="Main_Column_Architecture" xml:space="preserve">
     <value>Arch</value>
@@ -293,7 +293,7 @@
     <value>Clear</value>
   </data>
   <data name="Info_Button_Back" xml:space="preserve">
-    <value>Back</value>
+    <value>Back (Ctrl+W)</value>
   </data>
   <data name="Main_Column_Progress" xml:space="preserve">
     <value>Progress</value>
@@ -302,7 +302,7 @@
     <value>Status</value>
   </data>
   <data name="Options_Button_Back" xml:space="preserve">
-    <value>Back</value>
+    <value>Back (Ctrl+W)</value>
   </data>
   <data name="Options_Cache" xml:space="preserve">
     <value>Package Cache</value>
@@ -467,6 +467,12 @@
     <value>Role</value>
   </data>
   <data name="Info_Status" xml:space="preserve">
-    <value>Status</value>
+    <value>Status:</value>
+  </data>
+  <data name="Options_Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Options_Theme_Light" xml:space="preserve">
+    <value>Light</value>
   </data>
 </root>

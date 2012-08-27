@@ -10,7 +10,6 @@ namespace CoApp.VSE.Core.Utility
     {
         private static readonly ResourceDictionary LightResource = new ResourceDictionary { Source = new Uri("pack://application:,,,/CoApp.VSE.Core;component/Styles/BaseLight.xaml") };
         private static readonly ResourceDictionary DarkResource = new ResourceDictionary { Source = new Uri("pack://application:,,,/CoApp.VSE.Core;component/Styles/BaseDark.xaml") };
-        private static readonly ResourceDictionary AccentResource = new ResourceDictionary { Source = new Uri("pack://application:,,,/CoApp.VSE.Core;component/Styles/Accent.xaml") };
         
         public static void ChangeTheme(Window window, Theme theme)
         {
@@ -19,7 +18,6 @@ namespace CoApp.VSE.Core.Utility
 
             RemoveResourceDictionary(themeResource2, window.Resources);
             ApplyResourceDictionary(themeResource, window.Resources);
-            ApplyResourceDictionary(AccentResource, window.Resources);
         }
         
         private static void RemoveResourceDictionary(ResourceDictionary newRd, ResourceDictionary oldRd)

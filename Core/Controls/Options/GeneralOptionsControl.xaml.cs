@@ -112,6 +112,9 @@ namespace CoApp.VSE.Core.Controls.Options
 
         private void LoadSettings()
         {
+            if (Module.PackageManager == null)
+                return;
+
             RememberFiltersCheckBox.IsChecked = Module.PackageManager.Settings["#rememberFilters"].BoolValue;
             ShowConsoleCheckBox.IsChecked = Module.PackageManager.Settings["#showConsole"].BoolValue;
             AutoEndCheckBox.IsChecked = Module.PackageManager.Settings["#autoEnd"].BoolValue;

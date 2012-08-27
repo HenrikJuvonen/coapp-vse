@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -17,58 +20,44 @@ namespace CoApp.VSE.VSPackage
     [Guid(GuidList.guidVsPkgString)]
     public sealed class VsPackage : Package
     {
-        private uint _debuggingContextCookie, _solutionBuildingContextCookie, _solutionEventsCookie;
+        private uint _solutionExistsAndNotBuildingAndNotDebuggingContextCookie, _solutionExistsAndFullyLoadedContextCookie;
         private IVsMonitorSelection _vsMonitorSelection;
 
         private DTEEvents DTEEvents;
-        
+        private Dictionary<Project, string> Projects;
+
+        private bool _isSolutionOpen;
+
         protected override void Initialize()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CoAppApplication.ResolveAssembly);
-
             base.Initialize();
-            
-            // get the UI context cookie for the debugging mode
+
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CoAppApplication.ResolveAssembly);
+                        
             _vsMonitorSelection = (IVsMonitorSelection)GetService(typeof(IVsMonitorSelection));
-
-            // get debugging context cookie
-            var debuggingContextGuid = VSConstants.UICONTEXT_Debugging;
-            _vsMonitorSelection.GetCmdUIContextCookie(ref debuggingContextGuid, out _debuggingContextCookie);
-
-            // get the solution building cookie
-            var solutionBuildingContextGuid = VSConstants.UICONTEXT_SolutionBuilding;
-            _vsMonitorSelection.GetCmdUIContextCookie(ref solutionBuildingContextGuid, out _solutionBuildingContextCookie);
-
-            // Add our command handlers for menu (commands must exist in the .vsct file)
-            AddMenuCommandHandlers();
-
             Module.DTE = (DTE)GetService(typeof(DTE));
 
-            var solution = (IVsSolution) GetService(typeof (SVsSolution));
-
-            var solutionEvents = new SolutionEvents();
-            solution.AdviseSolutionEvents(solutionEvents, out _solutionEventsCookie);
+            // get the solution exists/not building/not debugging cookie
+            var solutionExistsAndNotBuildingAndNotDebuggingContextGuid = VSConstants.UICONTEXT.SolutionExistsAndNotBuildingAndNotDebugging_guid;
+            _vsMonitorSelection.GetCmdUIContextCookie(ref solutionExistsAndNotBuildingAndNotDebuggingContextGuid, out _solutionExistsAndNotBuildingAndNotDebuggingContextCookie);
             
-            Module.SolutionEvents = Module.DTE.Events.SolutionEvents;
-            Module.BuildEvents = Module.DTE.Events.BuildEvents;
-            Module.SolutionEvents.BeforeClosing += Module.HideVisualStudioControl;
-            Module.BuildEvents.OnBuildBegin += (scope, action) => Module.HideVisualStudioControl();
-            solutionEvents.AfterOpenProject += (sender, args) => Module.RestoreMissingPackages();
-            Module.SolutionEvents.Opened += Module.UpdateInSolutionStatus;
-
+            // get the solution exists and fully loaded cookie
+            var solutionExistsAndFullyLoadedContextGuid = VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_guid;
+            _vsMonitorSelection.GetCmdUIContextCookie(ref solutionExistsAndFullyLoadedContextGuid, out _solutionExistsAndFullyLoadedContextCookie);
+                                    
+            // Add our command handlers for menu (commands must exist in the .vsct file)
+            AddMenuCommandHandlers();
+            
             Module.Initialize();
             Module.OnStartup(null, null);
 
-            MessageFilter.Register();
-
             DTEEvents = Module.DTE.Events.DTEEvents;
+            DTEEvents.OnBeginShutdown += () => Module.OnExit(null, null);
 
-            DTEEvents.OnBeginShutdown += () =>
-            {
-                MessageFilter.Revoke();
-                Module.OnExit(null, null);
-                solution.UnadviseSolutionEvents(_solutionEventsCookie);
-            };
+            var timer = new DispatcherTimer();
+            timer.Tick += (o, a) => TrackSolution();
+            timer.Interval += new TimeSpan(0, 0, 0, 1);
+            timer.Start();
         }
 
         private void AddMenuCommandHandlers()
@@ -93,7 +82,7 @@ namespace CoApp.VSE.VSPackage
         private void QueryStatusEnable(object sender, EventArgs args)
         {
             var command = (OleMenuCommand)sender;
-            command.Visible = !IsIDEInDebuggingOrBuildingContext() && Module.IsSolutionOpen;
+            command.Visible = IsIDENotDebuggingAndNotBuilding();
             command.Enabled = true;
         }
 
@@ -114,22 +103,74 @@ namespace CoApp.VSE.VSPackage
             Module.RestoreMissingPackages(true);
         }
 
-        private bool IsIDEInDebuggingOrBuildingContext()
+        private bool IsSolutionFullyLoaded()
         {
             int pfActive;
-            int result = _vsMonitorSelection.IsCmdUIContextActive(_debuggingContextCookie, out pfActive);
-            if (result == VSConstants.S_OK && pfActive > 0)
+            int result = _vsMonitorSelection.IsCmdUIContextActive(_solutionExistsAndFullyLoadedContextCookie, out pfActive);
+            return result == VSConstants.S_OK && pfActive > 0;
+        }
+
+        private bool IsIDENotDebuggingAndNotBuilding()
+        {
+            int pfActive;
+            int result = _vsMonitorSelection.IsCmdUIContextActive(_solutionExistsAndNotBuildingAndNotDebuggingContextCookie, out pfActive);
+            return result == VSConstants.S_OK && pfActive > 0;
+        }
+        
+        /// <summary>
+        /// Tracks changes in solution: is solution opened/closed, is project added/removed, is project name changed.
+        /// </summary>
+        private void TrackSolution()
+        {
+            if (IsSolutionFullyLoaded())
             {
-                return true;
+                if (!_isSolutionOpen)
+                {
+                    _isSolutionOpen = true;
+                    Module.InvokeSolutionOpened();
+                }
+            }
+            else
+            {
+                if (_isSolutionOpen)
+                {
+                    _isSolutionOpen = false;
+                    Module.InvokeSolutionClosed();
+                    Projects = null;
+                }
             }
 
-            result = _vsMonitorSelection.IsCmdUIContextActive(_solutionBuildingContextCookie, out pfActive);
-            if (result == VSConstants.S_OK && pfActive > 0)
+            if (_isSolutionOpen)
             {
-                return true;
-            }
+                if (Projects == null)
+                {
+                    Projects = Module.DTE.Solution.Projects.OfType<Project>().ToDictionary(n => n, n => n.Name);
+                }
+                else
+                {
+                    var projects = Module.DTE.Solution.Projects.OfType<Project>().ToDictionary(n => n, n => n.Name);
 
-            return false;
+                    bool differs = false;
+
+                    foreach (var a in projects)
+                    {
+                        foreach (var b in Projects)
+                        {
+                            if (a.Key == b.Key && a.Value != b.Value)
+                                differs = true;
+                        }
+                    }
+
+                    if (projects.Count != Projects.Count)
+                        differs = true;
+
+                    if (differs)
+                    {
+                        Projects = projects;
+                        Module.InvokeSolutionChanged();
+                    }
+                }
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ namespace CoApp.VSE.Core.Controls
                     worker.DoWork += (sender, args) => Module.FinishPackageRestore();
                     worker.RunWorkerCompleted += (sender, args) =>
                     {
-                        var unrecoverable = Module.GetUnrecoverablePackages();
+                        var unrecoverable = Module.PackageManager.GetUnrecoverablePackages();
 
                         if (unrecoverable.Any())
                         {
@@ -86,7 +86,7 @@ namespace CoApp.VSE.Core.Controls
             var plan =
                 from package in packages
                 orderby package.CanonicalName
-                select new ProgressEventArgs(package.CanonicalName, null, 0);
+                select new ProgressEventArgs(package.CanonicalName, "Pending", 0);
 
             Packages = new ObservableCollection<ProgressEventArgs>(plan);
 

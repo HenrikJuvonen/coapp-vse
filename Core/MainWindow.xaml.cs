@@ -1,35 +1,112 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CoApp.VSE.Core
 {
     using Controls;
-    using Controls.Options;
 
     public partial class MainWindow
     {
-        public readonly MainControl MainControl = new MainControl();
-        public readonly InfoControl InfoControl = new InfoControl();
-        public readonly OptionsControl OptionsControl = new OptionsControl();
-        public readonly VisualStudioControl VisualStudioControl = new VisualStudioControl();
-        public readonly SummaryControl SummaryControl = new SummaryControl();
-        public readonly ProgressControl ProgressControl = new ProgressControl();
-
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        public string CurrentView
+        {
+            get
+            {
+                var view = ViewContainer.Children.OfType<UserControl>().FirstOrDefault(n => n.IsVisible);
+                return view == null ? "" : (string)view.Tag;
+            }
+        }
+
+        public void GoTo(string view)
+        {
+            foreach (UserControl child in ViewContainer.Children)
+            {
+                child.Visibility = (string)child.Tag == view ? Visibility.Visible : Visibility.Collapsed;
+            }
+            
+            VisualStudioControl.PackagesDataGrid.ItemsSource = null;
+            SummaryControl.RemoveDataGrid.ItemsSource = null;
+            SummaryControl.InstallDataGrid.ItemsSource = null;
+            ProgressControl.ProgressDataGrid.ItemsSource = null;
+            ProgressControl.Packages = null;
+            ProgressControl.Log.Document.Blocks.Clear();
+            InfoControl.DataContext = null;
+        }
+
+        private void CanExecuteMainViewCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = MainControl.IsVisible;
+        }
         
         private void ExecuteFocusSearch(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!MainControl.IsVisible)
-                return;
-
             if (!MainControl.SearchBox.IsFocused)
                 MainControl.SearchBox.Focus();
+        }
+
+        public void ExecuteToggleConsole(object sender = null, EventArgs e = null)
+        {
+            if (Module.PackageManager.Settings["#showConsole"].BoolValue)
+                return;
+
+            MainControl.ConsoleControl.Visibility = MainControl.ConsoleControl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+
+            if (MainControl.ConsoleControl.IsVisible)
+            {
+                System.Threading.ThreadPool.QueueUserWorkItem(
+                    a => Dispatcher.Invoke(new Action(() => MainControl.ConsoleControl.ConsoleBox.Focus())));
+            }
+            else
+            {
+                FocusManager.SetFocusedElement(this, this);
+            }
+        }
+
+        private void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteReload(null, null);
+        }
+
+        private void ExecuteApply(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteApply(null, null);
+        }
+
+        private void ExecuteShowOptions(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteShowOptions(null, null);
+        }
+
+        private void ExecuteBrowse(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteBrowse(null, null);
+        }
+
+        private void ExecuteMarkUpdates(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteMarkUpdates(null, null);
+        }
+
+        private void ExecuteMoreInformation(object sender, ExecutedRoutedEventArgs e)
+        {
+            MainControl.ExecuteMoreInformation(null, null);
+        }
+
+        private void ExecuteCancel(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (CurrentView == "Options" || CurrentView == "Info")
+            {
+                GoTo("Main");
+            }
         }
 
         public void ExecuteChangeTheme(object sender, EventArgs e)
@@ -43,24 +120,6 @@ namespace CoApp.VSE.Core
             {
                 Module.PackageManager.Settings["#theme"].StringValue = "Dark";
                 Utility.ThemeManager.ChangeTheme(Module.MainWindow, MahApps.Metro.Theme.Dark);
-            }
-        }
-
-        public void ExecuteToggleConsole(object sender = null, EventArgs e = null)
-        {
-            if (Module.PackageManager.Settings["#showConsole"].BoolValue || !MainControl.IsVisible)
-                return;
-
-            MainControl.ConsoleControl.Visibility = MainControl.ConsoleControl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-
-            if (MainControl.ConsoleControl.IsVisible)
-            {
-                System.Threading.ThreadPool.QueueUserWorkItem(
-                    a => Dispatcher.Invoke(new Action(() => MainControl.ConsoleControl.ConsoleBox.Focus())));
-            }
-            else
-            {
-                FocusManager.SetFocusedElement(this, this);
             }
         }
 
@@ -107,6 +166,11 @@ namespace CoApp.VSE.Core
                     Hide();
                 else
                     Application.Current.Shutdown();
+
+                if (Owner != null)
+                {
+                    Owner.Activate();
+                }
 
                 e.Cancel = true;
             }

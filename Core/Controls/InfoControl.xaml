@@ -65,7 +65,7 @@
                     </TextBlock>
                     <WrapPanel Style="{StaticResource PropertyBlockStyle}" VerticalAlignment="Center">
                         <TextBlock Style="{StaticResource PropertyNameStyle}" Text="{x:Static Core:Resources.Info_Status}" />
-                        <Image Source="{Binding StatusImage}" Stretch="None" Margin="2,0,2,0" />
+                        <Image Source="{Binding StatusImage}" Margin="2,0,2,0" Width="14" Height="14" />
                         <TextBlock Style="{StaticResource PropertyValueStyle}" Text="{Binding StatusText}" />
                     </WrapPanel>                    
                     <TextBlock Style="{StaticResource PropertyBlockStyle}" Visibility="{Binding PackageIdentity.PackageDetails.Publisher.Name, Converter={StaticResource nullOrEmptyToVisibility}}" TextWrapping="Wrap">

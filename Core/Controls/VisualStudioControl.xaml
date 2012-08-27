@@ -55,7 +55,7 @@
             <Label Grid.Row="0" Grid.Column="0" Margin="4,0,4,0" Content="{x:Static Core:Resources.VisualStudio_Packages}" />
             <DataGrid Grid.Row="1" Grid.Column="0" Name="PackagesDataGrid" Margin="4,0,4,4" BorderThickness="1,0,1,1" SelectionChanged="OnSelectionChanged">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="175" MaxWidth="175" Header="{x:Static Core:Resources.Main_Column_Name}">
+                    <DataGridTemplateColumn Width="*" Header="{x:Static Core:Resources.Main_Column_Name}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
@@ -76,7 +76,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="41" MaxWidth="41" Header="{x:Static Core:Resources.Main_Column_Architecture}">
+                    <DataGridTemplateColumn MinWidth="45" Header="{x:Static Core:Resources.Main_Column_Architecture}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />

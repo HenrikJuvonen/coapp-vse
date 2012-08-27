@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using CoApp.VSE.Core.Extensions;
 using EnvDTE;
 
 namespace CoApp.VSE.Core.Controls
 {
+    using Extensions;
+
     public partial class FilterMenu
     {
         private readonly FilterItemsControl _itemsControl;
@@ -26,26 +19,26 @@ namespace CoApp.VSE.Core.Controls
 
             _itemsControl = itemsControl;
 
-            foreach (var feedLocation in Module.PackageManager.GetFeedLocations())
+            if (Module.PackageManager != null)
             {
-                var menuitem = new MenuItem { Header = feedLocation };
-                menuitem.Click += OnMenuItemClick;
-                FilterFeedUrlMenuItem.Items.Add(menuitem);
+                foreach (var feedLocation in Module.PackageManager.GetFeedLocations())
+                {
+                    var menuitem = new MenuItem { Header = feedLocation };
+                    menuitem.Click += OnMenuItemClick;
+                    FilterFeedUrlMenuItem.Items.Add(menuitem);
+                }
             }
 
             if (Module.IsDTELoaded)
             {
-                Module.DTE.Events.SolutionEvents.Opened += UpdateProjects;
-                Module.DTE.Events.SolutionEvents.AfterClosing += UpdateProjects;
-                Module.DTE.Events.SolutionEvents.ProjectAdded += project => UpdateProjects();
-                Module.DTE.Events.SolutionEvents.ProjectRemoved += project => UpdateProjects();
-                Module.DTE.Events.SolutionEvents.ProjectRenamed += (project, name) => UpdateProjects();
+                Module.SolutionChanged += UpdateProjects;
+                Module.SolutionOpened += UpdateProjects;
+                Module.SolutionClosed += UpdateProjects;
             }
             else
             {
                 ((MenuItem)FilterBooleanMenuItem.Items[10]).Visibility = Visibility.Collapsed;
-            }
-            
+            }            
         }
 
         public void UpdateProjects()
@@ -67,6 +60,11 @@ namespace CoApp.VSE.Core.Controls
                 }
 
                 anyProjects = projects.Any();
+            }
+
+            if (!anyProjects)
+            {
+                _itemsControl.RemoveFilter(Core.Resources.Filter_Boolean, Core.Resources.Filter_Boolean_UsedInProjects);
             }
 
             foreach (MenuItem item in FilterBooleanMenuItem.Items)

@@ -462,7 +462,7 @@ namespace CoApp.VSE.Core.Controls
                 }
             }
 
-            var packages = Module.PackageManager.PackagesInFeeds.SelectMany(n => n.Value).Where(m => !searchtexts.Any() || searchtexts.Any(n => m.CanonicalName.PackageName.Contains(n)));
+            var packages = Module.PackageManager.PackagesViewModel.Packages.Select(n => n.PackageIdentity).Where(m => !searchtexts.Any() || searchtexts.Any(n => m.CanonicalName.PackageName.Contains(n)));
             
             _lastPackages = 
                 from package in packages

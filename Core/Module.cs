@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoApp.Packaging.Client;
+using EnvDTE;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -6,20 +8,22 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using CoApp.Packaging.Client;
-using EnvDTE;
 
 namespace CoApp.VSE.Core
 {
-    using System.Windows;
     using Extensions;
     using Packaging;
+    using System.Windows;
 
     public static class Module
     {
         private static bool _isLoaded;
 
         public static DTE DTE;
+
+        public static event Action SolutionChanged = delegate { };
+        public static event Action SolutionOpened = delegate { };
+        public static event Action SolutionClosed = delegate { };
 
         public static NotifyIcon TrayIcon;
         public static PackageManager PackageManager;
@@ -28,10 +32,7 @@ namespace CoApp.VSE.Core
 
         public static bool IsDTELoaded { get { return DTE != null; } }
         public static bool IsSolutionOpen { get { return IsDTELoaded && DTE.Solution != null && DTE.Solution.IsOpen; } }
-
-        public static SolutionEvents SolutionEvents;
-        public static BuildEvents BuildEvents;
-
+        
         private static bool _isApplying;
         private static bool _isRestoring;
 
@@ -61,11 +62,10 @@ namespace CoApp.VSE.Core
 
                 if (IsDTELoaded)
                 {
-                    MainWindow.Owner = (System.Windows.Window) HwndSource.FromHwnd(new IntPtr(DTE.MainWindow.HWnd)).RootVisual;
+                    MainWindow.Owner = (Window)HwndSource.FromHwnd(new IntPtr(DTE.MainWindow.HWnd)).RootVisual;
                 }
 
                 ReloadMainControl();
-                ShowMainControl();
                 
                 MainWindow.ShowDialog();
             }
@@ -77,41 +77,27 @@ namespace CoApp.VSE.Core
                     MainWindow.ShowDialog();
             }
         }
-
-        public static void ClearControls()
-        {
-            MainWindow.VisualStudioControl.PackagesDataGrid.ItemsSource = null;
-            MainWindow.SummaryControl.RemoveDataGrid.ItemsSource = null;
-            MainWindow.SummaryControl.InstallDataGrid.ItemsSource = null;
-            MainWindow.ProgressControl.ProgressDataGrid.ItemsSource = null;
-            MainWindow.ProgressControl.Packages = null;
-            MainWindow.ProgressControl.Log.Document.Blocks.Clear();
-            MainWindow.InfoControl.DataContext = null;
-        }
-        
+                
         public static void ShowInformationControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.InfoControl;
+            MainWindow.GoTo("Info");
             MainWindow.InfoControl.DataContext = PackageManager.PackagesViewModel.SelectedPackage;
         }
 
         public static void ShowMainControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.MainControl;
-            ClearControls();
+            MainWindow.GoTo("Main");
             _isRestoring = false;
         }
 
         public static void ShowOptionsControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.OptionsControl;
-            ClearControls();
+            MainWindow.GoTo("Options");
         }
 
         public static void ShowVisualStudioControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.VisualStudioControl;
-            ClearControls();
+            MainWindow.GoTo("VisualStudio");
             MainWindow.VisualStudioControl.Initialize();
         }
 
@@ -124,23 +110,19 @@ namespace CoApp.VSE.Core
 
         public static void ShowSummaryControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.SummaryControl;
-            ClearControls();
+            MainWindow.GoTo("Summary");
             MainWindow.SummaryControl.Initialize();
         }
 
         public static void ShowProgressControl()
         {
-            MainWindow.ContentControl.Content = MainWindow.ProgressControl;
-            ClearControls();
+            MainWindow.GoTo("Progress");
             MainWindow.ProgressControl.Initialize();
         }
 
         public static void Initialize()
         {
             PackageManager = new PackageManager();
-            
-            PackageManager.InitializeSettings();
 
             PackageManager.UpdatesAvailable += OnUpdatesAvailable;
 
@@ -216,7 +198,7 @@ namespace CoApp.VSE.Core
             {
                 if (PackageManager.Settings["#update"].IntValue == 1)
                 {
-                    MainWindow.MainControl.ExecuteMarkUpdates();
+                    MainWindow.MainControl.ExecuteMarkUpdates(null, null);
                     ShowSummaryControl();
                 }
 
@@ -231,7 +213,7 @@ namespace CoApp.VSE.Core
                 if (PackageManager.Settings["#restore"].IntValue == 1)
                 {
                     var packages = new List<Package>();
-                    foreach (var package in GetMissingPackages())
+                    foreach (var package in PackageManager.GetMissingPackages())
                     {
                         packages.AddRange(PackageManager.IdentifyDependencies(package).Where(n => !n.IsInstalled));
                         PackageManager.AddMark(package, Mark.DirectInstall);
@@ -263,7 +245,7 @@ namespace CoApp.VSE.Core
                         : string.Format(Resources.Update_InstallingMany, e.Count);
 
 
-                    MainWindow.MainControl.ExecuteMarkUpdates();
+                    MainWindow.MainControl.ExecuteMarkUpdates(null, null);
                     ShowProgressControl();
                 }
                 else
@@ -295,23 +277,22 @@ namespace CoApp.VSE.Core
             var worker = new BackgroundWorker();
             worker.DoWork += (o, args) => PackageManager.QueryPackages();
             worker.RunWorkerAsync();
-
+            
             if (IsDTELoaded)
             {
                 MainWindow.Title = "CoApp for Visual Studio";
                 TrayIcon.Text = MainWindow.Title;
                 MainWindow.ShowMinButton = false;
                 MainWindow.ShowInTaskbar = false;
+                MainWindow.MinWidth += 15;
             }
             else
             {
                 MainWindow.Title = "CoApp.VSE";
                 TrayIcon.Text = MainWindow.Title;
 
-                if (PackageManager.Settings["#showTrayIcon"].BoolValue && PackageManager.Settings["#startInTray"].BoolValue)
-                    return;
-
-                ShowMainWindow();
+                if (!(PackageManager.Settings["#showTrayIcon"].BoolValue && PackageManager.Settings["#startInTray"].BoolValue))
+                    ShowMainWindow();
             }
         }
 
@@ -332,14 +313,35 @@ namespace CoApp.VSE.Core
             TrayIcon.Visible = PackageManager.Settings["#showTrayIcon"].BoolValue;
         }
 
-        public static void UpdateInSolutionStatus()
+        public static void InvokeSolutionChanged()
         {
-            foreach (var packageItem in PackageManager.PackagesViewModel.Packages)
-            {
-                packageItem.InSolution = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
-            }
+            SolutionChanged();
+        }
 
-            ReloadMainControl();
+        public static void InvokeSolutionOpened()
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += (o, a) =>
+            {
+                foreach (var packageItem in PackageManager.PackagesViewModel.Packages)
+                {
+                    packageItem.InSolution = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
+                }
+
+                RestoreMissingPackages();
+            };
+            worker.RunWorkerCompleted += (o, a) =>
+            {
+                SolutionOpened();
+                ReloadMainControl();
+            };
+            worker.RunWorkerAsync();
+        }
+
+        public static void InvokeSolutionClosed()
+        {
+            Module.HideVisualStudioControl();
+            SolutionClosed();
         }
 
         public static void ManagePackage(PackageReference packageReference, IEnumerable<Project> checkedProjects, IEnumerable<LibraryReference> libraries)
@@ -420,7 +422,7 @@ namespace CoApp.VSE.Core
             if (PackageManager.Settings["#restore"].IntValue == 2 && !force)
                 return;
 
-            var missingPackages = GetMissingPackages();
+            var missingPackages = PackageManager.GetMissingPackages();
 
             if (!missingPackages.Any())
             {
@@ -484,55 +486,6 @@ namespace CoApp.VSE.Core
                     ManagePackage(packageReference, new[] { project }, addedLibraries);
                 }
             }
-        }
-
-        private static IEnumerable<Package> GetMissingPackages()
-        {
-            var packages = PackageManager.PackagesInFeeds.SelectMany(n => n.Value);
-            var resultPackages = new List<Package>();
-
-            foreach (var p in DTE.Solution.Projects.OfType<Project>().Where(n => n.IsSupported()))
-            {
-                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
-
-                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
-                {
-                    var pkg = packages.FirstOrDefault(package => packageReference.CanonicalName.PackageName == package.CanonicalName.PackageName);
-
-                    if (pkg != null)
-                    {
-                        resultPackages.Add(pkg);
-                    }
-                }
-
-            }
-            return resultPackages.Where(n => !n.IsInstalled).Distinct();
-        }
-
-        public static IEnumerable<string> GetUnrecoverablePackages()
-        {
-            if (!_isRestoring)
-                return Enumerable.Empty<string>();
-
-            _isRestoring = false;
-
-            var packages = PackageManager.PackagesInFeeds.SelectMany(n => n.Value);
-            var unrecoverable = new List<string>();
-
-            foreach (var p in DTE.Solution.Projects.OfType<Project>().Where(n => n.IsSupported()))
-            {
-                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
-
-                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
-                {
-                    if (!packages.Any(package => package.CanonicalName == packageReference.CanonicalName))
-                    {
-                        unrecoverable.Add(packageReference.CanonicalName);
-                    }
-                }
-            }
-
-            return unrecoverable.Distinct();
         }
     }
 }

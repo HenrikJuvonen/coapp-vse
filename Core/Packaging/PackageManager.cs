@@ -1,26 +1,31 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using CoApp.Packaging.Client;
+﻿using CoApp.Packaging.Client;
 using CoApp.Packaging.Common;
 using CoApp.Packaging.Common.Exceptions;
 using CoApp.Toolkit.Configuration;
 using CoApp.Toolkit.Extensions;
 using CoApp.Toolkit.Linq;
 using CoApp.Toolkit.Tasks;
+using CoApp.Toolkit.Text;
+using EnvDTE;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using CoApp.Toolkit.Text;
-using CoApp.VSE.Core.Extensions;
-using CoApp.VSE.Core.ViewModel;
-using EnvDTE;
-using CoApp.VSE.Core.Model;
-using System.Windows;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CoApp.VSE.Core.Packaging
 {
+    using Extensions;
+    using ViewModel;
+
     public class PackageManager
     {
+        private readonly object _L1 = new object();
+        private readonly object _L2 = new object();
+        private readonly object _L3 = new object();
+        private readonly object _L4 = new object();
+
         private PackagesViewModel _packagesViewModel; 
 
         public bool IsQuerying { get; private set; }
@@ -49,24 +54,27 @@ namespace CoApp.VSE.Core.Packaging
         {
             get
             {
-                if (_packagesViewModel != null)
-                    return _packagesViewModel;
-
-                IsQuerying = true;
-
-                SetNewCancellationTokenSource();
-
-                _packagesViewModel = new PackagesViewModel(GetPackagesFromAllFeeds());
-
-                if (!_initialUpdateCheckCompleted)
+                lock (_L1)
                 {
-                    GetPackages("updatable");
-                    _initialUpdateCheckCompleted = true;
-                }
+                    if (_packagesViewModel != null)
+                        return _packagesViewModel;
 
-                IsQuerying = false;
-                
-                return _packagesViewModel;
+                    IsQuerying = true;
+
+                    SetNewCancellationTokenSource();
+
+                    _packagesViewModel = new PackagesViewModel(GetPackagesFromAllFeeds());
+
+                    if (!_initialUpdateCheckCompleted)
+                    {
+                        GetPackages("updatable");
+                        _initialUpdateCheckCompleted = true;
+                    }
+
+                    IsQuerying = false;
+
+                    return _packagesViewModel;
+                }
             }
         }
 
@@ -79,6 +87,50 @@ namespace CoApp.VSE.Core.Packaging
                 PackagesInFeeds.Clear();
                 _marks.Clear();
             }
+        }
+        
+        public IEnumerable<Package> GetMissingPackages()
+        {
+            var packages = PackagesViewModel.Packages.Select(n => n.PackageIdentity);
+            var resultPackages = new List<Package>();
+
+            foreach (var p in Module.DTE.Solution.Projects.OfType<Project>().Where(n => n.IsSupported()))
+            {
+                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+
+                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
+                {
+                    var pkg = packages.FirstOrDefault(package => packageReference.CanonicalName.PackageName == package.CanonicalName.PackageName);
+
+                    if (pkg != null)
+                    {
+                        resultPackages.Add(pkg);
+                    }
+                }
+
+            }
+            return resultPackages.Where(n => !n.IsInstalled).Distinct();
+        }
+
+        public IEnumerable<string> GetUnrecoverablePackages()
+        {
+            var packages = PackagesViewModel.Packages.Select(n => n.PackageIdentity);
+            var unrecoverable = new List<string>();
+
+            foreach (var p in Module.DTE.Solution.Projects.OfType<Project>().Where(n => n.IsSupported()))
+            {
+                var packageReferenceFile = new PackageReferenceFile(Path.GetDirectoryName(p.FullName) + "/coapp.packages.config");
+
+                foreach (var packageReference in packageReferenceFile.GetPackageReferences())
+                {
+                    if (!packages.Any(package => package.CanonicalName == packageReference.CanonicalName))
+                    {
+                        unrecoverable.Add(packageReference.CanonicalName);
+                    }
+                }
+            }
+
+            return unrecoverable.Distinct();
         }
 
         public bool IsAnyUpdates
@@ -103,13 +155,16 @@ namespace CoApp.VSE.Core.Packaging
                 {
                     packageItem.SetStatus();
                     packageItem.ItemBackground = null;
-
-                    packageItem.InSolution = Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
                 }
+            }
+
+            foreach (var packageItem in PackagesViewModel.Packages)
+            {
+                packageItem.InSolution = Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
             }
         }
 
-        public void ClearMarks(bool forceClearInSolution)
+        public void ClearMarks()
         {
             _marks.Clear();
 
@@ -117,8 +172,7 @@ namespace CoApp.VSE.Core.Packaging
             {
                 packageItem.SetStatus();
                 packageItem.ItemBackground = null;
-
-                packageItem.InSolution = !forceClearInSolution && Module.IsSolutionOpen && Module.DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
+                packageItem.InSolution = false;
             }
         }
 
@@ -252,9 +306,8 @@ namespace CoApp.VSE.Core.Packaging
         public event EventHandler<LogEventArgs> Warning = delegate { };
         public event EventHandler<LogEventArgs> Error = delegate { };
 
-        public Dictionary<string, IList<Package>> PackagesInFeeds = new Dictionary<string, IList<Package>>();
-
-        public readonly List<string> Downloads = new List<string>();
+        private readonly Dictionary<string, IList<Package>> PackagesInFeeds = new Dictionary<string, IList<Package>>();
+        private readonly List<string> Downloads = new List<string>();
 
         public PackageManager()
         {
@@ -311,9 +364,10 @@ namespace CoApp.VSE.Core.Packaging
                     }
                 });
 
+            InitializeSettings();
         }
 
-        public void InitializeSettings()
+        private void InitializeSettings()
         {
             if (Settings["#update"].Value == null)
                 Settings["#update"].IntValue = 2;
@@ -536,73 +590,47 @@ namespace CoApp.VSE.Core.Packaging
         {
             var dependencies = new List<Package> { package };
 
-            try
+            Parallel.ForEach(package.Dependencies, dependency =>
             {
-                Parallel.ForEach(package.Dependencies, dependency =>
+                try
                 {
                     if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
                         var subdependencies = IdentifyPackageAndDependencies((Package) dependency);
-                        lock (this)
+                        lock (_L2)
                         {
                             dependencies.AddRange(subdependencies);
                         }
                     }
-                });
-            }
-            catch
-            {
-            }
+                }
+                catch
+                {
+                }
+            });
 
             return dependencies.Distinct();
         }
-
-        public IEnumerable<Package> IdentifyDependents(Package package)
-        {
-            var dependents = new List<Package>();
-
-            try
-            {
-                Parallel.ForEach(GetPackagesFromAllFeeds(), n =>
-                {
-                    if (n != package && n.Dependencies.Any(m => m.CanonicalName == package.CanonicalName))
-                    {
-                        lock (this)
-                        {
-                            dependents.Add((Package)n);
-                        }
-                    }
-                });
-            }
-            catch
-            {
-            }
-
-            return dependents;
-        }
-
+        
         public IEnumerable<Package> IdentifyOwnDependencies(Package package)
         {
             var dependencies = new List<Package>();
 
-            try
+            Parallel.ForEach(package.Dependencies, dependency =>
             {
-                Parallel.ForEach(package.Dependencies, dependency =>
+                try
                 {
                     if (dependency != null && PackagesInFeeds.Any(n => n.Value.Any(m => m.CanonicalName == dependency.CanonicalName)))
                     {
-                        lock (this)
+                        lock (_L2)
                         {
                             dependencies.Add((Package)dependency);
                         }
                     }
-                });
-            }
-            catch
-            {
-            }
+                }
+                catch { }
+            });
 
-            return dependencies.Where(n => n != null);
+            return dependencies.Where(n => n != null).Distinct();
         }
 
         private IEnumerable<Package> GetPackagesFromAllFeeds()
@@ -613,7 +641,7 @@ namespace CoApp.VSE.Core.Packaging
                 () => Parallel.ForEach(GetFeedLocations(), feedLocation =>
                 {
                     var pkgs = GetPackages(location: feedLocation);
-                    lock (this)
+                    lock (_L3)
                     {
                         packages.AddRange(pkgs);
                     }
@@ -621,7 +649,7 @@ namespace CoApp.VSE.Core.Packaging
                 () =>
                 {
                     var pkgs = GetPackages("installed");
-                    lock (this)
+                    lock (_L3)
                     {
                         packages.AddRange(pkgs);
                     }
@@ -643,7 +671,7 @@ namespace CoApp.VSE.Core.Packaging
 
             if (type == "installed")
             {
-                lock (this)
+                lock (_L4)
                 {
                     if (PackagesInFeeds.ContainsKey(""))
                         PackagesInFeeds.Remove("");
@@ -662,7 +690,7 @@ namespace CoApp.VSE.Core.Packaging
 
             if (location != null)
             {
-                lock (this)
+                lock (_L4)
                 {
                     if (PackagesInFeeds.ContainsKey(location))
                         PackagesInFeeds.Remove(location);
@@ -681,8 +709,7 @@ namespace CoApp.VSE.Core.Packaging
         {
             IEnumerable<Package> packages = null;
 
-            ContinueTask(Task.Factory.StartNew(() => 
-                ContinueTask(_pkm.QueryPackages(queries, pkgFilter, null, location).Continue(n => packages = n))));
+            ContinueTask(_pkm.QueryPackages(queries, pkgFilter, null, location).Continue(n => packages = n));
 
             return packages ?? Enumerable.Empty<Package>();
         }

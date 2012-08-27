@@ -33,16 +33,11 @@ namespace CoApp.VSE.Core.Controls
 
             if (Module.IsDTELoaded)
             {
-                var action = new Action<bool>(b =>
+                Module.SolutionClosed += () =>
                 {
-                    Module.PackageManager.ClearMarks(b);
+                    Module.PackageManager.ClearMarks();
                     Reload();
-                });
-
-                Module.DTE.Events.SolutionEvents.AfterClosing += () => action.Invoke(true);
-                Module.DTE.Events.SolutionEvents.ProjectAdded += project => action.Invoke(false);
-                Module.DTE.Events.SolutionEvents.ProjectRemoved += project => action.Invoke(false);
-                Module.DTE.Events.SolutionEvents.ProjectRenamed += (project, name) => action.Invoke(false);
+                };
 
                 InSolutionColumn.Visibility = Visibility.Visible;
             }
@@ -65,6 +60,14 @@ namespace CoApp.VSE.Core.Controls
 
         public void Reload()
         {
+            MarkAllUpgradesButton.IsEnabled = false;
+            MarkAllUpdatesButton.IsEnabled = false;
+            ApplyButton.IsEnabled = false;
+            NoItemsPane.Visibility = Visibility.Collapsed;
+            PackageDetailsPanel.Visibility = Visibility.Collapsed;
+            PackagesDataGrid.Visibility = Visibility.Collapsed;
+            ProgressPane.Visibility = Visibility.Visible;
+
             if (Module.PackageManager.IsQuerying)
             {
                 var timer = new DispatcherTimer();
@@ -73,14 +76,6 @@ namespace CoApp.VSE.Core.Controls
                 timer.Start();
                 return;
             }
-
-            MarkAllUpgradesButton.IsEnabled = false;
-            MarkAllUpdatesButton.IsEnabled = false;
-            ApplyButton.IsEnabled = false;
-            NoItemsPane.Visibility = Visibility.Collapsed;
-            PackageDetailsPanel.Visibility = Visibility.Collapsed;
-            PackagesDataGrid.Visibility = Visibility.Collapsed;
-            ProgressPane.Visibility = Visibility.Visible;
 
             sortDescriptions = PackagesDataGrid.Items.SortDescriptions.ToArray();
             DataContext = null;
@@ -108,6 +103,7 @@ namespace CoApp.VSE.Core.Controls
         }
 
         private int _counter;
+        private readonly object _L1 = new object();
         private void RefreshView(object sender, DoWorkEventArgs e)
         {
             _counter++;
@@ -121,8 +117,8 @@ namespace CoApp.VSE.Core.Controls
                 e.Cancel = true;
                 return;
             }
-            
-            lock (Module.PackageManager.PackagesViewModel)
+
+            lock (_L1)
             {
                 Module.PackageManager.PackagesViewModel.Refresh();
             }
@@ -143,7 +139,7 @@ namespace CoApp.VSE.Core.Controls
             if (e.Cancelled)
                 return;
 
-            lock (Module.PackageManager.PackagesViewModel)
+            lock (_L1)
             {
                 DataContext = Module.PackageManager.PackagesViewModel;
             }
@@ -221,12 +217,12 @@ namespace CoApp.VSE.Core.Controls
             Reload();
         }
 
-        public void ExecuteShowOptions(object sender = null, ExecutedRoutedEventArgs e = null)
+        internal void ExecuteShowOptions(object sender, ExecutedRoutedEventArgs e)
         {
             Module.ShowOptionsControl();
         }
-        
-        private void ExecuteApply(object sender, ExecutedRoutedEventArgs e)
+
+        internal void ExecuteApply(object sender, ExecutedRoutedEventArgs e)
         {
             if (Module.PackageManager.VisualStudioPlan.Any())
                 Module.ShowVisualStudioControl();
@@ -234,7 +230,7 @@ namespace CoApp.VSE.Core.Controls
                 Module.ShowSummaryControl();
         }
 
-        private void ExecuteBrowse(object sender, ExecutedRoutedEventArgs e)
+        internal void ExecuteBrowse(object sender, ExecutedRoutedEventArgs e)
         {
             var worker = new BackgroundWorker();
             worker.DoWork += (o, a) =>
@@ -255,18 +251,18 @@ namespace CoApp.VSE.Core.Controls
                 e.CanExecute = PackagesDataGrid.IsVisible;
         }
 
-        private void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
+        internal void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
         {
             Module.PackageManager.Reset();
             Reload();
         }
 
-        private void ExecuteMoreInformation(object sender, ExecutedRoutedEventArgs e)
+        internal void ExecuteMoreInformation(object sender, ExecutedRoutedEventArgs e)
         {
             Module.ShowInformationControl();
         }
 
-        public void ExecuteMarkUpdates(object sender = null, ExecutedRoutedEventArgs e = null)
+        internal void ExecuteMarkUpdates(object sender, ExecutedRoutedEventArgs e)
         {
             foreach (var item in Module.PackageManager.PackagesViewModel.Packages.Where(n => n.Status == PackageItemStatus.InstalledHasUpdate))
             {
@@ -294,11 +290,6 @@ namespace CoApp.VSE.Core.Controls
                 UriHelper.OpenExternalLink(hyperlink.NavigateUri);
                 e.Handled = true;
             }
-        }
-
-        private void ExecuteClearSearch(object sender, ExecutedRoutedEventArgs e)
-        {
-            SearchBox.Clear();
         }
 
         private void OnStatusContextMenuItemClick(object sender, RoutedEventArgs e)
@@ -360,7 +351,12 @@ namespace CoApp.VSE.Core.Controls
                 {
 
                     if (Module.IsSolutionOpen && packageItem.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None)
+                    {
+                        if (Module.PackageManager.VisualStudioPlan.Any(n => n.CanonicalName.DiffersOnlyByVersion(packageItem.PackageIdentity.CanonicalName)))
+                            return;
+
                         packageItem.SetStatus(PackageItemStatus.MarkedForVisualStudio);
+                    }
                     else
                     {
                         if ((packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive) || packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange))
@@ -522,6 +518,7 @@ namespace CoApp.VSE.Core.Controls
                 ((MenuItem)menu.Items[6]).IsEnabled = !unmark.IsEnabled && !packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange) &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
                 ((MenuItem)menu.Items[7]).IsEnabled = !unmark.IsEnabled && Module.IsSolutionOpen &&
+                    !Module.PackageManager.VisualStudioPlan.Any(n => n.CanonicalName.DiffersOnlyByVersion(packageItem.PackageIdentity.CanonicalName)) &&
                     packageItem.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None;
             }
             else

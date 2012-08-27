@@ -44,7 +44,7 @@
             <Label Grid.Row="0" Grid.Column="0" Margin="4,0,4,0" Content="Packages to be removed:" Visibility="{Binding ElementName=RemoveDataGrid, Path=Visibility}"/>
             <DataGrid Grid.Row="1" Grid.Column="0" Name="RemoveDataGrid" Margin="4,0,4,4" BorderThickness="1,0,1,1" CellStyle="{DynamicResource DataGridCellStyle2}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160" Header="{x:Static Core:Resources.Main_Column_Name}">
+                    <DataGridTemplateColumn Width="*" Header="{x:Static Core:Resources.Main_Column_Name}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
@@ -65,7 +65,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45" Header="{x:Static Core:Resources.Main_Column_Architecture}">
+                    <DataGridTemplateColumn Width="45" Header="{x:Static Core:Resources.Main_Column_Architecture}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />
@@ -77,7 +77,7 @@
             <Label Grid.Row="0" Grid.Column="1" Margin="4,0,4,0" Content="Packages to be installed:" Visibility="{Binding ElementName=InstallDataGrid, Path=Visibility}"/>
             <DataGrid Grid.Row="1" Grid.Column="1" Name="InstallDataGrid" Margin="4,0,4,4" BorderThickness="1,0,1,1" CellStyle="{DynamicResource DataGridCellStyle2}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn MinWidth="160" MaxWidth="160" Header="{x:Static Core:Resources.Main_Column_Name}">
+                    <DataGridTemplateColumn Width="*" Header="{x:Static Core:Resources.Main_Column_Name}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
@@ -98,7 +98,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn MinWidth="45" MaxWidth="45" Header="{x:Static Core:Resources.Main_Column_Architecture}">
+                    <DataGridTemplateColumn Width="45" Header="{x:Static Core:Resources.Main_Column_Architecture}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Architecture}" />

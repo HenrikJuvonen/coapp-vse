@@ -50,7 +50,7 @@ anycpu {
     set: bin_path = @"output\any\${cfg}\bin\";
     uses: clean;
 	
-    requires: "MahApps.Metro";
+    requires: "MahApps.Metro-0.7.1.1";
 	
     targets: {
         "${bin_path}CoApp.VSE.exe",

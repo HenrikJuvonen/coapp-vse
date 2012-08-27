@@ -21,7 +21,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
                 <ResourceDictionary Source="Styles/Colors.xaml" />
                 <ResourceDictionary Source="Styles/Controls.xaml" />
                 <ResourceDictionary Source="Styles/MetroWindow.xaml" />
@@ -31,20 +30,56 @@
 
     <Window.CommandBindings>
         <CommandBinding 
+            Command="{x:Static Core:Commands.FocusSearch}"
+            Executed="ExecuteFocusSearch"
+            CanExecute="CanExecuteMainViewCommand"/>
+        <CommandBinding 
             Command="{x:Static Core:Commands.ToggleConsole}"
-            Executed="ExecuteToggleConsole" />
+            Executed="ExecuteToggleConsole"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.Reload}"
+            Executed="ExecuteReload"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.Apply}"
+            Executed="ExecuteApply"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.ShowOptions}"
+            Executed="ExecuteShowOptions"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.Browse}"
+            Executed="ExecuteBrowse"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.MarkUpdates}"
+            Executed="ExecuteMarkUpdates"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.MoreInformation}"
+            Executed="ExecuteMoreInformation"
+            CanExecute="CanExecuteMainViewCommand" />
+        <CommandBinding 
+            Command="{x:Static Core:Commands.Cancel}"
+            Executed="ExecuteCancel" />
         <CommandBinding 
             Command="{x:Static Core:Commands.ChangeTheme}"
             Executed="ExecuteChangeTheme" />
-        <CommandBinding 
-            Command="{x:Static Core:Commands.FocusSearch}"
-            Executed="ExecuteFocusSearch" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
         <KeyBinding Command="{x:Static Core:Commands.FocusSearch}" Gesture="CTRL+F" />
-        <KeyBinding Command="{x:Static Core:Commands.ToggleConsole}" Gesture="F2" />
-        <KeyBinding Command="{x:Static Core:Commands.ChangeTheme}" Gesture="F3" />
+        <KeyBinding Command="{x:Static Core:Commands.ToggleConsole}" Gesture="CTRL+N" />
+        <KeyBinding Command="{x:Static Core:Commands.ChangeTheme}" Gesture="CTRL+T" />
+        <KeyBinding Command="{x:Static Core:Commands.Reload}" Gesture="CTRL+R" />
+        <KeyBinding Command="{x:Static Core:Commands.Apply}" Gesture="CTRL+Y" />
+        <KeyBinding Command="{x:Static Core:Commands.ShowOptions}" Gesture="CTRL+O" />
+        <KeyBinding Command="{x:Static Core:Commands.Browse}" Gesture="CTRL+B" />
+        <KeyBinding Command="{x:Static Core:Commands.MarkUpdates}" Gesture="CTRL+U" />
+        <KeyBinding Command="{x:Static Core:Commands.Cancel}" Gesture="CTRL+W" />
+        <KeyBinding Command="{x:Static Core:Commands.MoreInformation}" Gesture="CTRL+D" />
     </Window.InputBindings>
 
     <Grid>
@@ -52,7 +87,14 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="23" />
         </Grid.RowDefinitions>
-        <ContentControl Name="ContentControl" />
-        <Border Name="BottomBorder" Grid.Row="1" Background="{DynamicResource AccentColorBrush}" />
+        <Grid x:Name="ViewContainer">
+            <Controls:MainControl x:Name="MainControl" Visibility="Visible" Tag="Main"/>
+            <Controls:InfoControl x:Name="InfoControl" Visibility="Collapsed" Tag="Info"/>
+            <Controls:SummaryControl x:Name="SummaryControl" Visibility="Collapsed" Tag="Summary" />
+            <Controls:ProgressControl x:Name="ProgressControl" Visibility="Collapsed" Tag="Progress" />
+            <Controls:VisualStudioControl x:Name="VisualStudioControl" Visibility="Collapsed" Tag="VisualStudio" />
+            <Options:OptionsControl x:Name="OptionsControl" Visibility="Collapsed" Tag="Options" />
+        </Grid>
+        <Border Grid.Row="1" Background="{DynamicResource AccentColorBrush}" />
     </Grid>
 </MetroControls:MetroWindow>

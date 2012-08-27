@@ -135,7 +135,11 @@ namespace CoApp.VSE.Core.ViewModel
                 {
                     var project = Module.DTE.Solution.Projects.OfType<Project>().FirstOrDefault(m => m.Name == projectName);
 
-                    isInProjects = isInProjects || project.HasPackage(n.PackageIdentity);
+                    if (project != null)
+                    {
+                        isInProjects = isInProjects || project.HasPackage(n.PackageIdentity);
+                    }
+
                 }
 
                 result = result && isInProjects;
