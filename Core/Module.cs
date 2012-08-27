@@ -31,7 +31,7 @@ namespace CoApp.VSE.Core
         public static bool IsShutdownForced { get; private set; }
 
         public static bool IsDTELoaded { get { return DTE != null; } }
-        public static bool IsSolutionOpen { get { return IsDTELoaded && DTE.Solution != null && DTE.Solution.IsOpen; } }
+        public static bool IsSolutionOpen { get; private set; }
         
         private static bool _isApplying;
         private static bool _isRestoring;
@@ -332,6 +332,7 @@ namespace CoApp.VSE.Core
             };
             worker.RunWorkerCompleted += (o, a) =>
             {
+                IsSolutionOpen = true;
                 SolutionOpened();
                 ReloadMainControl();
             };
@@ -341,6 +342,7 @@ namespace CoApp.VSE.Core
         public static void InvokeSolutionClosed()
         {
             Module.HideVisualStudioControl();
+            IsSolutionOpen = false;
             SolutionClosed();
         }
 
