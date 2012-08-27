@@ -359,7 +359,7 @@ namespace CoApp.VSE.Core.Controls
                     }
                     else
                     {
-                        if ((packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive) || packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange))
+                        if ((packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive))
                             return;
                         
                         packageItem.SetStatus(PackageItemStatus.MarkedForRemoval);
@@ -509,13 +509,13 @@ namespace CoApp.VSE.Core.Controls
             if (packageItem.PackageIdentity.IsInstalled)
             {
                 ((MenuItem)menu.Items[1]).IsEnabled = false;
-                ((MenuItem)menu.Items[2]).IsEnabled = !unmark.IsEnabled && !packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange) &&
+                ((MenuItem)menu.Items[2]).IsEnabled = !unmark.IsEnabled &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
                 ((MenuItem)menu.Items[3]).IsEnabled = !unmark.IsEnabled && !packageItem.IsHighestInstalled;
                 ((MenuItem)menu.Items[4]).IsEnabled = !unmark.IsEnabled && !packageItem.IsHighestInstalled;
-                ((MenuItem)menu.Items[5]).IsEnabled = !unmark.IsEnabled && !packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange) &&
+                ((MenuItem)menu.Items[5]).IsEnabled = !unmark.IsEnabled &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
-                ((MenuItem)menu.Items[6]).IsEnabled = !unmark.IsEnabled && !packageItem.PackageIdentity.PackageState.HasFlag(PackageState.DoNotChange) &&
+                ((MenuItem)menu.Items[6]).IsEnabled = !unmark.IsEnabled &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
                 ((MenuItem)menu.Items[7]).IsEnabled = !unmark.IsEnabled && Module.IsSolutionOpen &&
                     !Module.PackageManager.VisualStudioPlan.Any(n => n.CanonicalName.DiffersOnlyByVersion(packageItem.PackageIdentity.CanonicalName)) &&

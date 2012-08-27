@@ -235,7 +235,7 @@ namespace CoApp.VSE.Core.Packaging
                                 n.Value.Contains(Mark.IndirectRemove) ||
                                 n.Value.Contains(Mark.IndirectCompletelyRemove))
                     .Select(n => n.Key)
-                    .Where(package => !(package.Name == "coapp" && package.IsActive) && !package.PackageState.HasFlag(PackageState.DoNotChange)).ToArray();
+                    .Where(package => !(package.Name == "coapp" && package.IsActive)).ToArray();
             }
         }
 
