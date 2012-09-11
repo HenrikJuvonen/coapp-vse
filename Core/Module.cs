@@ -32,6 +32,7 @@ namespace CoApp.VSE.Core
 
         public static bool IsDTELoaded { get { return DTE != null; } }
         public static bool IsSolutionOpen { get; private set; }
+        public static bool IsProjectsOpen { get; private set; }
         
         private static bool _isApplying;
         private static bool _isRestoring;
@@ -315,6 +316,7 @@ namespace CoApp.VSE.Core
 
         public static void InvokeSolutionChanged()
         {
+            IsProjectsOpen = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported());
             SolutionChanged();
         }
 
@@ -327,6 +329,8 @@ namespace CoApp.VSE.Core
                 {
                     packageItem.InSolution = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported() && m.HasPackage(packageItem.PackageIdentity));
                 }
+
+                IsProjectsOpen = DTE.Solution.Projects.OfType<Project>().Any(m => m.IsSupported());
 
                 RestoreMissingPackages();
             };
@@ -343,6 +347,7 @@ namespace CoApp.VSE.Core
         {
             Module.HideVisualStudioControl();
             IsSolutionOpen = false;
+            IsProjectsOpen = false;
             SolutionClosed();
         }
 

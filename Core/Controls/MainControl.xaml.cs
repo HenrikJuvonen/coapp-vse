@@ -247,8 +247,8 @@ namespace CoApp.VSE.Core.Controls
 
         private void CanExecuteBrowse(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (PackagesDataGrid != null)
-                e.CanExecute = PackagesDataGrid.IsVisible;
+            e.CanExecute = PackagesDataGrid != null && PackagesDataGrid.IsVisible;
+            e.Handled = true;
         }
 
         internal void ExecuteReload(object sender, ExecutedRoutedEventArgs e)
@@ -350,7 +350,7 @@ namespace CoApp.VSE.Core.Controls
                 else
                 {
 
-                    if (Module.IsSolutionOpen && packageItem.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None)
+                    if (Module.IsProjectsOpen && packageItem.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None)
                     {
                         if (Module.PackageManager.VisualStudioPlan.Any(n => n.CanonicalName.DiffersOnlyByVersion(packageItem.PackageIdentity.CanonicalName)))
                             return;
@@ -517,7 +517,7 @@ namespace CoApp.VSE.Core.Controls
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
                 ((MenuItem)menu.Items[6]).IsEnabled = !unmark.IsEnabled &&
                     !(packageItem.Name == "coapp" && packageItem.PackageIdentity.IsActive);
-                ((MenuItem)menu.Items[7]).IsEnabled = !unmark.IsEnabled && Module.IsSolutionOpen &&
+                ((MenuItem)menu.Items[7]).IsEnabled = !unmark.IsEnabled && Module.IsProjectsOpen &&
                     !Module.PackageManager.VisualStudioPlan.Any(n => n.CanonicalName.DiffersOnlyByVersion(packageItem.PackageIdentity.CanonicalName)) &&
                     packageItem.PackageIdentity.GetDeveloperLibraryType() != DeveloperLibraryType.None;
             }

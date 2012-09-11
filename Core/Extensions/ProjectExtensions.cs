@@ -295,10 +295,9 @@ namespace CoApp.VSE.Core.Extensions
         /// </summary>
         public static void ManageReferences(this Project project, PackageReference packageReference, IEnumerable<LibraryReference> libraries)
         {
-            // TODO: This will be changed to "referenceassemblies\\flavor\\arch\\simplename-version\\" in 1.2.0.444+
-            string path = string.Format(@"{0}\ReferenceAssemblies\{1}\{2}{3}-{4}\",
+            string path = string.Format(@"{0}\ReferenceAssemblies\{1}\{2}\{3}-{4}\",
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                packageReference.CanonicalName.Architecture, packageReference.CanonicalName.Name, packageReference.CanonicalName.Flavor, packageReference.CanonicalName.Version);
+                packageReference.CanonicalName.Flavor, packageReference.CanonicalName.Architecture, packageReference.CanonicalName.Name, packageReference.CanonicalName.Version);
 
             var buildProject = project.AsMsBuildProject();
             var vsProject = (VSProject)project.Object;

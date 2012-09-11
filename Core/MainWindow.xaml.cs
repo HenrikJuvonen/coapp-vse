@@ -114,11 +114,13 @@ namespace CoApp.VSE.Core
             if (Module.PackageManager.Settings["#theme"].StringValue == "Dark")
             {
                 Module.PackageManager.Settings["#theme"].StringValue = "Light";
+                OptionsControl.ThemeComboBox.SelectedIndex = 1;
                 Utility.ThemeManager.ChangeTheme(Module.MainWindow, MahApps.Metro.Theme.Light);
             }
             else
             {
                 Module.PackageManager.Settings["#theme"].StringValue = "Dark";
+                OptionsControl.ThemeComboBox.SelectedIndex = 0;
                 Utility.ThemeManager.ChangeTheme(Module.MainWindow, MahApps.Metro.Theme.Dark);
             }
         }
